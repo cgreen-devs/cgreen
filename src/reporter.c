@@ -6,7 +6,7 @@
 
 // There seems to be an "off by four" bug in the Linux implementation of messaging.
 // This can cause stack corruption, so we use the heap and add some padding.
-#define LINUX_MSGRCV_CORRUPTION_PADDING 1
+#define LINUX_MSGRCV_CORRUPTION_PADDING 16
 
 enum {pass = 1, fail, completion};
 
@@ -144,7 +144,7 @@ static void destroy_breadcrumb(TestReporter *reporter) {
 }
 
 static ReporterResult *create_message_buffer() {
-    ReporterResult *message = (ReporterResult *)malloc(sizeof(ReporterResult) * 2 * LINUX_MSGRCV_CORRUPTION_PADDING);
+    ReporterResult *message = (ReporterResult *)malloc(sizeof(ReporterResult) + 2 * LINUX_MSGRCV_CORRUPTION_PADDING);
     return message + LINUX_MSGRCV_CORRUPTION_PADDING;
 }
 
