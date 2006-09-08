@@ -116,7 +116,7 @@ static void clean_up_test_run(TestSuite *suite, TestReporter *reporter) {
     clear_sequences();
     (*reporter->destroy)(reporter);
 	context.reporter = NULL;
-	destroy_test_suite(suite);	
+	destroy_test_suite(suite);
 }
 
 static void run_every_test(TestSuite *suite, TestReporter *reporter) {
