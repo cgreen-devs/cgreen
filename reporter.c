@@ -4,10 +4,6 @@
 #include <sys/msg.h>
 #include <stdarg.h>
 
-// There seems to be an "off by four" bug in the Linux implementation of messaging.
-// This can cause stack corruption, so we use the heap and add some padding.
-#define LINUX_MSGRCV_CORRUPTION_PADDING 16
-
 enum {pass = 1, fail, completion};
 
 static ReporterIpc *ipc_list = NULL;
@@ -144,12 +140,14 @@ static void destroy_breadcrumb(TestReporter *reporter) {
 }
 
 static ReporterResult *create_message_buffer() {
-    ReporterResult *message = (ReporterResult *)malloc(sizeof(ReporterResult) + 2 * LINUX_MSGRCV_CORRUPTION_PADDING);
-    return message + LINUX_MSGRCV_CORRUPTION_PADDING;
+	// There seems to be an "off by four" bug in the Linux implementation of messaging.
+	// This can cause stack corruption, so we use the heap and add some padding.
+    ReporterResult *message = (ReporterResult *)malloc(sizeof(ReporterResult) * 3);
+    return message + 1;
 }
 
 static void destroy_message_buffer(ReporterResult *message) {
-    free(message - LINUX_MSGRCV_CORRUPTION_PADDING);
+    free(message - 1);
 }
 
 static void start_ipc(TestReporter *reporter) {

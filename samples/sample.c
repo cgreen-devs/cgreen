@@ -1,5 +1,4 @@
-#include "unit.h"
-#include "text_reporter.h"
+#include "../cgreen.h"
 #include <stdlib.h>
 #include <stdio.h>
 
