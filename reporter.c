@@ -28,7 +28,7 @@ TestReporter *create_reporter() {
 	reporter->failures = 0;
 	reporter->exceptions = 0;
 	create_breadcrumb(reporter);
-	reporter->ipc = start_ipc();
+	reporter->ipc = start_messaging(45);
     return reporter;
 }
 
