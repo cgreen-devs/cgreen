@@ -1,5 +1,6 @@
 #include "reporter.h"
 #include "messaging.h"
+#include "breadcrumb.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/msg.h>
@@ -12,8 +13,6 @@ static void show_fail(TestReporter *reporter, const char *file, int line, char *
 static void show_incomplete(TestReporter *reporter, char *name);
 static void assert_true(TestReporter *reporter, const char *file, int line, int result, char *message, ...);
 static void read_reporter_results(TestReporter *reporter);
-static void create_breadcrumb(TestReporter *reporter);
-static void destroy_breadcrumb(TestReporter *reporter);
 
 TestReporter *create_reporter() {
     TestReporter *reporter = (TestReporter *)malloc(sizeof(TestReporter));
@@ -27,49 +26,31 @@ TestReporter *create_reporter() {
 	reporter->passes = 0;
 	reporter->failures = 0;
 	reporter->exceptions = 0;
-	create_breadcrumb(reporter);
+	reporter->breadcrumb = (void *)create_breadcrumb();
 	reporter->ipc = start_messaging(45);
     return reporter;
 }
 
 void destroy_reporter(TestReporter *reporter) {
-	destroy_breadcrumb(reporter);
+	destroy_breadcrumb((Breadcrumb *)reporter->breadcrumb);
     free(reporter);
 }
 
-void reporter_start(TestReporter *reporter, char *name)  {
-	reporter->breadcrumb_depth++;
-	if (reporter->breadcrumb_depth > reporter->breadcrumb_space) {
-		reporter->breadcrumb_space++;
-		reporter->breadcrumb = (char **)realloc(
-				reporter->breadcrumb,
-				sizeof(char *) * reporter->breadcrumb_space);
-	}
-	reporter->breadcrumb[reporter->breadcrumb_depth - 1] = name;
+void reporter_start(TestReporter *reporter, const char *name)  {
+	push_breadcrumb((Breadcrumb *)reporter->breadcrumb, name);
 }
 
-void reporter_finish(TestReporter *reporter, char *name) {
+void reporter_finish(TestReporter *reporter, const char *name) {
     read_reporter_results(reporter);
-	reporter->breadcrumb_depth--;
+    pop_breadcrumb((Breadcrumb *)reporter->breadcrumb);
 }
 
 void add_reporter_result(TestReporter *reporter, int result) {
-    send_message((MessageQueue *)reporter->ipc, result ? pass : fail);
+    send_message(reporter->ipc, result ? pass : fail);
 }
 
 void send_reporter_completion_notification(TestReporter *reporter) {
-    send_message((MessageQueue *)reporter->ipc, completion);
-}
-
-char *get_current_reporter_test(TestReporter *reporter) {
-	return reporter->breadcrumb[reporter->breadcrumb_depth - 1];
-}
-
-void walk_reporter_breadcrumb(TestReporter *reporter, void (*walker)(char *, void *), void *memo) {
-    int i;
-    for (i = 0; i < reporter->breadcrumb_depth; i++) {
-        (*walker)(reporter->breadcrumb[i], memo);
-    }
+    send_message(reporter->ipc, completion);
 }
 
 static void show_pass(TestReporter *reporter, const char *file, int line, char *message, va_list arguments) {
@@ -96,7 +77,7 @@ static void assert_true(TestReporter *reporter, const char *file, int line, int 
 static void read_reporter_results(TestReporter *reporter) {
     int completed = 0;
     int result;
-    while ((result = receive_message((MessageQueue *)reporter->ipc)) > 0) {
+    while ((result = receive_message(reporter->ipc)) > 0) {
         if (result == pass) {
             reporter->passes++;
         } else if (result == fail) {
@@ -106,17 +87,7 @@ static void read_reporter_results(TestReporter *reporter) {
         }
     }
     if (! completed) {
-        (*reporter->show_incomplete)(reporter, get_current_reporter_test(reporter));
+        (*reporter->show_incomplete)(reporter, get_current_from_breadcrumb((Breadcrumb *)reporter->breadcrumb));
         reporter->exceptions++;
     }
-}
-
-static void create_breadcrumb(TestReporter *reporter) {
-	reporter->breadcrumb = NULL;
-	reporter->breadcrumb_depth = 0;
-	reporter->breadcrumb_space = 0;
-}
-
-static void destroy_breadcrumb(TestReporter *reporter) {
-	free(reporter->breadcrumb);
 }
