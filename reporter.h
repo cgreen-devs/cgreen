@@ -10,7 +10,7 @@ struct _TestReporter {
 	void (*finish)(TestReporter *, const char *name);
     void (*show_pass)(TestReporter *, const char *, int, char *, va_list);
     void (*show_fail)(TestReporter *, const char *, int, char *, va_list);
-    void (*show_incomplete)(TestReporter *, char *);
+    void (*show_incomplete)(TestReporter *, const char *);
     void (*assert_true)(TestReporter *, const char *, int, int, char *, ...);
 	int passes;
 	int failures;
