@@ -10,7 +10,7 @@ enum {pass = 1, fail, completion};
 
 static void show_pass(TestReporter *reporter, const char *file, int line, char *message, va_list arguments);
 static void show_fail(TestReporter *reporter, const char *file, int line, char *message, va_list arguments);
-static void show_incomplete(TestReporter *reporter, char *name);
+static void show_incomplete(TestReporter *reporter, const char *name);
 static void assert_true(TestReporter *reporter, const char *file, int line, int result, char *message, ...);
 static void read_reporter_results(TestReporter *reporter);
 
@@ -59,7 +59,7 @@ static void show_pass(TestReporter *reporter, const char *file, int line, char *
 static void show_fail(TestReporter *reporter, const char *file, int line, char *message, va_list arguments) {
 }
 
-static void show_incomplete(TestReporter *reporter, char *name) {
+static void show_incomplete(TestReporter *reporter, const char *name) {
 }
 
 static void assert_true(TestReporter *reporter, const char *file, int line, int result, char *message, ...) {

@@ -7,7 +7,7 @@
 static void text_reporter_start(TestReporter *reporter, const char *name);
 static void text_reporter_finish(TestReporter *reporter, const char *name);
 static void show_fail(TestReporter *reporter, const char *file, int line, char *message, va_list arguments);
-static void show_incomplete(TestReporter *reporter, char *name);
+static void show_incomplete(TestReporter *reporter, const char *name);
 static void show_breadcrumb(const char *name, void *memo);
 
 TestReporter *create_text_reporter() {
@@ -52,7 +52,7 @@ static void show_fail(TestReporter *reporter, const char *file, int line, char *
     printf(" at [%s] line [%d]\n", file, line);
 }
 
-static void show_incomplete(TestReporter *reporter, char *name) {
+static void show_incomplete(TestReporter *reporter, const char *name) {
     int i = 0;
     printf("Exception!: ");
     walk_breadcrumb(
