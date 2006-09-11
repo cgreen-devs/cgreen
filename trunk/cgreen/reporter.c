@@ -6,18 +6,18 @@
 
 enum {pass = 1, fail, completion};
 
-static ReporterIpc *ipc_list = NULL;
-static int ipc_count = 0;
-
-struct _ReporterIpc {
+typedef struct _MessageQueue {
     int queue;
     pid_t owner;
-};
+} MessageQueue;
 
-typedef struct _ReporterResult {
+static MessageQueue *ipc_list = NULL;
+static int ipc_count = 0;
+
+typedef struct _Message {
     long type;
     int result;
-} ReporterResult;
+} Message;
 
 static void show_pass(TestReporter *reporter, const char *file, int line, char *message, va_list arguments);
 static void show_fail(TestReporter *reporter, const char *file, int line, char *message, va_list arguments);
@@ -26,12 +26,12 @@ static void assert_true(TestReporter *reporter, const char *file, int line, int 
 static void read_reporter_results(TestReporter *reporter);
 static void create_breadcrumb(TestReporter *reporter);
 static void destroy_breadcrumb(TestReporter *reporter);
-static ReporterResult *create_message_buffer();
-static void destroy_message_buffer(ReporterResult *message);
-static void start_ipc(TestReporter *reporter);
+static Message *create_message_buffer();
+static void destroy_message_buffer(Message *message);
+static void *start_ipc();
 static void clean_up_ipc();
-static void send_message(TestReporter *reporter, int result);
-static int receive_message(TestReporter *reporter);
+static void send_message(MessageQueue *messaging, int result);
+static int receive_message(MessageQueue *messaging);
 
 TestReporter *create_reporter() {
     TestReporter *reporter = (TestReporter *)malloc(sizeof(TestReporter));
@@ -46,7 +46,7 @@ TestReporter *create_reporter() {
 	reporter->failures = 0;
 	reporter->exceptions = 0;
 	create_breadcrumb(reporter);
-	start_ipc(reporter);
+	reporter->ipc = start_ipc();
     return reporter;
 }
 
@@ -72,11 +72,11 @@ void reporter_finish(TestReporter *reporter, char *name) {
 }
 
 void add_reporter_result(TestReporter *reporter, int result) {
-    send_message(reporter, result ? pass : fail);
+    send_message((MessageQueue *)reporter->ipc, result ? pass : fail);
 }
 
 void send_reporter_completion_notification(TestReporter *reporter) {
-    send_message(reporter, completion);
+    send_message((MessageQueue *)reporter->ipc, completion);
 }
 
 char *get_current_reporter_test(TestReporter *reporter) {
@@ -114,7 +114,7 @@ static void assert_true(TestReporter *reporter, const char *file, int line, int 
 static void read_reporter_results(TestReporter *reporter) {
     int completed = 0;
     int result;
-    while ((result = receive_message(reporter)) > 0) {
+    while ((result = receive_message((MessageQueue *)reporter->ipc)) > 0) {
         if (result == pass) {
             reporter->passes++;
         } else if (result == fail) {
@@ -139,25 +139,25 @@ static void destroy_breadcrumb(TestReporter *reporter) {
 	free(reporter->breadcrumb);
 }
 
-static ReporterResult *create_message_buffer() {
+static Message *create_message_buffer() {
 	// There seems to be an "off by four" bug in the Linux implementation of messaging.
 	// This can cause stack corruption, so we use the heap and add some padding.
-    ReporterResult *message = (ReporterResult *)malloc(sizeof(ReporterResult) * 3);
+    Message *message = (Message *)malloc(sizeof(Message) * 3);
     return message + 1;
 }
 
-static void destroy_message_buffer(ReporterResult *message) {
+static void destroy_message_buffer(Message *message) {
     free(message - 1);
 }
 
-static void start_ipc(TestReporter *reporter) {
+static void *start_ipc() {
     if (ipc_count == 0) {
         atexit(&clean_up_ipc);
     }
-    ipc_list = (ReporterIpc *)realloc(ipc_list, sizeof(ReporterIpc) * ++ipc_count);
-    reporter->ipc = &(ipc_list[ipc_count - 1]);
-    reporter->ipc->queue = msgget((long)getpid(), 0666 | IPC_CREAT);
-    reporter->ipc->owner = getpid();
+    ipc_list = (MessageQueue *)realloc(ipc_list, sizeof(MessageQueue) * ++ipc_count);
+    ipc_list[ipc_count - 1].queue = msgget((long)getpid(), 0666 | IPC_CREAT);
+    ipc_list[ipc_count - 1].owner = getpid();
+    return (void *)&(ipc_list[ipc_count - 1]);
 }
 
 static void clean_up_ipc() {
@@ -172,17 +172,17 @@ static void clean_up_ipc() {
     ipc_count = 0;
 }
 
-static void send_message(TestReporter *reporter, int result) {
-    ReporterResult *message = create_message_buffer();
+static void send_message(MessageQueue *messaging, int result) {
+    Message *message = create_message_buffer();
     message->type = 1;
     message->result = result;
-    msgsnd(reporter->ipc->queue, message, sizeof(ReporterResult), 0);
+    msgsnd(messaging->queue, message, sizeof(Message), 0);
     destroy_message_buffer(message);
 }
 
-static int receive_message(TestReporter *reporter) {
-    ReporterResult *message = create_message_buffer();
-    ssize_t received = msgrcv(reporter->ipc->queue, message, sizeof(ReporterResult), 1, IPC_NOWAIT);
+static int receive_message(MessageQueue *messaging) {
+    Message *message = create_message_buffer();
+    ssize_t received = msgrcv(messaging->queue, message, sizeof(Message), 1, IPC_NOWAIT);
     int result = (received > 0 ? message->result : 0);
     destroy_message_buffer(message);
     return result;

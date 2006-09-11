@@ -3,8 +3,6 @@
 
 #include <stdarg.h>
 
-typedef struct _ReporterIpc ReporterIpc;
-
 typedef struct _TestReporter TestReporter;
 struct _TestReporter {
     void (*destroy)(TestReporter *);
@@ -20,7 +18,7 @@ struct _TestReporter {
 	char **breadcrumb;
 	int breadcrumb_depth;
 	int breadcrumb_space;
-	ReporterIpc *ipc;
+	void *ipc;
 	void *memo;
 };
 
