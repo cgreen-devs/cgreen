@@ -14,10 +14,8 @@ typedef struct _Message {
     int result;
 } Message;
 
-Message *create_message_buffer();
-void destroy_message_buffer(Message *message);
-void *start_messaging(int tag);
-void send_message(MessageQueue *messaging, int result);
-int receive_message(MessageQueue *messaging);
+int start_messaging(int tag);
+void send_message(int messaging, int result);
+int receive_message(int messaging);
 
 #endif
