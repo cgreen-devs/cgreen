@@ -18,7 +18,7 @@ struct _TestReporter {
 	char **breadcrumb;
 	int breadcrumb_depth;
 	int breadcrumb_space;
-	void *ipc;
+	int ipc;
 	void *memo;
 };
 
