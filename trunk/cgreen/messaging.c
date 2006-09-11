@@ -2,10 +2,10 @@
 #include <sys/msg.h>
 #include <stdlib.h>
 
-static MessageQueue *ipc_list = NULL;
-static int ipc_count = 0;
+static MessageQueue *queues = NULL;
+static int queue_count = 0;
 
-static void clean_up_ipc();
+static void clean_up_messaging();
 
 Message *create_message_buffer() {
 	// There seems to be an "off by four" bug in the Linux implementation of messaging.
@@ -18,19 +18,20 @@ void destroy_message_buffer(Message *message) {
     free(message - 1);
 }
 
-void *start_ipc() {
-    if (ipc_count == 0) {
-        atexit(&clean_up_ipc);
+void *start_messaging(int tag) {
+    if (queue_count == 0) {
+        atexit(&clean_up_messaging);
     }
-    ipc_list = (MessageQueue *)realloc(ipc_list, sizeof(MessageQueue) * ++ipc_count);
-    ipc_list[ipc_count - 1].queue = msgget((long)getpid(), 0666 | IPC_CREAT);
-    ipc_list[ipc_count - 1].owner = getpid();
-    return (void *)&(ipc_list[ipc_count - 1]);
+    queues = (MessageQueue *)realloc(queues, sizeof(MessageQueue) * ++queue_count);
+    queues[queue_count - 1].queue = msgget((long)getpid(), 0666 | IPC_CREAT);
+    queues[queue_count - 1].owner = getpid();
+    queues[queue_count - 1].tag = tag;
+    return (void *)&(queues[queue_count - 1]);
 }
 
 void send_message(MessageQueue *messaging, int result) {
     Message *message = create_message_buffer();
-    message->type = 1;
+    message->type = messaging->tag;
     message->result = result;
     msgsnd(messaging->queue, message, sizeof(Message), 0);
     destroy_message_buffer(message);
@@ -38,20 +39,20 @@ void send_message(MessageQueue *messaging, int result) {
 
 int receive_message(MessageQueue *messaging) {
     Message *message = create_message_buffer();
-    ssize_t received = msgrcv(messaging->queue, message, sizeof(Message), 1, IPC_NOWAIT);
+    ssize_t received = msgrcv(messaging->queue, message, sizeof(Message), messaging->tag, IPC_NOWAIT);
     int result = (received > 0 ? message->result : 0);
     destroy_message_buffer(message);
     return result;
 }
 
-static void clean_up_ipc() {
+static void clean_up_messaging() {
     int i;
-    for (i = 0; i < ipc_count; i++) {
-        if (ipc_list[i].owner == getpid()) {
-            msgctl(ipc_list[i].queue, IPC_RMID, NULL);
+    for (i = 0; i < queue_count; i++) {
+        if (queues[i].owner == getpid()) {
+            msgctl(queues[i].queue, IPC_RMID, NULL);
         }
     }
-    free(ipc_list);
-    ipc_list = NULL;
-    ipc_count = 0;
+    free(queues);
+    queues = NULL;
+    queue_count = 0;
 }
