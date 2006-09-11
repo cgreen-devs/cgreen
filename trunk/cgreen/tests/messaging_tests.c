@@ -1,17 +1,27 @@
 #include "../cgreen.h"
 #include "../messaging.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <sys/msg.h>
 
-void single_message_should_be_received() {
-    MessageQueue *queue = start_messaging(2);
-    send_message(queue, 99);
-    assert_equal(receive_message(queue), 99, NULL);
-    msgctl(queue->queue, IPC_RMID, NULL);
+void highly_nested_test_suite_should_still_complete() {
+    assert_true(1, NULL);
+}
+
+TestSuite *highly_nested_test_suite() {
+    TestSuite *suite = create_test_suite();
+    add_unit_test(suite, highly_nested_test_suite_should_still_complete);
+    int i;
+    for (i = 0; i < 1000; i++) {
+        TestSuite *nesting = create_test_suite();
+        add_suite(nesting, suite);
+        suite = nesting;
+    }
+    return suite;
 }
 
 TestSuite *messaging_tests() {
     TestSuite *suite = create_test_suite();
-    add_unit_test(suite, single_message_should_be_received);
+    add_suite(suite, highly_nested_test_suite());
     return suite;
 }
