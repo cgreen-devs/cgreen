@@ -1,13 +1,14 @@
 #include "text_reporter.h"
 #include "reporter.h"
+#include "breadcrumb.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-static void text_reporter_start(TestReporter *reporter, char *name);
-static void text_reporter_finish(TestReporter *reporter, char *name);
+static void text_reporter_start(TestReporter *reporter, const char *name);
+static void text_reporter_finish(TestReporter *reporter, const char *name);
 static void show_fail(TestReporter *reporter, const char *file, int line, char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, char *name);
-static void show_breadcrumb(char *name, void *memo);
+static void show_breadcrumb(const char *name, void *memo);
 
 TestReporter *create_text_reporter() {
     TestReporter *reporter = create_reporter();
@@ -18,16 +19,16 @@ TestReporter *create_text_reporter() {
     return reporter;
 }
 
-static void text_reporter_start(TestReporter *reporter, char *name) {
+static void text_reporter_start(TestReporter *reporter, const char *name) {
 	reporter_start(reporter, name);
-	if (reporter->breadcrumb_depth == 1) {
-		printf("Running \"%s\"...\n", get_current_reporter_test(reporter));
+	if (get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb) == 1) {
+		printf("Running \"%s\"...\n", get_current_from_breadcrumb((Breadcrumb *)reporter->breadcrumb));
 	}
 }
 
-static void text_reporter_finish(TestReporter *reporter, char *name) {
+static void text_reporter_finish(TestReporter *reporter, const char *name) {
 	reporter_finish(reporter, name);
-	if (reporter->breadcrumb_depth == 0) {
+	if (get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb) == 0) {
 		printf(
 				"Completed \"%s\": %d pass%s, %d failure%s, %d exception%s.\n",
 				name,
@@ -43,7 +44,10 @@ static void text_reporter_finish(TestReporter *reporter, char *name) {
 static void show_fail(TestReporter *reporter, const char *file, int line, char *message, va_list arguments) {
     int i = 0;
     printf("Failure!: ");
-    walk_reporter_breadcrumb(reporter, &show_breadcrumb, (void *)&i);
+    walk_breadcrumb(
+            (Breadcrumb *)reporter->breadcrumb,
+            &show_breadcrumb,
+            (void *)&i);
     vprintf((message == NULL ? "Problem" : message), arguments);
     printf(" at [%s] line [%d]\n", file, line);
 }
@@ -51,11 +55,14 @@ static void show_fail(TestReporter *reporter, const char *file, int line, char *
 static void show_incomplete(TestReporter *reporter, char *name) {
     int i = 0;
     printf("Exception!: ");
-    walk_reporter_breadcrumb(reporter, &show_breadcrumb, (void *)&i);
+    walk_breadcrumb(
+            (Breadcrumb *)reporter->breadcrumb,
+            &show_breadcrumb,
+            (void *)&i);
     printf("Test \"%s\" failed to complete\n", name);
 }
 
-static void show_breadcrumb(char *name, void *memo) {
+static void show_breadcrumb(const char *name, void *memo) {
     if (*(int *)memo > 0) {
         printf("%s -> ", name);
     }
