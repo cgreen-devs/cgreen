@@ -29,13 +29,20 @@ The other main extra feature is the support for writing mock
 callbacks. This includes counting invocations, and generating
 sequences for return values or parameter assertions.
 
+There is only one make file of signficance, and that's in the
+root directory. Running make will build cgreen.a and cgreen.h
+on a Unix (gcc) setup. You can then include these as normal
+library files in your project. You may have to hack the makefile.
+Once I figure out how automake works, things will improve.
+
 This project would not have happened without the generous
 financial support of the Wordtracker keyword tool...
 http://www.wordtracker.com/
 
 This tool is basically a spin off from that project.
 
-Feedback and queries should be sent to myself.
+Feedback and queries should be sent to myself until a mail list
+has been set up.
 
 yours Marcus Baker
 -- 
