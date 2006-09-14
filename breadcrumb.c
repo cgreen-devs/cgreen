@@ -30,6 +30,9 @@ void pop_breadcrumb(Breadcrumb *breadcrumb) {
 }
 
 const char *get_current_from_breadcrumb(Breadcrumb *breadcrumb) {
+    if (get_breadcrumb_depth(breadcrumb) == 0) {
+        return NULL;
+    }
 	return breadcrumb->trail[breadcrumb->depth - 1];
 }
 
