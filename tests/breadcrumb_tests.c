@@ -60,6 +60,18 @@ void single_item_breadcrumb_does_calls_walker_only_once() {
     walk_breadcrumb(breadcrumb, &walker_for_single_item_breadcrumb, NULL);
 }
 
+void walker_for_double_item_breadcrumb(const char *name, void *memo) {
+    expected_call_count(2);
+    assert_string_equal(name, string_sequence("Hello", "Goodbye"), NULL);
+}
+
+void double_item_breadcrumb_does_calls_walker_only_once() {
+    Breadcrumb *breadcrumb = create_breadcrumb();
+    push_breadcrumb(breadcrumb, "Hello");
+    push_breadcrumb(breadcrumb, "Goodbye");
+    walk_breadcrumb(breadcrumb, &walker_for_double_item_breadcrumb, NULL);
+}
+
 TestSuite *breadcrumb_tests() {
     TestSuite *suite = create_test_suite();
     add_unit_test(suite, can_destroy_empty_breadcrumb);
@@ -70,5 +82,6 @@ TestSuite *breadcrumb_tests() {
     add_unit_test(suite, popping_last_name_leaves_breadcrumb_empty);
     add_unit_test(suite, empty_breadcrumb_does_not_trigger_walker);
     add_unit_test(suite, single_item_breadcrumb_does_calls_walker_only_once);
+    add_unit_test(suite, double_item_breadcrumb_does_calls_walker_only_once);
     return suite;
 }
