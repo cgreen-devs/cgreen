@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<page title="Cgreen Quickstart Guide" here="cgreen">
+    <long_title>
+		Cgreen is a unit testing framework for the C programming language
+    </long_title>
+    <content>
+        <section name="what" title="What is Cgreen?">
+            <p>
+                Cgreen is a unit tester for the C software developer.
+            </p>
+			<p>
+				Unit testing is a development practice popularised by the
+				agile development community.
+				It is characterised by writing many small tests alongside
+				the normal code.
+				Often the tests are written before the code they are testing,
+				in a tight test-code-refactor loop.
+				Done this way, the practice is known as Test Driven Development.
+			</p>
+			<p>
+				Unit tests are written in the same language as the code, in
+				our case C.
+				This avoids the mental challenge of constantly switching language,
+				and also allows you to use any application code in your tests.
+			</p>
+			<p>
+				Cgreen fully supports this style of working.
+			</p>
+		</section>
+	    <section name="install" title="Installing Cgreen">
+            <p>
+                <a href="http://sourceforge.net/projects/fakemail/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
+            </p>
+        </section>
+    </content>
+    <internal>
+        <link>
+            <a href="#what">What is Cgreen?</a>
+        </link>
+        <link>
+            <a href="#install">Installing</a> and testing the installation.
+        </link>
+        <link>
+            A <a href="#typical">more typical Cgreen test case</a>.
+        </link>
+        <link>
+            Simulating interactions with <a href="#mock">mock function callbacks</a>.
+        </link>
+    </internal>
+    <external>
+        <link>
+            The <a href="http://sourceforge.net/projects/cgreen">Cgreen SourceForge page</a>.
+        </link>
+    </external>
+    <meta>
+        <keywords>
+        </keywords>
+    </meta>
+</page>
