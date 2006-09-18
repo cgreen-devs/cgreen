@@ -28,6 +28,13 @@
 			</p>
 		</section>
 	    <section name="install" title="Installing Cgreen">
+			<p>
+				Installing Cgreen is as simple as running <em>make</em>
+				in the unzipped <em>cgreen folder</em>.
+				The makefile will create a unix library called <em>cgreen.a</em>
+				which can be used in conjunction with the <em>cgreen.h</em>
+				header file to compile test code.
+			</p>
             <p>
                 <a href="http://sourceforge.net/projects/fakemail/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
             </p>
