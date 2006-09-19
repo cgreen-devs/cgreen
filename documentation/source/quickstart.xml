@@ -35,6 +35,31 @@
 				which can be used in conjunction with the <em>cgreen.h</em>
 				header file to compile test code.
 			</p>
+			<p>
+				We'll first write a test to confirm everything is working.
+				Let's start with a simple test script with no tests, called
+				<em>first_test.c</em>...
+<c>
+#include "cgreen/cgreen.h"
+
+int main(int argc, char **argv) {
+    TestSuite *suite = create_test_suite();
+    return run_test_suite(suite, create_text_reporter());
+}
+</c>
+				This is a very unexciting test.
+				It just creates an empty test suite and runs it.
+				It's usually easier to proceed in small steps, though,
+				and this is the smallest one I could think of.
+				The only complication is the <em>cgreen.h</em> header
+				file.
+				Here I am assuming we have symlinked the Cgreen folder
+				into the same location as our test script, or placed
+				the Cgreen folder in the path.
+			</p>
+			<p>
+				Building this test is, of course, trivial.
+			</p>
             <p>
                 <a href="http://sourceforge.net/projects/fakemail/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
             </p>
