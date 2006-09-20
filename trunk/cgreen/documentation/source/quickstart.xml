@@ -39,12 +39,12 @@
 				We'll first write a test to confirm everything is working.
 				Let's start with a simple test script with no tests, called
 				<em>first_test.c</em>...
-<c>
-#include "cgreen/cgreen.h"
+<c><strong>
+#include "cgreen/cgreen.h"</strong>
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv) {<strong>
     TestSuite *suite = create_test_suite();
-    return run_test_suite(suite, create_text_reporter());
+    return run_test_suite(suite, create_text_reporter());</strong>
 }
 </c>
 				This is a very unexciting test.
@@ -58,10 +58,67 @@ int main(int argc, char **argv) {
 				the Cgreen folder in the path.
 			</p>
 			<p>
-				Building this test is, of course, trivial.
+				Building this test is, of course, trivial...
+<sh>
+gcc -c first_test.c
+gcc first_test.o cgreen/cgreen.a -o first_test
+./first_test
+</sh>
+				Invoking the executable should give...
+<sh>
+Running "first_test.c"...
+Completed "first_test.c": 0 passes, 0 failures, 0 exceptions.
+</sh>
+				All of the above rather assumes you are working in a
+				Unix like environment, probably with <em>gcc</em>.
+				This has been tested on Linux and Mac OSX so far, but
+				not Windows.
+				It might work though.
+				Cgreen should compile on all systems the support the
+				<em>sys/msg.h</em> messaging library.
+			</p>
+			<p>
+				So far we have tested compilation, and that the test suite
+				actually runs.
+				Let's add a meaningless test or two...
+<c>
+#include "cgreen/cgreen.h"
+<strong>
+void this_test_should_pass() {
+	assert_true(1, "This should be true");
+}
+
+void this_test_should_fail() {
+	assert_true(0, "This should be false");
+}
+</strong>
+int main(int argc, char **argv) {
+	TestSuite *suite = create_test_suite();<strong>
+	add_unit_test(suite, this_test_should_pass);
+	add_unit_test(suite, this_test_should_fail);</strong>
+	return run_test_suite(suite, create_text_reporter());
+}
+</c>
+				A test can be any function with a <code>void (void)</code>
+				signature.
+				<code>add_unit_test()</code> is a macro, hence
+				there is no <code>&amp;</code> with the function
+				pointer.
+			</p>
+			<p>
+				On compiling and running, we now get the output...
+<sh>
+Running "first_test.c"...
+Failure!: this_test_should_fail -> This should be false at [first_test.c] line [8]
+Completed "first_test.c": 1 pass, 1 failure, 0 exceptions.
+</sh>
+				The <code>TextReporter</code>, created by the
+				<code>create_text_reporter()</code> call, is the
+				simplest way to output the test results.
+				It just streams the failures as text.
 			</p>
             <p>
-                <a href="http://sourceforge.net/projects/fakemail/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
+                <a href="http://sourceforge.net/projects/cgreen/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
             </p>
         </section>
     </content>
