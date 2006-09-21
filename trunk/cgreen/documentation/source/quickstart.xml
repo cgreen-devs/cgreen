@@ -22,9 +22,20 @@
 				our case C.
 				This avoids the mental challenge of constantly switching language,
 				and also allows you to use any application code in your tests.
+				Cgreen fully supports this style of working.
 			</p>
 			<p>
-				Cgreen fully supports this style of working.
+				The feature list is:
+				<ul>
+					<li>Fully composable test suites.</li>
+					<li><code>setup()</code> and <code>teardown()</code> for
+						tests and test suites.</li>
+					<li>Each test runs in it's own process.</li>
+					<li>An isolated test can be run in a single process for
+						debugging.</li>
+					<li>Facilities for the easy mocking of callback functions.</li>
+					<li>The reporting mechanism can be easily extended.</li>
+				</ul>
 			</p>
 		</section>
 	    <section name="install" title="Installing Cgreen">
@@ -116,6 +127,13 @@ Completed "first_test.c": 1 pass, 1 failure, 0 exceptions.
 				<code>create_text_reporter()</code> call, is the
 				simplest way to output the test results.
 				It just streams the failures as text.
+				Currently it's the only method supported.
+			</p>
+		</section>
+	    <section name="typical" title="A more typical test case">
+			<p>
+				For a more realistic example we need something to test.
+				We'll pretend that we are writing a word splitting function
 			</p>
             <p>
                 <a href="http://sourceforge.net/projects/cgreen/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
