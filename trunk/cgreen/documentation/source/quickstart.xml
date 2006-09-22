@@ -133,7 +133,23 @@ Completed "first_test.c": 1 pass, 1 failure, 0 exceptions.
 	    <section name="typical" title="A more typical test case">
 			<p>
 				For a more realistic example we need something to test.
-				We'll pretend that we are writing a word splitting function
+				We'll pretend that we are writing a function to copy
+				the first word of a sentence.
+				Not an obviously useful function, but we'll be using it
+				for something more practical below.
+				Here is an example of what we have in mind...
+<c><![CDATA[
+first = first_word("Just the first");
+]]></c>
+				This time we'll add a little more structure to our tests.
+				Rather than having the test run stand alone, we'll
+				separate the runner from the test cases.
+				Here is the empty test case in <em>words_test.c</em>...
+<c><![CDATA[
+]]></c>
+				Here is the <em>all_tests.c</em> test runner...
+<c><![CDATA[
+]]></c>
 			</p>
             <p>
                 <a href="http://sourceforge.net/projects/cgreen/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
