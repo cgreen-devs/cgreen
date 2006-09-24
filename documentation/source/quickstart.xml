@@ -142,14 +142,76 @@ Completed "first_test.c": 1 pass, 1 failure, 0 exceptions.
 first = first_word("Just the first");
 ]]></c>
 				This time we'll add a little more structure to our tests.
-				Rather than having the test run stand alone, we'll
+				Rather than having the test as a stand alone program, we'll
 				separate the runner from the test cases.
-				Here is the empty test case in <em>words_test.c</em>...
+				That way, multiple test suites of test cases can be
+				included in the <code>main()</code> runner.
+			</p>
+			<p>
+				Here is the so far empty test case in <em>words_test.c</em>...
 <c><![CDATA[
+#include "cgreen/cgreen.h"
+<strong>
+TestSuite *words_tests() {
+    TestSuite *suite = create_test_suite();
+    return suite;
+}</strong>
 ]]></c>
 				Here is the <em>all_tests.c</em> test runner...
 <c><![CDATA[
+#include "cgreen/cgreen.h"
+
+TestSuite *words_tests();
+
+int main(int argc, char **argv) {
+    TestSuite *suite = create_test_suite();<strong>
+    add_suite(suite, words_tests());</strong>
+    if (argc > 1) {<strong>
+        return run_single_test(suite, argv[1], create_text_reporter());</strong>
+    }
+    return run_test_suite(suite, create_text_reporter());
+}
 ]]></c>
+				Cgreen has two ways of running tests.
+				The default is with each test run in it's own process.
+				This is what happens if you invoke <code>run_test_suite()</code>.
+				While this makes all the tests independent, the constant
+				<code>fork()</code>'ing can make the tests difficult to debug.
+				To make debugging simpler, Cgreen does not <code>fork()</code>
+				when only a single test is run.
+			</p>
+			<p>
+				Building this scaffolding...
+<sh>
+gcc -c words_test.c
+gcc -c all_tests.c
+gcc words_test.o all_tests.o cgreen/cgreen.a -o all_tests
+</sh>
+				...and executing the result gives the familiar...
+<sh>
+Running "all_tests.c"...
+Completed "all_tests.c": 0 passes, 0 failures, 0 exceptions.
+</sh>
+				All this scaffolding is pure overhead, but from now on adding tests
+				will be a lot easier.
+				Here is a first test of <code>first_word()</code>...
+<c><![CDATA[
+#include "cgreen/cgreen.h"<strong>
+#include "words.h"</strong>
+
+void can_duplicate_first_word() {
+	char *word = first_word("Birds of a feather");<strong>
+	assert_string_equal(word, "Birds", "First word was [%s]", word);</strong>
+	free(word);
+}
+
+TestSuite *words_tests() {
+    TestSuite *suite = create_test_suite();
+	add_unit_test(suite, <strong>can_duplicate_first_word</strong>);
+    return suite;
+}
+]]></c>
+				
 			</p>
             <p>
                 <a href="http://sourceforge.net/projects/cgreen/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
