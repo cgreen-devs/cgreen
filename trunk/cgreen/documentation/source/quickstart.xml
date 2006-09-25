@@ -133,14 +133,21 @@ Completed "first_test.c": 1 pass, 1 failure, 0 exceptions.
 	    <section name="typical" title="A more typical test case">
 			<p>
 				For a more realistic example we need something to test.
-				We'll pretend that we are writing a function to copy
-				the first word of a sentence.
+				We'll pretend that we are writing a function to split
+				the words of a sentence in place.
+				It does this by replacing any spaces with string
+				terminators an dreturns the number of conversions plus one.
 				Not an obviously useful function, but we'll be using it
 				for something more practical below.
 				Here is an example of what we have in mind...
 <c><![CDATA[
-first = first_word("Just the first");
+char *sentence = strdup("Just the first test");
+word_count = split_words(sentence);
 ]]></c>
+				<code>sentence</code> should now point at
+				<code><![CDATA["Just\0the\0first\0test"]]></code>.
+			</p>
+			<p>
 				This time we'll add a little more structure to our tests.
 				Rather than having the test as a stand alone program, we'll
 				separate the runner from the test cases.
@@ -197,17 +204,19 @@ Completed "all_tests.c": 0 passes, 0 failures, 0 exceptions.
 				Here is a first test of <code>first_word()</code>...
 <c><![CDATA[
 #include "cgreen/cgreen.h"<strong>
-#include "words.h"</strong>
+#include "words.h"
+#include <string.h>
 
-void can_duplicate_first_word() {
-	char *word = first_word("Birds of a feather");<strong>
-	assert_string_equal(word, "Birds", "First word was [%s]", word);</strong>
-	free(word);
-}
+void word_count_returned_from_split() {
+	char *sentence = strdup("Birds of a feather");
+	int word_count = split_words(sentence);
+	assert_equal(word_count, 4, "Word count of [%s] was [%d]", sentence, word_count);
+	free(sentence);
+}</strong>
 
 TestSuite *words_tests() {
-    TestSuite *suite = create_test_suite();
-	add_unit_test(suite, <strong>can_duplicate_first_word</strong>);
+    TestSuite *suite = create_test_suite();<strong>
+	add_unit_test(suite, word_count_returned_from_split);</strong>
     return suite;
 }
 ]]></c>
