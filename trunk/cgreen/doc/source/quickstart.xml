@@ -130,15 +130,13 @@ Completed "first_test.c": 1 pass, 1 failure, 0 exceptions.
 				Currently it's the only method supported.
 			</p>
 		</section>
-	    <section name="typical" title="A more typical test case">
+	    <section name="tdd" title="Test Driven Development with Cgreen">
 			<p>
 				For a more realistic example we need something to test.
 				We'll pretend that we are writing a function to split
 				the words of a sentence in place.
 				It does this by replacing any spaces with string
-				terminators an dreturns the number of conversions plus one.
-				Not an obviously useful function, but we'll be using it
-				for something more practical below.
+				terminators and returns the number of conversions plus one.
 				Here is an example of what we have in mind...
 <c><![CDATA[
 char *sentence = strdup("Just the first test");
@@ -146,16 +144,19 @@ word_count = split_words(sentence);
 ]]></c>
 				<code>sentence</code> should now point at
 				<code><![CDATA["Just\0the\0first\0test"]]></code>.
+				Not an obviously useful function, but we'll be using it
+				for something more practical below.
 			</p>
 			<p>
-				This time we'll add a little more structure to our tests.
+				This time around we'll add a little more structure to our tests.
 				Rather than having the test as a stand alone program, we'll
 				separate the runner from the test cases.
 				That way, multiple test suites of test cases can be
-				included in the <code>main()</code> runner.
+				included in the <code>main()</code> runner file.
+				This makes it less work to add more tests.
 			</p>
 			<p>
-				Here is the so far empty test case in <em>words_test.c</em>...
+				Here is the, so far empty, test case in <em>words_test.c</em>...
 <c><![CDATA[
 #include "cgreen/cgreen.h"
 <strong>
@@ -185,7 +186,8 @@ int main(int argc, char **argv) {
 				While this makes all the tests independent, the constant
 				<code>fork()</code>'ing can make the tests difficult to debug.
 				To make debugging simpler, Cgreen does not <code>fork()</code>
-				when only a single test is run.
+				when only a single test is run by name with
+				<code>run_single_test()</code>.
 			</p>
 			<p>
 				Building this scaffolding...
@@ -201,7 +203,7 @@ Completed "all_tests.c": 0 passes, 0 failures, 0 exceptions.
 </sh>
 				All this scaffolding is pure overhead, but from now on adding tests
 				will be a lot easier.
-				Here is a first test of <code>first_word()</code>...
+				Here is a first test of <code>split_words()</code>...
 <c><![CDATA[
 #include "cgreen/cgreen.h"<strong>
 #include "words.h"
@@ -220,7 +222,41 @@ TestSuite *words_tests() {
     return suite;
 }
 ]]></c>
-				
+				The <code>assert_equal()</code> macro takes in the two
+				values to compare, followed by a <code>printf()</code>
+				style format string.
+				If the string is NULL, then a default message is reported.
+				With the default <code>TextReporter</code> the message
+				is sent to <code>STDOUT</code>.
+			</p>
+			<p>
+				To get this to compile we need to create the <em>words.h</em>
+				header file...
+<c>
+int split_words(char *sentence);
+</c>
+				...and to get the code to link we need a stub function in
+				<em>words.c</em>...
+<c>
+int split_words(char *sentence) {
+	return 0;
+}
+</c>
+				A full build later...
+<sh>
+gcc -c all_words.c
+gcc -c words_test.c
+gcc -c words.c
+gcc all_tests.o words_test.o words.o cgreen/cgreen.a -o all_tests
+./all_tests
+</sh>
+				...and we get the more useful response...
+<sh>
+Running "all_tests.c"...
+Failure!: words_test.c -> word_count_returned_from_split -> Word count of [Birds of a feather] was [0] at [words_test.c] line [8]
+Completed "all_tests.c": 0 passes, 1 failure, 0 exceptions.
+</sh>
+				At last we have a meaningful failing test.
 			</p>
             <p>
                 <a href="http://sourceforge.net/projects/cgreen/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
@@ -229,16 +265,16 @@ TestSuite *words_tests() {
     </content>
     <internal>
         <link>
-            <a href="#what">What is Cgreen?</a>
+            What is the <a href="#what">Cgreen unit tester</a>?
         </link>
         <link>
-            <a href="#install">Installing</a> and testing the installation.
+            <a href="#install">Installing Cgreen</a> and testing the installation.
         </link>
         <link>
-            A <a href="#typical">more typical Cgreen test case</a>.
+            <a href="#tdd">Test driven development example</a> with Cgreen.
         </link>
         <link>
-            Simulating interactions with <a href="#mock">mock function callbacks</a>.
+            Simulating interactions with <a href="#mock">mock callbacks</a>.
         </link>
     </internal>
     <external>
