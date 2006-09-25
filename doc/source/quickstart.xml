@@ -118,11 +118,11 @@ int main(int argc, char **argv) {
 			</p>
 			<p>
 				On compiling and running, we now get the output...
-<sh>
+<sh><![CDATA[
 Running "first_test.c"...
 Failure!: this_test_should_fail -> This should be false at [first_test.c] line [8]
 Completed "first_test.c": 1 pass, 1 failure, 0 exceptions.
-</sh>
+]]></sh>
 				The <code>TextReporter</code>, created by the
 				<code>create_text_reporter()</code> call, is the
 				simplest way to output the test results.
@@ -251,12 +251,113 @@ gcc all_tests.o words_test.o words.o cgreen/cgreen.a -o all_tests
 ./all_tests
 </sh>
 				...and we get the more useful response...
-<sh>
+<sh><![CDATA[
 Running "all_tests.c"...
 Failure!: words_test.c -> word_count_returned_from_split -> Word count of [Birds of a feather] was [0] at [words_test.c] line [8]
 Completed "all_tests.c": 0 passes, 1 failure, 0 exceptions.
-</sh>
+]]></sh>
+				The breadcrumb trail is the nesting of the tests, from the
+				test suites which can nested in each other, through the test
+				function and finally the message from the assertion.
+				A failure is a mismatched assertion, an exception is counted
+				when the test fails to complete for any reason.
+			</p>
+			<p>
 				At last we have a meaningful failing test.
+				In the best traditions of test driven development, we'll
+				make it pass with the minumum amount of implementation...
+<c>
+int split_words(char *sentence) {
+	return 4;
+}
+</c>
+				We could add say a three word test to drive the development,
+				but frankly this example is too simple.
+				Instead we'll go straight to the refactoring...
+<c><![CDATA[
+<strong>#include <string.h></strong>
+
+int split_words(char *sentence) {<strong>
+	int i, count = 1;
+	for (i = 0; i < strlen(sentence); i++) {
+		if (sentence[i] == ' ') {
+			count++;
+		}
+	}
+	return count;</strong>
+}
+]]></c>
+				There is a problem here, but our tests still pass,
+				so time to add another test.
+				We want to confirm that the string is broken into
+				separate words...
+<c><![CDATA[
+#include "cgreen/cgreen.h"
+#include "words.h"
+#include <string.h>
+
+void word_count_returned_from_split() { ... }
+<strong>
+void spaces_should_be_converted_to_zeroes() {
+	char *sentence = strdup("Birds of a feather");
+	split_words(sentence);
+	int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
+	assert_equal(comparison, 0, "Compares as %d", comparison);
+	free(sentence);	
+}</strong>
+
+TestSuite *words_tests() {
+    TestSuite *suite = create_test_suite();
+	add_unit_test(suite, word_count_returned_from_split);<strong>
+	add_unit_test(suite, spaces_should_be_converted_to_zeroes);</strong>
+    return suite;
+}
+]]></c>
+				Sure enough, we get a failure...
+<sh><![CDATA[
+Running "all_tests.c"...
+Failure!: words_test.c -> spaces_should_be_converted_to_zeroes -> Compares as -32 at [words_test.c] line [16]
+Completed "all_tests.c": 1 pass, 1 failure, 0 exceptions.
+]]></sh>
+				Not surprising given that we haven't written the code yet.
+			</p>
+			<p>
+				The fix...
+<c><![CDATA[
+int split_words(char *sentence) {
+	int i, count = 1;
+	for (i = 0; i < strlen(sentence); i++) {
+		if (sentence[i] == ' ') {<strong>
+			sentence[i] = '\0';</strong>
+			count++;
+		}
+	}
+	return count;
+}
+]]></c>
+				...reveals our previous hack...
+<sh><![CDATA[
+Running "all_tests.c"...
+Failure!: words_test.c -> word_count_returned_from_split -> Word count of [Birds] was [2] at [words_test.c] line [8]
+Completed "all_tests.c": 1 pass, 1 failure, 0 exceptions.
+]]></sh>
+				Our earlier test now fails, because we have affected
+				the <code>strlen()</code> call in our loop.
+				Moving this calculation out of the loop...
+<c><![CDATA[
+int split_words(char *sentence) {
+	int i, count = 1, <strong>length = strlen(sentence)</strong>;
+	for (i = 0; <strong>i < length</strong>; i++) {
+		...
+	}
+	return count;
+}
+]]></c>
+				...restores order...
+<sh>
+Running "all_tests.c"...
+Completed "all_tests.c": 2 passes, 0 failures, 0 exceptions.
+</sh>
 			</p>
             <p>
                 <a href="http://sourceforge.net/projects/cgreen/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
