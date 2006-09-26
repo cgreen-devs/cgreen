@@ -359,6 +359,148 @@ Running "all_tests.c"...
 Completed "all_tests.c": 2 passes, 0 failures, 0 exceptions.
 </sh>
 			</p>
+		</section>
+		<section name="mock" title="Mocking callback functions">
+			<p>
+				A good test places the subject under test into a
+				tightly controlled environment.
+				A test chamber if you like.
+				This makes the tests fast, repeatable and reliable.
+			</p>
+			<p>
+				To create a test chamber for testing code, it means we have
+				to control any outgoing calls from the code under test.
+				We won't believe our test failure if our code is making
+				calls to the internet for example.
+				Not only that, but it means we have to get dependent components
+				working before we can test the higher level code.
+				This makes it difficult to code top down.
+			</p>
+			<p>
+				The solution to this dilemma is to write stub code for
+				the components whilst the higher level code is written.
+				This pollutes the code base with temporary code, and
+				the test isolation disappears when the system is eventually
+				fleshed out.
+			</p>
+			<p>
+				The ideal is to have minimal stubs written for each
+				individual test.
+				Cgreen encourages this approach by making such tests
+				easier to write.
+			</p>
+			<p>
+				The next example is more realistic.
+				Still in our <em>words.h</em> file, we want to write
+				a function that invokes a callback on each word in a
+				sentence.
+				Something like...
+<c><![CDATA[
+void act_on_word(const char *word, void *memo) {
+	...
+}
+
+words("This is a sentence", &act_on_word, &memo);
+]]></c>
+				Here the <code>memo</code> pointer is just some accumulated
+				data that the <code>act_on_word()</code> callback is working with.
+				The callback is actually a flex point, and not of interest
+				right now.
+			</p>
+			<p>
+				The function under test is the <code>words()</code>
+				function, and we want to make sure it walks the sentence
+				correctly.
+				How to test this?
+			</p>
+			<p>
+				Let's start with a one word sentence.
+				In this case we would expect the callback to be invoked
+				once with the only word, right?
+				Here is the test for that...
+<c><![CDATA[
+...
+#include <stdlib.h>
+...<strong>
+void one_word(const char *word, void *i) {
+	assert_string_equal(word, "Word", NULL);
+	*(int *)i = 1;
+}
+
+void single_word_sentence_invokes_callback_once() {
+	int i = 0;
+	words("Word", &one_word, &i);
+	assert_true(i, NULL);
+}</strong>
+
+TestSuite *words_tests() {
+    TestSuite *suite = create_test_suite();
+	...
+	add_unit_test(suite, <strong>single_word_sentence_invokes_callback_once</strong>);
+    return suite;
+}
+]]></c>
+				The test function is <code>single_word_sentence_invokes_callback_once()</code>.
+				This sets up a flag that the callback was called, invokes the
+				<code>words()</code> function and asserts that the flag has changed.
+				We don't bother with a message for this test, instead passing
+				<code>NULL</code> to <code>assert_true()</code>.
+			</p>
+			<p>
+				The sample callback <code>one_word()</code> checks that the
+				only word was passed, and changes the flag so that we know it
+				was called.
+				All pretty trivial.
+			</p>
+			<p>
+				Only the test method, not the callback, is added to the test
+				suite.
+				We can freely add other code to the test scripts and only
+				the <code>TestSuite</code> factory <code>words_tests()</code> needs
+				to have external linkage.
+			</p>
+			<p>
+				For a compile and link the <em>words.h</em> file must now
+				look like...
+<c><![CDATA[
+int split_words(char *sentence);
+void words(const char *sentence, void (*walker)(const char *, void *), void *);
+]]></c>
+				...and the <em>words.c</em> file should have the stub...
+<c><![CDATA[
+void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
+}
+]]></c>
+				This gives us the expected failing test...
+<sh><![CDATA[
+Running "all_tests.c"...
+Failure!: words_test.c -> single_word_sentence_invokes_callback_once -> Problem at [words_test.c] line [30]
+Completed "all_tests.c": 2 passes, 1 failure, 0 exceptions.
+]]></sh>
+				We can easily get the test to pass by filling out the
+				implementation with...
+<c><![CDATA[
+void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
+	<strong>(*walker)(sentence, memo);</strong>
+}
+]]></c>
+				That was all pretty conventional, but let's tackle the trickier
+				case of actually splitting the sentence.
+				Here is the test function we will add to <em>words_test.c</em>...
+<c><![CDATA[
+void phrase_invokes_callback_for_each_word() {
+	words("Birds of a feather", &four_words, NULL);
+}
+]]></c>
+				It just invokes the method with the callback.
+				More interesting is the callback itself...
+<c><![CDATA[
+void four_words(const char *word, void *memo) {
+	assert_string_equal(word, string_sequence("Birds", "of", "a", "feather"), NULL);
+	expected_call_count(4);
+}
+]]></c>
+			</p>
             <p>
                 <a href="http://sourceforge.net/projects/cgreen/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
             </p>
