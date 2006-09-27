@@ -82,17 +82,19 @@ Completed "first_test.c": 0 passes, 0 failures, 0 exceptions.
 </sh>
 				All of the above rather assumes you are working in a
 				Unix like environment, probably with <em>gcc</em>.
-				This has been tested on Linux and Mac OSX so far, but
-				not Windows.
-				It might work though.
-				Cgreen should compile on all systems the support the
+				The code is pretty much standard C99, so any C compiler
+				should work.
+				Cgreen should compile on all systems that support the
 				<em>sys/msg.h</em> messaging library.
+				This has been tested on Linux and Mac OSX so far, but
+				not Windows, although that might work too.
 			</p>
 			<p>
 				So far we have tested compilation, and that the test suite
 				actually runs.
-				Let's add a meaningless test or two...
-<c>
+				Let's add a meaningless test or two so that you can see how
+				it runs...
+<c><![CDATA[
 #include "cgreen/cgreen.h"
 <strong>
 void this_test_should_pass() {
@@ -109,7 +111,7 @@ int main(int argc, char **argv) {
 	add_unit_test(suite, this_test_should_fail);</strong>
 	return run_test_suite(suite, create_text_reporter());
 }
-</c>
+]]></c>
 				A test can be any function with a <code>void (void)</code>
 				signature.
 				<code>add_unit_test()</code> is a macro, hence
