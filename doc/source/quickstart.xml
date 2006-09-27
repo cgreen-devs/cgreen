@@ -450,6 +450,8 @@ TestSuite *words_tests() {
 				The sample callback <code>one_word()</code> checks that the
 				only word was passed, and changes the flag so that we know it
 				was called.
+				The <code>assert_string_equal()</code> compares two strings
+				of course.
 				All pretty trivial.
 			</p>
 			<p>
@@ -492,7 +494,7 @@ void phrase_invokes_callback_for_each_word() {
 	words("Birds of a feather", &four_words, NULL);
 }
 ]]></c>
-				It just invokes the method with the callback.
+				It just invokes the method with a test callback.
 				More interesting is the callback itself...
 <c><![CDATA[
 void four_words(const char *word, void *memo) {
