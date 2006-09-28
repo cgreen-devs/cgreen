@@ -18,24 +18,26 @@ void spaces_should_be_converted_to_zeroes() {
 	free(sentence);	
 }
 
-void one_word(const char *word, void *i) {
+void one_word_please(const char *word, void *i) {
 	assert_string_equal(word, "Word", NULL);
 	*(int *)i = 1;
 }
 
 void single_word_sentence_invokes_callback_once() {
 	int i = 0;
-	words("Word", &one_word, &i);
+	words("Word", &one_word_please, &i);
 	assert_true(i, NULL);
 }
 
-void four_words(const char *word, void *memo) {
-	assert_string_equal(word, string_sequence("Birds", "of", "a", "feather"));
+void four_words_please(const char *word, void *memo) {
+	char *expected = string_sequence("Birds", "of", "a", "feather");
+	assert_string_equal(word, expected,
+			"Word should be [%s], but was [%s]", expected, word);
 	expected_call_count(4);
 }
 
 void phrase_invokes_callback_for_each_word() {
-	words("Birds of a feather", &four_words, NULL);
+	words("Birds of a feather", &four_words_please, NULL);
 }
 
 TestSuite *words_tests() {

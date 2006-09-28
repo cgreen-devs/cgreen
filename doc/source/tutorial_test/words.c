@@ -12,5 +12,12 @@ int split_words(char *sentence) {
 }
 
 void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
-	(*walker)(sentence, memo);
+	char *words = strdup(sentence);
+	int word_count = split_words(words);
+	char *word = words;
+	while (word_count-- > 0) {
+		(*walker)(word, memo);
+		word = word + strlen(word) + 1;
+	}
+	free(words);
 }
