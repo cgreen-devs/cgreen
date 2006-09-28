@@ -261,11 +261,11 @@ Failure!: words_test.c -> word_count_returned_from_split -> Word count of [Birds
 Completed "all_tests.c": 0 passes, 1 failure, 0 exceptions.
 ]]></sh>
                 The breadcrumb trail is the nesting of the tests.
-				It goes from the
+                It goes from the
                 test suites, which can nested in each other, through the test
                 function, and finally to the message from the assertion.
                 In the language of Cgreen, a failure is a mismatched
-				assertion, an exception is counted
+                assertion, an exception is counted
                 when the test fails to complete for any reason.
             </p>
             <p>
@@ -278,7 +278,7 @@ int split_words(char *sentence) {
 }
 </c>
                 We could add say a three word test to create a contradiction
-				and drive the development,
+                and drive the development,
                 but frankly this example is too simple.
                 Instead we'll go straight to the refactoring...
 <c><![CDATA[
@@ -296,9 +296,9 @@ int split_words(char *sentence) {<strong>
 ]]></c>
                 There is a hidden problem here, but our tests still pass,
                 so we'll pretend we didn't notice.
-			</p>
-			<p>
-				Time to add another test.
+            </p>
+            <p>
+                Time to add another test.
                 We want to confirm that the string is broken into
                 separate words...
 <c><![CDATA[
@@ -368,7 +368,7 @@ int split_words(char *sentence) {
 Running "all_tests.c"...
 Completed "all_tests.c": 2 passes, 0 failures, 0 exceptions.
 </sh>
-				Now let's do something more interesting.
+                Now let's do something more interesting.
             </p>
         </section>
         <section name="mock" title="Mocking callback functions">
@@ -459,7 +459,7 @@ TestSuite *words_tests() {
                 only word was correct, and changes the flag so that we know it
                 was called.
                 The <code>assert_string_equal()</code> is a Cgreen macro that
-				compares two strings of course.
+                compares two strings of course.
                 All pretty trivial.
             </p>
             <p>
@@ -506,43 +506,75 @@ void phrase_invokes_callback_for_each_word() {
                 More interesting is the callback itself...
 <c><![CDATA[
 void four_words_please(const char *word, void *memo) {
-    assert_string_equal(word, string_sequence("Birds", "of", "a", "feather"), NULL);
-    expected_call_count(4);
+    char *expected = <strong>string_sequence("Birds", "of", "a", "feather")</strong>;
+    assert_string_equal(word, expected,
+            "Word should be [%s], but was [%s]", expected, word);<strong>
+    expected_call_count(4);</strong>
 }
 ]]></c>
-				The <code>assert_string_equal()</code> call now compares
-				<code>word</code> with a series of strings from a
-				<code>string_sequence()</code> call.
-			</p>
-			<p>
-				What makes the sequence macro special is that it returns
-				successive parameters on each call using a counter that
-				is reset between test functions.
-				That is, <code><![CDATA["Birds"]]></code> on the first
-				call, <code><![CDATA["of"]]></code> on the second, and
-				so on.
-				This means that each call to <code>four_words_please()</code>
-				will have it's parameter checked against different values.
-			</p>
-			<p>
-				We can also use sequences for return values, of course,
-				and we can have integer and pointer sequences as well.
-			</p>
-			<p>
-				The <code>expected_call_count()</code> method talks directly
-				to the unit tester just like an assertion.
-				It keeps a count of each time it is called, and at the end
-				of the test the call count is tallied with the expected
-				value.
-				If there is a mismatch, then a failure is generated.
-				The call must have been made at least once though, for
-				the counters to have been set up.
-			</p>
-			<p>
-				Once we have added our test to the suite and built the tests,
-				we should see...
+                The <code>assert_string_equal()</code> call now compares
+                <code>word</code> with a series of strings from a
+                <code>string_sequence()</code> call.
+            </p>
+            <p>
+                What makes the sequence macro special is that it returns
+                successive parameters on each call using a counter that
+                is reset between test functions.
+                That is, <code><![CDATA["Birds"]]></code> on the first
+                call, <code><![CDATA["of"]]></code> on the second, and
+                so on.
+                This means that each call to <code>four_words_please()</code>
+                will have it's parameter checked against different values.
+            </p>
+            <p>
+                In general we can also use sequences for return values,
+                and we can have integer and pointer sequences as well.
+            </p>
+            <p>
+                The <code>expected_call_count()</code> method talks directly
+                to the unit tester just like an assertion.
+                It keeps a count of each time it is called, and at the end
+                of the test the call count is tallied with the expected
+                value.
+                If there is a mismatch, then a failure is generated.
+                The call must have been made at least once though, for
+                the counters to have been set up.
+            </p>
+            <p>
+                Once we have added our test to the suite and built the tests,
+                we should see...
 <sh><![CDATA[
+Running "all_tests.c"...
+Failure!: words_test.c -> phrase_invokes_callback_for_each_word -> Word should be [Birds], but was [Birds of a feather] at [words_test.c] line [35]
+Failure!: words_test.c -> phrase_invokes_callback_for_each_word -> Expected a call count of [4], but got [1] at [words_test.c] line [36]
+Completed "all_tests.c": 4 passes, 2 failures, 0 exceptions.
 ]]></sh>
+                ...which is exactly what we would expect.
+            </p>
+            <p>
+                Although not relevant to testing, I cannot resist getting this
+                test to pass.
+                Besides, I get to use the function we created earlier.
+<c><![CDATA[
+void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {<strong>
+    char *words = strdup(sentence);
+    int word_count = split_words(words);
+    char *word = words;
+    while (word_count-- > 0) {
+        (*walker)(word, memo);
+        word = word + strlen(word) + 1;
+    }
+    free(words);</strong>
+}
+]]></c>
+                It took me three goes to get this right, as I firstly
+                forgot the <code>+ 1</code> on to <code>strlen()</code>
+                and then forgot to swap <code>sentence</code> for
+                <code>word</code> in the <code>*walker</code> call.
+                Of course running the tests made these mistakes
+                very obvious.
+                It's taken me far longer to write this paragraph than
+                it has to write the code.
             </p>
             <p>
                 <a href="http://sourceforge.net/projects/cgreen/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
