@@ -1,164 +1,164 @@
 <?xml version="1.0"?>
 <page title="Cgreen Quickstart Guide" here="cgreen">
     <long_title>
-		Cgreen is a unit testing framework for the C programming language
+        Cgreen is a unit testing framework for the C programming language
     </long_title>
     <content>
         <section name="what" title="What is Cgreen?">
             <p>
                 Cgreen is a unit tester for the C software developer.
             </p>
-			<p>
-				Unit testing is a development practice popularised by the
-				agile development community.
-				It is characterised by writing many small tests alongside
-				the normal code.
-				Often the tests are written before the code they are testing,
-				in a tight test-code-refactor loop.
-				Done this way, the practice is known as Test Driven Development.
-			</p>
-			<p>
-				Unit tests are written in the same language as the code, in
-				our case C.
-				This avoids the mental challenge of constantly switching language,
-				and also allows you to use any application code in your tests.
-				Cgreen fully supports this style of working.
-			</p>
-			<p>
-				The feature list is:
-				<ul>
-					<li>Fully composable test suites.</li>
-					<li><code>setup()</code> and <code>teardown()</code> for
-						tests and test suites.</li>
-					<li>Each test runs in it's own process.</li>
-					<li>An isolated test can be run in a single process for
-						debugging.</li>
-					<li>Facilities for the easy mocking of callback functions.</li>
-					<li>The reporting mechanism can be easily extended.</li>
-				</ul>
-			</p>
-		</section>
-	    <section name="install" title="Installing Cgreen">
-			<p>
-				Installing Cgreen is as simple as running <em>make</em>
-				in the unzipped <em>cgreen folder</em>.
-				The makefile will create a unix library called <em>cgreen.a</em>
-				which can be used in conjunction with the <em>cgreen.h</em>
-				header file to compile test code.
-			</p>
-			<p>
-				We'll first write a test to confirm everything is working.
-				Let's start with a simple test script with no tests, called
-				<em>first_test.c</em>...
-<c><strong>
+            <p>
+                Unit testing is a development practice popularised by the
+                agile development community.
+                It is characterised by writing many small tests alongside
+                the normal code.
+                Often the tests are written before the code they are testing,
+                in a tight test-code-refactor loop.
+                Done this way, the practice is known as Test Driven Development.
+                Cgreen supports this style of working.
+            </p>
+            <p>
+                Unit tests are written in the same language as the code, in
+                our case C.
+                This avoids the mental overhead of constantly switching language,
+                and also allows you to use any application code in your tests.
+            </p>
+            <p>
+                The feature list is:
+                <ul>
+                    <li>Fully composable test suites.</li>
+                    <li><code>setup()</code> and <code>teardown()</code> for
+                        tests and test suites.</li>
+                    <li>Each test runs in it's own process.</li>
+                    <li>An isolated test can be run in a single process for
+                        debugging.</li>
+                    <li>Facilities for the easy mocking of callback functions.</li>
+                    <li>The reporting mechanism can be easily extended.</li>
+                </ul>
+            </p>
+        </section>
+        <section name="install" title="Installing Cgreen">
+            <p>
+                Installing Cgreen is as simple as running <em>make</em>
+                in the unzipped <em>cgreen</em> folder.
+                The makefile will create a unix library called <em>cgreen.a</em>
+                which can be used in conjunction with the <em>cgreen.h</em>
+                header file to compile test code.
+            </p>
+            <p>
+                We'll first write a test to confirm everything is working.
+                Let's start with a simple test script with no tests, called
+                <em>first_test.c</em>...
+<c><![CDATA[<strong>
 #include "cgreen/cgreen.h"</strong>
 
 int main(int argc, char **argv) {<strong>
     TestSuite *suite = create_test_suite();
     return run_test_suite(suite, create_text_reporter());</strong>
 }
-</c>
-				This is a very unexciting test.
-				It just creates an empty test suite and runs it.
-				It's usually easier to proceed in small steps, though,
-				and this is the smallest one I could think of.
-				The only complication is the <em>cgreen.h</em> header
-				file.
-				Here I am assuming we have symlinked the Cgreen folder
-				into the same location as our test script, or placed
-				the Cgreen folder in the path.
-			</p>
-			<p>
-				Building this test is, of course, trivial...
+]]></c>
+                This is a very unexciting test.
+                It just creates an empty test suite and runs it.
+                It's usually easier to proceed in small steps, though,
+                and this is the smallest one I could think of.
+                The only complication is the <em>cgreen.h</em> header
+                file.
+                Here I am assuming we have symlinked the Cgreen folder
+                into the same location as our test script, or placed
+                the Cgreen folder in the path.
+            </p>
+            <p>
+                Building this test is, of course, trivial...
 <sh>
 gcc -c first_test.c
 gcc first_test.o cgreen/cgreen.a -o first_test
 ./first_test
 </sh>
-				Invoking the executable should give...
+                Invoking the executable should give...
 <sh>
 Running "first_test.c"...
 Completed "first_test.c": 0 passes, 0 failures, 0 exceptions.
 </sh>
-				All of the above rather assumes you are working in a
-				Unix like environment, probably with <em>gcc</em>.
-				The code is pretty much standard C99, so any C compiler
-				should work.
-				Cgreen should compile on all systems that support the
-				<em>sys/msg.h</em> messaging library.
-				This has been tested on Linux and Mac OSX so far, but
-				not Windows, although that might work too.
-			</p>
-			<p>
-				So far we have tested compilation, and that the test suite
-				actually runs.
-				Let's add a meaningless test or two so that you can see how
-				it runs...
+                All of the above rather assumes you are working in a
+                Unix like environment, probably with <em>gcc</em>.
+                The code is pretty much standard C99, so any C compiler
+                should work.
+                Cgreen should compile on all systems that support the
+                <em>sys/msg.h</em> messaging library.
+                This has been tested on Linux and Mac OSX so far, but
+                not Windows, although that might work too.
+            </p>
+            <p>
+                So far we have tested compilation, and that the test suite
+                actually runs.
+                Let's add a meaningless test or two so that you can see how
+                it runs...
 <c><![CDATA[
 #include "cgreen/cgreen.h"
 <strong>
 void this_test_should_pass() {
-	assert_true(1, "This should be true");
+    assert_true(1, "This should be true");
 }
 
 void this_test_should_fail() {
-	assert_true(0, "This should be false");
+    assert_true(0, "This should be false");
 }
 </strong>
 int main(int argc, char **argv) {
-	TestSuite *suite = create_test_suite();<strong>
-	add_unit_test(suite, this_test_should_pass);
-	add_unit_test(suite, this_test_should_fail);</strong>
-	return run_test_suite(suite, create_text_reporter());
+    TestSuite *suite = create_test_suite();<strong>
+    add_unit_test(suite, this_test_should_pass);
+    add_unit_test(suite, this_test_should_fail);</strong>
+    return run_test_suite(suite, create_text_reporter());
 }
 ]]></c>
-				A test can be any function with a <code>void (void)</code>
-				signature.
-				<code>add_unit_test()</code> is a macro, hence
-				there is no <code>&amp;</code> with the function
-				pointer.
-			</p>
-			<p>
-				On compiling and running, we now get the output...
+                A test can be any function with a <code>void (void)</code>
+                signature.
+                <code>add_unit_test()</code> is a macro, hence
+                there is no <code>&amp;</code> with the function
+                pointer.
+            </p>
+            <p>
+                On compiling and running, we now get the output...
 <sh><![CDATA[
 Running "first_test.c"...
 Failure!: this_test_should_fail -> This should be false at [first_test.c] line [8]
 Completed "first_test.c": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
-				The <code>TextReporter</code>, created by the
-				<code>create_text_reporter()</code> call, is the
-				simplest way to output the test results.
-				It just streams the failures as text.
-				Currently it's the only method supported.
-			</p>
-		</section>
-	    <section name="tdd" title="Test Driven Development with Cgreen">
-			<p>
-				For a more realistic example we need something to test.
-				We'll pretend that we are writing a function to split
-				the words of a sentence in place.
-				It does this by replacing any spaces with string
-				terminators and returns the number of conversions plus one.
-				Here is an example of what we have in mind...
+                The <code>TextReporter</code>, created by the
+                <code>create_text_reporter()</code> call, is the
+                simplest way to output the test results.
+                It just streams the failures as text.
+                Currently it's the only method supported.
+            </p>
+        </section>
+        <section name="tdd" title="Test Driven Development with Cgreen">
+            <p>
+                For a more realistic example we need something to test.
+                We'll pretend that we are writing a function to split
+                the words of a sentence in place.
+                It does this by replacing any spaces with string
+                terminators and returns the number of conversions plus one.
+                Here is an example of what we have in mind...
 <c><![CDATA[
 char *sentence = strdup("Just the first test");
 word_count = split_words(sentence);
 ]]></c>
-				<code>sentence</code> should now point at
-				<code><![CDATA["Just\0the\0first\0test"]]></code>.
-				Not an obviously useful function, but we'll be using it
-				for something more practical below.
-			</p>
-			<p>
-				This time around we'll add a little more structure to our tests.
-				Rather than having the test as a stand alone program, we'll
-				separate the runner from the test cases.
-				That way, multiple test suites of test cases can be
-				included in the <code>main()</code> runner file.
-				This makes it less work to add more tests.
-			</p>
-			<p>
-				Here is the, so far empty, test case in <em>words_test.c</em>...
+                <code>sentence</code> should now point at
+                <code><![CDATA["Just\0the\0first\0test"]]></code>.
+                Not an obviously useful function, but we'll be using it
+                for something more practical below.
+            </p>
+            <p>
+                This time around we'll add a little more structure to our tests.
+                Rather than having the test as a stand alone program, we'll
+                separate the runner from the test cases.
+                That way, multiple test suites of test cases can be
+                included in the <code>main()</code> runner file.
+                This makes it less work to add more tests.
+            </p>
+            <p>
+                Here is the, so far empty, test case in <em>words_test.c</em>...
 <c><![CDATA[
 #include "cgreen/cgreen.h"
 <strong>
@@ -167,7 +167,7 @@ TestSuite *words_tests() {
     return suite;
 }</strong>
 ]]></c>
-				Here is the <em>all_tests.c</em> test runner...
+                Here is the <em>all_tests.c</em> test runner...
 <c><![CDATA[
 #include "cgreen/cgreen.h"
 
@@ -182,69 +182,71 @@ int main(int argc, char **argv) {
     return run_test_suite(suite, create_text_reporter());
 }
 ]]></c>
-				Cgreen has two ways of running tests.
-				The default is with each test run in it's own process.
-				This is what happens if you invoke <code>run_test_suite()</code>.
-				While this makes all the tests independent, the constant
-				<code>fork()</code>'ing can make the tests difficult to debug.
-				To make debugging simpler, Cgreen does not <code>fork()</code>
-				when only a single test is run by name with
-				<code>run_single_test()</code>.
-			</p>
-			<p>
-				Building this scaffolding...
+                Cgreen has two ways of running tests.
+                The default is with each test run in it's own process.
+                This is what happens if you invoke <code>run_test_suite()</code>.
+                While this makes all the tests independent, the constant
+                <code>fork()</code>'ing can make the tests difficult to debug.
+                To make debugging simpler, Cgreen does not <code>fork()</code>
+                when only a single test is run by name with
+                <code>run_single_test()</code>.
+            </p>
+            <p>
+                Building this scaffolding...
 <sh>
 gcc -c words_test.c
 gcc -c all_tests.c
 gcc words_test.o all_tests.o cgreen/cgreen.a -o all_tests
 </sh>
-				...and executing the result gives the familiar...
+                ...and executing the result gives the familiar...
 <sh>
 Running "all_tests.c"...
 Completed "all_tests.c": 0 passes, 0 failures, 0 exceptions.
 </sh>
-				All this scaffolding is pure overhead, but from now on adding tests
-				will be a lot easier.
-				Here is a first test of <code>split_words()</code>...
+                All this scaffolding is pure overhead, but from now on adding tests
+                will be a lot easier.
+            </p>
+            <p>
+                Here is a first test of <code>split_words()</code>...
 <c><![CDATA[
 #include "cgreen/cgreen.h"<strong>
 #include "words.h"
 #include <string.h>
 
 void word_count_returned_from_split() {
-	char *sentence = strdup("Birds of a feather");
-	int word_count = split_words(sentence);
-	assert_equal(word_count, 4, "Word count of [%s] was [%d]", sentence, word_count);
-	free(sentence);
+    char *sentence = strdup("Birds of a feather");
+    int word_count = split_words(sentence);
+    assert_equal(word_count, 4, "Word count of [%s] was [%d]", sentence, word_count);
+    free(sentence);
 }</strong>
 
 TestSuite *words_tests() {
     TestSuite *suite = create_test_suite();<strong>
-	add_unit_test(suite, word_count_returned_from_split);</strong>
+    add_unit_test(suite, word_count_returned_from_split);</strong>
     return suite;
 }
 ]]></c>
-				The <code>assert_equal()</code> macro takes in the two
-				values to compare, followed by a <code>printf()</code>
-				style format string.
-				If the string is NULL, then a default message is reported.
-				With the default <code>TextReporter</code> the message
-				is sent to <code>STDOUT</code>.
-			</p>
-			<p>
-				To get this to compile we need to create the <em>words.h</em>
-				header file...
+                The <code>assert_equal()</code> macro takes in the two
+                values to compare, followed by a <code>printf()</code>
+                style format string.
+                If the string is <code>NULL</code>, then a default message is reported.
+                With the default <code>TextReporter</code> the message
+                is sent to <code>STDOUT</code>.
+            </p>
+            <p>
+                To get this to compile we need to create the <em>words.h</em>
+                header file...
 <c>
 int split_words(char *sentence);
 </c>
-				...and to get the code to link we need a stub function in
-				<em>words.c</em>...
+                ...and to get the code to link we need a stub function in
+                <em>words.c</em>...
 <c>
 int split_words(char *sentence) {
-	return 0;
+    return 0;
 }
 </c>
-				A full build later...
+                A full build later...
 <sh>
 gcc -c all_words.c
 gcc -c words_test.c
@@ -252,47 +254,53 @@ gcc -c words.c
 gcc all_tests.o words_test.o words.o cgreen/cgreen.a -o all_tests
 ./all_tests
 </sh>
-				...and we get the more useful response...
+                ...and we get the more useful response...
 <sh><![CDATA[
 Running "all_tests.c"...
 Failure!: words_test.c -> word_count_returned_from_split -> Word count of [Birds of a feather] was [0] at [words_test.c] line [8]
 Completed "all_tests.c": 0 passes, 1 failure, 0 exceptions.
 ]]></sh>
-				The breadcrumb trail is the nesting of the tests, from the
-				test suites which can nested in each other, through the test
-				function and finally the message from the assertion.
-				A failure is a mismatched assertion, an exception is counted
-				when the test fails to complete for any reason.
-			</p>
-			<p>
-				At last we have a meaningful failing test.
-				In the best traditions of test driven development, we'll
-				make it pass with the minumum amount of implementation...
+                The breadcrumb trail is the nesting of the tests.
+				It goes from the
+                test suites, which can nested in each other, through the test
+                function, and finally to the message from the assertion.
+                In the language of Cgreen, a failure is a mismatched
+				assertion, an exception is counted
+                when the test fails to complete for any reason.
+            </p>
+            <p>
+                At last we have a meaningful failing test.
+                In the best traditions of test driven development, we'll
+                make it pass with the minumum amount of implementation...
 <c>
 int split_words(char *sentence) {
-	return 4;
+    return 4;
 }
 </c>
-				We could add say a three word test to drive the development,
-				but frankly this example is too simple.
-				Instead we'll go straight to the refactoring...
+                We could add say a three word test to create a contradiction
+				and drive the development,
+                but frankly this example is too simple.
+                Instead we'll go straight to the refactoring...
 <c><![CDATA[
 <strong>#include <string.h></strong>
 
 int split_words(char *sentence) {<strong>
-	int i, count = 1;
-	for (i = 0; i < strlen(sentence); i++) {
-		if (sentence[i] == ' ') {
-			count++;
-		}
-	}
-	return count;</strong>
+    int i, count = 1;
+    for (i = 0; i < strlen(sentence); i++) {
+        if (sentence[i] == ' ') {
+            count++;
+        }
+    }
+    return count;</strong>
 }
 ]]></c>
-				There is a problem here, but our tests still pass,
-				so time to add another test.
-				We want to confirm that the string is broken into
-				separate words...
+                There is a hidden problem here, but our tests still pass,
+                so we'll pretend we didn't notice.
+			</p>
+			<p>
+				Time to add another test.
+                We want to confirm that the string is broken into
+                separate words...
 <c><![CDATA[
 #include "cgreen/cgreen.h"
 #include "words.h"
@@ -301,210 +309,241 @@ int split_words(char *sentence) {<strong>
 void word_count_returned_from_split() { ... }
 <strong>
 void spaces_should_be_converted_to_zeroes() {
-	char *sentence = strdup("Birds of a feather");
-	split_words(sentence);
-	int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
-	assert_equal(comparison, 0, "Compares as %d", comparison);
-	free(sentence);	
+    char *sentence = strdup("Birds of a feather");
+    split_words(sentence);
+    int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
+    assert_equal(comparison, 0, "Compares as %d", comparison);
+    free(sentence); 
 }</strong>
 
 TestSuite *words_tests() {
     TestSuite *suite = create_test_suite();
-	add_unit_test(suite, word_count_returned_from_split);<strong>
-	add_unit_test(suite, spaces_should_be_converted_to_zeroes);</strong>
+    add_unit_test(suite, word_count_returned_from_split);<strong>
+    add_unit_test(suite, spaces_should_be_converted_to_zeroes);</strong>
     return suite;
 }
 ]]></c>
-				Sure enough, we get a failure...
+                Sure enough, we get a failure...
 <sh><![CDATA[
 Running "all_tests.c"...
 Failure!: words_test.c -> spaces_should_be_converted_to_zeroes -> Compares as -32 at [words_test.c] line [16]
 Completed "all_tests.c": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
-				Not surprising given that we haven't written the code yet.
-			</p>
-			<p>
-				The fix...
+                Not surprising given that we haven't written the code yet.
+            </p>
+            <p>
+                The fix...
 <c><![CDATA[
 int split_words(char *sentence) {
-	int i, count = 1;
-	for (i = 0; i < strlen(sentence); i++) {
-		if (sentence[i] == ' ') {<strong>
-			sentence[i] = '\0';</strong>
-			count++;
-		}
-	}
-	return count;
+    int i, count = 1;
+    for (i = 0; i < strlen(sentence); i++) {
+        if (sentence[i] == ' ') {<strong>
+            sentence[i] = '\0';</strong>
+            count++;
+        }
+    }
+    return count;
 }
 ]]></c>
-				...reveals our previous hack...
+                ...reveals our previous hack...
 <sh><![CDATA[
 Running "all_tests.c"...
 Failure!: words_test.c -> word_count_returned_from_split -> Word count of [Birds] was [2] at [words_test.c] line [8]
 Completed "all_tests.c": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
-				Our earlier test now fails, because we have affected
-				the <code>strlen()</code> call in our loop.
-				Moving this calculation out of the loop...
+                Our earlier test now fails, because we have affected
+                the <code>strlen()</code> call in our loop.
+                Moving this calculation out of the loop...
 <c><![CDATA[
 int split_words(char *sentence) {
-	int i, count = 1, <strong>length = strlen(sentence)</strong>;
-	for (i = 0; <strong>i < length</strong>; i++) {
-		...
-	}
-	return count;
+    int i, count = 1, <strong>length = strlen(sentence)</strong>;
+    for (i = 0; <strong>i < length</strong>; i++) {
+        ...
+    }
+    return count;
 }
 ]]></c>
-				...restores order...
+                ...restores order...
 <sh>
 Running "all_tests.c"...
 Completed "all_tests.c": 2 passes, 0 failures, 0 exceptions.
 </sh>
-			</p>
-		</section>
-		<section name="mock" title="Mocking callback functions">
-			<p>
-				A good test places the subject under test into a
-				tightly controlled environment.
-				A test chamber if you like.
-				This makes the tests fast, repeatable and reliable.
-			</p>
-			<p>
-				To create a test chamber for testing code, it means we have
-				to control any outgoing calls from the code under test.
-				We won't believe our test failure if our code is making
-				calls to the internet for example.
-				Not only that, but it means we have to get dependent components
-				working before we can test the higher level code.
-				This makes it difficult to code top down.
-			</p>
-			<p>
-				The solution to this dilemma is to write stub code for
-				the components whilst the higher level code is written.
-				This pollutes the code base with temporary code, and
-				the test isolation disappears when the system is eventually
-				fleshed out.
-			</p>
-			<p>
-				The ideal is to have minimal stubs written for each
-				individual test.
-				Cgreen encourages this approach by making such tests
-				easier to write.
-			</p>
-			<p>
-				The next example is more realistic.
-				Still in our <em>words.h</em> file, we want to write
-				a function that invokes a callback on each word in a
-				sentence.
-				Something like...
+				Now let's do something more interesting.
+            </p>
+        </section>
+        <section name="mock" title="Mocking callback functions">
+            <p>
+                A good test places the subject under test into a
+                tightly controlled environment.
+                A test chamber if you like.
+                This makes the tests fast, repeatable and reliable.
+            </p>
+            <p>
+                To create a test chamber for testing code, it means we have
+                to control any outgoing calls from the code under test.
+                We won't believe our test failure if our code is making
+                calls to the internet for example.
+                Not only that, but it means we have to get dependent components
+                working before we can test the higher level code.
+                This makes it difficult to code top down.
+            </p>
+            <p>
+                The solution to this dilemma is to write stub code for
+                the components whilst the higher level code is written.
+                This pollutes the code base with temporary code, and
+                the test isolation disappears when the system is eventually
+                fleshed out.
+            </p>
+            <p>
+                The ideal is to have minimal stubs written for each
+                individual test.
+                Cgreen encourages this approach by making such tests
+                easier to write.
+            </p>
+            <p>
+                The next example is more realistic.
+                Still in our <em>words.h</em> file, we want to write
+                a function that invokes a callback on each word in a
+                sentence.
+                Something like...
 <c><![CDATA[
-void act_on_word(const char *word, void *memo) {
-	...
-}
-
-words("This is a sentence", &act_on_word, &memo);
+void act_on_word(const char *word, void *memo) { ... }<strong>
+words("This is a sentence", &act_on_word, &memo);</strong>
 ]]></c>
-				Here the <code>memo</code> pointer is just some accumulated
-				data that the <code>act_on_word()</code> callback is working with.
-				The callback is actually a flex point, and not of interest
-				right now.
-			</p>
-			<p>
-				The function under test is the <code>words()</code>
-				function, and we want to make sure it walks the sentence
-				correctly.
-				How to test this?
-			</p>
-			<p>
-				Let's start with a one word sentence.
-				In this case we would expect the callback to be invoked
-				once with the only word, right?
-				Here is the test for that...
+                Here the <code>memo</code> pointer is just some accumulated
+                data that the <code>act_on_word()</code> callback is working with.
+            </p>
+            <p>
+                The callback is actually a flex point, and not of interest
+                right now.
+                The function under test is the <code>words()</code>
+                function, and we want to make sure it walks the sentence
+                correctly.
+                How to test this?
+            </p>
+            <p>
+                Let's start with a one word sentence.
+                In this case we would expect the callback to be invoked
+                once with the only word, right?
+                Here is the test for that...
 <c><![CDATA[
 ...
 #include <stdlib.h>
 ...<strong>
-void one_word(const char *word, void *i) {
-	assert_string_equal(word, "Word", NULL);
-	*(int *)i = 1;
+void one_word_please(const char *word, void *flag) {
+    assert_string_equal(word, "Word", NULL);
+    *(int *)flag = 1;
 }
 
 void single_word_sentence_invokes_callback_once() {
-	int i = 0;
-	words("Word", &one_word, &i);
-	assert_true(i, NULL);
+    int flag = 0;
+    words("Word", &one_word_please, &flag);
+    assert_true(flag, NULL);
 }</strong>
 
 TestSuite *words_tests() {
     TestSuite *suite = create_test_suite();
-	...
-	add_unit_test(suite, <strong>single_word_sentence_invokes_callback_once</strong>);
+    ...
+    add_unit_test(suite, <strong>single_word_sentence_invokes_callback_once</strong>);
     return suite;
 }
 ]]></c>
-				The test function is <code>single_word_sentence_invokes_callback_once()</code>.
-				This sets up a flag that the callback was called, invokes the
-				<code>words()</code> function and asserts that the flag has changed.
-				We don't bother with a message for this test, instead passing
-				<code>NULL</code> to <code>assert_true()</code>.
-			</p>
-			<p>
-				The sample callback <code>one_word()</code> checks that the
-				only word was passed, and changes the flag so that we know it
-				was called.
-				The <code>assert_string_equal()</code> compares two strings
-				of course.
-				All pretty trivial.
-			</p>
-			<p>
-				Only the test method, not the callback, is added to the test
-				suite.
-				We can freely add other code to the test scripts and only
-				the <code>TestSuite</code> factory <code>words_tests()</code> needs
-				to have external linkage.
-			</p>
-			<p>
-				For a compile and link the <em>words.h</em> file must now
-				look like...
+                The test function is <code>single_word_sentence_invokes_callback_once()</code>.
+                This sets up a flag that the callback was called, invokes the
+                <code>words()</code> function and asserts that the flag has changed.
+                We don't bother with a message for this test, instead passing
+                <code>NULL</code> to <code>assert_true()</code>.
+            </p>
+            <p>
+                The sample callback <code>one_word()</code> checks that the
+                only word was correct, and changes the flag so that we know it
+                was called.
+                The <code>assert_string_equal()</code> is a Cgreen macro that
+				compares two strings of course.
+                All pretty trivial.
+            </p>
+            <p>
+                Only the test method, not the callback, is added to the test
+                suite.
+                We can freely add other code to the test scripts and only
+                the <code>TestSuite</code> factory <code>words_tests()</code> needs
+                to have external linkage.
+            </p>
+            <p>
+                For a compile and link the <em>words.h</em> file must now
+                look like...
 <c><![CDATA[
-int split_words(char *sentence);
-void words(const char *sentence, void (*walker)(const char *, void *), void *);
+int split_words(char *sentence);<strong>
+void words(const char *sentence, void (*walker)(const char *, void *), void *);</strong>
 ]]></c>
-				...and the <em>words.c</em> file should have the stub...
-<c><![CDATA[
+                ...and the <em>words.c</em> file should have the stub...
+<c><![CDATA[<strong>
 void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
-}
+}</strong>
 ]]></c>
-				This gives us the expected failing test...
+                This gives us the expected failing test...
 <sh><![CDATA[
 Running "all_tests.c"...
 Failure!: words_test.c -> single_word_sentence_invokes_callback_once -> Problem at [words_test.c] line [30]
 Completed "all_tests.c": 2 passes, 1 failure, 0 exceptions.
 ]]></sh>
-				We can easily get the test to pass by filling out the
-				implementation with...
+                We can easily get the test to pass by filling out the
+                implementation with...
 <c><![CDATA[
 void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
-	<strong>(*walker)(sentence, memo);</strong>
+    <strong>(*walker)(sentence, memo);</strong>
 }
 ]]></c>
-				That was all pretty conventional, but let's tackle the trickier
-				case of actually splitting the sentence.
-				Here is the test function we will add to <em>words_test.c</em>...
-<c><![CDATA[
+                That was all pretty conventional, but let's tackle the trickier
+                case of actually splitting the sentence.
+                Here is the test function we will add to <em>words_test.c</em>...
+<c><![CDATA[<strong>
 void phrase_invokes_callback_for_each_word() {
-	words("Birds of a feather", &four_words, NULL);
-}
+    words("Birds of a feather", &four_words_please, NULL);
+}</strong>
 ]]></c>
-				It just invokes the method with a test callback.
-				More interesting is the callback itself...
+                It just invokes the method with a test callback.
+                More interesting is the callback itself...
 <c><![CDATA[
-void four_words(const char *word, void *memo) {
-	assert_string_equal(word, string_sequence("Birds", "of", "a", "feather"), NULL);
-	expected_call_count(4);
+void four_words_please(const char *word, void *memo) {
+    assert_string_equal(word, string_sequence("Birds", "of", "a", "feather"), NULL);
+    expected_call_count(4);
 }
 ]]></c>
+				The <code>assert_string_equal()</code> call now compares
+				<code>word</code> with a series of strings from a
+				<code>string_sequence()</code> call.
 			</p>
+			<p>
+				What makes the sequence macro special is that it returns
+				successive parameters on each call using a counter that
+				is reset between test functions.
+				That is, <code><![CDATA["Birds"]]></code> on the first
+				call, <code><![CDATA["of"]]></code> on the second, and
+				so on.
+				This means that each call to <code>four_words_please()</code>
+				will have it's parameter checked against different values.
+			</p>
+			<p>
+				We can also use sequences for return values, of course,
+				and we can have integer and pointer sequences as well.
+			</p>
+			<p>
+				The <code>expected_call_count()</code> method talks directly
+				to the unit tester just like an assertion.
+				It keeps a count of each time it is called, and at the end
+				of the test the call count is tallied with the expected
+				value.
+				If there is a mismatch, then a failure is generated.
+				The call must have been made at least once though, for
+				the counters to have been set up.
+			</p>
+			<p>
+				Once we have added our test to the suite and built the tests,
+				we should see...
+<sh><![CDATA[
+]]></sh>
+            </p>
             <p>
                 <a href="http://sourceforge.net/projects/cgreen/"><img src="http://sourceforge.net/sflogo.php?group_id=130951&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/></a>
             </p>

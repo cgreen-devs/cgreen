@@ -1,2 +1,2 @@
 #!/bin/sh
-Xalan -o ../index.html quickstart.xml bundled_docs.xslt
+xsltproc bundled_docs.xslt quickstart.xml > ../index.html
