@@ -554,7 +554,7 @@ Completed "all_tests.c": 4 passes, 2 failures, 0 exceptions.
             <p>
                 Although not relevant to testing, I cannot resist getting this
                 test to pass.
-                Besides, I get to use the function we created earlier.
+                Besides, we get to use the function we created earlier.
 <c><![CDATA[
 void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {<strong>
     char *words = strdup(sentence);
@@ -568,10 +568,10 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
 }
 ]]></c>
                 It took me three goes to get this right, as I firstly
-                forgot the <code>+ 1</code> on to <code>strlen()</code>
+                forgot the <code>+ 1</code> added on to <code>strlen()</code>,
                 and then forgot to swap <code>sentence</code> for
-                <code>word</code> in the <code>*walker</code> call.
-                Of course running the tests made these mistakes
+                <code>word</code> in the <code>(*walker)()</code> call.
+                Of course running the tests each time made these mistakes
                 very obvious.
                 It's taken me far longer to write this paragraph than
                 it has to write the code.
@@ -598,6 +598,9 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
     <external>
         <link>
             The <a href="http://sourceforge.net/projects/cgreen">Cgreen SourceForge page</a>.
+        </link>
+        <link>
+            Unit testing was popularised by <a href="http://extremeprogramming.org">eXtreme Programming</a>.
         </link>
     </external>
     <meta>
