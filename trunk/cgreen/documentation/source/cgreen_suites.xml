@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<page title="Writing Cgreen test suites" here="cgreen">
+    <long_title>
+        Creating C test suites using the Cgreen unit testing framework
+    </long_title>
+    <content>
+        <section name="assert" title="Assertions and failures">
+			<p>
+			</p>
+        </section>
+        <section name="suites" title="Building composite test suites">
+        </section>
+        <section name="fork" title="Each test in it's own process">
+        </section>
+    </content>
+    <internal>
+        <link>
+            Writing <a href="#assert">Cgreen assertions</a>.
+        </link>
+        <link>
+            Creating <a href="#suites">composite test suites</a>.
+        </link>
+        <link>
+            <a href="#fork">Each test in it's own process</a>.
+        </link>
+    </internal>
+    <external>
+        <link>
+            The <a href="http://sourceforge.net/projects/cgreen">Cgreen SourceForge page</a>.
+        </link>
+        <link>
+            Unit testing was popularised by <a href="http://extremeprogramming.org">eXtreme Programming</a>.
+        </link>
+    </external>
+    <meta>
+        <keywords>
+        </keywords>
+    </meta>
+</page>
