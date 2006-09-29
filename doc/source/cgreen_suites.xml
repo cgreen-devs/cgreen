@@ -4,8 +4,48 @@
         Creating C test suites using the Cgreen unit testing framework
     </long_title>
     <content>
-        <section name="assert" title="Assertions and failures">
+        <section name="writing" title="Writing basic tests">
 			<p>
+				Cgreen tests are simply C functions with no parameters
+				and a <code>void</code> return value.
+				An example might be...
+<c><![CDATA[
+void <strong>strlen_of_hello_should_be_five</strong>() {
+	<strong>assert_equal</strong>(strlen("Hello"), 5, NULL);
+}
+]]></c>
+				The test function name can be anything you want.
+				The <code>assert_equal()</code> call is an example
+				of an assertion.
+				Assertions send messages to Cgreen, which in turn
+				outputs the results.
+			</p>
+			<p>
+				Here are the standard assertions...
+				<table>
+					<tr><th>Assertion</th><th>Description</th></tr>
+					<tr><td><code>assert_true(boolean)</code></td><td>Passes if boolean evaluates true</td></tr>
+					<tr><td><code>assert_false(boolean)</code></td><td>Fails if boolean evaluates true</td></tr>
+					<tr><td><code>assert_equal(first, second)</code></td><td>Passes if <code>first == second</code></td></tr>
+					<tr><td><code>assert_not_equal(first, second)</code></td><td>Passes if <code>first != second</code></td></tr>
+					<tr><td><code>assert_string_equal(char *, char *)</code></td><td>Uses <code>strcmp()</code> and passes if the strings are equal</td></tr>
+					<tr><td><code>assert_string_not_equal(char *, char *)</code></td><td>Uses <code>strcmp()</code> and fails if the strings are equal</td></tr>
+				</table>
+				All the assertions have an addition <code>char *</code> parameter
+				which is the message you wished to display on failure.
+				If set to <code>NULL</code> then a not very helpful default
+				message is shown instead.
+			</p>
+			<p>
+				Actually the assertion macros have variable argment lists as
+				the failure message acts like the template in <code>printf()</code>.
+				We could change the test above to be...
+<c><![CDATA[
+void <strong>strlen_of_hello_should_be_five</strong>() {
+	int length = strlen("Hello");
+	assert_equal(length, 5, "Should be 5, but was %s", length);
+}
+]]></c>
 			</p>
         </section>
         <section name="suites" title="Building composite test suites">
@@ -15,7 +55,7 @@
     </content>
     <internal>
         <link>
-            Writing <a href="#assert">Cgreen assertions</a>.
+            Writing <a href="#writing">Cgreen tests</a>.
         </link>
         <link>
             Creating <a href="#suites">composite test suites</a>.

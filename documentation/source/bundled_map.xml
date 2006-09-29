@@ -1,2 +1,6 @@
 <?xml version="1.0"?>
-<page title="Cgreen" file="index.html"/>
+<page title="Cgreen" file="index.html">
+	<page title="Test suites" file="cgreen_suites.html"/>
+	<page title="Mock callbacks" file="mock_callbacks.html"/>
+	<page title="Changing the reporting" file="cgreen_reporter.html"/>
+</page>

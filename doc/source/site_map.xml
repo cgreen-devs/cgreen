@@ -13,7 +13,11 @@
         <page title="Authentication" file="authentication_documentation.php"/>
         <page title="Scriptable browser" file="browser_documentation.php"/>
     </page>
-    <page title="Cgreen" file="cgreen.php"/>
+    <page title="Cgreen" file="cgreen.php">
+		<page title="Test suites" file="cgreen_suites.php"/>
+		<page title="Mock callbacks" file="mock_callbacks.php"/>
+		<page title="Changing the reporting" file="cgreen_reporter.php"/>
+	</page>
     <page title="Fakemail" file="fakemail.php"/>
     <page title="PHP unit testing" file="first_test_tutorial.php">
         <page title="Grouping tests" file="group_test_tutorial.php"/>
