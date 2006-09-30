@@ -10,7 +10,7 @@
                 and a <code>void</code> return value.
                 An example might be...
 <c><![CDATA[
-void <strong>strlen_of_hello_should_be_five</strong>() {
+static void <strong>strlen_of_hello_should_be_five</strong>() {
     <strong>assert_equal</strong>(strlen("Hello"), 5, NULL);
 }
 ]]></c>
@@ -37,20 +37,129 @@ void <strong>strlen_of_hello_should_be_five</strong>() {
                 message is shown instead.
             </p>
             <p>
-                Actually the assertion macros have variable argment lists as
+                Actually the assertion macros have variable argument lists as
                 the failure message acts like the template in <code>printf()</code>.
                 We could change the test above to be...
 <c><![CDATA[
-void strlen_of_hello_should_be_five() {
+static void strlen_of_hello_should_be_five() {
     int length = strlen("Hello");
-    assert_equal(length, 5, <strong>"Should be 5, but was %s"</strong>, length);
+    assert_equal(length, 5, <strong>"Should be 5, but was %d"</strong>, length);
 }
+]]></c>
+                A much more user friendly message when things go wrong.
+            </p>
+            <p>
+                For this test to work there needs to be a running test suite.
+                We can create one expecially for this test like so...
+<c><![CDATA[
+<strong>TestSuite *our_tests() {
+    TestSuite *suite = create_test_suite();
+    add_test(suite, strlen_of_hello_should_be_five);
+    return suite;
+}</strong>
+]]></c>
+                In case you have spotted that <code>strlen_of_hello_should_be_five()</code>
+                should have an ampersand in front of it, <code>add_test()</code>
+                is a macro.
+                The <code>&amp;</code> is added automatically.
+            </p>
+            <p>
+                To run the test suite, we call <code>run_test_suite()</code> on
+                it.
+                This function cleans up the test suite after running it, so
+                we can just write...
+<c><![CDATA[
+<strong>run_test_suite(our_tests(), create_text_reporter());</strong>
+]]></c>
+                The results of assertions are ultimately delivered as passes and
+                failures to a collection of callbacks defined in a
+                <code>TestReporter</code> structure.
+                The only predefined one in Cgreen is the <code>TextReporter</code>
+                that delivers messages in plain text.
+            </p>
+            <p>
+                The full test script now looks like...
+<c><![CDATA[
+<strong>#include "cgreen/cgreen.h"
+#include <string.h></strong>
+
+static void strlen_of_hello_should_be_five() {
+    int length = strlen("Hello");
+    assert_equal(length, 5, "Should be 5, but was %d", length);
+}
+
+TestSuite *our_tests() {
+    TestSuite *suite = create_test_suite();
+    add_test(suite, strlen_of_hello_should_be_five);
+    return suite;
+}
+
+<strong>int main(int argc, char **argv) {
+    return </strong>run_test_suite(our_tests(), create_text_reporter());<strong>
+}</strong>
+]]></c>
+                The return value of <code>run_test_suite()</code> is a
+                Unix exit code.
+            </p>
+            <p>
+                Compliling and running gives...
+<sh><![CDATA[
+gcc -c strlen_test.c
+gcc strlen_test.o cgreen/cgreen.a -o strlen_test
+./strlen_test<strong>
+Running "strlen_test.c"...
+Completed "strlen_test.c": 1 pass, 0 failures, 0 exceptions.</strong>
+]]></sh>
+                The test messages are only shown on failure.
+                If we break our test...
+<c><![CDATA[
+static void strlen_of_hello_should_be_five() {
+    int length = strlen(<strong>"Hiya"</strong>);
+    assert_equal(length, 5, "Should be 5, but was %d", length);
+}
+]]></c>
+                ...we'll get our own helpful message...
+<sh><![CDATA[
+Running "strlen_test.c"...<strong>
+Failure!: strlen_of_hello_should_be_five -> Should be 5, but was 4 at [strlen_test.c] line [6]</strong>
+Completed "strlen_test.c": 0 passes, 1 failure, 0 exceptions.
+]]></sh>
+                Cgreen appends the location of the test failure to
+                our error string.
+            </p>
+            <p>
+                Once we have a basic test scaffold up, it's pretty easy to
+                add more tests.
+                Adding a test of <code>strlen()</code> with an empty string
+                for example...
+<c><![CDATA[
+...<strong>
+static void strlen_of_empty_string_should_be_zero() {
+    int length = strlen("\0");
+    assert_equal(length, 0, "Should be 0, but was %d", length);
+}</strong>
+
+TestSuite *<strong>our_tests</strong>() {
+    TestSuite *suite = create_test_suite();
+    add_test(suite, strlen_of_hello_should_be_five);<strong>
+    add_test(suite, strlen_of_empty_string_should_be_zero);</strong>
+    return suite;
+}
+...
 ]]></c>
             </p>
         </section>
-        <section name="suites" title="Building composite test suites">
+        <section name="fixtures" title="Set up and tear down">
+            <p>
+                It's common for test suites to have a lot of duplicate code,
+                especially when setting up similar tests.
+            </p>
         </section>
         <section name="fork" title="Each test in it's own process">
+            <p>
+            </p>
+        </section>
+        <section name="suites" title="Building composite test suites">
         </section>
     </content>
     <internal>
@@ -58,10 +167,13 @@ void strlen_of_hello_should_be_five() {
             Writing <a href="#writing">Cgreen tests</a>.
         </link>
         <link>
-            Creating <a href="#suites">composite test suites</a>.
+            The <a href="#fixtures">setup() and teardown()</a> fixtures.
         </link>
         <link>
             <a href="#fork">Each test in it's own process</a>.
+        </link>
+        <link>
+            Creating <a href="#suites">composite test suites</a>.
         </link>
     </internal>
     <external>

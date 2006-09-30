@@ -5,8 +5,10 @@
 #include "sequence.h"
 
 #define create_test_suite() create_named_test_suite(__FILE__)
+#define add_test(suite, test) _add_unit_test(suite, #test, &test)
 #define add_unit_test(suite, test) _add_unit_test(suite, #test, &test)
 #define add_suite(owner, suite) _add_suite(owner, #suite, suite)
+#define add_test_suite(owner, suite) _add_suite(owner, #suite, suite)
 #define setup(suite, function) _setup(suite, &function)
 #define teardown(suite, function) _teardown(suite, &function)
 #define assert_true(result, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, result, __VA_ARGS__)
@@ -23,7 +25,6 @@
 #define expected_call_count(expected) _count_calls(__FILE__, __LINE__, expected)
 
 typedef struct _TestSuite TestSuite;
-
 typedef struct _TestContext TestContext;
 
 TestSuite *create_named_test_suite(char *name);
