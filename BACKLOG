@@ -1,0 +1,6 @@
+Cgreen TODO
+-----------
+Allow multiple setup() and teardown() as a stack.
+Add a coloured text reporter.
+Investigate adding a SmartFrog reporter.
+longjmp() trap for internal errors.

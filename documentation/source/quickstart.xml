@@ -107,14 +107,14 @@ void this_test_should_fail() {
 </strong>
 int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();<strong>
-    add_unit_test(suite, this_test_should_pass);
-    add_unit_test(suite, this_test_should_fail);</strong>
+    add_test(suite, this_test_should_pass);
+    add_test(suite, this_test_should_fail);</strong>
     return run_test_suite(suite, create_text_reporter());
 }
 ]]></c>
                 A test can be any function with a <code>void (void)</code>
                 signature.
-                <code>add_unit_test()</code> is a macro, hence
+                <code>add_test()</code> is a macro, hence
                 there is no <code>&amp;</code> with the function
                 pointer.
             </p>
@@ -222,7 +222,7 @@ void word_count_returned_from_split() {
 
 TestSuite *words_tests() {
     TestSuite *suite = create_test_suite();<strong>
-    add_unit_test(suite, word_count_returned_from_split);</strong>
+    add_test(suite, word_count_returned_from_split);</strong>
     return suite;
 }
 ]]></c>
@@ -294,7 +294,7 @@ int split_words(char *sentence) {<strong>
     return count;</strong>
 }
 ]]></c>
-                There is a hidden problem here, but our tests still pass,
+                There is a hidden problem here, but our tests still pass
                 so we'll pretend we didn't notice.
             </p>
             <p>
@@ -318,8 +318,8 @@ void spaces_should_be_converted_to_zeroes() {
 
 TestSuite *words_tests() {
     TestSuite *suite = create_test_suite();
-    add_unit_test(suite, word_count_returned_from_split);<strong>
-    add_unit_test(suite, spaces_should_be_converted_to_zeroes);</strong>
+    add_test(suite, word_count_returned_from_split);<strong>
+    add_test(suite, spaces_should_be_converted_to_zeroes);</strong>
     return suite;
 }
 ]]></c>
@@ -353,7 +353,28 @@ Completed "all_tests.c": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
                 Our earlier test now fails, because we have affected
                 the <code>strlen()</code> call in our loop.
-                Moving this calculation out of the loop...
+            </p>
+            <p>
+                It's obvious that test driven development leaves a
+                trail of regression tests.
+                What's not so obvious is that it naturally leads
+                to leaner code.
+            </p>
+            <p>
+                The instant feedback allows us to try minimal code
+                to see if it will work and to fix it when it doesn't.
+                We can be this confident only with a pretty complete test
+                coverage.
+                However, because we are writing the tests before each code
+                change, the very process itself gives us almost complete
+                coverage.
+                This effect is boosted by our habit of going in small
+                steps.
+                A small step is a minimal change.
+            </p>
+            <p>
+                Meanwhile we have a failing test.
+                Moving the length calculation out of the loop...
 <c><![CDATA[
 int split_words(char *sentence) {
     int i, count = 1, <strong>length = strlen(sentence)</strong>;
@@ -368,7 +389,12 @@ int split_words(char *sentence) {
 Running "all_tests.c"...
 Completed "all_tests.c": 2 passes, 0 failures, 0 exceptions.
 </sh>
-                Now let's do something more interesting.
+                It's nice to keep the code under control while we are
+                actually writing it, rather than debugging later when things
+                are more complicated.
+            </p>
+            <p>
+                Let's do something more interesting.
             </p>
         </section>
         <section name="mock" title="Mocking callback functions">
@@ -444,7 +470,7 @@ void single_word_sentence_invokes_callback_once() {
 TestSuite *words_tests() {
     TestSuite *suite = create_test_suite();
     ...
-    add_unit_test(suite, <strong>single_word_sentence_invokes_callback_once</strong>);
+    add_test(suite, <strong>single_word_sentence_invokes_callback_once</strong>);
     return suite;
 }
 ]]></c>
