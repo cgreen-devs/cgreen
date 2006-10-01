@@ -33,7 +33,7 @@ void _add_unit_test(TestSuite *suite, char *name, void (*test)(TestReporter *));
 void _add_suite(TestSuite *owner, char *name, TestSuite *suite);
 void _setup(TestSuite *suite, void (*set_up)());
 void _teardown(TestSuite *suite, void (*tear_down)());
-void stop_soon(unsigned int seconds);
+void die_in(unsigned int seconds);
 int run_test_suite(TestSuite *suite, TestReporter *reporter);
 int run_single_test(TestSuite *suite, char *test, TestReporter *reporter);
 TestReporter *get_test_reporter();

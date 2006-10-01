@@ -119,7 +119,7 @@ void seg_fault() {
 }
 
 void time_out_in_only_one_second() {
-    stop_soon(1);
+    die_in(1);
     sleep(10);
 }
 

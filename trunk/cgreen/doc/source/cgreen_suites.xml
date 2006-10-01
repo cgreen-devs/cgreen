@@ -277,14 +277,142 @@ TestSuite *person_tests() {
                 to remove as much mechanical clutter as we can.
             </p>
             <p>
-                One detail.
-                The <code>teardown()</code> function may not be run if the
+                A couple of details.
+            </p>
+            <p>
+                Currently only one <code>setup()</code> and <code>teardown()</code>
+                may be added to each <code>TestSuite</code>.
+            </p>
+            <p>
+                Also the <code>teardown()</code> function may not be run if the
                 test crashes, causing some test interference.
                 This brings us nicely onto the next section...
             </p>
         </section>
         <section name="fork" title="Each test in it's own process">
             <p>
+                Consider this test method...
+<c><![CDATA[
+void will_seg_fault() {
+    int *p = NULL;
+    (*p)++;
+}
+]]></c>
+                Crashes are not something you would normally want to have
+                in a test run.
+                Not least because it stop you receiving the very test output
+                you need to tackle the problem.
+            </p>
+            <p>
+                To prevent segmentation faults and other problems bringing
+                down the test suites, Cgreen runs every test in it's
+                own process.
+            </p>
+            <p>
+                Just before the <code>setup()</code> call, Cgreen <code>fork()</code>'s.
+                The main process wait's for the test to complete normally or die.
+                This includes the <code>teardown()</code>.
+                If the test process dies, an exception is reported and the main
+                test process carries on.
+            </p>
+            <p>
+                For example...
+<c><![CDATA[
+#include "cgreen/cgreen.h"
+#include <stdlib.h>
+<strong>
+static void will_seg_fault() {
+    int *p = NULL;
+    (*p)++;
+}</strong>
+
+int main(int argc, char **argv) {
+    TestSuite *suite = create_test_suite();
+    add_test(suite, <strong>will_seg_fault</strong>);
+    run_test_suite(suite, create_text_reporter());
+}
+]]></c>
+                When built and run, this gives...
+<sh><![CDATA[
+Running "crash_test.c"...
+Exception!: will_seg_fault -> Test "will_seg_fault" failed to complete
+Completed "crash_test.c": 0 passes, 0 failures, 1 exception.
+]]></sh>
+                The obvious thing to do now is to fire up the debugger.
+                Unfortunately, the constant <code>fork()</code>'ing of
+                Cgreen can be an extra complication too many.
+                It's enough of a problem to find the bug.
+            </p>
+            <p>
+                To get around this, and also to allow the running of
+                one test at a time, Cgreen has the <code>run_single_test()</code>
+                function.
+                The signatures of the two run methods are...
+<c><![CDATA[
+int run_test_suite(TestSuite *suite, TestReporter *reporter);
+int run_single_test(TestSuite *suite, <strong>char *test</strong>, TestReporter *reporter);
+]]></c>
+                The extra parameter of <code>run_single_test()</code>, the
+                <code>test</code> string, is the name of the test to select.
+                This could be any test, even in nested test suites (see below).
+            </p>
+            <p>
+                Here is how we would use it to debug our crashing test...
+<c><![CDATA[
+int main(int argc, char **argv) {
+    TestSuite *suite = create_test_suite();
+    add_test(suite, will_seg_fault);
+    <strong>run_single_test(suite, "will_seg_fault", create_text_reporter());</strong>
+}
+]]></c>
+                When run in this way, Cgreen will not <code>fork()</code>.
+            </p>
+            <p>
+                This deals with the segmentation fault case, but what about a process that fails
+                to complete by getting stuck in a loop?
+            </p>
+            <p>
+                Well, Cgreen will wait forever too.
+                Using the C signal handlers, we can place a time limit on the
+                process by sending it an interrupt.
+                To save us writing this ourselves, Cgreen includes the
+                <code>die_in()</code> function to help us out.
+            </p>
+            <p>
+                Here is an example of time limiting a test...
+<c><![CDATA[
+...
+static void will_seg_fault() { ... }
+<strong>
+static void will_stall() {
+    die_in(1);
+    while(1) { }
+}</strong>
+
+int main(int argc, char **argv) {
+    TestSuite *suite = create_test_suite();
+    add_test(suite, will_seg_fault);
+    add_test(suite, <strong>will_stall</strong>);
+    run_test_suite(suite, create_text_reporter());
+}
+]]></c>
+                When executed, the code will slow for a second, and
+                then finish with...
+<sh><![CDATA[
+Running "crash_test.c"...
+Exception!: will_seg_fault -> Test "will_seg_fault" failed to complete
+Exception!: will_stall -> Test "will_stall" failed to complete
+Completed "crash_test.c": 0 passes, 0 failures, 2 exceptions.
+]]></sh>
+                Note that you see the test results as they come in.
+                Cgreen streams the results as they happen, making it easier
+                to figure out where the test suite has problems.
+            </p>
+            <p>
+                Of course, if you want to set a general time limit on all
+                your tests, then you can add a <code>die_in()</code> to
+                a <code>setup()</code> function.
+                Cgreen will then apply the limit to all of them.
             </p>
         </section>
         <section name="suites" title="Building composite test suites">

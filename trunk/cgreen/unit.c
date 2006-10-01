@@ -87,7 +87,7 @@ void _teardown(TestSuite *suite, void (*teardown)()) {
     suite->teardown = teardown;
 }
 
-void stop_soon(unsigned int seconds) {
+void die_in(unsigned int seconds) {
     signal(SIGALRM, &stop);
     alarm(seconds);
 }
