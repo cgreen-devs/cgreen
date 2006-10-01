@@ -153,6 +153,9 @@ TestSuite *<strong>our_tests</strong>() {
             <p>
                 It's common for test suites to have a lot of duplicate code,
                 especially when setting up similar tests.
+				Take this for example...
+<c><![CDATA[
+]]></c>
             </p>
         </section>
         <section name="fork" title="Each test in it's own process">
