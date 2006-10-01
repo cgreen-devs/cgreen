@@ -4,6 +4,14 @@
         Creating C test suites using the Cgreen unit testing framework
     </long_title>
     <content>
+        <p>
+            Cgreen is a tool for building unit tests in the C language,
+            usually alongside writing the production code.
+            These tests are written by the programmer to prevent bugs,
+            rather than by the customer or eventual user of the software.
+            Even though the test suites are created by software developers,
+            they are intended to be human readable C code.
+        </p>
         <section name="writing" title="Writing basic tests">
             <p>
                 Cgreen tests are simply C functions with no parameters
@@ -155,7 +163,122 @@ TestSuite *<strong>our_tests</strong>() {
                 especially when setting up similar tests.
 				Take this for example...
 <c><![CDATA[
+#include "cgreen/cgreen.h"
+#include <stdlib.h>
+#include <mysql/mysql.h>
+#include "person.h"
+<strong>
+static void create_schema() {
+    MYSQL *connection = mysql_init(NULL);
+    mysql_real_connect(connection, "localhost", "me", "secret", "test", 0, NULL, 0);
+    mysql_query(connection, "create table people (name, varchar(255) unique)");
+    mysql_close(connection);
+}
+
+static void drop_schema() {
+    MYSQL *connection = mysql_init(NULL);
+    mysql_real_connect(connection, "localhost", "me", "secret", "test", 0, NULL, 0);
+    mysql_query(connection, "drop table people");
+    mysql_close(connection);
+}</strong>
+
+static void can_add_person_to_database() {
+    <strong>create_schema();</strong>
+    Person *person = create_person();
+    set_person_name(person, "Fred");
+    save_person(person);
+    Person *found = find_person_by_name("Fred");
+    assert_string_equal(get_person_name(person), "Fred", NULL);
+    <strong>drop_schema();</strong>
+}
+
+static void cannot_add_duplicate_person() {
+    <strong>create_schema();</strong>
+    Person *person = create_person();
+    set_person_name(person, "Fred");
+    assert_true(save_person(person), NULL);
+    Person *duplicate = create_person();
+    set_person_name(duplicate, "Fred");
+    assert_false(save_person(duplicate), NULL);
+    <strong>drop_schema();</strong>
+}
+
+TestSuite *person_tests() {
+    TestSuite *suite = create_test_suite();
+    add_test(suite, can_add_person_to_database);
+    add_test(suite, cannot_add_duplicate_person);
+    return suite;
+}
+
+int main(int argc, char **argv) {
+    return run_test_suite(person_tests(), create_text_reporter());
+}
 ]]></c>
+                We have already factored out the duplicate code into it's
+                own functions, so things are not so bad...yet.
+                What happens though when we get dozens of tests.
+                For something as compicated as database ActiveRecord
+                functionality, having dozens of tests is very likely.
+            </p>
+            <p>
+                We can get Cgreen to do some of the work for us by
+                declaring these methods as <code>setup()</code> and
+                <code>teardown()</code> functions in the test suite.
+            </p>
+            <p>
+                Here is the new version...
+<c><![CDATA[
+...
+static void create_schema() { ... }
+
+static void drop_schema() { ... }
+
+static void can_add_person_to_database() {
+    Person *person = create_person();
+    set_person_name(person, "Fred");
+    save_person(person);
+    Person *found = find_person_by_name("Fred");
+    assert_string_equal(get_person_name(person), "Fred", NULL);
+}
+
+static void cannot_add_duplicate_person() {
+    Person *person = create_person();
+    set_person_name(person, "Fred");
+    assert_true(save_person(person), NULL);
+    Person *duplicate = create_person();
+    set_person_name(duplicate, "Fred");
+    assert_false(save_person(duplicate), NULL);
+}
+
+TestSuite *person_tests() {
+    TestSuite *suite = create_test_suite();<strong>
+    setup(suite, create_schema);
+    teardown(suite, drop_schema);</strong>
+    add_test(suite, can_add_person_to_database);
+    add_test(suite, cannot_add_duplicate_person);
+    return suite;
+}
+...
+]]></c>
+                With this new arrangement Cgreen runs the <code>create_schema()</code>
+                function before each test, and the <code>drop_schema()</code>
+                function after each test.
+            </p>
+            <p>
+                The reason we try so hard to strip everything out of
+                the test functions is that that the test suite acts
+                as documentation.
+                In our <em>person.h</em> example we can easily see that
+                <code>Person</code> has some kind of name property, and
+                that this value must be unique.
+                For the tests to act like a readable specification we have
+                to remove as much mechanical clutter as we can.
+            </p>
+            <p>
+                One detail.
+                The <code>teardown()</code> function may not be run if the
+                test crashes, causing some test interference.
+                This brings us nicely onto the next section...
             </p>
         </section>
         <section name="fork" title="Each test in it's own process">
