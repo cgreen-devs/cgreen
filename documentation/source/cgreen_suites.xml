@@ -217,8 +217,9 @@ int main(int argc, char **argv) {
                 We have already factored out the duplicate code into it's
                 own functions, so things are not so bad...yet.
                 What happens though when we get dozens of tests.
-                For something as compicated as database ActiveRecord
-                functionality, having dozens of tests is very likely.
+                For something as compicated as a database
+                <a href="http://www.martinfowler.com/eaaCatalog/activeRecord.html">ActiveRecord</a>,
+                having dozens of tests is very likely.
             </p>
             <p>
                 We can get Cgreen to do some of the work for us by
@@ -263,6 +264,7 @@ TestSuite *person_tests() {
                 With this new arrangement Cgreen runs the <code>create_schema()</code>
                 function before each test, and the <code>drop_schema()</code>
                 function after each test.
+                This saves some repetitive typing.
             </p>
             <p>
                 The reason we try so hard to strip everything out of
