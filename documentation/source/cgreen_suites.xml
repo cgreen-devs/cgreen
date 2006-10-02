@@ -417,6 +417,108 @@ Completed "crash_test.c": 0 passes, 0 failures, 2 exceptions.
         </section>
         <section name="suites" title="Building composite test suites">
 			<p>
+				The <code>TestSuite</code> is a composite structure.
+				This means test suites can be added to test suites, building
+				a tree structure that will be executed in order.
+			</p>
+			<p>
+				Let's combine the <code>strlen()</code> tests with the
+				<code>Person</code> tests above.
+				Firstly we need to remove the <code>main()</code> calls.
+				E.g...
+<c><![CDATA[
+#include "cgreen/cgreen.h"
+#include <string.h>
+
+static void strlen_of_hello_should_be_five() { ... }
+static void strlen_of_empty_string_should_be_zero() { ... }
+
+TestSuite *our_tests() {
+    TestSuite *suite = create_test_suite();
+    add_test(suite, strlen_of_hello_should_be_five);
+    add_test(suite, strlen_of_empty_string_should_be_zero);
+    return suite;
+}
+]]></c>
+				Then we can write a small runner script with a new
+				<code>main()</code> function...
+<c><![CDATA[
+#include "strlen_tests.c"
+#include "person_tests.c"
+<strong>
+TestSuite *our_tests();
+TestSuite *person_tests();</strong>
+
+int main(int argc, char **argv) {
+	TestSuite *suite = create_test_suite();
+	add_suite(suite, our_tests);
+	add_suite(suite, person_tests);<strong>
+    if (argc > 1) {</strong>
+        return run_single_test(suite, <strong>argv[1]</strong>, create_text_reporter());<strong>
+    }</strong>
+    return run_test_suite(suite, create_text_reporter());
+}
+]]></c>
+				It's usually easier to place the <code>TestSuite</code>
+				prototypes in the runner
+				scripts, rather than have lot's of header files.
+				This is the same reasoning that let us drop the prototypes
+				for the test functions in the actual test scripts.
+				We can get away with this, because the tests are more about
+				documentation than encapsulation.
+			</p>
+			<p>
+				It's sometimes handy to be able to run just a single test
+				from the command line, so we added a simple <code>if</code>
+				block to take the test name as an optional argument.
+				The entire test suite will be searched for the named
+				test.
+				This trick also saves us a recomplile when we debug.
+			</p>
+			<p>
+				We've placed each test suite in it's own file, but that
+				is not necessary.
+				We could build several test suites in the same file, even
+				nesting them.
+				We can even add mixtures of test functions and test suites
+				to the same parent test suite.
+				Loops will give trouble, however.
+			</p>
+			<p>
+				If we do place several suites in the same file, then
+				all the suites will be named the same
+				in the breadcrumb trail in the test message.
+				They will all be named after the current file.
+				If you want to get around this, or you just like to name
+				your test suites, you can use <code>create_named_test_suite()</code>
+				instead of <code>create_test_suite()</code>.
+				This takes a single string parameter.
+				In fact <code>create_test_suite()</code> is just a macro that
+				inserts the <code>__FILE__</code> constant into
+				<code>create_named_test_suite()</code>.
+			</p>
+			<p>
+				What happens to <code>setup()</code> and <code>teardown()</code>
+				in a <code>TestSuite</code> that contains other
+				<code>TestSuite</code>s?
+			</p>
+			<p>
+				Well firstly, Cgreen does not <code>fork()</code> when running
+				a suite.
+				It leaves it up to the child suite to <code>fork()</code>
+				the individual tests.
+				This means that a <code>setup()</code> and <code>teardown</code>
+				fixture will run in the main process.
+				They will be run once for each child suite.
+			</p>
+			<p>
+				We can use this to speed up our <code>Person</code> tests
+				above.
+				Remember we were creating a new connection and closing it
+				again in the fixtures.
+				This means opening and closing a lot of connections.
+				At the slight risk of some test interference, we could
+				reuse the connection accross tests...
 			</p>
         </section>
     </content>
