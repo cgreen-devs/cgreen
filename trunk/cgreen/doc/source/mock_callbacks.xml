@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<page title="Mocking callbacks in Cgreen" here="mock_callbacks">
+    <long_title>
+        Creating mock callbacks in the Cgreen unit testing framework
+    </long_title>
+    <content>
+        <section name="iteration" title="Simulating streams">
+			<p>
+				How do we test this code...
+<c><![CDATA[
+char *read_line() {
+	int buffer_size = 0;
+	char *buffer = NULL;
+	int length = 0;
+}
+]]></c>
+			</p>
+        </section>
+    </content>
+    <internal>
+        <link>
+            Writing <a href="#simulation">Cgreen tests</a>.
+        </link>
+    </internal>
+    <external>
+        <link>
+            The <a href="http://sourceforge.net/projects/cgreen">Cgreen SourceForge page</a>.
+        </link>
+        <link>
+            Unit testing was popularised by <a href="http://extremeprogramming.org">eXtreme Programming</a>.
+        </link>
+    </external>
+    <meta>
+        <keywords>
+        </keywords>
+    </meta>
+</page>

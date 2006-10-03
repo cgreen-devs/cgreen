@@ -3,18 +3,14 @@
 #include <mysql/mysql.h>
 #include "person.h"
 
+static MYSQL *connection;
+
 static void create_schema() {
-    MYSQL *connection = mysql_init(NULL);
-    mysql_real_connect(connection, "localhost", "me", "secret", "test", 0, NULL, 0);
     mysql_query(connection, "create table people (name, varchar(255) unique)");
-    mysql_close(connection);
 }
 
 static void drop_schema() {
-    MYSQL *connection = mysql_init(NULL);
-    mysql_real_connect(connection, "localhost", "me", "secret", "test", 0, NULL, 0);
     mysql_query(connection, "drop table people");
-    mysql_close(connection);
 }
 
 static void can_add_person_to_database() {
@@ -34,13 +30,27 @@ static void cannot_add_duplicate_person() {
     assert_false(save_person(duplicate), NULL);
 }
 
+void open_connection() {
+    connection = mysql_init(NULL);
+    mysql_real_connect(connection, "localhost", "me", "secret", "test", 0, NULL, 0);
+}
+
+void close_connection() {
+    mysql_close(connection);
+}
+
 TestSuite *person_tests() {
     TestSuite *suite = create_test_suite();
     setup(suite, create_schema);
     teardown(suite, drop_schema);
     add_test(suite, can_add_person_to_database);
     add_test(suite, cannot_add_duplicate_person);
-    return suite;
+
+    TestSuite *fixture = create_named_test_suite("Mysql");
+    add_suite(fixture, suite);
+    setup(fixture, open_connection);
+    teardown(fixture, close_connection);
+    return fixture;
 }
 
 int main(int argc, char **argv) {

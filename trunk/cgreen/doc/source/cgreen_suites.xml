@@ -507,8 +507,8 @@ int main(int argc, char **argv) {
 				a suite.
 				It leaves it up to the child suite to <code>fork()</code>
 				the individual tests.
-				This means that a <code>setup()</code> and <code>teardown</code>
-				fixture will run in the main process.
+				This means that a <code>setup()</code> and <code>teardown()</code>
+				will run in the main process.
 				They will be run once for each child suite.
 			</p>
 			<p>
@@ -519,6 +519,62 @@ int main(int argc, char **argv) {
 				This means opening and closing a lot of connections.
 				At the slight risk of some test interference, we could
 				reuse the connection accross tests...
+<c><![CDATA[
+...
+static MYSQL *connection;
+
+static void create_schema() {
+    mysql_query(connection, "create table people (name, varchar(255) unique)");
+}
+
+static void drop_schema() {
+    mysql_query(connection, "drop table people");
+}
+
+static void can_add_person_to_database() { ... }
+static void cannot_add_duplicate_person() { ... }
+<strong>
+void open_connection() {
+    connection = mysql_init(NULL);
+    mysql_real_connect(connection, "localhost", "me", "secret", "test", 0, NULL, 0);
+}
+
+void close_connection() {
+    mysql_close(connection);
+}
+</strong>
+TestSuite *person_tests() {
+    TestSuite *suite = create_test_suite();
+    setup(suite, create_schema);
+    teardown(suite, drop_schema);
+    add_test(suite, can_add_person_to_database);
+    add_test(suite, cannot_add_duplicate_person);
+<strong>
+    TestSuite *fixture = create_named_test_suite("Mysql fixture");
+    add_suite(fixture, suite);
+    setup(fixture, open_connection);
+    teardown(fixture, close_connection);
+    return fixture;</strong>
+}
+]]></c>
+				The trick here is creating a test suite as a wrapper
+				whose sole purpose to wrap the main test suite in
+				the fixture.
+				This is the <code>fixture</code> pointer.
+			</p>
+			<p>
+				This code is a little confusing, because we have two sets of
+				fixtures.
+				We have the MySQL connection fixture.
+				This is run just
+				once at the beginning and end of the person tests as
+				that is the only member of <code>fixture</code>.
+				We also have the schema fixture, which is run before
+				and after every test.
+			</p>
+			<p>
+				In the real world we would probably place the connection
+				fixture in it's own file.
 			</p>
         </section>
     </content>
