@@ -32,21 +32,21 @@ static void <strong>strlen_of_hello_should_be_five</strong>() {
                 Here are the standard assertions...
                 <table>
                     <tr><th>Assertion</th><th>Description</th></tr>
-                    <tr><td><code>assert_true(boolean)</code></td><td>Passes if boolean evaluates true</td></tr>
-                    <tr><td><code>assert_false(boolean)</code></td><td>Fails if boolean evaluates true</td></tr>
-                    <tr><td><code>assert_equal(first, second)</code></td><td>Passes if <code>first == second</code></td></tr>
-                    <tr><td><code>assert_not_equal(first, second)</code></td><td>Passes if <code>first != second</code></td></tr>
-                    <tr><td><code>assert_string_equal(char *, char *)</code></td><td>Uses <code>strcmp()</code> and passes if the strings are equal</td></tr>
-                    <tr><td><code>assert_string_not_equal(char *, char *)</code></td><td>Uses <code>strcmp()</code> and fails if the strings are equal</td></tr>
+                    <tr><td><code>assert_true(boolean, message, ...)</code></td><td>Passes if boolean evaluates true</td></tr>
+                    <tr><td><code>assert_false(boolean, message, ...)</code></td><td>Fails if boolean evaluates true</td></tr>
+                    <tr><td><code>assert_equal(first, second, message, ...)</code></td><td>Passes if <code>first == second</code></td></tr>
+                    <tr><td><code>assert_not_equal(first, second, message, ...)</code></td><td>Passes if <code>first != second</code></td></tr>
+                    <tr><td><code>assert_string_equal(char *, char *, message, ...)</code></td><td>Uses <code>strcmp()</code> and passes if the strings are equal</td></tr>
+                    <tr><td><code>assert_string_not_equal(char *, char *, message, ...)</code></td><td>Uses <code>strcmp()</code> and fails if the strings are equal</td></tr>
                 </table>
-                All the assertions have an addition <code>char *</code> parameter
+                All the assertions have an addition <code>char *</code> message parameter,
                 which is the message you wished to display on failure.
-                If set to <code>NULL</code> then a not very helpful default
+                If this is set to <code>NULL</code>, then a not very helpful default
                 message is shown instead.
             </p>
             <p>
-                Actually the assertion macros have variable argument lists as
-                the failure message acts like the template in <code>printf()</code>.
+                Actually the assertion macros have variable argument lists.
+                The failure message acts like the template in <code>printf()</code>.
                 We could change the test above to be...
 <c><![CDATA[
 static void strlen_of_hello_should_be_five() {
@@ -57,7 +57,7 @@ static void strlen_of_hello_should_be_five() {
                 A much more user friendly message when things go wrong.
             </p>
             <p>
-                For this test to work there needs to be a running test suite.
+                For the test above to work there needs to be a running test suite.
                 We can create one expecially for this test like so...
 <c><![CDATA[
 <strong>TestSuite *our_tests() {
@@ -86,7 +86,7 @@ static void strlen_of_hello_should_be_five() {
                 that delivers messages in plain text.
             </p>
             <p>
-                The full test script now looks like...
+                A full test script now looks like...
 <c><![CDATA[
 <strong>#include "cgreen/cgreen.h"
 #include <string.h></strong>
@@ -155,13 +155,14 @@ TestSuite *<strong>our_tests</strong>() {
 }
 ...
 ]]></c>
+                And so on.
             </p>
         </section>
         <section name="fixtures" title="Set up and tear down">
             <p>
                 It's common for test suites to have a lot of duplicate code,
                 especially when setting up similar tests.
-				Take this for example...
+                Take this database code for example...
 <c><![CDATA[
 #include "cgreen/cgreen.h"
 #include <stdlib.h>
@@ -215,9 +216,11 @@ int main(int argc, char **argv) {
 }
 ]]></c>
                 We have already factored out the duplicate code into it's
-                own functions, so things are not so bad...yet.
-                What happens though when we get dozens of tests.
-                For something as compicated as a database
+                own functions <code>create_scheme()</code> and <code>drop_schema()</code>,
+                so things are not so bad.
+                At least not yet.
+                What happens when we get dozens of tests?
+                For a test subject as compicated as a database
                 <a href="http://www.martinfowler.com/eaaCatalog/activeRecord.html">ActiveRecord</a>,
                 having dozens of tests is very likely.
             </p>
@@ -230,9 +233,9 @@ int main(int argc, char **argv) {
                 Here is the new version...
 <c><![CDATA[
 ...
-static void create_schema() { ... }
+static void <strong>create_schema()</strong> { ... }
 
-static void drop_schema() { ... }
+static void <strong>drop_schema()</strong> { ... }
 
 static void can_add_person_to_database() {
     Person *person = create_person();
@@ -264,7 +267,8 @@ TestSuite *person_tests() {
                 With this new arrangement Cgreen runs the <code>create_schema()</code>
                 function before each test, and the <code>drop_schema()</code>
                 function after each test.
-                This saves some repetitive typing.
+                This saves some repetitive typing and reduces the chance of accidents.
+                It also makes the tests more focused.
             </p>
             <p>
                 The reason we try so hard to strip everything out of
@@ -278,12 +282,8 @@ TestSuite *person_tests() {
             </p>
             <p>
                 A couple of details.
-            </p>
-            <p>
                 Currently only one <code>setup()</code> and <code>teardown()</code>
                 may be added to each <code>TestSuite</code>.
-            </p>
-            <p>
                 Also the <code>teardown()</code> function may not be run if the
                 test crashes, causing some test interference.
                 This brings us nicely onto the next section...
@@ -300,7 +300,7 @@ void will_seg_fault() {
 ]]></c>
                 Crashes are not something you would normally want to have
                 in a test run.
-                Not least because it stop you receiving the very test output
+                Not least because it will stop you receiving the very test output
                 you need to tackle the problem.
             </p>
             <p>
@@ -340,7 +340,7 @@ Completed "crash_test.c": 0 passes, 0 failures, 1 exception.
 ]]></sh>
                 The obvious thing to do now is to fire up the debugger.
                 Unfortunately, the constant <code>fork()</code>'ing of
-                Cgreen can be an extra complication too many.
+                Cgreen can be an extra complication too many when debugging.
                 It's enough of a problem to find the bug.
             </p>
             <p>
@@ -384,15 +384,15 @@ int main(int argc, char **argv) {
 ...
 static void will_seg_fault() { ... }
 <strong>
-static void will_stall() {
+static void this_would_stall() {
     die_in(1);
-    while(1) { }
+    while(0 == 0) { }
 }</strong>
 
 int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
     add_test(suite, will_seg_fault);
-    add_test(suite, <strong>will_stall</strong>);
+    add_test(suite, <strong>this_would_stall</strong>);
     run_test_suite(suite, create_text_reporter());
 }
 ]]></c>
@@ -401,7 +401,7 @@ int main(int argc, char **argv) {
 <sh><![CDATA[
 Running "crash_test.c"...
 Exception!: will_seg_fault -> Test "will_seg_fault" failed to complete
-Exception!: will_stall -> Test "will_stall" failed to complete
+Exception!: will_stall -> Test "this_would_stall" failed to complete
 Completed "crash_test.c": 0 passes, 0 failures, 2 exceptions.
 ]]></sh>
                 Note that you see the test results as they come in.
@@ -416,16 +416,16 @@ Completed "crash_test.c": 0 passes, 0 failures, 2 exceptions.
             </p>
         </section>
         <section name="suites" title="Building composite test suites">
-			<p>
-				The <code>TestSuite</code> is a composite structure.
-				This means test suites can be added to test suites, building
-				a tree structure that will be executed in order.
-			</p>
-			<p>
-				Let's combine the <code>strlen()</code> tests with the
-				<code>Person</code> tests above.
-				Firstly we need to remove the <code>main()</code> calls.
-				E.g...
+            <p>
+                The <code>TestSuite</code> is a composite structure.
+                This means test suites can be added to test suites, building
+                a tree structure that will be executed in order.
+            </p>
+            <p>
+                Let's combine the <code>strlen()</code> tests with the
+                <code>Person</code> tests above.
+                Firstly we need to remove the <code>main()</code> calls.
+                E.g...
 <c><![CDATA[
 #include "cgreen/cgreen.h"
 #include <string.h>
@@ -440,8 +440,8 @@ TestSuite *our_tests() {
     return suite;
 }
 ]]></c>
-				Then we can write a small runner script with a new
-				<code>main()</code> function...
+                Then we can write a small runner script with a new
+                <code>main()</code> function...
 <c><![CDATA[
 #include "strlen_tests.c"
 #include "person_tests.c"
@@ -450,85 +450,85 @@ TestSuite *our_tests();
 TestSuite *person_tests();</strong>
 
 int main(int argc, char **argv) {
-	TestSuite *suite = create_test_suite();
-	add_suite(suite, our_tests);
-	add_suite(suite, person_tests);<strong>
+    TestSuite *suite = create_test_suite();
+    add_suite(suite, our_tests);
+    add_suite(suite, person_tests);<strong>
     if (argc > 1) {</strong>
         return run_single_test(suite, <strong>argv[1]</strong>, create_text_reporter());<strong>
     }</strong>
     return run_test_suite(suite, create_text_reporter());
 }
 ]]></c>
-				It's usually easier to place the <code>TestSuite</code>
-				prototypes in the runner
-				scripts, rather than have lot's of header files.
-				This is the same reasoning that let us drop the prototypes
-				for the test functions in the actual test scripts.
-				We can get away with this, because the tests are more about
-				documentation than encapsulation.
-			</p>
-			<p>
-				It's sometimes handy to be able to run just a single test
-				from the command line, so we added a simple <code>if</code>
-				block to take the test name as an optional argument.
-				The entire test suite will be searched for the named
-				test.
-				This trick also saves us a recomplile when we debug.
-			</p>
-			<p>
-				We've placed each test suite in it's own file, but that
-				is not necessary.
-				We could build several test suites in the same file, even
-				nesting them.
-				We can even add mixtures of test functions and test suites
-				to the same parent test suite.
-				Loops will give trouble, however.
-			</p>
-			<p>
-				If we do place several suites in the same file, then
-				all the suites will be named the same
-				in the breadcrumb trail in the test message.
-				They will all be named after the current file.
-				If you want to get around this, or you just like to name
-				your test suites, you can use <code>create_named_test_suite()</code>
-				instead of <code>create_test_suite()</code>.
-				This takes a single string parameter.
-				In fact <code>create_test_suite()</code> is just a macro that
-				inserts the <code>__FILE__</code> constant into
-				<code>create_named_test_suite()</code>.
-			</p>
-			<p>
-				What happens to <code>setup()</code> and <code>teardown()</code>
-				in a <code>TestSuite</code> that contains other
-				<code>TestSuite</code>s?
-			</p>
-			<p>
-				Well firstly, Cgreen does not <code>fork()</code> when running
-				a suite.
-				It leaves it up to the child suite to <code>fork()</code>
-				the individual tests.
-				This means that a <code>setup()</code> and <code>teardown()</code>
-				will run in the main process.
-				They will be run once for each child suite.
-			</p>
-			<p>
-				We can use this to speed up our <code>Person</code> tests
-				above.
-				Remember we were creating a new connection and closing it
-				again in the fixtures.
-				This means opening and closing a lot of connections.
-				At the slight risk of some test interference, we could
-				reuse the connection accross tests...
+                It's usually easier to place the <code>TestSuite</code>
+                prototypes in the runner
+                scripts, rather than have lot's of header files.
+                This is the same reasoning that let us drop the prototypes
+                for the test functions in the actual test scripts.
+                We can get away with this, because the tests are more about
+                documentation than encapsulation.
+            </p>
+            <p>
+                It's sometimes handy to be able to run just a single test
+                from the command line, so we added a simple <code>if</code>
+                block to take the test name as an optional argument.
+                The entire test suite will be searched for the named
+                test.
+                This trick also saves us a recomplile when we debug.
+            </p>
+            <p>
+                We've placed each test suite in it's own file, but that
+                is not necessary.
+                We could build several test suites in the same file, even
+                nesting them.
+                We can even add mixtures of test functions and test suites
+                to the same parent test suite.
+                Loops will give trouble, however.
+            </p>
+            <p>
+                If we do place several suites in the same file, then
+                all the suites will be named the same
+                in the breadcrumb trail in the test message.
+                They will all be named after the current file.
+                If you want to get around this, or you just like to name
+                your test suites, you can use <code>create_named_test_suite()</code>
+                instead of <code>create_test_suite()</code>.
+                This takes a single string parameter.
+                In fact <code>create_test_suite()</code> is just a macro that
+                inserts the <code>__FILE__</code> constant into
+                <code>create_named_test_suite()</code>.
+            </p>
+            <p>
+                What happens to <code>setup()</code> and <code>teardown()</code>
+                in a <code>TestSuite</code> that contains other
+                <code>TestSuite</code>s?
+            </p>
+            <p>
+                Well firstly, Cgreen does not <code>fork()</code> when running
+                a suite.
+                It leaves it up to the child suite to <code>fork()</code>
+                the individual tests.
+                This means that a <code>setup()</code> and <code>teardown()</code>
+                will run in the main process.
+                They will be run once for each child suite.
+            </p>
+            <p>
+                We can use this to speed up our <code>Person</code> tests
+                above.
+                Remember we were creating a new connection and closing it
+                again in the fixtures.
+                This means opening and closing a lot of connections.
+                At the slight risk of some test interference, we could
+                reuse the connection accross tests...
 <c><![CDATA[
 ...
 static MYSQL *connection;
 
-static void create_schema() {
-    mysql_query(connection, "create table people (name, varchar(255) unique)");
+static void create_schema() {<strong>
+    mysql_query(connection, "create table people (name, varchar(255) unique)");</strong>
 }
 
-static void drop_schema() {
-    mysql_query(connection, "drop table people");
+static void drop_schema() {<strong>
+    mysql_query(connection, "drop table people");</strong>
 }
 
 static void can_add_person_to_database() { ... }
@@ -557,25 +557,55 @@ TestSuite *person_tests() {
     return fixture;</strong>
 }
 ]]></c>
-				The trick here is creating a test suite as a wrapper
-				whose sole purpose to wrap the main test suite in
-				the fixture.
-				This is the <code>fixture</code> pointer.
-			</p>
-			<p>
-				This code is a little confusing, because we have two sets of
-				fixtures.
-				We have the MySQL connection fixture.
-				This is run just
-				once at the beginning and end of the person tests as
-				that is the only member of <code>fixture</code>.
-				We also have the schema fixture, which is run before
-				and after every test.
-			</p>
-			<p>
-				In the real world we would probably place the connection
-				fixture in it's own file.
-			</p>
+                The trick here is creating a test suite as a wrapper
+                whose sole purpose to wrap the main test suite in
+                the fixture.
+                This is our <code>fixture</code> pointer.
+                This code is a little confusing, because we have two sets of
+                fixtures in the same test script.
+            </p>
+            <p>
+                We have the MySQL connection fixture.
+                This is runs <code>open_connection()</code> and
+                <code>close_connection()</code> just
+                once at the beginning and end of the person tests.
+                This is because the <code>suite</code> pointer is the
+                only member of <code>fixture</code>.
+            </p>
+            <p>
+                We also have the schema fixture, the <code>create_schema()</code>
+                and <code>drop_schema()</code>, which is run before
+                and after every test.
+                Those are still attached to the inner <code>suite</code>.
+            </p>
+            <p>
+                In the real world we would probably place the connection
+                fixture in it's own file...
+<c><![CDATA[
+static MYSQL *connection;
+
+MYSQL *get_connection() {
+    return connection;
+}
+
+static void open_connection() {
+    connection = mysql_init(NULL);
+    mysql_real_connect(connection, "localhost", "me", "secret", "test", 0, NULL, 0);
+}
+
+static void close_connection() {
+    mysql_close(connection);
+}
+<strong>
+TestSuite *connection_fixture(TestSuite *suite) {</strong>
+    TestSuite *fixture = create_named_test_suite("Mysql fixture");
+    add_suite(fixture, suite);
+    setup(fixture, open_connection);
+    teardown(fixture, close_connection);
+    return fixture;<strong>
+}</strong>
+]]></c>
+            </p>
         </section>
     </content>
     <internal>

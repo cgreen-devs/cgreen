@@ -4,116 +4,195 @@
         Creating mock callbacks in the Cgreen unit testing framework
     </long_title>
     <content>
-        <section name="iteration" title="Simulating iterators">
-			<p>
-				How do we test this code...?
+		<p>
+			A function rarely exists in isolation, but usually makes further
+			function calls.
+			If we are decoupling our code, then these other
+			functions will be passed in.
+			This gives us the problem of simulating these calls.
+		</p>
+        <section name="problem" title="The problem with streams">
+            <p>
+                How do we test this code...?
 <c><![CDATA[
-char *read_line(int (*get_character)(), void *stream) {
-	int buffer_size = 0, length = 0;
-	char *buffer = NULL;
-	int ch;
-	while ((ch = (*get_character)(stream)) != EOF) {
-		if (++length > size) {
-			size += 100;
-			buffer = realloc(buffer, size + 1);
-		}
-		if ((buffer[length] = ch) == '\n') {
-			break;
-		}
-	}
-	return buffer;
+char *read_line(int (*read)(void *), void *stream) {
+    int buffer_size = 0, length = 0;
+    char *buffer = NULL;
+    int ch;
+    while ((ch = (*read)(stream)) != EOF) {
+        if (++length > size) {
+            size += 100;
+            buffer = realloc(buffer, size + 1);
+        }
+        if ((buffer[length] = ch) == '\n') {
+            break;
+        }
+    }
+    return buffer;
 }
 ]]></c>
-				This is a fairly generic stream reader that turns
-				the incoming characters into string lines, returning
-				<code>NULL</code> if there is no line.
-				The line has memory allocated to it and the
-				stream is advanced ready for the next call.
-				That's quite a bit of functionality, and there
-				are plenty of nasty boundary conditions.
-				I really want this code tested before I deploy it.
-			</p>
-			<p>
-				First we'll test something easy.
-				When the stream is empty, nothing should happen.
-				We just get <code>NULL</code>s when the stream is
-				exhausted.
-				This is easy to test if we write our own stream...
+                This is a fairly generic stream filter that turns
+                the incoming characters into string lines, returning
+                <code>NULL</code> if there is no line.
+                The line has memory allocated to it and the
+                stream is advanced ready for the next call.
+                That's quite a bit of functionality, and there
+                are plenty of nasty boundary conditions.
+                I really want this code tested before I deploy it.
+            </p>
+            <p>
+                First we'll test something easy.
+                When the stream is empty, nothing should happen.
+                We just get <code>NULL</code>s when the stream is
+                exhausted.
+                This is easy to test if we write our own stream...
 <c><![CDATA[
 int empty_stream(void *stream) {
-	return EOF;
+    return EOF;
 }
 
 void reading_lines_from_empty_stream_gives_null() {
-	assert_equal(read_line(&empty_stream, NULL), NULL);
+    assert_equal(read_line(&empty_stream, NULL), NULL);
 }
 
 TestSuite *stream_tests() {
-	TestSuite *suite = create_test_suite();
-	add_test(suite, reading_lines_from_empty_stream_gives_null);
-	return suite;
+    TestSuite *suite = create_test_suite();
+    add_test(suite, reading_lines_from_empty_stream_gives_null);
+    return suite;
 }
 ]]></c>
-				It's easy, because our fake stream returns only
-				one value.
-				If we want to test a one character line, we have to send
-				the terminating <code>EOF</code> or <code><![CDATA["\n"]]></code>.
-				Otherwise our code will loop forever, giving an infinite
-				line of just one character.
-			</p>
-			<p>
-				Here is a way we could do this...
+                It's easy, because our fake stream returns only
+                one value.
+            </p>
+            <p>
+                If we want to test a one character line, we have to send
+                the terminating <code>EOF</code> or <code><![CDATA["\n"]]></code>.
+                Otherwise our code will loop forever, giving an infinite
+                line of just one character.
+            </p>
+            <p>
+                Here is a way we could do this...
 <c><![CDATA[
 static int call_count = 0;
 
 int one_character_stream(void *stream) {
-	if (call_count++ == 0) {
-		return 'a';
-	} else {
-		return EOF;
-	}
+    if (call_count++ == 0) {
+        return 'a';
+    } else {
+        return EOF;
+    }
 }
 
 void reading_lines_from_one_character_gives_one_character_line() {
-	char *line = read_line(&one_character_stream, NULL);
-	assert_string_equal("a", line, NULL);
-	free(line);
+    char *line = read_line(&one_character_stream, NULL);
+    assert_string_equal("a", line, NULL);
+    free(line);
 }
 ]]></c>
-				We simply keep track of the number of calls in the
-				callback.
+                We simply keep track of the number of calls in the
+                callback.
+            </p>
+            <p>
+                There are a bunch of problems with this:
+                <ul>
+                    <li>It's tedious.</li>
+                    <li>It's error prone with many switches</li>
+                    <li>We cannot reuse this function in other tests without
+                        resetting the counter each time.</li>
+                </ul>
+                To make our lives much easier, Cgreen includes a sequence
+                concept to handle all of the switching for us.
 			</p>
-			<p>
-				There are a bunch of problems with this:
-				<ul>
-					<li>It's tedious.</li>
-					<li>It's error prone with many switches</li>
-					<li>We cannot reuse this function in other tests without
-						resetting the counter each time.</li>
-				</ul>
-				To make our lives much easier, Cgreen includes a sequence
-				concept to handle all of the switching for us.
-			</p>
-			<p>
-				Here is our callback test rewritten to use Cgreen sequences...
+		</section>
+		<section name="stubbing" title="Stubbing with sequences">
+		    <p>
+                Here is our callback test rewritten to use Cgreen sequences...
 <c><![CDATA[
 int one_character_stream(void *stream) {
-	return integer_sequence('a', EOF);
+    return integer_sequence('a', EOF);
 }
 
 void reading_lines_from_one_character_gives_one_character_line() {
-	char *line = read_line(&one_character_stream, NULL);
-	assert_string_equal("a", line, NULL);
-	free(line);
+    char *line = read_line(&one_character_stream, NULL);
+    assert_string_equal("a", line, NULL);
+    free(line);
 }
 ]]></c>
-				The <code>integer_sequence()</code> call is a macro that
-				does two things:
-				<ol>
-					<li>On successive calls it returns each parameter in turn.</li>
-					<li>It resets the counter between tests</li>
-				</ol>
+                The <code>integer_sequence()</code> call is a macro that
+                does two things:
+                <ol>
+                    <li>On successive calls it returns each parameter in turn.</li>
+                    <li>It resets the counter between tests</li>
+                </ol>
+                By wrapping this up into a single macro, we make the tests
+                more readable.
+            </p>
+            <p>
+                There are only three sequences currently available:
+                <code>integer_sequence()</code>, <code>string_sequence</code>
+                and <code>address_sequence()</code> for pointers.
+                This is enough for most function signatures with a little
+                casting.
+            </p>
+            <p>
+                Each sequence macro captures the <code>__FILE__</code>
+                and <code>__LINE__</code> information where it is called.
+                It uses this information to distinguish itself from other
+                sequences running in the same test.
+                This allows some fairly compact test writing...
+<c><![CDATA[
+int one_word_stream(void *stream) { return integer_sequence('t', 'h', 'e', EOF); }
+int one_word_line(void *stream) { return integer_sequence('t', 'h', 'e', '\n'); }
+int line_ending_only(void *stream) { return integer_sequence('\n', EOF); }
+
+void test_typical_streams() {
+    assert_string_equal("the", read_line(&one_word_stream, NULL), NULL);
+    assert_string_equal("the", read_line(&one_word_line, NULL), NULL);
+    assert_string_equal("", read_line(&line_ending_only, NULL), NULL);
+}
+]]></c>
+				As each test runs in it's own process, I haven't bothered
+				to free the pointers.
+				I've just let the operating system do it.
+				Purists may want to add the extra code.
 			</p>
+			<p>
+                Even though all the sequences run in the same test, they
+                are separate sequences as they are called on separate lines.
+                This should be avoided...
+<c><![CDATA[
+return integer_sequence(1, 2, 3) + integer_sequence(4, 5, 6);
+]]></c>
+                ...as the sequences will interfere.
+                Changing it to...
+<c><![CDATA[
+return integer_sequence(1, 2, 3) +
+        integer_sequence(4, 5, 6);
+]]></c>
+                ...should be fine.
+            </p>
+            <p>
+                We often call special testing functions &quot;stubs&quot;.
+                Cgreen makes it easier to create stubs, and so easier to
+                create a sealed test chamber in which to test our code.
+                Our fake callback did not need any setting up of files
+                or network connections for example, and so we've isolated
+                the <code>read_line()</code> code from the rest of the world.
+            </p>
+            <p>
+                The information flow is still one way though, from stub
+                to the code under test.
+                Things get more interesting when we thing of the traffic
+                going the other way.
+                This gets us into the same territory as mock objects.
+            </p>
+        </section>
+        <section name="assertions" title="Setting expectations on mock callbacks">
+            <p>
+                To swap the traffic flow, we'll look at an output example instead.
+<c><![CDATA[
+]]></c>
+            </p>
         </section>
     </content>
     <internal>
