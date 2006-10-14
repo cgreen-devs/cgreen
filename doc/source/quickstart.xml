@@ -399,34 +399,6 @@ Completed "all_tests.c": 2 passes, 0 failures, 0 exceptions.
         </section>
         <section name="mock" title="Mocking callback functions">
             <p>
-                A good test places the subject under test into a
-                tightly controlled environment.
-                A test chamber if you like.
-                This makes the tests fast, repeatable and reliable.
-            </p>
-            <p>
-                To create a test chamber for testing code, it means we have
-                to control any outgoing calls from the code under test.
-                We won't believe our test failure if our code is making
-                calls to the internet for example.
-                Not only that, but it means we have to get dependent components
-                working before we can test the higher level code.
-                This makes it difficult to code top down.
-            </p>
-            <p>
-                The solution to this dilemma is to write stub code for
-                the components whilst the higher level code is written.
-                This pollutes the code base with temporary code, and
-                the test isolation disappears when the system is eventually
-                fleshed out.
-            </p>
-            <p>
-                The ideal is to have minimal stubs written for each
-                individual test.
-                Cgreen encourages this approach by making such tests
-                easier to write.
-            </p>
-            <p>
                 The next example is more realistic.
                 Still in our <em>words.h</em> file, we want to write
                 a function that invokes a callback on each word in a
@@ -438,13 +410,15 @@ words("This is a sentence", &act_on_word, &memo);</strong>
 ]]></c>
                 Here the <code>memo</code> pointer is just some accumulated
                 data that the <code>act_on_word()</code> callback is working with.
-            </p>
-            <p>
+                Other peole will write the <code>act_on_word()</code> function
+                and probably many other functions like it.
                 The callback is actually a flex point, and not of interest
                 right now.
+            </p>
+            <p>
                 The function under test is the <code>words()</code>
                 function, and we want to make sure it walks the sentence
-                correctly.
+                correctly, dispatching individual words as it goes.
                 How to test this?
             </p>
             <p>
@@ -481,7 +455,7 @@ TestSuite *words_tests() {
                 <code>NULL</code> to <code>assert_true()</code>.
             </p>
             <p>
-                The sample callback <code>one_word()</code> checks that the
+                The sample callback <code>one_word_please()</code> checks that the
                 only word was correct, and changes the flag so that we know it
                 was called.
                 The <code>assert_string_equal()</code> is a Cgreen macro that

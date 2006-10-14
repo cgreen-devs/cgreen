@@ -4,22 +4,43 @@
         Creating mock callbacks in the Cgreen unit testing framework
     </long_title>
     <content>
-		<p>
-			A function rarely exists in isolation, but usually makes further
-			function calls.
-			If we are decoupling our code, then these other
-			functions will be passed in.
-			This gives us the problem of simulating these calls.
-		</p>
+        <p>
+            A good test places the subject under test into a
+            tightly controlled environment.
+            A test chamber if you like.
+            This makes the tests fast, repeatable and reliable.
+        </p>
+        <p>
+            To create a test chamber for testing code, it means we have
+            to control any outgoing calls from the code under test.
+            We won't believe our test failure if our code is making
+            calls to the internet for example.
+            Not only that, but it means we have to get dependent components
+            working before we can test the higher level code.
+            This makes it difficult to code top down.
+        </p>
+        <p>
+            The solution to this dilemma is to write stub code for
+            the components whilst the higher level code is written.
+            This pollutes the code base with temporary code, and
+            the test isolation disappears when the system is eventually
+            fleshed out.
+        </p>
+        <p>
+            The ideal is to have minimal stubs written for each
+            individual test.
+            Cgreen encourages this approach by making such tests
+            easier to write.
+        </p>
         <section name="problem" title="The problem with streams">
             <p>
                 How do we test this code...?
 <c><![CDATA[
-char *read_line(int (*read)(void *), void *stream) {
+char *read_line(<strong>int (*read)(void *), void *stream</strong>) {
     int buffer_size = 0, length = 0;
     char *buffer = NULL;
     int ch;
-    while ((ch = (*read)(stream)) != EOF) {
+    while (<strong>(ch = (*read)(stream)) != EOF</strong>) {
         if (++length > size) {
             size += 100;
             buffer = realloc(buffer, size + 1);
@@ -47,12 +68,12 @@ char *read_line(int (*read)(void *), void *stream) {
                 exhausted.
                 This is easy to test if we write our own stream...
 <c><![CDATA[
-int empty_stream(void *stream) {
+<strong>int empty_stream(void *stream) {
     return EOF;
-}
+}</strong>
 
 void reading_lines_from_empty_stream_gives_null() {
-    assert_equal(read_line(&empty_stream, NULL), NULL);
+    assert_equal(read_line(<strong>&empty_stream, NULL</strong>), NULL);
 }
 
 TestSuite *stream_tests() {
@@ -63,8 +84,12 @@ TestSuite *stream_tests() {
 ]]></c>
                 It's easy, because our fake stream returns only
                 one value.
+                We don't even need the <code>stream</code> pointer for
+                the test, so we just use <code>NULL</code>.
             </p>
             <p>
+                Things are harder when the function result changes from
+                call to call.
                 If we want to test a one character line, we have to send
                 the terminating <code>EOF</code> or <code><![CDATA["\n"]]></code>.
                 Otherwise our code will loop forever, giving an infinite
@@ -73,7 +98,7 @@ TestSuite *stream_tests() {
             <p>
                 Here is a way we could do this...
 <c><![CDATA[
-static int call_count = 0;
+<strong>static int call_count = 0;
 
 int one_character_stream(void *stream) {
     if (call_count++ == 0) {
@@ -81,11 +106,11 @@ int one_character_stream(void *stream) {
     } else {
         return EOF;
     }
-}
+}</strong>
 
 void reading_lines_from_one_character_gives_one_character_line() {
-    char *line = read_line(&one_character_stream, NULL);
-    assert_string_equal("a", line, NULL);
+    char *line = read_line(<strong>&one_character_stream</strong>, NULL);<strong>
+    assert_string_equal("a", line, NULL);</strong>
     free(line);
 }
 ]]></c>
@@ -108,8 +133,8 @@ void reading_lines_from_one_character_gives_one_character_line() {
 		    <p>
                 Here is our callback test rewritten to use Cgreen sequences...
 <c><![CDATA[
-int one_character_stream(void *stream) {
-    return integer_sequence('a', EOF);
+int one_character_stream(void *stream) {<strong>
+    return integer_sequence('a', EOF);</strong>
 }
 
 void reading_lines_from_one_character_gives_one_character_line() {
@@ -129,10 +154,12 @@ void reading_lines_from_one_character_gives_one_character_line() {
             </p>
             <p>
                 There are only three sequences currently available:
-                <code>integer_sequence()</code>, <code>string_sequence</code>
-                and <code>address_sequence()</code> for pointers.
-                This is enough for most function signatures with a little
-                casting.
+                <table>
+                    <tr><th>Sequence</th><th>Return type</th></tr>
+                    <tr><td><code>integer_sequence()</code></td><td>integer</td></tr>
+                    <tr><td><code>string_sequence()</code></td><td><code>char *</code> pointer</td></tr>
+                    <tr><td><code>address_sequence()</code></td><td><code>void *</code> pointer</td></tr>
+                </table>
             </p>
             <p>
                 Each sequence macro captures the <code>__FILE__</code>
@@ -141,14 +168,14 @@ void reading_lines_from_one_character_gives_one_character_line() {
                 sequences running in the same test.
                 This allows some fairly compact test writing...
 <c><![CDATA[
-int one_word_stream(void *stream) { return integer_sequence('t', 'h', 'e', EOF); }
-int one_word_line(void *stream) { return integer_sequence('t', 'h', 'e', '\n'); }
-int line_ending_only(void *stream) { return integer_sequence('\n', EOF); }
+int one_word_stream(void *stream) { return <strong>integer_sequence('t', 'h', 'e', EOF)</strong>; }
+int one_word_line(void *stream) { return <strong>integer_sequence('t', 'h', 'e', '\n')</strong>; }
+int line_ending_only(void *stream) { return <strong>integer_sequence('\n', EOF)</strong>; }
 
 void test_typical_streams() {
-    assert_string_equal("the", read_line(&one_word_stream, NULL), NULL);
-    assert_string_equal("the", read_line(&one_word_line, NULL), NULL);
-    assert_string_equal("", read_line(&line_ending_only, NULL), NULL);
+    assert_string_equal("the", read_line(<strong>&one_word_stream</strong>, NULL), NULL);
+    assert_string_equal("the", read_line(<strong>&one_word_line</strong>, NULL), NULL);
+    assert_string_equal("", read_line(<strong>&line_ending_only</strong>, NULL), NULL);
 }
 ]]></c>
 				As each test runs in it's own process, I haven't bothered
@@ -161,13 +188,13 @@ void test_typical_streams() {
                 are separate sequences as they are called on separate lines.
                 This should be avoided...
 <c><![CDATA[
-return integer_sequence(1, 2, 3) + integer_sequence(4, 5, 6);
+return <strong>integer_sequence(1, 2, 3) + integer_sequence(4, 5, 6)</strong>;
 ]]></c>
                 ...as the sequences will interfere.
                 Changing it to...
 <c><![CDATA[
-return integer_sequence(1, 2, 3) +
-        integer_sequence(4, 5, 6);
+return <strong>integer_sequence(1, 2, 3) +
+        integer_sequence(4, 5, 6)</strong>;
 ]]></c>
                 ...should be fine.
             </p>
