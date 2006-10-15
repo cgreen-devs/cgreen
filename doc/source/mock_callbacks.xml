@@ -36,14 +36,14 @@
             <p>
                 How do we test this code...?
 <c><![CDATA[
-char *read_line(<strong>int (*read)(void *), void *stream</strong>) {
+char *read_paragraph(<strong>int (*read)(void *), void *stream</strong>) {
     int buffer_size = 0, length = 0;
     char *buffer = NULL;
     int ch;
     while (<strong>(ch = (*read)(stream)) != EOF</strong>) {
-        if (++length > size) {
+        if (++length > buffer_size) {
             size += 100;
-            buffer = realloc(buffer, size + 1);
+            buffer = realloc(buffer, buffer_size + 1);
         }
         if ((buffer[length] = ch) == '\n') {
             break;
@@ -53,9 +53,9 @@ char *read_line(<strong>int (*read)(void *), void *stream</strong>) {
 }
 ]]></c>
                 This is a fairly generic stream filter that turns
-                the incoming characters into string lines, returning
-                <code>NULL</code> if there is no line.
-                The line has memory allocated to it and the
+                the incoming characters into C string paragraphs, returning
+                <code>NULL</code> if there is no paragraph.
+                The paragraph has memory allocated to it and the
                 stream is advanced ready for the next call.
                 That's quite a bit of functionality, and there
                 are plenty of nasty boundary conditions.
@@ -73,7 +73,7 @@ char *read_line(<strong>int (*read)(void *), void *stream</strong>) {
 }</strong>
 
 void reading_lines_from_empty_stream_gives_null() {
-    assert_equal(read_line(<strong>&empty_stream, NULL</strong>), NULL);
+    assert_equal(read_paragraph(<strong>&empty_stream, NULL</strong>), NULL);
 }
 
 TestSuite *stream_tests() {
@@ -109,7 +109,7 @@ int one_character_stream(void *stream) {
 }</strong>
 
 void reading_lines_from_one_character_gives_one_character_line() {
-    char *line = read_line(<strong>&one_character_stream</strong>, NULL);<strong>
+    char *line = read_paragraph(<strong>&one_character_stream</strong>, NULL);<strong>
     assert_string_equal("a", line, NULL);</strong>
     free(line);
 }
@@ -138,7 +138,7 @@ int one_character_stream(void *stream) {<strong>
 }
 
 void reading_lines_from_one_character_gives_one_character_line() {
-    char *line = read_line(&one_character_stream, NULL);
+    char *line = read_paragraph(&one_character_stream, NULL);
     assert_string_equal("a", line, NULL);
     free(line);
 }
@@ -173,9 +173,9 @@ int one_word_line(void *stream) { return <strong>integer_sequence('t', 'h', 'e',
 int line_ending_only(void *stream) { return <strong>integer_sequence('\n', EOF)</strong>; }
 
 void test_typical_streams() {
-    assert_string_equal("the", read_line(<strong>&one_word_stream</strong>, NULL), NULL);
-    assert_string_equal("the", read_line(<strong>&one_word_line</strong>, NULL), NULL);
-    assert_string_equal("", read_line(<strong>&line_ending_only</strong>, NULL), NULL);
+    assert_string_equal("the", read_paragraph(<strong>&one_word_stream</strong>, NULL), NULL);
+    assert_string_equal("the", read_paragraph(<strong>&one_word_line</strong>, NULL), NULL);
+    assert_string_equal("", read_paragraph(<strong>&line_ending_only</strong>, NULL), NULL);
 }
 ]]></c>
 				As each test runs in it's own process, I haven't bothered
@@ -204,7 +204,7 @@ return <strong>integer_sequence(1, 2, 3) +
                 create a sealed test chamber in which to test our code.
                 Our fake callback did not need any setting up of files
                 or network connections for example, and so we've isolated
-                the <code>read_line()</code> code from the rest of the world.
+                the <code>read_paragraph()</code> code from the rest of the world.
             </p>
             <p>
                 The information flow is still one way though, from stub
@@ -214,11 +214,28 @@ return <strong>integer_sequence(1, 2, 3) +
                 This gets us into the same territory as mock objects.
             </p>
         </section>
-        <section name="assertions" title="Setting expectations on mock callbacks">
+        <section name="assertions" title="Setting expectations on mock functions">
             <p>
-                To swap the traffic flow, we'll look at an output example instead.
+                To swap the traffic flow, we'll look at an outgoing example instead.
+                Here is the prewritten production code...
 <c><![CDATA[
+void all_paragraphs(int (*read)(void *), void *in, <strong>void (*write)(char *, void *), void *out</strong>) {
+    while (1) {
+        char *line = read_paragraph(&read, in);
+        if (line == NULL) {
+            return;
+        }
+        <strong>(*write)(line, out);</strong>
+        free(line);
+    }
+}
 ]]></c>
+                This is the start of a formatter utility.
+                Later filters will probably break the paragaphs up into justified text,
+                but right now that is all abstracted behind the
+                <code>void write(char *, void *)</code> interface.
+                Our current interests are: does it loop through the paragraphs, and does
+                it crash?
             </p>
         </section>
     </content>
