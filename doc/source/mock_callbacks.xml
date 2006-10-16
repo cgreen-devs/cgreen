@@ -179,7 +179,7 @@ void test_typical_streams() {
 }
 ]]></c>
 				As each test runs in it's own process, I haven't bothered
-				to free the pointers.
+				to free the pointers,
 				I've just let the operating system do it.
 				Purists may want to add the extra code.
 			</p>
@@ -219,7 +219,7 @@ return <strong>integer_sequence(1, 2, 3) +
                 To swap the traffic flow, we'll look at an outgoing example instead.
                 Here is the prewritten production code...
 <c><![CDATA[
-void all_paragraphs(int (*read)(void *), void *in, <strong>void (*write)(char *, void *), void *out</strong>) {
+void by_paragraph(int (*read)(void *), void *in, <strong>void (*write)(char *, void *), void *out</strong>) {
     while (1) {
         char *line = read_paragraph(&read, in);
         if (line == NULL) {
@@ -237,6 +237,31 @@ void all_paragraphs(int (*read)(void *), void *in, <strong>void (*write)(char *,
                 Our current interests are: does it loop through the paragraphs, and does
                 it crash?
             </p>
+			<p>
+				We could test correct paragraph formation by writing a stub
+				that collects the paragraphs into a <code>struct</code>.
+				We could then pick apart that <code>struct</code> and test
+				each piece with assertions.
+				This approach is extremely clumsy in C.
+				The language is just not suited to building and tearing down
+				complex edifices, never mind navigating them with assertions.
+				We would badly clutter our tests.
+			</p>
+			<p>
+				Instead we'll test the output as soon as possible, right in
+				the called function...
+<c><![CDATA[<strong>
+void expect_one_letter(char *paragraph, void *stream) {
+	assert_string_equal(paragraph, "a", NULL);
+	called_once();
+}</strong>
+
+void one_letter_is_made_into_one_paragraph() {
+	by_paragraph(<strong>&one_character_stream</strong>, NULL, <strong>&expect_one_letter</strong>, NULL);
+}
+]]></c>
+				We can place the assertions in any function called by our tests.
+			</p>
         </section>
     </content>
     <internal>
