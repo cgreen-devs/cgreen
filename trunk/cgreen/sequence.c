@@ -22,6 +22,20 @@ typedef struct _Counter {
 static Counter *all_counters = NULL;
 static int counter_count = 0;
 
+typedef struct _Recording {
+	int line;
+	const char *file;
+	int length;
+	union {
+		int *integers;
+		char **strings;
+		void **addresses;
+	} tape;
+} Recording;
+
+static Recording *all_recordings = NULL;
+static int recording_count = 0;
+
 static int get_sequence_iteration(const char *file, int line);
 static void create_sequence(const char *file, int line);
 static void create_counter(const char *file, int line, int expected);
@@ -73,6 +87,14 @@ void _count_calls(const char *file, int line, int expected) {
         }
     }
     create_counter(file, line, expected);
+}
+
+void replay() {
+	
+}
+
+void _replay_integer(const char *file, int line, int expectation) {
+	
 }
 
 void walk_counters(void(*walker)(const char *, int, int, int, void *), void *memo) {

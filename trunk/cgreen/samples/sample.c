@@ -197,6 +197,22 @@ TestSuite *sequence_tests() {
     return suite;
 }
 
+void remember_one_integer(int value) {
+	replay_integer(value);
+}
+
+void replay_single_parameter() {
+	remember_one_integer(5);
+	replay();
+	remember_one_integer(5);
+}
+
+TestSuite *replay_tests() {
+    TestSuite *suite = create_named_test_suite("sequence tests");
+    add_unit_test(suite, replay_single_parameter);
+    return suite;
+}
+
 void take_so_long_that_ctrl_c_is_needed() {
     sleep(10);
 }
