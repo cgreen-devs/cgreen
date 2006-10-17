@@ -198,7 +198,12 @@ TestSuite *sequence_tests() {
 }
 
 void remember_one_integer(int value) {
-	replay_integer(value);
+	recorded_integer(value);
+}
+
+void call_unexpectedly() {
+	replay();
+	remember_one_integer(5);
 }
 
 void replay_single_parameter() {
@@ -207,9 +212,18 @@ void replay_single_parameter() {
 	remember_one_integer(5);
 }
 
+void called_too_many_times() {
+	remember_one_integer(5);
+	replay();
+	remember_one_integer(5);
+	remember_one_integer(5);
+}
+
 TestSuite *replay_tests() {
     TestSuite *suite = create_named_test_suite("sequence tests");
+    add_unit_test(suite, call_unexpectedly);
     add_unit_test(suite, replay_single_parameter);
+    add_unit_test(suite, called_too_many_times);
     return suite;
 }
 
@@ -224,6 +238,7 @@ int main(int argc, char **argv) {
     add_suite(suite, visible_fixtures());
     add_suite(suite, isolation_tests());
     add_suite(suite, sequence_tests());
+    add_suite(suite, replay_tests());
     //add_unit_test(suite, take_so_long_that_ctrl_c_is_needed);
     if (argc > 1) {
         return run_single_test(suite, argv[1], create_text_reporter());

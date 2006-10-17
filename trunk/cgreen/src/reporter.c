@@ -8,11 +8,20 @@
 
 enum {pass = 1, fail, completion};
 
+struct _TestContext {
+	TestReporter *reporter;
+};
+static TestContext context;
+
 static void show_pass(TestReporter *reporter, const char *file, int line, char *message, va_list arguments);
 static void show_fail(TestReporter *reporter, const char *file, int line, char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *name);
 static void assert_true(TestReporter *reporter, const char *file, int line, int result, char *message, ...);
 static void read_reporter_results(TestReporter *reporter);
+
+TestReporter *get_test_reporter() {
+	return context.reporter;
+}
 
 TestReporter *create_reporter() {
     TestReporter *reporter = (TestReporter *)malloc(sizeof(TestReporter));
@@ -28,12 +37,14 @@ TestReporter *create_reporter() {
 	reporter->exceptions = 0;
 	reporter->breadcrumb = (void *)create_breadcrumb();
 	reporter->ipc = start_messaging(45);
+	context.reporter = reporter;
     return reporter;
 }
 
 void destroy_reporter(TestReporter *reporter) {
 	destroy_breadcrumb((Breadcrumb *)reporter->breadcrumb);
     free(reporter);
+    context.reporter = NULL;
 }
 
 void reporter_start(TestReporter *reporter, const char *name)  {

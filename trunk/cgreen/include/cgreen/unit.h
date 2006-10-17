@@ -23,10 +23,9 @@
 #define called_never() _count_calls(__FILE__, __LINE__, 0)
 #define called_once() _count_calls(__FILE__, __LINE__, 1)
 #define expected_call_count(expected) _count_calls(__FILE__, __LINE__, expected)
-#define replay_integer(expected) _replay_integer(__FILE__, __LINE__, expected)
+#define recorded_integer(expected) _recorded_integer(__FILE__, __LINE__, expected)
 
 typedef struct _TestSuite TestSuite;
-typedef struct _TestContext TestContext;
 
 TestSuite *create_named_test_suite(char *name);
 void destroy_test_suite(TestSuite *suite);
@@ -37,6 +36,5 @@ void _teardown(TestSuite *suite, void (*tear_down)());
 void die_in(unsigned int seconds);
 int run_test_suite(TestSuite *suite, TestReporter *reporter);
 int run_single_test(TestSuite *suite, char *test, TestReporter *reporter);
-TestReporter *get_test_reporter();
 
 #endif

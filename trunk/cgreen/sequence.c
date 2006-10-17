@@ -1,7 +1,10 @@
 #include "sequence.h"
+#include "reporter.h"
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+
+enum {recording = 1, playing};
 
 typedef struct _Sequence {
     int line;
@@ -25,20 +28,23 @@ static int counter_count = 0;
 typedef struct _Recording {
 	int line;
 	const char *file;
-	int length;
 	union {
-		int *integers;
-		char **strings;
-		void **addresses;
-	} tape;
+		int integer;
+		char *string;
+		void *address;
+	} expected;
 } Recording;
 
 static Recording *all_recordings = NULL;
 static int recording_count = 0;
+static int recording_or_playing = recording;
 
 static int get_sequence_iteration(const char *file, int line);
 static void create_sequence(const char *file, int line);
 static void create_counter(const char *file, int line, int expected);
+static int create_recording(const char *file, int line);
+static void destroy_recording(int position);
+static int find_first_recording(const char *file, int line);
 
 int _integer_sequence(const char *file, int line, ...) {
     int iteration = get_sequence_iteration(file, line);
@@ -90,11 +96,20 @@ void _count_calls(const char *file, int line, int expected) {
 }
 
 void replay() {
-	
+	recording_or_playing = playing;	
 }
 
-void _replay_integer(const char *file, int line, int expectation) {
-	
+void _recorded_integer(const char *file, int line, int expected) {
+	if (recording_or_playing == recording) {
+	    int position = create_recording(file, line);
+	    all_recordings[position].expected.integer = expected;
+	} else {
+	    int position = find_first_recording(file, line);
+	    if (position < 0) {
+	        (*get_test_reporter()->assert_true)(get_test_reporter(), file, line, 0, "Unexpected integer [%d]", expected);
+	    }
+	    destroy_recording(position);
+	}
 }
 
 void walk_counters(void(*walker)(const char *, int, int, int, void *), void *memo) {
@@ -112,8 +127,14 @@ void walk_counters(void(*walker)(const char *, int, int, int, void *), void *mem
 void clear_sequences() {
     free(all_sequences);
     all_sequences = NULL;
+    sequence_count = 0;
     free(all_counters);
     all_counters = NULL;
+    counter_count = 0;
+    free(all_recordings);
+    all_recordings = NULL;
+    recording_count = 0;
+	recording_or_playing = recording;
 }
 
 static int get_sequence_iteration(const char *file, int line) {
@@ -142,4 +163,26 @@ static void create_counter(const char *file, int line, int expected) {
     all_counters[counter_count - 1].file = file;
     all_counters[counter_count - 1].expected = expected;
     all_counters[counter_count - 1].actual = 1;
+}
+
+static int create_recording(const char *file, int line) {
+    all_recordings = (Recording *)realloc(all_recordings, sizeof(Recording) * ++recording_count);
+    all_recordings[recording_count - 1].line = line;
+    all_recordings[recording_count - 1].file = file;
+    return recording_count - 1;
+}
+
+static void destroy_recording(int position) {
+}
+
+static int find_first_recording(const char *file, int line) {
+    int i;
+    for (i = 0; i < recording_count; i++) {
+        if (all_sequences[i].line == line) {
+            if (strcmp(all_sequences[i].file, file) == 0) {
+                return i;
+            }
+        }
+    }
+    return -1;
 }

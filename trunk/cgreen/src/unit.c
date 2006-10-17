@@ -27,11 +27,6 @@ struct _TestSuite {
     int size;
 };
 
-struct _TestContext {
-	TestReporter *reporter;
-};
-static TestContext context;
-
 static void clean_up_test_run(TestSuite *suite, TestReporter *reporter);
 static void run_every_test(TestSuite *suite, TestReporter *reporter);
 static void run_named_test(TestSuite *suite, char *name, TestReporter *reporter);
@@ -93,7 +88,6 @@ void die_in(unsigned int seconds) {
 }
 
 int run_test_suite(TestSuite *suite, TestReporter *reporter) {
-	context.reporter = reporter;
 	run_every_test(suite, reporter);
 	int success = (reporter->failures == 0);
 	clean_up_test_run(suite, reporter);
@@ -101,21 +95,15 @@ int run_test_suite(TestSuite *suite, TestReporter *reporter) {
 }
 
 int run_single_test(TestSuite *suite, char *name, TestReporter *reporter) {
-	context.reporter = reporter;
 	run_named_test(suite, name, reporter);
 	int success = (reporter->failures == 0);
 	clean_up_test_run(suite, reporter);
 	return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-TestReporter *get_test_reporter() {
-	return context.reporter;
-}
-
 static void clean_up_test_run(TestSuite *suite, TestReporter *reporter) {
     clear_sequences();
     (*reporter->destroy)(reporter);
-	context.reporter = NULL;
 	destroy_test_suite(suite);
 }
 
