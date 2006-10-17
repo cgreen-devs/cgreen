@@ -251,16 +251,26 @@ void by_paragraph(int (*read)(void *), void *in, <strong>void (*write)(char *, v
 				Instead we'll test the output as soon as possible, right in
 				the called function...
 <c><![CDATA[<strong>
-void expect_one_letter(char *paragraph, void *stream) {
+void expect_one_letter_paragraph(char *paragraph, void *stream) {
 	assert_string_equal(paragraph, "a", NULL);
-	called_once();
 }</strong>
 
-void one_letter_is_made_into_one_paragraph() {
-	by_paragraph(<strong>&one_character_stream</strong>, NULL, <strong>&expect_one_letter</strong>, NULL);
+void one_character_is_made_into_a_one_letter_paragraph() {
+	by_paragraph(
+			<strong>&one_character_stream</strong>,
+			NULL,
+			<strong>&expect_one_letter_paragraph</strong>,
+			NULL);
 }
 ]]></c>
-				We can place the assertions in any function called by our tests.
+				By placing the assertions into the mocked function, we
+				keep the tests minimal.
+				With a bit of obvious naming, we keep the test clear too.
+			</p>
+			<p>
+				The catch with this method is that if the function
+				<code>expect_one_letter_paragraph</code> is never
+				called, then no failure will be raised in the tests.
 			</p>
         </section>
     </content>

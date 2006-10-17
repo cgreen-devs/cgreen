@@ -23,6 +23,7 @@
 #define called_never() _count_calls(__FILE__, __LINE__, 0)
 #define called_once() _count_calls(__FILE__, __LINE__, 1)
 #define expected_call_count(expected) _count_calls(__FILE__, __LINE__, expected)
+#define replay_integer(expected) _replay_integer(__FILE__, __LINE__, expected)
 
 typedef struct _TestSuite TestSuite;
 typedef struct _TestContext TestContext;
