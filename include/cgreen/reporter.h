@@ -3,6 +3,8 @@
 
 #include <stdarg.h>
 
+typedef struct _TestContext TestContext;
+
 typedef struct _TestReporter TestReporter;
 struct _TestReporter {
     void (*destroy)(TestReporter *);
@@ -20,6 +22,7 @@ struct _TestReporter {
 	void *memo;
 };
 
+TestReporter *get_test_reporter();
 TestReporter *create_reporter();
 void destroy_reporter(TestReporter *reporter);
 void reporter_start(TestReporter *reporter, const char *name);
