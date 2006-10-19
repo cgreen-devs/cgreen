@@ -181,7 +181,6 @@ void call_me_twice() {
 }
 
 void trip_the_counters() {
-    //dont_call_me();
     call_me_once();
     call_me_twice();
     call_me_twice();

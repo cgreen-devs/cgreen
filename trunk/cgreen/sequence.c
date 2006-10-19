@@ -107,8 +107,9 @@ void _recorded_integer(const char *file, int line, int expected) {
 	    int position = find_first_recording(file, line);
 	    if (position < 0) {
 	        (*get_test_reporter()->assert_true)(get_test_reporter(), file, line, 0, "Unexpected integer [%d]", expected);
-	    }
-	    destroy_recording(position);
+	    } else {
+	    	destroy_recording(position);
+		}
 	}
 }
 
@@ -173,13 +174,23 @@ static int create_recording(const char *file, int line) {
 }
 
 static void destroy_recording(int position) {
+	if (recording_count == 1) {
+		free(all_recordings);
+		all_recordings = NULL;
+	} else {
+		memmove(
+				all_recordings + position + 1,
+				all_recordings + position,
+				(recording_count - position - 2) * sizeof(Recording));
+	}
+	recording_count--;
 }
 
 static int find_first_recording(const char *file, int line) {
     int i;
     for (i = 0; i < recording_count; i++) {
-        if (all_sequences[i].line == line) {
-            if (strcmp(all_sequences[i].file, file) == 0) {
+        if (all_recordings[i].line == line) {
+            if (strcmp(all_recordings[i].file, file) == 0) {
                 return i;
             }
         }
