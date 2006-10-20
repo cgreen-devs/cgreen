@@ -10,7 +10,6 @@ int main(int argc, char **argv) {
     add_suite(suite, messaging_tests());
     add_suite(suite, assertion_tests());
     add_suite(suite, breadcrumb_tests());
-    add_suite(suite, sequence_tests());
     if (argc > 1) {
         return run_single_test(suite, argv[1], create_text_reporter());
     }

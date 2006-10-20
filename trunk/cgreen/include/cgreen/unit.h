@@ -2,7 +2,7 @@
 #define _UNIT_HEADER_
 
 #include "reporter.h"
-#include "sequence.h"
+#include "mocks.h"
 
 #define create_test_suite() create_named_test_suite(__FILE__)
 #define add_test(suite, test) _add_unit_test(suite, #test, &test)
@@ -17,12 +17,6 @@
 #define assert_not_equal(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, (tried != expected), __VA_ARGS__)
 #define assert_string_equal(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, strcmp(tried, expected) == 0, __VA_ARGS__)
 #define assert_string_not_equal(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, strcmp(tried, expected) != 0, __VA_ARGS__)
-#define integer_sequence(...) _integer_sequence(__FILE__, __LINE__, __VA_ARGS__)
-#define string_sequence(...) _string_sequence(__FILE__, __LINE__, __VA_ARGS__)
-#define address_sequence(...) _address_sequence(__FILE__, __LINE__, __VA_ARGS__)
-#define called_never() _count_calls(__FILE__, __LINE__, 0)
-#define called_once() _count_calls(__FILE__, __LINE__, 1)
-#define expected_call_count(expected) _count_calls(__FILE__, __LINE__, expected)
 #define recorded_integer(expected) _recorded_integer(__FILE__, __LINE__, expected)
 
 typedef struct _TestSuite TestSuite;
