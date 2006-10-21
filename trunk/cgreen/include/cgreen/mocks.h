@@ -2,6 +2,7 @@
 #define _MOCKS_HEADER_
 
 #include <inttypes.h>
+#include "reporter.h"
 
 #define ANYTHING "__anything__"
 
@@ -25,5 +26,7 @@ void _play();
 void _will_return(const char *function, intptr_t result);
 void _mask(const char *parameters);
 void _always();
+void clear_mocks();
+void tally_mocks(TestReporter *reporter);
 
 #endif

@@ -14,6 +14,6 @@ static void can_stub_an_integer_return() {
 
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();
-    //add_test(suite, can_stub_an_integer_return);
+    add_test(suite, can_stub_an_integer_return);
     return suite;
 }
