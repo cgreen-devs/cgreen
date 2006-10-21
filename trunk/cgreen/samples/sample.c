@@ -172,7 +172,6 @@ int main(int argc, char **argv) {
     add_suite(suite, fixture_tests());
     add_suite(suite, visible_fixtures());
     add_suite(suite, isolation_tests());
-    add_suite(suite, sequence_tests());
     add_suite(suite, replay_tests());
     //add_unit_test(suite, take_so_long_that_ctrl_c_is_needed);
     if (argc > 1) {
