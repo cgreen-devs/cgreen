@@ -1,5 +1,6 @@
 #include "unit.h"
 #include "reporter.h"
+#include "mocks.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -201,9 +202,11 @@ static void stop() {
 }
 
 static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *reporter) {
+    clear_mocks();
 	(*suite->setup)();
     (*test->test)();
 	(*suite->teardown)();
+	tally_mocks(reporter);
 }
 
 static void tally_counter(const char *file, int line, int expected, int actual, void *abstract_reporter) {
