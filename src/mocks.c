@@ -6,16 +6,22 @@ enum {playing = 1, recording};
 static int record_state = playing;
 static int always_state = 0;
 
-void _compare_integer(const char *file, int line, const char *function, const char *parameter, int integer) {
+typedef struct _ReturnFrame {
+    const char *function;
+    intptr_t result;
+    int keep;
+} ReturnFrame;
+
+void _compare_integer(const char *file, int line, const char *parameter, int integer) {
 }
 
-void _compare_string(const char *file, int line, const char *function, const char *parameter, int string) {
+void _compare_string(const char *file, int line, const char *parameter, int string) {
 }
 
-void _compare_address(const char *file, int line, const char *function, const char *parameter, int address) {
+void _compare_address(const char *file, int line, const char *parameter, int address) {
 }
 
-void _result(const char *function) {
+intptr_t _result(const char *function) {
 }
 
 void _expect(const char *function, const char *file, int line) {
@@ -38,7 +44,7 @@ void _play() {
     always_state = 0;
 }
 
-void _will_return(const char *function, ...) {
+void _will_return(const char *function, intptr_t result) {
 }
 
 void _mask(const char *parameters) {
