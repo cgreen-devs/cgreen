@@ -102,7 +102,6 @@ int run_single_test(TestSuite *suite, char *name, TestReporter *reporter) {
 }
 
 static void clean_up_test_run(TestSuite *suite, TestReporter *reporter) {
-    clear_sequences();
     (*reporter->destroy)(reporter);
 	destroy_test_suite(suite);
 }
@@ -202,11 +201,9 @@ static void stop() {
 }
 
 static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *reporter) {
-	clear_sequences();
 	(*suite->setup)();
     (*test->test)();
 	(*suite->teardown)();
-	walk_counters(tally_counter, (void *)reporter);
 }
 
 static void tally_counter(const char *file, int line, int expected, int actual, void *abstract_reporter) {
