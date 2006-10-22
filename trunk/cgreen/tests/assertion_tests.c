@@ -3,11 +3,11 @@
 #include <stdio.h>
 
 void these_should_be_true() {
-    assert_true(1, "One is true");
+    assert_true(1);
 }
 
 void these_should_be_false() {
-    assert_false(0, "Nought is false");
+    assert_false(0);
 }
 
 void these_should_be_equal() {

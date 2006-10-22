@@ -5,7 +5,7 @@
 #include <sys/msg.h>
 
 void highly_nested_test_suite_should_still_complete() {
-    assert_true(1, NULL);
+    assert_true(1);
 }
 
 TestSuite *highly_nested_test_suite() {
