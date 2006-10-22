@@ -33,7 +33,7 @@
                     <li>Each test runs in it's own process.</li>
                     <li>An isolated test can be run in a single process for
                         debugging.</li>
-                    <li>Facilities for the easy mocking of callback functions.</li>
+                    <li>Ability to mock functions.</li>
                     <li>The reporting mechanism can be easily extended.</li>
                 </ul>
             </p>
@@ -77,8 +77,8 @@ gcc first_test.o cgreen/cgreen.a -o first_test
 </sh>
                 Invoking the executable should give...
 <sh>
-Running "first_test.c"...
-Completed "first_test.c": 0 passes, 0 failures, 0 exceptions.
+Running "main"...
+Completed "main": 0 passes, 0 failures, 0 exceptions.
 </sh>
                 All of the above rather assumes you are working in a
                 Unix like environment, probably with <em>gcc</em>.
@@ -98,11 +98,11 @@ Completed "first_test.c": 0 passes, 0 failures, 0 exceptions.
 #include "cgreen/cgreen.h"
 <strong>
 void this_test_should_pass() {
-    assert_true(1, "This should be true");
+    assert_true(1);
 }
 
 void this_test_should_fail() {
-    assert_true(0, "This should be false");
+    assert_true(0);
 }
 </strong>
 int main(int argc, char **argv) {
@@ -121,9 +121,9 @@ int main(int argc, char **argv) {
             <p>
                 On compiling and running, we now get the output...
 <sh><![CDATA[
-Running "first_test.c"...
+Running "main"...
 Failure!: this_test_should_fail -> This should be false at [first_test.c] line [8]
-Completed "first_test.c": 1 pass, 1 failure, 0 exceptions.
+Completed "main": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
                 The <code>TextReporter</code>, created by the
                 <code>create_text_reporter()</code> call, is the
@@ -132,7 +132,7 @@ Completed "first_test.c": 1 pass, 1 failure, 0 exceptions.
                 Currently it's the only method supported.
             </p>
         </section>
-        <section name="tdd" title="Test Driven Development with Cgreen">
+        <section name="tdd" title="Test Driven Development with Cgreen in five minutes">
             <p>
                 For a more realistic example we need something to test.
                 We'll pretend that we are writing a function to split
@@ -200,8 +200,8 @@ gcc words_test.o all_tests.o cgreen/cgreen.a -o all_tests
 </sh>
                 ...and executing the result gives the familiar...
 <sh>
-Running "all_tests.c"...
-Completed "all_tests.c": 0 passes, 0 failures, 0 exceptions.
+Running "main"...
+Completed "main": 0 passes, 0 failures, 0 exceptions.
 </sh>
                 All this scaffolding is pure overhead, but from now on adding tests
                 will be a lot easier.
@@ -216,7 +216,7 @@ Completed "all_tests.c": 0 passes, 0 failures, 0 exceptions.
 void word_count_returned_from_split() {
     char *sentence = strdup("Birds of a feather");
     int word_count = split_words(sentence);
-    assert_equal(word_count, 4, "Word count of [%s] was [%d]", sentence, word_count);
+    assert_equal(word_count, 4);
     free(sentence);
 }</strong>
 
@@ -227,9 +227,7 @@ TestSuite *words_tests() {
 }
 ]]></c>
                 The <code>assert_equal()</code> macro takes in the two
-                values to compare, followed by a <code>printf()</code>
-                style format string.
-                If the string is <code>NULL</code>, then a default message is reported.
+                values to compare.
                 With the default <code>TextReporter</code> the message
                 is sent to <code>STDOUT</code>.
             </p>
@@ -256,29 +254,21 @@ gcc all_tests.o words_test.o words.o cgreen/cgreen.a -o all_tests
 </sh>
                 ...and we get the more useful response...
 <sh><![CDATA[
-Running "all_tests.c"...
-Failure!: words_test.c -> word_count_returned_from_split -> Word count of [Birds of a feather] was [0] at [words_test.c] line [8]
-Completed "all_tests.c": 0 passes, 1 failure, 0 exceptions.
+Running "main"...
+Failure!: words_test -> word_count_returned_from_split -> [0] should be [4] at [words_test.c] line [8]
+Completed "main": 0 passes, 1 failure, 0 exceptions.
 ]]></sh>
                 The breadcrumb trail is the nesting of the tests.
                 It goes from the
                 test suites, which can nested in each other, through the test
                 function, and finally to the message from the assertion.
                 In the language of Cgreen, a failure is a mismatched
-                assertion, an exception is counted
-                when the test fails to complete for any reason.
+                assertion, an exception is accumulated
+                when a test fails to complete for any reason.
             </p>
             <p>
-                At last we have a meaningful failing test.
-                In the best traditions of test driven development, we'll
-                make it pass with the minumum amount of implementation...
-<c>
-int split_words(char *sentence) {
-    return 4;
-}
-</c>
-                We could add say a three word test to create a contradiction
-                and drive the development,
+                We could get this to pass just by returning the value 4.
+                Doing TDD in really small steps, you would actually do this,
                 but frankly this example is too simple.
                 Instead we'll go straight to the refactoring...
 <c><![CDATA[
@@ -312,7 +302,7 @@ void spaces_should_be_converted_to_zeroes() {
     char *sentence = strdup("Birds of a feather");
     split_words(sentence);
     int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
-    assert_equal(comparison, 0, "Compares as %d", comparison);
+    assert_equal(comparison, 0);
     free(sentence); 
 }</strong>
 
@@ -325,9 +315,9 @@ TestSuite *words_tests() {
 ]]></c>
                 Sure enough, we get a failure...
 <sh><![CDATA[
-Running "all_tests.c"...
-Failure!: words_test.c -> spaces_should_be_converted_to_zeroes -> Compares as -32 at [words_test.c] line [16]
-Completed "all_tests.c": 1 pass, 1 failure, 0 exceptions.
+Running "main"...
+Failure!: words_test -> spaces_should_be_converted_to_zeroes -> [-32] shoudl be [0] at [words_test.c] line [16]
+Completed "main": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
                 Not surprising given that we haven't written the code yet.
             </p>
@@ -347,33 +337,12 @@ int split_words(char *sentence) {
 ]]></c>
                 ...reveals our previous hack...
 <sh><![CDATA[
-Running "all_tests.c"...
-Failure!: words_test.c -> word_count_returned_from_split -> Word count of [Birds] was [2] at [words_test.c] line [8]
-Completed "all_tests.c": 1 pass, 1 failure, 0 exceptions.
+Running "main"...
+Failure!: words_test -> word_count_returned_from_split -> [2] should be [4] at [words_test.c] line [8]
+Completed "main": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
                 Our earlier test now fails, because we have affected
                 the <code>strlen()</code> call in our loop.
-            </p>
-            <p>
-                It's obvious that test driven development leaves a
-                trail of regression tests.
-                What's not so obvious is that it naturally leads
-                to leaner code.
-            </p>
-            <p>
-                The instant feedback allows us to try minimal code
-                to see if it will work and to fix it when it doesn't.
-                We can be this confident only with a pretty complete test
-                coverage.
-                However, because we are writing the tests before each code
-                change, the very process itself gives us almost complete
-                coverage.
-                This effect is boosted by our habit of going in small
-                steps.
-                A small step is a minimal change.
-            </p>
-            <p>
-                Meanwhile we have a failing test.
                 Moving the length calculation out of the loop...
 <c><![CDATA[
 int split_words(char *sentence) {
@@ -386,18 +355,19 @@ int split_words(char *sentence) {
 ]]></c>
                 ...restores order...
 <sh>
-Running "all_tests.c"...
-Completed "all_tests.c": 2 passes, 0 failures, 0 exceptions.
+Running "main"...
+Completed "main": 2 passes, 0 failures, 0 exceptions.
 </sh>
                 It's nice to keep the code under control while we are
                 actually writing it, rather than debugging later when things
                 are more complicated.
             </p>
             <p>
+                That was pretty straight forward.
                 Let's do something more interesting.
             </p>
         </section>
-        <section name="mock" title="Mocking callback functions">
+        <section name="mock" title="Mocking functions">
             <p>
                 The next example is more realistic.
                 Still in our <em>words.h</em> file, we want to write
@@ -410,7 +380,7 @@ words("This is a sentence", &act_on_word, &memo);</strong>
 ]]></c>
                 Here the <code>memo</code> pointer is just some accumulated
                 data that the <code>act_on_word()</code> callback is working with.
-                Other peole will write the <code>act_on_word()</code> function
+                Other people will write the <code>act_on_word()</code> function
                 and probably many other functions like it.
                 The callback is actually a flex point, and not of interest
                 right now.
@@ -430,15 +400,14 @@ words("This is a sentence", &act_on_word, &memo);</strong>
 ...
 #include <stdlib.h>
 ...<strong>
-void one_word_please(const char *word, void *flag) {
-    assert_string_equal(word, "Word", NULL);
-    *(int *)flag = 1;
+void mocked_callback(char *word, void *memo) {
+    checked_string(word);
+    checked_integer(memo);
 }
 
 void single_word_sentence_invokes_callback_once() {
-    int flag = 0;
-    words("Word", &one_word_please, &flag);
-    assert_true(flag, NULL);
+	expect(mocked_callback, "Word", NULL);
+	words("Word", &mocked_callback, NULL);
 }</strong>
 
 TestSuite *words_tests() {
@@ -448,29 +417,33 @@ TestSuite *words_tests() {
     return suite;
 }
 ]]></c>
+                What is the funny looking <code>mocked_callback()</code> function?
+            </p>
+            <p>
+                A mock is basically a programmable object,
+                here a single function.
+                The macro <code>checked_string()</code> behaves differently
+                depending on context.
+                In record mode, when the mock is being set up, it records
+                parameters for later comparison.
+                When in playback mode, it compares the incoming parameters with
+                the expected values and dispatches messages to the test suite if
+                there is a mismatch.
+            </p>
+            <p>
                 The test function is <code>single_word_sentence_invokes_callback_once()</code>.
-                This sets up a flag that the callback was called, invokes the
-                <code>words()</code> function and asserts that the flag has changed.
-                We don't bother with a message for this test, instead passing
-                <code>NULL</code> to <code>assert_true()</code>.
+                Using the <code>expect()</code> macro it programs the mock function
+                to expect a single call.
+                That call will have parameters <code><![CDATA["Word"]]></code> and
+                <code>NULL</code>.
+                If they don't match later, we will get a test failure.
             </p>
             <p>
-                The sample callback <code>one_word_please()</code> checks that the
-                only word was correct, and changes the flag so that we know it
-                was called.
-                The <code>assert_string_equal()</code> is a Cgreen macro that
-                compares two strings of course.
-                All pretty trivial.
-            </p>
-            <p>
-                Only the test method, not the callback, is added to the test
+                Only the test method, not the mock callback, is added to the test
                 suite.
-                We can freely add other code to the test scripts and only
-                the <code>TestSuite</code> factory <code>words_tests()</code> needs
-                to have external linkage.
             </p>
             <p>
-                For a compile and link the <em>words.h</em> file must now
+                For a successful compile and link, the <em>words.h</em> file must now
                 look like...
 <c><![CDATA[
 int split_words(char *sentence);<strong>

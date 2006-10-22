@@ -1,5 +1,6 @@
 Cgreen TODO
 -----------
+Tally the mocks to tie in call counts.
 ANYTHING mask on expectations.
 Allow multiple setup() and teardown() as a stack.
 Add a coloured text reporter.
