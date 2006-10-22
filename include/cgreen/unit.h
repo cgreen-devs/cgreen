@@ -12,7 +12,7 @@
 
 typedef struct _TestSuite TestSuite;
 
-TestSuite *create_named_test_suite(char *name);
+TestSuite *create_named_test_suite(const char *name);
 void destroy_test_suite(TestSuite *suite);
 void _add_test(TestSuite *suite, char *name, void (*test)(TestReporter *));
 void _add_suite(TestSuite *owner, char *name, TestSuite *suite);

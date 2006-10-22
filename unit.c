@@ -44,7 +44,7 @@ static void tally_counter(const char *file, int line, int expected, int actual, 
 static void die(char *message, ...);
 static void do_nothing();
 
-TestSuite *create_named_test_suite(char *name) {
+TestSuite *create_named_test_suite(const char *name) {
     TestSuite *suite = (TestSuite *)malloc(sizeof(TestSuite));
 	suite->name = name;
     suite->tests = NULL;
