@@ -56,6 +56,22 @@ static void expectation_confirmed() {
     integer_in(3);
 }
 
+static void always_expected_keeps_affirming_parameter() {
+    always_expect(integer_in, 3);
+    integer_in(3);
+    integer_in(3);
+    integer_in(3);
+}
+
+static void expectation_sequence() {
+    expect(integer_in, 1);
+    expect(integer_in, 2);
+    expect(integer_in, 3);
+    integer_in(1);
+    integer_in(2);
+    integer_in(3);
+}
+
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();
     add_test(suite, can_stub_an_integer_return);
@@ -65,5 +81,7 @@ TestSuite *mock_tests() {
     add_test(suite, confirm_stub_is_reset_between_tests);
     add_test(suite, stub_uses_the_always_value_once_hit);
     add_test(suite, expectation_confirmed);
+    add_test(suite, always_expected_keeps_affirming_parameter);
+    add_test(suite, expectation_sequence);
     return suite;
 }

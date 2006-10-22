@@ -140,9 +140,30 @@ static void stub_fails_when_called_without_presets() {
     gives_integer();
 }
 
+static void takes_integer(int i) {
+    checked_integer(i);
+}
+
+static void expectation_fails_when_called_without_presets() {
+    takes_integer(1);
+}
+
+static void expectation_confirmed() {
+    expect(takes_integer, 3);
+    takes_integer(3);
+}
+
+static void expectation_dashed() {
+    expect(takes_integer, 3);
+    takes_integer(4);
+}
+
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();
     add_test(suite, stub_fails_when_called_without_presets);
+    add_test(suite, expectation_fails_when_called_without_presets);
+    add_test(suite, expectation_confirmed);
+    add_test(suite, expectation_dashed);
     return suite;
 }
 
