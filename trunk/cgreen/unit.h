@@ -4,7 +4,7 @@
 #include "reporter.h"
 #include "mocks.h"
 
-#define create_test_suite() create_named_test_suite(__FILE__)
+#define create_test_suite() create_named_test_suite(__func__)
 #define add_test(suite, test) _add_unit_test(suite, #test, &test)
 #define add_unit_test(suite, test) _add_unit_test(suite, #test, &test)
 #define add_suite(owner, suite) _add_suite(owner, #suite, suite)

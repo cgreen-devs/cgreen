@@ -13,10 +13,10 @@ struct _TestContext {
 };
 static TestContext context;
 
-static void show_pass(TestReporter *reporter, const char *file, int line, char *message, va_list arguments);
-static void show_fail(TestReporter *reporter, const char *file, int line, char *message, va_list arguments);
+static void show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
+static void show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *name);
-static void assert_true(TestReporter *reporter, const char *file, int line, int result, char *message, ...);
+static void assert_true(TestReporter *reporter, const char *file, int line, int result, const char *message, ...);
 static void read_reporter_results(TestReporter *reporter);
 
 TestReporter *get_test_reporter() {
@@ -64,16 +64,16 @@ void send_reporter_completion_notification(TestReporter *reporter) {
     send_message(reporter->ipc, completion);
 }
 
-static void show_pass(TestReporter *reporter, const char *file, int line, char *message, va_list arguments) {
+static void show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
 }
 
-static void show_fail(TestReporter *reporter, const char *file, int line, char *message, va_list arguments) {
+static void show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
 }
 
 static void show_incomplete(TestReporter *reporter, const char *name) {
 }
 
-static void assert_true(TestReporter *reporter, const char *file, int line, int result, char *message, ...) {
+static void assert_true(TestReporter *reporter, const char *file, int line, int result, const char *message, ...) {
     va_list arguments;
     va_start(arguments, message);
 	if (result) {

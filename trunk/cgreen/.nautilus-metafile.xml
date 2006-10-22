@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <directory>
   <file name="makefile" window_geometry="495x459+529+4"/>
-  <file name="samples" window_geometry="591x201+19+417"/>
-  <file name="tests" window_geometry="454x305+36+602"/>
+  <file name="samples" window_geometry="556x249+76+142"/>
+  <file name="tests" window_geometry="625x390+27+477"/>
   <file name="documentation" window_geometry="572x256+47+629"/>
+  <file name="packages" window_geometry="556x249+11+175"/>
 </directory>

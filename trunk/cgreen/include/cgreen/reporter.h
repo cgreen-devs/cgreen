@@ -10,10 +10,10 @@ struct _TestReporter {
     void (*destroy)(TestReporter *);
 	void (*start)(TestReporter *, const char *name);
 	void (*finish)(TestReporter *, const char *name);
-    void (*show_pass)(TestReporter *, const char *, int, char *, va_list);
-    void (*show_fail)(TestReporter *, const char *, int, char *, va_list);
+    void (*show_pass)(TestReporter *, const char *, int, const char *, va_list);
+    void (*show_fail)(TestReporter *, const char *, int, const char *, va_list);
     void (*show_incomplete)(TestReporter *, const char *);
-    void (*assert_true)(TestReporter *, const char *, int, int, char *, ...);
+    void (*assert_true)(TestReporter *, const char *, int, int, const char *, ...);
 	int passes;
 	int failures;
 	int exceptions;

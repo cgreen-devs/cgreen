@@ -33,7 +33,7 @@ void these_strings_should_not_match() {
 }
 
 TestSuite *assertion_tests() {
-    TestSuite *suite = create_named_test_suite("assertion tests");
+    TestSuite *suite = create_test_suite();
     add_unit_test(suite, these_should_be_true);
     add_unit_test(suite, these_should_be_false);
     add_unit_test(suite, these_should_be_equal);
@@ -59,7 +59,7 @@ void check_again_during_teardown() {
 }
 
 TestSuite *fixture_tests() {
-    TestSuite *suite = create_named_test_suite("fixture tests");
+    TestSuite *suite = create_test_suite();
     setup(suite, set_up_an_integer);
     teardown(suite, check_again_during_teardown);
     add_unit_test(suite, confirm_integer_is_set_up);
@@ -79,7 +79,7 @@ void print_something_during_teardown() {
 }
 
 TestSuite *visible_test() {
-    TestSuite *suite = create_named_test_suite("visible test");
+    TestSuite *suite = create_test_suite();
     setup(suite, print_something_during_setup);
     add_unit_test(suite, print_something_during_a_test);
     teardown(suite, print_something_during_teardown);
@@ -95,7 +95,7 @@ void print_something_during_suite_teardown() {
 }
 
 TestSuite *visible_fixtures() {
-    TestSuite *suite = create_named_test_suite("visible fixtures");
+    TestSuite *suite = create_test_suite();
     setup(suite, print_something_during_suite_setup);
     add_suite(suite, visible_test());
     add_suite(suite, visible_test());
@@ -124,7 +124,7 @@ void time_out_in_only_one_second() {
 }
 
 TestSuite *isolation_tests() {
-    TestSuite *suite = create_named_test_suite("isolation tests");
+    TestSuite *suite = create_test_suite();
     add_unit_test(suite, create_test_interference);
     add_unit_test(suite, prove_there_is_no_test_interference);
     add_unit_test(suite, seg_fault);
@@ -132,33 +132,17 @@ TestSuite *isolation_tests() {
     return suite;
 }
 
-void remember_one_integer(int value) {
-	recorded_integer(value);
+static int gives_integer() {
+    return stubbed_result();
 }
 
-void call_unexpectedly() {
-	replay();
-	remember_one_integer(5);
+static void stub_fails_when_called_without_presets() {
+    gives_integer();
 }
 
-void replay_single_parameter() {
-	remember_one_integer(5);
-	replay();
-	remember_one_integer(5);
-}
-
-void called_too_many_times() {
-	remember_one_integer(5);
-	replay();
-	remember_one_integer(5);
-	remember_one_integer(5);
-}
-
-TestSuite *replay_tests() {
-    TestSuite *suite = create_named_test_suite("sequence tests");
-    add_unit_test(suite, call_unexpectedly);
-    add_unit_test(suite, replay_single_parameter);
-    add_unit_test(suite, called_too_many_times);
+TestSuite *mock_tests() {
+    TestSuite *suite = create_test_suite();
+    add_test(suite, stub_fails_when_called_without_presets);
     return suite;
 }
 
@@ -172,7 +156,7 @@ int main(int argc, char **argv) {
     add_suite(suite, fixture_tests());
     add_suite(suite, visible_fixtures());
     add_suite(suite, isolation_tests());
-    add_suite(suite, replay_tests());
+    add_suite(suite, mock_tests());
     //add_unit_test(suite, take_so_long_that_ctrl_c_is_needed);
     if (argc > 1) {
         return run_single_test(suite, argv[1], create_text_reporter());
