@@ -21,7 +21,7 @@ typedef struct UnitTest {
 } UnitTest;
 
 struct _TestSuite {
-	char *name;
+	const char *name;
     UnitTest *tests;
     void (*setup)();
     void (*teardown)();
