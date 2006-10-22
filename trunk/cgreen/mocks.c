@@ -38,6 +38,7 @@ static void ensure_expectation_queue();
 static void record_expectation(const char *check_file, int check_line, const char *parameter, intptr_t expected);
 RecordedExpectation *find_expectation(const char *check_file, int check_line, const char *parameter);
 RecordedResult *find_result(const char *function);
+static int matches_expectation(RecordedExpectation *expectation, const char *check_file, int check_line, const char *parameter);
 static void set_test_location(const char *file, int line);
 static void clear_test_location();
 static int is_recording();
@@ -48,12 +49,18 @@ void _checked_integer(const char *check_file, int check_line, const char *parame
         record_expectation(check_file, check_line, parameter, (intptr_t)integer);
     } else {
         RecordedExpectation *expectation = find_expectation(check_file, check_line, parameter);
+        if (expectation == NULL) {
+            return;
+        }
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
                 expectation->test_file,
                 expectation->test_line,
                 (int)(expectation->expected) == integer,
                 "parameter [%s] is [%d], and should be [%d]", parameter, integer, (int)(expectation->expected));
+        if (! expectation->should_keep) {
+            free(expectation);
+        }
     }
 }
 
@@ -153,12 +160,11 @@ RecordedExpectation *find_expectation(const char *check_file, int check_line, co
     int i;
     for (i = 0; i < vector_size(expectation_queue); i++) {
         RecordedExpectation *expectation = (RecordedExpectation *)vector_get(expectation_queue, i);
-        if (expectation->check_file == check_file) {
-            if (expectation->check_line == check_line) {
-                if (expectation->parameter == parameter) {
-                    return expectation;
-                }
+        if (matches_expectation(expectation, check_file, check_line, parameter)) {
+            if (! expectation->should_keep) {
+                return vector_remove(expectation_queue, i);
             }
+            return expectation;
         }
     }
     return NULL;
@@ -176,6 +182,12 @@ RecordedResult *find_result(const char *function) {
         }
     }
     return NULL;
+}
+
+static int matches_expectation(RecordedExpectation *expectation, const char *check_file, int check_line, const char *parameter) {
+    return (expectation->check_file == check_file) &&
+            (expectation->check_line == check_line) &&
+            (expectation->parameter == parameter);
 }
 
 static void set_test_location(const char *file, int line) {

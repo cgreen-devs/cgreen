@@ -9,6 +9,7 @@
 #define checked_integer(i) _checked_integer(__FILE__, __LINE__, #i, i)
 #define checked_string(s) _checked_string(__FILE__, __LINE__, #s, s)
 #define expect(f, ...) _expect(#f, __FILE__, __LINE__); _mask(#__VA_ARGS__); f(__VA_ARGS__); _play()
+#define always_expect(f, ...) _always(); _expect(#f, __FILE__, __LINE__); _mask(#__VA_ARGS__); f(__VA_ARGS__); _play()
 #define will_return(f, r) _will_return(#f, (intptr_t)r); _play()
 #define always_return(f, r) _always(); _will_return(#f, (intptr_t)r); _play()
 #define mock(f, r, ...) _mock(#f, __FILE__, __LINE__); _mask(#__VA_ARGS__); f(__VA_ARGS__); _will_return(#f, (intptr_t)r); _play()
