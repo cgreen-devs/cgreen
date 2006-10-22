@@ -3,13 +3,13 @@
 #include <stdio.h>
 
 void these_should_be_true() {
-    assert_true(1, "One is true");
-    assert_false(1, "One is not false");
+    assert_true(1);
+    assert_false(1);
 }
 
 void these_should_be_false() {
-    assert_true(0, "Nought is not true");
-    assert_false(0, "Nought is false");
+    assert_true(0);
+    assert_false(0);
 }
 
 void these_should_be_equal() {
