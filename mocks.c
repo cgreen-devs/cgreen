@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 enum {playing = 1, recording};
-static int record_state = playing;
+static int recording_state = playing;
 static int should_keep = 0;
 
 typedef struct _RecordedResult {
@@ -13,55 +13,89 @@ typedef struct _RecordedResult {
     int should_keep;
 } RecordedResult;
 
+typedef struct _RecordedExpectation {
+    const char *check_file;
+    int check_line;
+    const char *test_file;
+    int test_line;
+    const char *parameter;
+    intptr_t expected;
+    int should_keep;
+} RecordedExpectation;
+
 static Vector *result_queue = NULL;
+static Vector *expectation_queue = NULL;
 
-void _checked_integer(const char *file, int line, const char *parameter, int integer) {
+typedef struct _TestLocation {
+    const char *file;
+    int line;
+} TestLocation;
+
+static TestLocation location = {"", 0};
+
+static void ensure_result_queue();
+static void ensure_expectation_queue();
+static void record_expectation(const char *check_file, int check_line, const char *parameter, intptr_t expected);
+RecordedExpectation *find_expectation(const char *check_file, int check_line, const char *parameter);
+RecordedResult *find_result(const char *function);
+static void set_test_location(const char *file, int line);
+static void clear_test_location();
+static int is_recording();
+
+void _checked_integer(const char *check_file, int check_line, const char *parameter, int integer) {
+    if (is_recording()) {
+        ensure_expectation_queue();
+        record_expectation(check_file, check_line, parameter, (intptr_t)integer);
+    } else {
+        RecordedExpectation *expectation = find_expectation(check_file, check_line, parameter);
+        (*get_test_reporter()->assert_true)(
+                get_test_reporter(),
+                expectation->test_file,
+                expectation->test_line,
+                (int)(expectation->expected) == integer,
+                "parameter [%s] is [%d], and should be [%d]", parameter, integer, (int)(expectation->expected));
+    }
 }
 
-void _checked_string(const char *file, int line, const char *parameter, int string) {
-}
-
-void _checked_address(const char *file, int line, const char *parameter, int address) {
+void _checked_string(const char *check_file, int check_line, const char *parameter, int string) {
 }
 
 intptr_t _stubbed_result(const char *function, const char *file, int line) {
-    int i;
-    for (i = 0; i < vector_size(result_queue); i++) {
-        RecordedResult *record = vector_get(result_queue, i);
-        if (record->function == function) {
-            intptr_t result = record->result;
-            if (! record->should_keep) {
-                free(vector_remove(result_queue, i));
-            }
-            return result;
-        }
+    RecordedResult *result = find_result(function);
+    if (result == NULL) {
+        (*get_test_reporter()->assert_true)(
+                get_test_reporter(),
+                file,
+                line,
+                0,
+                "No return value set for function [%s]", function);
+        return 0;
     }
-    (*get_test_reporter()->assert_true)(
-            get_test_reporter(),
-            file,
-            line,
-            0,
-            "No return value set for function [%s]",
-            function);
+    intptr_t value = result->result;
+    if (! result->should_keep) {
+        free(result);
+    }
+    return value;
 }
 
-void _expect(const char *function, const char *file, int line) {
-    record_state = recording;
+void _expect(const char *function, const char *test_file, int test_line) {
+    recording_state = recording;
+    set_test_location(test_file, test_line);
 }
 
-void _mock(const char *function, const char *file, int line) {
-    record_state = recording;
+void _mock(const char *function, const char *test_file, int test_line) {
+    recording_state = recording;
+    set_test_location(test_file, test_line);
 }
 
 void _play() {
-    record_state = playing;
+    recording_state = playing;
     should_keep = 0;
+    clear_test_location();
 }
 
 void _will_return(const char *function, intptr_t result) {
-    if (result_queue== NULL) {
-        result_queue = create_vector(&free);
-    }
+    ensure_result_queue();
     RecordedResult *record = (RecordedResult *)malloc(sizeof(RecordedResult));
     record->function = function;
     record->result = result;
@@ -80,8 +114,80 @@ void clear_mocks() {
     if (result_queue != NULL) {
         destroy_vector(result_queue);
     }
+    if (expectation_queue != NULL) {
+        destroy_vector(expectation_queue);
+    }
+    clear_test_location();
 }
 
 void tally_mocks(TestReporter *reporter) {
     clear_mocks();
+    clear_test_location();
+}
+
+static void ensure_result_queue() {
+    if (result_queue== NULL) {
+        result_queue = create_vector(&free);
+    }
+}
+
+static void ensure_expectation_queue() {
+    if (expectation_queue== NULL) {
+        expectation_queue = create_vector(&free);
+    }
+}
+
+static void record_expectation(const char *check_file, int check_line, const char *parameter, intptr_t expected) {
+    RecordedExpectation *expectation = (RecordedExpectation *)malloc(sizeof(RecordedExpectation));
+    expectation->check_file = check_file;
+    expectation->check_line = check_line;
+    expectation->test_file = location.file;
+    expectation->test_line = location.line;
+    expectation->parameter = parameter;
+    expectation->expected = expected;
+    expectation->should_keep = should_keep;
+    vector_add(expectation_queue, expectation);
+}
+
+RecordedExpectation *find_expectation(const char *check_file, int check_line, const char *parameter) {
+    int i;
+    for (i = 0; i < vector_size(expectation_queue); i++) {
+        RecordedExpectation *expectation = (RecordedExpectation *)vector_get(expectation_queue, i);
+        if (expectation->check_file == check_file) {
+            if (expectation->check_line == check_line) {
+                if (expectation->parameter == parameter) {
+                    return expectation;
+                }
+            }
+        }
+    }
+    return NULL;
+}
+
+RecordedResult *find_result(const char *function) {
+    int i;
+    for (i = 0; i < vector_size(result_queue); i++) {
+        RecordedResult *result = (RecordedResult *)vector_get(result_queue, i);
+        if (result->function == function) {
+            if (! result->should_keep) {
+                return vector_remove(result_queue, i);
+            }
+            return result;
+        }
+    }
+    return NULL;
+}
+
+static void set_test_location(const char *file, int line) {
+    location.file = file;
+    location.line = line;
+}
+
+static void clear_test_location() {
+    location.file = "";
+    location.line = 0;
+}
+
+static int is_recording() {
+    return (recording_state == recording);
 }
