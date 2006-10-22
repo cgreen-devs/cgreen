@@ -30,14 +30,14 @@ void popping_item_takes_us_back_to_the_previous_item() {
 
 void empty_breadcrumb_has_null_as_current() {
     Breadcrumb *breadcrumb = create_breadcrumb();
-    assert_equal(get_current_from_breadcrumb(breadcrumb), NULL, NULL);
+    assert_equal(get_current_from_breadcrumb(breadcrumb), NULL);
 }
 
 void popping_last_name_leaves_breadcrumb_empty() {
     Breadcrumb *breadcrumb = create_breadcrumb();
     push_breadcrumb(breadcrumb, "Hello");
     pop_breadcrumb(breadcrumb);
-    assert_equal(get_current_from_breadcrumb(breadcrumb), NULL, NULL);
+    assert_equal(get_current_from_breadcrumb(breadcrumb), NULL);
 }
 
 void walker_for_empty_breadcrumb(const char *name, void *memo) {
