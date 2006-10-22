@@ -1,10 +1,7 @@
 Cgreen TODO
 -----------
-Playback and record stub return values.
-Expectations on mocks.
 ANYTHING mask on expectations.
 Allow multiple setup() and teardown() as a stack.
-IMprove comparison error messages.
 Add a coloured text reporter.
 Investigate adding a SmartFrog reporter.
 longjmp() trap for internal errors.

@@ -45,7 +45,6 @@ static int is_recording();
 
 void _checked_integer(const char *check_file, int check_line, const char *parameter, int integer) {
     if (is_recording()) {
-        ensure_expectation_queue();
         record_expectation(check_file, check_line, parameter, (intptr_t)integer);
     } else {
         RecordedExpectation *expectation = find_expectation(check_file, check_line, parameter);
@@ -64,7 +63,24 @@ void _checked_integer(const char *check_file, int check_line, const char *parame
     }
 }
 
-void _checked_string(const char *check_file, int check_line, const char *parameter, int string) {
+void _checked_string(const char *check_file, int check_line, const char *parameter, const char *string) {
+    if (is_recording()) {
+        record_expectation(check_file, check_line, parameter, (intptr_t)string);
+    } else {
+        RecordedExpectation *expectation = find_expectation(check_file, check_line, parameter);
+        if (expectation == NULL) {
+            return;
+        }
+        (*get_test_reporter()->assert_true)(
+                get_test_reporter(),
+                expectation->test_file,
+                expectation->test_line,
+                (strcmp((char *)(expectation->expected), string) == 0),
+                "parameter [%s] is [%s], and should be [%s]", parameter, string, (char *)(expectation->expected));
+        if (! expectation->should_keep) {
+            free(expectation);
+        }
+    }
 }
 
 intptr_t _stubbed_result(const char *function, const char *file, int line) {
@@ -129,7 +145,6 @@ void clear_mocks() {
 
 void tally_mocks(TestReporter *reporter) {
     clear_mocks();
-    clear_test_location();
 }
 
 static void ensure_result_queue() {
@@ -145,6 +160,7 @@ static void ensure_expectation_queue() {
 }
 
 static void record_expectation(const char *check_file, int check_line, const char *parameter, intptr_t expected) {
+    ensure_expectation_queue();
     RecordedExpectation *expectation = (RecordedExpectation *)malloc(sizeof(RecordedExpectation));
     expectation->check_file = check_file;
     expectation->check_line = check_line;
