@@ -5,10 +5,8 @@
 #include "mocks.h"
 
 #define create_test_suite() create_named_test_suite(__func__)
-#define add_test(suite, test) _add_unit_test(suite, #test, &test)
-#define add_unit_test(suite, test) _add_unit_test(suite, #test, &test)
+#define add_test(suite, test) _add_test(suite, #test, &test)
 #define add_suite(owner, suite) _add_suite(owner, #suite, suite)
-#define add_test_suite(owner, suite) _add_suite(owner, #suite, suite)
 #define setup(suite, function) _setup(suite, &function)
 #define teardown(suite, function) _teardown(suite, &function)
 #define assert_true(result, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, result, __VA_ARGS__)
@@ -23,7 +21,7 @@ typedef struct _TestSuite TestSuite;
 
 TestSuite *create_named_test_suite(char *name);
 void destroy_test_suite(TestSuite *suite);
-void _add_unit_test(TestSuite *suite, char *name, void (*test)(TestReporter *));
+void _add_test(TestSuite *suite, char *name, void (*test)(TestReporter *));
 void _add_suite(TestSuite *owner, char *name, TestSuite *suite);
 void _setup(TestSuite *suite, void (*set_up)());
 void _teardown(TestSuite *suite, void (*tear_down)());

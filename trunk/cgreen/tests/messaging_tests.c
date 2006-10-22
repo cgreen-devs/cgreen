@@ -10,7 +10,7 @@ void highly_nested_test_suite_should_still_complete() {
 
 TestSuite *highly_nested_test_suite() {
     TestSuite *suite = create_test_suite();
-    add_unit_test(suite, highly_nested_test_suite_should_still_complete);
+    add_test(suite, highly_nested_test_suite_should_still_complete);
     int i;
     for (i = 0; i < 1000; i++) {
         TestSuite *nesting = create_test_suite();
@@ -29,6 +29,6 @@ void can_send_message() {
 TestSuite *messaging_tests() {
     TestSuite *suite = create_test_suite();
     add_suite(suite, highly_nested_test_suite());
-    add_unit_test(suite, can_send_message);
+    add_test(suite, can_send_message);
     return suite;
 }
