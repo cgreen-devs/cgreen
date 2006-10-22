@@ -84,6 +84,9 @@ void _checked_string(const char *check_file, int check_line, const char *paramet
 }
 
 intptr_t _stubbed_result(const char *function, const char *file, int line) {
+    if (is_recording()) {
+        return 0;
+    }
     RecordedResult *result = find_result(function);
     if (result == NULL) {
         (*get_test_reporter()->assert_true)(
@@ -102,11 +105,6 @@ intptr_t _stubbed_result(const char *function, const char *file, int line) {
 }
 
 void _expect(const char *function, const char *test_file, int test_line) {
-    recording_state = recording;
-    set_test_location(test_file, test_line);
-}
-
-void _mock(const char *function, const char *test_file, int test_line) {
     recording_state = recording;
     set_test_location(test_file, test_line);
 }

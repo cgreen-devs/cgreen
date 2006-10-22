@@ -53,14 +53,14 @@ static char *string_out() {
 
 static void can_stub_a_string_return() {
     will_return(string_out, "hello");
-    assert_equal(string_out(), "hello");
+    assert_string_equal(string_out(), "hello");
 }
 
 static void can_stub_a_string_sequence() {
     will_return(string_out, "hello");
     will_return(string_out, "goodbye");
-    assert_equal(string_out(), "hello");
-    assert_equal(string_out(), "goodbye");
+    assert_string_equal(string_out(), "hello");
+    assert_string_equal(string_out(), "goodbye");
 }
 
 static void integer_in(int i) {
@@ -105,8 +105,7 @@ static void string_expectation_sequence() {
 }
 
 static void mixed_parameters(int i, char *s) {
-    checked_integer(i);
-    checked_string(s);
+    checked_integer(i); checked_string(s);
 }
 
 static void confirming_multiple_parameters_multiple_times() {
@@ -114,6 +113,30 @@ static void confirming_multiple_parameters_multiple_times() {
     expect(mixed_parameters, 2, "Goodbye");
     mixed_parameters(1, "Hello");
     mixed_parameters(2, "Goodbye");
+}
+
+static int sample_mock(int i, char *s) {
+    checked_integer(i); checked_string(s);
+    return (int)stubbed_result();
+}
+
+static void can_mock_full_function_call() {
+    mock(sample_mock, 5, 666, "devil");
+    assert_equal(sample_mock(666, "devil"), 5);
+}
+
+static void can_mock_full_sequence() {
+    mock(sample_mock, 5, 666, "devil");
+    mock(sample_mock, 6, 667, "beastie");
+    assert_equal(sample_mock(666, "devil"), 5);
+    assert_equal(sample_mock(667, "beastie"), 6);
+}
+
+static void can_always_mock_full_function_call() {
+    always_mock(sample_mock, 5, 666, "devil");
+    assert_equal(sample_mock(666, "devil"), 5);
+    assert_equal(sample_mock(666, "devil"), 5);
+    assert_equal(sample_mock(666, "devil"), 5);
 }
 
 TestSuite *mock_tests() {
@@ -132,5 +155,8 @@ TestSuite *mock_tests() {
     add_test(suite, string_expectation_confirmed);
     add_test(suite, string_expectation_sequence);
     add_test(suite, confirming_multiple_parameters_multiple_times);
+    add_test(suite, can_mock_full_function_call);
+    add_test(suite, can_mock_full_sequence);
+    add_test(suite, can_always_mock_full_function_call);
     return suite;
 }
