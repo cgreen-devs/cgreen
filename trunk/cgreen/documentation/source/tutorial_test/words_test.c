@@ -6,7 +6,7 @@
 void word_count_returned_from_split() {
 	char *sentence = strdup("Birds of a feather");
 	int word_count = split_words(sentence);
-	assert_equal(word_count, 4, "Word count of [%s] was [%d]", sentence, word_count);
+	assert_equal(word_count, 4);
 	free(sentence);
 }
 
@@ -14,30 +14,26 @@ void spaces_should_be_converted_to_zeroes() {
 	char *sentence = strdup("Birds of a feather");
 	split_words(sentence);
 	int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
-	assert_equal(comparison, 0, "Compares as %d", comparison);
+	assert_equal(comparison, 0);
 	free(sentence);	
 }
 
-void one_word_please(const char *word, void *i) {
-	assert_string_equal(word, "Word", NULL);
-	*(int *)i = 1;
+void mocked_callback(char *word, void *memo) {
+    checked_string(word);
+    checked_integer(memo);
 }
 
 void single_word_sentence_invokes_callback_once() {
-	int i = 0;
-	words("Word", &one_word_please, &i);
-	assert_true(i, NULL);
-}
-
-void four_words_please(const char *word, void *memo) {
-	char *expected = string_sequence("Birds", "of", "a", "feather");
-	assert_string_equal(word, expected,
-			"Word should be [%s], but was [%s]", expected, word);
-	expected_call_count(4);
+	expect(mocked_callback, "Word", NULL);
+	words("Word", &mocked_callback, NULL);
 }
 
 void phrase_invokes_callback_for_each_word() {
-	words("Birds of a feather", &four_words_please, NULL);
+	expect(mocked_callback, "Birds", NULL);
+	expect(mocked_callback, "of", NULL);
+	expect(mocked_callback, "a", NULL);
+	expect(mocked_callback, "feather", NULL);
+	words("Birds of a feather", &mocked_callback, NULL);
 }
 
 TestSuite *words_tests() {
