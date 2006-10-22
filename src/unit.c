@@ -59,7 +59,7 @@ void destroy_test_suite(TestSuite *suite) {
     free(suite);
 }
 
-void _add_unit_test(TestSuite *suite, char *name, void (*test)()) {
+void _add_test(TestSuite *suite, char *name, void (*test)()) {
     suite->size++;
     suite->tests = (UnitTest *)realloc(suite->tests, sizeof(UnitTest) * suite->size);
     suite->tests[suite->size - 1].type = test_function;

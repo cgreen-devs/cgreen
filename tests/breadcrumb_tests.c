@@ -74,14 +74,14 @@ void double_item_breadcrumb_does_calls_walker_only_once() {
 
 TestSuite *breadcrumb_tests() {
     TestSuite *suite = create_test_suite();
-    add_unit_test(suite, can_destroy_empty_breadcrumb);
-    add_unit_test(suite, last_name_pushed_is_current);
-    add_unit_test(suite, can_push_more_than_one_item);
-    add_unit_test(suite, popping_item_takes_us_back_to_the_previous_item);
-    add_unit_test(suite, empty_breadcrumb_has_null_as_current);
-    add_unit_test(suite, popping_last_name_leaves_breadcrumb_empty);
-    add_unit_test(suite, empty_breadcrumb_does_not_trigger_walker);
-    add_unit_test(suite, single_item_breadcrumb_does_calls_walker_only_once);
-    add_unit_test(suite, double_item_breadcrumb_does_calls_walker_only_once);
+    add_test(suite, can_destroy_empty_breadcrumb);
+    add_test(suite, last_name_pushed_is_current);
+    add_test(suite, can_push_more_than_one_item);
+    add_test(suite, popping_item_takes_us_back_to_the_previous_item);
+    add_test(suite, empty_breadcrumb_has_null_as_current);
+    add_test(suite, popping_last_name_leaves_breadcrumb_empty);
+    add_test(suite, empty_breadcrumb_does_not_trigger_walker);
+    add_test(suite, single_item_breadcrumb_does_calls_walker_only_once);
+    add_test(suite, double_item_breadcrumb_does_calls_walker_only_once);
     return suite;
 }

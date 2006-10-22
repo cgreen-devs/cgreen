@@ -28,11 +28,11 @@ void these_strings_should_not_match() {
 
 TestSuite *assertion_tests() {
     TestSuite *suite = create_test_suite();
-    add_unit_test(suite, these_should_be_true);
-    add_unit_test(suite, these_should_be_false);
-    add_unit_test(suite, these_should_be_equal);
-    add_unit_test(suite, these_should_not_be_equal);
-    add_unit_test(suite, these_strings_should_match);
-    add_unit_test(suite, these_strings_should_not_match);
+    add_test(suite, these_should_be_true);
+    add_test(suite, these_should_be_false);
+    add_test(suite, these_should_be_equal);
+    add_test(suite, these_should_not_be_equal);
+    add_test(suite, these_strings_should_match);
+    add_test(suite, these_strings_should_not_match);
     return suite;
 }

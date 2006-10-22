@@ -34,12 +34,12 @@ void these_strings_should_not_match() {
 
 TestSuite *assertion_tests() {
     TestSuite *suite = create_test_suite();
-    add_unit_test(suite, these_should_be_true);
-    add_unit_test(suite, these_should_be_false);
-    add_unit_test(suite, these_should_be_equal);
-    add_unit_test(suite, these_should_not_be_equal);
-    add_unit_test(suite, these_strings_should_match);
-    add_unit_test(suite, these_strings_should_not_match);
+    add_test(suite, these_should_be_true);
+    add_test(suite, these_should_be_false);
+    add_test(suite, these_should_be_equal);
+    add_test(suite, these_should_not_be_equal);
+    add_test(suite, these_strings_should_match);
+    add_test(suite, these_strings_should_not_match);
     return suite;
 }
 
@@ -62,7 +62,7 @@ TestSuite *fixture_tests() {
     TestSuite *suite = create_test_suite();
     setup(suite, set_up_an_integer);
     teardown(suite, check_again_during_teardown);
-    add_unit_test(suite, confirm_integer_is_set_up);
+    add_test(suite, confirm_integer_is_set_up);
     return suite;
 }
 
@@ -81,7 +81,7 @@ void print_something_during_teardown() {
 TestSuite *visible_test() {
     TestSuite *suite = create_test_suite();
     setup(suite, print_something_during_setup);
-    add_unit_test(suite, print_something_during_a_test);
+    add_test(suite, print_something_during_a_test);
     teardown(suite, print_something_during_teardown);
     return suite;
 }
@@ -125,10 +125,10 @@ void time_out_in_only_one_second() {
 
 TestSuite *isolation_tests() {
     TestSuite *suite = create_test_suite();
-    add_unit_test(suite, create_test_interference);
-    add_unit_test(suite, prove_there_is_no_test_interference);
-    add_unit_test(suite, seg_fault);
-    add_unit_test(suite, time_out_in_only_one_second);
+    add_test(suite, create_test_interference);
+    add_test(suite, prove_there_is_no_test_interference);
+    add_test(suite, seg_fault);
+    add_test(suite, time_out_in_only_one_second);
     return suite;
 }
 
