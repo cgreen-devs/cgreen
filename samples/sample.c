@@ -13,12 +13,12 @@ void these_should_be_false() {
 }
 
 void these_should_be_equal() {
-    assert_equal(1, 1, "%d should be %d", 1, 1);
+    assert_equal(1, 1);
     assert_not_equal(1, 1, "%d should not be %d", 1, 1);
 }
 
 void these_should_not_be_equal() {
-    assert_equal(0, 1, "%d should be %d", 0, 1);
+    assert_equal(0, 1);
     assert_not_equal(0, 1, "%d should not be %d", 0, 1);
 }
 
@@ -50,12 +50,12 @@ void set_up_an_integer() {
 }
 
 void confirm_integer_is_set_up() {
-    assert_equal(an_integer, 1, "Could not set up the integer");
+    assert_equal_with_message(an_integer, 1, "Could not set up the integer");
     an_integer = 2;
 }
 
 void check_again_during_teardown() {
-    assert_equal(an_integer, 1, "Integer was changed from %d to %d", 1, an_integer);
+    assert_equal_with_message(an_integer, 1, "Integer was changed from 1 to %d", an_integer);
 }
 
 TestSuite *fixture_tests() {
@@ -110,7 +110,7 @@ void create_test_interference() {
 }
 
 void prove_there_is_no_test_interference() {
-    assert_equal(interference, 0, "Interference detected as %d", interference);
+    assert_equal(interference, 0);
 }
 
 void seg_fault() {
