@@ -15,7 +15,7 @@ void these_should_be_equal() {
 }
 
 void these_should_not_be_equal() {
-    assert_not_equal(0, 1, "%d should not be %d", 0, 1);
+    assert_not_equal(0, 1);
 }
 
 void these_strings_should_match() {

@@ -8,22 +8,22 @@ static int integer_out() {
 
 static void can_stub_an_integer_return() {
     will_return(integer_out, 3);
-    assert_equal(integer_out(), 3, NULL);
+    assert_equal(integer_out(), 3);
 }
 
 static void repeats_return_value_when_set_to_always() {
     always_return(integer_out, 3);
-    assert_equal(integer_out(), 3, NULL);
-    assert_equal(integer_out(), 3, NULL);
+    assert_equal(integer_out(), 3);
+    assert_equal(integer_out(), 3);
 }
 
 static void can_stub_an_integer_return_sequence() {
     will_return(integer_out, 1);
     will_return(integer_out, 2);
     will_return(integer_out, 3);
-    assert_equal(integer_out(), 1, NULL);
-    assert_equal(integer_out(), 2, NULL);
-    assert_equal(integer_out(), 3, NULL);
+    assert_equal(integer_out(), 1);
+    assert_equal(integer_out(), 2);
+    assert_equal(integer_out(), 3);
 }
 
 static void set_stub_just_to_be_cleared() {
@@ -32,7 +32,7 @@ static void set_stub_just_to_be_cleared() {
 
 static void confirm_stub_is_reset_between_tests() {
     will_return(integer_out, 2);
-    assert_equal(integer_out(), 2, NULL);
+    assert_equal(integer_out(), 2);
 }
 
 static void stub_uses_always_value_once_hit() {
@@ -40,11 +40,11 @@ static void stub_uses_always_value_once_hit() {
     will_return(integer_out, 2);
     always_return(integer_out, 3);
     will_return(integer_out, 4);
-    assert_equal(integer_out(), 1, NULL);
-    assert_equal(integer_out(), 2, NULL);
-    assert_equal(integer_out(), 3, NULL);
-    assert_equal(integer_out(), 3, NULL);
-    assert_equal(integer_out(), 3, NULL);
+    assert_equal(integer_out(), 1);
+    assert_equal(integer_out(), 2);
+    assert_equal(integer_out(), 3);
+    assert_equal(integer_out(), 3);
+    assert_equal(integer_out(), 3);
 }
 
 TestSuite *mock_tests() {
