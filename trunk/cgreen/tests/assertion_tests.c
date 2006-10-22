@@ -19,11 +19,11 @@ void these_should_not_be_equal() {
 }
 
 void these_strings_should_match() {
-    assert_string_equal("Hello", "Hello", "%s should be %s", "Hello", "Hello");
+    assert_string_equal("Hello", "Hello");
 }
 
 void these_strings_should_not_match() {
-    assert_string_not_equal("Hello", "hello", "%s should not be %s", "Hello", "hello");
+    assert_string_not_equal("Hello", "hello");
 }
 
 TestSuite *assertion_tests() {
