@@ -46,7 +46,7 @@ void *vector_get(Vector *vector, int position) {
 }
 
 int vector_size(Vector *vector) {
-    return vector->size;
+    return (vector == NULL ? 0 : vector->size);
 }
 
 static void increase_space(Vector *vector) {

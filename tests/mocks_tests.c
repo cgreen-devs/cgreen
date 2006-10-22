@@ -2,18 +2,58 @@
 #include "../mocks.h"
 #include <stdlib.h>
 
-static int integer_in_integer_out(int i) {
-    compare_integer(i);
-    return (int)result();
+static int integer_out() {
+    return (int)stubbed_result();
 }
 
 static void can_stub_an_integer_return() {
-    will_return(integer_in_integer_out, 3);
-    assert_equal(integer_in_integer_out(0), 3, NULL);
+    will_return(integer_out, 3);
+    assert_equal(integer_out(), 3, NULL);
+}
+
+static void repeats_return_value_when_set_to_always() {
+    always_return(integer_out, 3);
+    assert_equal(integer_out(), 3, NULL);
+    assert_equal(integer_out(), 3, NULL);
+}
+
+static void can_stub_an_integer_return_sequence() {
+    will_return(integer_out, 1);
+    will_return(integer_out, 2);
+    will_return(integer_out, 3);
+    assert_equal(integer_out(), 1, NULL);
+    assert_equal(integer_out(), 2, NULL);
+    assert_equal(integer_out(), 3, NULL);
+}
+
+static void set_stub_just_to_be_cleared() {
+    will_return(integer_out, 1);
+}
+
+static void confirm_stub_is_reset_between_tests() {
+    will_return(integer_out, 2);
+    assert_equal(integer_out(), 2, NULL);
+}
+
+static void stub_uses_always_value_once_hit() {
+    will_return(integer_out, 1);
+    will_return(integer_out, 2);
+    always_return(integer_out, 3);
+    will_return(integer_out, 4);
+    assert_equal(integer_out(), 1, NULL);
+    assert_equal(integer_out(), 2, NULL);
+    assert_equal(integer_out(), 3, NULL);
+    assert_equal(integer_out(), 3, NULL);
+    assert_equal(integer_out(), 3, NULL);
 }
 
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();
     add_test(suite, can_stub_an_integer_return);
+    add_test(suite, repeats_return_value_when_set_to_always);
+    add_test(suite, can_stub_an_integer_return_sequence);
+    add_test(suite, set_stub_just_to_be_cleared);
+    add_test(suite, confirm_stub_is_reset_between_tests);
+    add_test(suite, stub_uses_always_value_once_hit);
     return suite;
 }

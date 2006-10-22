@@ -6,7 +6,7 @@
 
 static void text_reporter_start(TestReporter *reporter, const char *name);
 static void text_reporter_finish(TestReporter *reporter, const char *name);
-static void show_fail(TestReporter *reporter, const char *file, int line, char *message, va_list arguments);
+static void show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *name);
 static void show_breadcrumb(const char *name, void *memo);
 
@@ -41,7 +41,7 @@ static void text_reporter_finish(TestReporter *reporter, const char *name) {
 	}
 }
 
-static void show_fail(TestReporter *reporter, const char *file, int line, char *message, va_list arguments) {
+static void show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     int i = 0;
     printf("Failure!: ");
     walk_breadcrumb(

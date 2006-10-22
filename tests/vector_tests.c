@@ -100,6 +100,10 @@ static void destructor_is_called_three_times_on_three_item_vector() {
     assert_equal(times_called, 3, NULL);
 }
 
+static void vector_size_of_null_pointer_is_zero() {
+    assert_equal(vector_size(NULL), 0, NULL);
+}
+
 TestSuite *vector_tests() {
     TestSuite *suite = create_test_suite();
     setup(suite, set_up_vector);
@@ -116,5 +120,6 @@ TestSuite *vector_tests() {
     add_test(suite, destructor_is_called_on_single_item);
     add_test(suite, destructor_is_not_called_on_empty_vector);
     add_test(suite, destructor_is_called_three_times_on_three_item_vector);
+    add_test(suite, vector_size_of_null_pointer_is_zero);
     return suite;
 }
