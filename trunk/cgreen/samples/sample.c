@@ -157,6 +157,24 @@ static void expectation_dashed() {
     expect(takes_integer, 3);
     takes_integer(4);
 }
+static void mixed_parameters(int i, char *s) {
+    checked_integer(i);
+    checked_string(s);
+}
+
+static void confirming_multiple_parameters_multiple_times() {
+    expect(mixed_parameters, 1, "Hello");
+    expect(mixed_parameters, 2, "Goodbye");
+    mixed_parameters(1, "Hello");
+    mixed_parameters(2, "Goodbye");
+}
+
+static void breaking_multiple_parameters_multiple_times() {
+    expect(mixed_parameters, 1, "Hello");
+    expect(mixed_parameters, 2, "Goodbye");
+    mixed_parameters(10, "Helloo");
+    mixed_parameters(20, "Gooodbye");
+}
 
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();
@@ -164,6 +182,8 @@ TestSuite *mock_tests() {
     add_test(suite, expectation_fails_when_called_without_presets);
     add_test(suite, expectation_confirmed);
     add_test(suite, expectation_dashed);
+    add_test(suite, confirming_multiple_parameters_multiple_times);
+    add_test(suite, breaking_multiple_parameters_multiple_times);
     return suite;
 }
 

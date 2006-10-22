@@ -16,7 +16,7 @@
 #define stubbed_result() _stubbed_result(__func__, __FILE__, __LINE__)
 
 void _checked_integer(const char *check_file, int check_line, const char *parameter, int integer);
-void _checked_string(const char *check_file, int check_line, const char *parameter, int string);
+void _checked_string(const char *check_file, int check_line, const char *parameter, const char *string);
 intptr_t _stubbed_result(const char *function, const char *file, int line);
 void _expect(const char *function, const char *test_file, int test_line);
 void _mock(const char *function, const char *test_file, int test_line);
