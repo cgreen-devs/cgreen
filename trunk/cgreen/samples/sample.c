@@ -180,6 +180,11 @@ static void uncalled_expectations_should_throw_errors() {
     expect(mixed_parameters, 1, "Hello");
 }
 
+static void unexpected_call_should_throw_error() {
+    expect_never(mixed_parameters);
+    mixed_parameters(10, "Helloo");
+}
+
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();
     add_test(suite, stub_fails_when_called_without_presets);
@@ -189,6 +194,7 @@ TestSuite *mock_tests() {
     add_test(suite, confirming_multiple_parameters_multiple_times);
     add_test(suite, breaking_multiple_parameters_multiple_times);
     add_test(suite, uncalled_expectations_should_throw_errors);
+    add_test(suite, unexpected_call_should_throw_error);
     return suite;
 }
 

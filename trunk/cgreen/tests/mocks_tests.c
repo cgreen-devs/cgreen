@@ -143,6 +143,10 @@ static void can_always_mock_full_function_call() {
     assert_equal(sample_mock(666, "devil"), 5);
 }
 
+static void can_declare_function_never_called() {
+    expect_never(sample_mock);
+}
+
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();
     add_test(suite, can_stub_an_integer_return);
@@ -163,5 +167,6 @@ TestSuite *mock_tests() {
     add_test(suite, when_called_with_always_should_not_tally_counts);
     add_test(suite, can_mock_full_sequence);
     add_test(suite, can_always_mock_full_function_call);
+    add_test(suite, can_declare_function_never_called);
     return suite;
 }
