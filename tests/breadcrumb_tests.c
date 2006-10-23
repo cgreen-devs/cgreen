@@ -45,13 +45,10 @@ void mock_walker(const char *name, void *memo) {
     checked_integer(memo);
 }
 
-void walker_for_empty_breadcrumb(const char *name, void *memo) {
-    //called_never();
-}
-
 void empty_breadcrumb_does_not_trigger_walker() {
+    expect_never(mock_walker);
     Breadcrumb *breadcrumb = create_breadcrumb();
-    walk_breadcrumb(breadcrumb, &walker_for_empty_breadcrumb, NULL);
+    walk_breadcrumb(breadcrumb, &mock_walker, NULL);
 }
 
 void single_item_breadcrumb_does_calls_walker_only_once() {
