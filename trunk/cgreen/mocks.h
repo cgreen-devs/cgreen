@@ -6,8 +6,8 @@
 
 #define ANYTHING "__anything__"
 
-#define checked_integer(i) _checked_integer(__FILE__, __LINE__, #i, i)
-#define checked_string(s) _checked_string(__FILE__, __LINE__, #s, s)
+#define checked_integer(i) _checked_integer(__FILE__, __LINE__, __func__, #i, i)
+#define checked_string(s) _checked_string(__FILE__, __LINE__, __func__, #s, s)
 #define expect(f, ...) _expect(#f, __FILE__, __LINE__); _mask(#__VA_ARGS__); f(__VA_ARGS__); _play()
 #define always_expect(f, ...) _always(); _expect(#f, __FILE__, __LINE__); _mask(#__VA_ARGS__); f(__VA_ARGS__); _play()
 #define will_return(f, r) _will_return(#f, (intptr_t)r); _play()
@@ -16,8 +16,8 @@
 #define always_mock(f, r, ...) _always(); _expect(#f, __FILE__, __LINE__); _mask(#__VA_ARGS__); f(__VA_ARGS__); _will_return(#f, (intptr_t)r); _play()
 #define stubbed_result() _stubbed_result(__func__, __FILE__, __LINE__)
 
-void _checked_integer(const char *check_file, int check_line, const char *parameter, int integer);
-void _checked_string(const char *check_file, int check_line, const char *parameter, const char *string);
+void _checked_integer(const char *check_file, int check_line, const char *function, const char *parameter, int integer);
+void _checked_string(const char *check_file, int check_line, const char *function, const char *parameter, const char *string);
 intptr_t _stubbed_result(const char *function, const char *file, int line);
 void _expect(const char *function, const char *test_file, int test_line);
 void _play();
