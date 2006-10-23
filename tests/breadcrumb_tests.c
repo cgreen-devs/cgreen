@@ -40,6 +40,11 @@ void popping_last_name_leaves_breadcrumb_empty() {
     assert_equal(get_current_from_breadcrumb(breadcrumb), NULL);
 }
 
+void mock_walker(const char *name, void *memo) {
+    checked_string(name);
+    checked_integer(memo);
+}
+
 void walker_for_empty_breadcrumb(const char *name, void *memo) {
     //called_never();
 }
@@ -49,27 +54,20 @@ void empty_breadcrumb_does_not_trigger_walker() {
     walk_breadcrumb(breadcrumb, &walker_for_empty_breadcrumb, NULL);
 }
 
-void walker_for_single_item_breadcrumb(const char *name, void *memo) {
-    //called_once();
-    assert_string_equal(name, "Hello");
-}
-
 void single_item_breadcrumb_does_calls_walker_only_once() {
+    expect(mock_walker, "Hello", NULL);
     Breadcrumb *breadcrumb = create_breadcrumb();
     push_breadcrumb(breadcrumb, "Hello");
-    walk_breadcrumb(breadcrumb, &walker_for_single_item_breadcrumb, NULL);
-}
-
-void walker_for_double_item_breadcrumb(const char *name, void *memo) {
-    //expected_call_count(2);
-    //assert_string_equal(name, string_sequence("Hello", "Goodbye"), NULL);
+    walk_breadcrumb(breadcrumb, &mock_walker, NULL);
 }
 
 void double_item_breadcrumb_does_calls_walker_only_once() {
+    expect(mock_walker, "Hello", NULL);
+    expect(mock_walker, "Goodbye", NULL);
     Breadcrumb *breadcrumb = create_breadcrumb();
     push_breadcrumb(breadcrumb, "Hello");
     push_breadcrumb(breadcrumb, "Goodbye");
-    walk_breadcrumb(breadcrumb, &walker_for_double_item_breadcrumb, NULL);
+    walk_breadcrumb(breadcrumb, &mock_walker, NULL);
 }
 
 TestSuite *breadcrumb_tests() {
