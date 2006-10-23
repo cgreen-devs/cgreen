@@ -132,7 +132,7 @@ Completed "main": 1 pass, 1 failure, 0 exceptions.
                 Currently it's the only method supported.
             </p>
         </section>
-        <section name="tdd" title="Five minutes doing TDDevelopment with Cgreen">
+        <section name="tdd" title="Five minutes doing TDD with Cgreen">
             <p>
                 For a more realistic example we need something to test.
                 We'll pretend that we are writing a function to split
@@ -489,7 +489,7 @@ void phrase_invokes_callback_for_each_word() {
 				Each call is expected in sequence.
 				Any failures, or left over calls, or extra calls, and we
 				get failures.
-				We can see this when we run the tests...
+				We can see all this when we run the tests...
 <sh><![CDATA[
 Running "main"...
 Failure!: words_tests -> phrase_invokes_callback_for_each_word -> mocked_callback(..., word, ...) is [Birds of a feather], and should be [Birds] at [words_test.c] line [32]
@@ -501,33 +501,14 @@ Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_
 Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [35]
 Completed "main": 5 passes, 7 failures, 0 exceptions.
 ]]></sh>
-            </p>
-
-            <p>
-                The <code>expected_call_count()</code> method talks directly
-                to the unit tester just like an assertion.
-                It keeps a count of each time it is called, and at the end
-                of the test the call count is tallied with the expected
-                value.
-                If there is a mismatch, then a failure is generated.
-                The call must have been made at least once though, for
-                the counters to have been set up.
+				The first failure tells the story.
+				Our little <code>words()</code> function called the mock callback
+				with the entire sentence.
             </p>
             <p>
-                Once we have added our test to the suite and built the tests,
-                we should see...
-<sh><![CDATA[
-Running "all_tests.c"...
-Failure!: words_test.c -> phrase_invokes_callback_for_each_word -> Word should be [Birds], but was [Birds of a feather] at [words_test.c] line [35]
-Failure!: words_test.c -> phrase_invokes_callback_for_each_word -> Expected a call count of [4], but got [1] at [words_test.c] line [36]
-Completed "all_tests.c": 4 passes, 2 failures, 0 exceptions.
-]]></sh>
-                ...which is exactly what we would expect.
-            </p>
-            <p>
-                Although not relevant to testing, I cannot resist getting this
-                test to pass.
-                Besides, we get to use the function we created earlier.
+                Although not relevant to this guide, I cannot resist getting these
+                tests to pass.
+                Besides, we get to use the function we created earlier...
 <c><![CDATA[
 void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {<strong>
     char *words = strdup(sentence);
@@ -540,10 +521,19 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
     free(words);</strong>
 }
 ]]></c>
-                It took me three goes to get this right, as I firstly
+				And with some work we are rewarded with...
+<sh><![CDATA[
+Running "main"...
+Completed "main": 12 passes, 0 failures, 0 exceptions.
+]]></sh>
+                It took me three goes to get this right.
+				I firstly
                 forgot the <code>+ 1</code> added on to <code>strlen()</code>,
-                and then forgot to swap <code>sentence</code> for
-                <code>word</code> in the <code>(*walker)()</code> call.
+                then forgot to swap <code>sentence</code> for
+                <code>word</code> in the <code>(*walker)()</code> call,
+				and finally third time lucky.
+			</p>
+			<p>
                 Of course running the tests each time made these mistakes
                 very obvious.
                 It's taken me far longer to write this paragraph than
