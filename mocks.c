@@ -2,6 +2,7 @@
 #include "reporter.h"
 #include "vector.h"
 #include <stdlib.h>
+#include <string.h>
 
 enum {playing = 1, recording};
 static int recording_state = playing;
@@ -231,7 +232,7 @@ RecordedResult *find_result(const char *function) {
     int i;
     for (i = 0; i < vector_size(result_queue); i++) {
         RecordedResult *result = (RecordedResult *)vector_get(result_queue, i);
-        if (result->function == function) {
+        if (strcmp(result->function, function) == 0) {
             if (! result->should_keep) {
                 return vector_remove(result_queue, i);
             }
