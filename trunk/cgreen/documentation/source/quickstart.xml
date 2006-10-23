@@ -132,7 +132,7 @@ Completed "main": 1 pass, 1 failure, 0 exceptions.
                 Currently it's the only method supported.
             </p>
         </section>
-        <section name="tdd" title="Test Driven Development with Cgreen in five minutes">
+        <section name="tdd" title="Five minutes doing TDDevelopment with Cgreen">
             <p>
                 For a more realistic example we need something to test.
                 We'll pretend that we are writing a function to split
@@ -367,7 +367,7 @@ Completed "main": 2 passes, 0 failures, 0 exceptions.
                 Let's do something more interesting.
             </p>
         </section>
-        <section name="mock" title="Mocking functions">
+        <section name="mock" title="What are mock functions?">
             <p>
                 The next example is more realistic.
                 Still in our <em>words.h</em> file, we want to write
@@ -387,7 +387,7 @@ words("This is a sentence", &act_on_word, &memo);</strong>
             </p>
             <p>
                 The function under test is the <code>words()</code>
-                function, and we want to make sure it walks the sentence
+                function and we want to make sure it walks the sentence
                 correctly, dispatching individual words as it goes.
                 How to test this?
             </p>
@@ -420,8 +420,8 @@ TestSuite *words_tests() {
                 What is the funny looking <code>mocked_callback()</code> function?
             </p>
             <p>
-                A mock is basically a programmable object,
-                here a single function.
+                A mock is basically a programmable object.
+                In C objects are limited to functions, so this is a mock function.
                 The macro <code>checked_string()</code> behaves differently
                 depending on context.
                 In record mode, when the mock is being set up, it records
@@ -454,12 +454,16 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *);<
 void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
 }</strong>
 ]]></c>
-                This gives us the expected failing test...
+                This gives us the expected failing tests...
 <sh><![CDATA[
 Running "all_tests.c"...
-Failure!: words_test.c -> single_word_sentence_invokes_callback_once -> Problem at [words_test.c] line [30]
-Completed "all_tests.c": 2 passes, 1 failure, 0 exceptions.
+Failure!: words_tests -> single_word_sentence_invokes_callback_once -> Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [27]
+Failure!: words_tests -> single_word_sentence_invokes_callback_once -> Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [27]
+Completed "all_tests.c": 2 passes, 2 failures, 0 exceptions.
 ]]></sh>
+				Cgreen reports each unused parameter that was set up.
+				It expected the parameter checks to be called once each,
+				but they weren't.
                 We can easily get the test to pass by filling out the
                 implementation with...
 <c><![CDATA[
@@ -467,42 +471,38 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
     <strong>(*walker)(sentence, memo);</strong>
 }
 ]]></c>
+				Now everything should pass, although it's not much of a test yet.
+			</p>
+			<p>
                 That was all pretty conventional, but let's tackle the trickier
                 case of actually splitting the sentence.
                 Here is the test function we will add to <em>words_test.c</em>...
 <c><![CDATA[<strong>
 void phrase_invokes_callback_for_each_word() {
-    words("Birds of a feather", &four_words_please, NULL);
+	expect(mocked_callback, "Birds", NULL);
+	expect(mocked_callback, "of", NULL);
+	expect(mocked_callback, "a", NULL);
+	expect(mocked_callback, "feather", NULL);
+	words("Birds of a feather", &mocked_callback, NULL);
 }</strong>
 ]]></c>
-                It just invokes the method with a test callback.
-                More interesting is the callback itself...
-<c><![CDATA[
-void four_words_please(const char *word, void *memo) {
-    char *expected = <strong>string_sequence("Birds", "of", "a", "feather")</strong>;
-    assert_string_equal(word, expected,
-            "Word should be [%s], but was [%s]", expected, word);<strong>
-    expected_call_count(4);</strong>
-}
-]]></c>
-                The <code>assert_string_equal()</code> call now compares
-                <code>word</code> with a series of strings from a
-                <code>string_sequence()</code> call.
+				Each call is expected in sequence.
+				Any failures, or left over calls, or extra calls, and we
+				get failures.
+				We can see this when we run the tests...
+<sh><![CDATA[
+Running "main"...
+Failure!: words_tests -> phrase_invokes_callback_for_each_word -> mocked_callback(..., word, ...) is [Birds of a feather], and should be [Birds] at [words_test.c] line [32]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [33]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [33]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [34]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [34]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [35]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [35]
+Completed "main": 5 passes, 7 failures, 0 exceptions.
+]]></sh>
             </p>
-            <p>
-                What makes the sequence macro special is that it returns
-                successive parameters on each call using a counter that
-                is reset between test functions.
-                That is, <code><![CDATA["Birds"]]></code> on the first
-                call, <code><![CDATA["of"]]></code> on the second, and
-                so on.
-                This means that each call to <code>four_words_please()</code>
-                will have it's parameter checked against different values.
-            </p>
-            <p>
-                In general we can also use sequences for return values,
-                and we can have integer and pointer sequences as well.
-            </p>
+
             <p>
                 The <code>expected_call_count()</code> method talks directly
                 to the unit tester just like an assertion.

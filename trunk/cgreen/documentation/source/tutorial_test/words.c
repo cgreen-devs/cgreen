@@ -10,7 +10,7 @@ int split_words(char *sentence) {
 	}
 	return count;
 }
-
+/*
 void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
 	char *words = strdup(sentence);
 	int word_count = split_words(words);
@@ -20,4 +20,8 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
 		word = word + strlen(word) + 1;
 	}
 	free(words);
+}
+*/
+void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
+    (*walker)(sentence, memo);
 }
