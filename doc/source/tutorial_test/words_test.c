@@ -18,7 +18,7 @@ void spaces_should_be_converted_to_zeroes() {
 	free(sentence);	
 }
 
-void mocked_callback(char *word, void *memo) {
+void mocked_callback(const char *word, void *memo) {
     checked_string(word);
     checked_integer(memo);
 }
@@ -38,9 +38,9 @@ void phrase_invokes_callback_for_each_word() {
 
 TestSuite *words_tests() {
     TestSuite *suite = create_test_suite();
-	add_unit_test(suite, word_count_returned_from_split);
-	add_unit_test(suite, spaces_should_be_converted_to_zeroes);
-	add_unit_test(suite, single_word_sentence_invokes_callback_once);
-	add_unit_test(suite, phrase_invokes_callback_for_each_word);
+	add_test(suite, word_count_returned_from_split);
+	add_test(suite, spaces_should_be_converted_to_zeroes);
+	add_test(suite, single_word_sentence_invokes_callback_once);
+	add_test(suite, phrase_invokes_callback_for_each_word);
     return suite;
 }
