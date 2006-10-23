@@ -176,6 +176,10 @@ static void breaking_multiple_parameters_multiple_times() {
     mixed_parameters(20, "Gooodbye");
 }
 
+static void uncalled_expectations_should_throw_errors() {
+    expect(mixed_parameters, 1, "Hello");
+}
+
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();
     add_test(suite, stub_fails_when_called_without_presets);
@@ -184,6 +188,7 @@ TestSuite *mock_tests() {
     add_test(suite, expectation_dashed);
     add_test(suite, confirming_multiple_parameters_multiple_times);
     add_test(suite, breaking_multiple_parameters_multiple_times);
+    add_test(suite, uncalled_expectations_should_throw_errors);
     return suite;
 }
 

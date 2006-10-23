@@ -125,6 +125,10 @@ static void can_mock_full_function_call() {
     assert_equal(sample_mock(666, "devil"), 5);
 }
 
+static void when_called_with_always_should_not_tally_counts() {
+    always_mock(sample_mock, 5, 666, "devil");
+}
+
 static void can_mock_full_sequence() {
     mock(sample_mock, 5, 666, "devil");
     mock(sample_mock, 6, 667, "beastie");
@@ -156,6 +160,7 @@ TestSuite *mock_tests() {
     add_test(suite, string_expectation_sequence);
     add_test(suite, confirming_multiple_parameters_multiple_times);
     add_test(suite, can_mock_full_function_call);
+    add_test(suite, when_called_with_always_should_not_tally_counts);
     add_test(suite, can_mock_full_sequence);
     add_test(suite, can_always_mock_full_function_call);
     return suite;

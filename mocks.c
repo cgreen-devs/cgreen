@@ -18,6 +18,7 @@ typedef struct _RecordedExpectation {
     int check_line;
     const char *test_file;
     int test_line;
+    const char *function;
     const char *parameter;
     intptr_t expected;
     int should_keep;
@@ -35,7 +36,7 @@ static TestLocation location = {"", 0};
 
 static void ensure_result_queue();
 static void ensure_expectation_queue();
-static void record_expectation(const char *check_file, int check_line, const char *parameter, intptr_t expected);
+static void record_expectation(const char *check_file, int check_line, const char *function, const char *parameter, intptr_t expected);
 RecordedExpectation *find_expectation(const char *check_file, int check_line, const char *parameter);
 RecordedResult *find_result(const char *function);
 static int matches_expectation(RecordedExpectation *expectation, const char *check_file, int check_line, const char *parameter);
@@ -43,9 +44,9 @@ static void set_test_location(const char *file, int line);
 static void clear_test_location();
 static int is_recording();
 
-void _checked_integer(const char *check_file, int check_line, const char *parameter, int integer) {
+void _checked_integer(const char *check_file, int check_line, const char *function, const char *parameter, int integer) {
     if (is_recording()) {
-        record_expectation(check_file, check_line, parameter, (intptr_t)integer);
+        record_expectation(check_file, check_line, function, parameter, (intptr_t)integer);
     } else {
         RecordedExpectation *expectation = find_expectation(check_file, check_line, parameter);
         if (expectation == NULL) {
@@ -56,16 +57,16 @@ void _checked_integer(const char *check_file, int check_line, const char *parame
                 expectation->test_file,
                 expectation->test_line,
                 (int)(expectation->expected) == integer,
-                "parameter [%s] is [%d], and should be [%d]", parameter, integer, (int)(expectation->expected));
+                "%s(..., %s, ...) is [%d], and should be [%d]", function, parameter, integer, (int)(expectation->expected));
         if (! expectation->should_keep) {
             free(expectation);
         }
     }
 }
 
-void _checked_string(const char *check_file, int check_line, const char *parameter, const char *string) {
+void _checked_string(const char *check_file, int check_line, const char *function, const char *parameter, const char *string) {
     if (is_recording()) {
-        record_expectation(check_file, check_line, parameter, (intptr_t)string);
+        record_expectation(check_file, check_line, function, parameter, (intptr_t)string);
     } else {
         RecordedExpectation *expectation = find_expectation(check_file, check_line, parameter);
         if (expectation == NULL) {
@@ -76,7 +77,7 @@ void _checked_string(const char *check_file, int check_line, const char *paramet
                 expectation->test_file,
                 expectation->test_line,
                 (strcmp((char *)(expectation->expected), string) == 0),
-                "parameter [%s] is [%s], and should be [%s]", parameter, string, (char *)(expectation->expected));
+                "%s(..., %s, ...) is [%s], and should be [%s]", function, parameter, string, (char *)(expectation->expected));
         if (! expectation->should_keep) {
             free(expectation);
         }
@@ -142,6 +143,18 @@ void clear_mocks() {
 }
 
 void tally_mocks(TestReporter *reporter) {
+    int i;
+    for (i = 0; i < vector_size(expectation_queue); i++) {
+        RecordedExpectation *expectation = vector_get(expectation_queue, i);
+        if (! expectation->should_keep) {
+            (*get_test_reporter()->assert_true)(
+                    get_test_reporter(),
+                    expectation->test_file,
+                    expectation->test_line,
+                    0,
+                    "Unused %s(..., %s, ...) expectation", expectation->function, expectation->parameter);
+        }
+    }
     clear_mocks();
 }
 
@@ -157,13 +170,14 @@ static void ensure_expectation_queue() {
     }
 }
 
-static void record_expectation(const char *check_file, int check_line, const char *parameter, intptr_t expected) {
+static void record_expectation(const char *check_file, int check_line, const char *function, const char *parameter, intptr_t expected) {
     ensure_expectation_queue();
     RecordedExpectation *expectation = (RecordedExpectation *)malloc(sizeof(RecordedExpectation));
     expectation->check_file = check_file;
     expectation->check_line = check_line;
     expectation->test_file = location.file;
     expectation->test_line = location.line;
+    expectation->function = function;
     expectation->parameter = parameter;
     expectation->expected = expected;
     expectation->should_keep = should_keep;
