@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
-<page title="Writing Cgreen test suites" here="cgreen">
+<page title="Building Cgreen test suites" here="cgreen">
     <long_title>
         Creating C test suites using the Cgreen unit testing framework
     </long_title>
     <content>
         <p>
-            Cgreen is a tool for building unit tests in the C language,
-            usually alongside writing the production code.
-            These tests are written by the programmer to prevent bugs,
-            rather than by the customer or eventual user of the software.
+            Cgreen is a tool for building unit tests in the C language.
+            These are usually alongside writing the production code
+            by the programmer to prevent bugs.
             Even though the test suites are created by software developers,
-            they are intended to be human readable C code.
+            they are intended to be human readable C code, as part of
+            their function is an executable specification.
         </p>
         <section name="writing" title="Writing basic tests">
             <p>
@@ -19,7 +19,7 @@
                 An example might be...
 <c><![CDATA[
 static void <strong>strlen_of_hello_should_be_five</strong>() {
-    <strong>assert_equal</strong>(strlen("Hello"), 5, NULL);
+    <strong>assert_equal</strong>(strlen("Hello"), 5);
 }
 ]]></c>
                 The test function name can be anything you want.
@@ -32,17 +32,41 @@ static void <strong>strlen_of_hello_should_be_five</strong>() {
                 Here are the standard assertions...
                 <table>
                     <tr><th>Assertion</th><th>Description</th></tr>
-                    <tr><td><code>assert_true(boolean, message, ...)</code></td><td>Passes if boolean evaluates true</td></tr>
-                    <tr><td><code>assert_false(boolean, message, ...)</code></td><td>Fails if boolean evaluates true</td></tr>
-                    <tr><td><code>assert_equal(first, second, message, ...)</code></td><td>Passes if <code>first == second</code></td></tr>
-                    <tr><td><code>assert_not_equal(first, second, message, ...)</code></td><td>Passes if <code>first != second</code></td></tr>
-                    <tr><td><code>assert_string_equal(char *, char *, message, ...)</code></td><td>Uses <code>strcmp()</code> and passes if the strings are equal</td></tr>
-                    <tr><td><code>assert_string_not_equal(char *, char *, message, ...)</code></td><td>Uses <code>strcmp()</code> and fails if the strings are equal</td></tr>
+                    <tr><td><code>assert_true(boolean)</code></td><td>Passes if boolean evaluates true</td></tr>
+                    <tr><td><code>assert_false(boolean)</code></td><td>Fails if boolean evaluates true</td></tr>
+                    <tr><td><code>assert_equal(first, second)</code></td><td>Passes if <code>first == second</code></td></tr>
+                    <tr><td><code>assert_not_equal(first, second)</code></td><td>Passes if <code>first != second</code></td></tr>
+                    <tr><td><code>assert_string_equal(char *, char *)</code></td><td>Uses <code>strcmp()</code> and passes if the strings are equal</td></tr>
+                    <tr><td><code>assert_string_not_equal(char *, char *)</code></td><td>Uses <code>strcmp()</code> and fails if the strings are equal</td></tr>
                 </table>
-                All the assertions have an addition <code>char *</code> message parameter,
+                The boolean assertion macros accept an <code>int</code> value.
+                The equality assertions accept anything that can be cast to <code>intptr_t</code>
+                and simply perform an <code>==</code> operation.
+                The string comparisons are slightly different in that they use the
+                <code><![CDATA[<string.h>]]></code> library function <code>strcmp()</code>.
+                If <code>assert_equal()</code> is used on <code>char *</code> pointers
+                then the pointers have to point at the same string.
+            </p>
+            <p>
+                Each assertion has a default message comparing the two values.
+                If you want to substitute your own failure messages, then you
+                must use the <code>*_with_message()</code> counterparts...
+                <table>
+                    <tr><th>Assertion</th></tr>
+                    <tr><td><code>assert_true_with_message(boolean, message, ...)</code></td></tr>
+                    <tr><td><code>assert_false_with_message(boolean, message, ...)</code></td></tr>
+                    <tr><td><code>assert_equal_with_message(first, second, message, ...)</code></td></tr>
+                    <tr><td><code>assert_not_equal_with_message(first, second, message, ...)</code></td></tr>
+                    <tr><td><code>assert_string_equal_with_message(char *, char *, message, ...)</code></td></tr>
+                    <tr><td><code>assert_string_not_equal_with_message(char *, char *, message, ...)</code></td></tr>
+                </table>
+                All these assertions have an additional <code>char *</code> message parameter,
                 which is the message you wished to display on failure.
-                If this is set to <code>NULL</code>, then a not very helpful default
+                If this is set to <code>NULL</code>, then the default
                 message is shown instead.
+                The most useful assertion from this group is <code>assert_true_with_message()</code>
+                as you can use that to create your own assertion functions with your
+                own messages.
             </p>
             <p>
                 Actually the assertion macros have variable argument lists.
@@ -50,11 +74,13 @@ static void <strong>strlen_of_hello_should_be_five</strong>() {
                 We could change the test above to be...
 <c><![CDATA[
 static void strlen_of_hello_should_be_five() {
-    int length = strlen("Hello");
-    assert_equal(length, 5, <strong>"Should be 5, but was %d"</strong>, length);
+    const char *greeting = "Hello";
+    int length = strlen(greeting);
+    assert_equal_with_message(length, 5,
+            <strong>"[%s] should be 5, but was %d"</strong>, greeting, length);
 }
 ]]></c>
-                A much more user friendly message when things go wrong.
+                A slightly more user friendly message when things go wrong.
             </p>
             <p>
                 For the test above to work there needs to be a running test suite.
@@ -92,8 +118,7 @@ static void strlen_of_hello_should_be_five() {
 #include <string.h></strong>
 
 static void strlen_of_hello_should_be_five() {
-    int length = strlen("Hello");
-    assert_equal(length, 5, "Should be 5, but was %d", length);
+    assert_equal(strlen("Hello"), 5);
 }
 
 TestSuite *our_tests() {
@@ -115,22 +140,21 @@ TestSuite *our_tests() {
 gcc -c strlen_test.c
 gcc strlen_test.o cgreen/cgreen.a -o strlen_test
 ./strlen_test<strong>
-Running "strlen_test.c"...
-Completed "strlen_test.c": 1 pass, 0 failures, 0 exceptions.</strong>
+Running "main"...
+Completed "main": 1 pass, 0 failures, 0 exceptions.</strong>
 ]]></sh>
                 The test messages are only shown on failure.
                 If we break our test...
 <c><![CDATA[
 static void strlen_of_hello_should_be_five() {
-    int length = strlen(<strong>"Hiya"</strong>);
-    assert_equal(length, 5, "Should be 5, but was %d", length);
+    assert_equal(strlen(<strong>"Hiya"</strong>, 5);
 }
 ]]></c>
-                ...we'll get our own helpful message...
+                ...we'll get the helpful message...
 <sh><![CDATA[
-Running "strlen_test.c"...<strong>
-Failure!: strlen_of_hello_should_be_five -> Should be 5, but was 4 at [strlen_test.c] line [6]</strong>
-Completed "strlen_test.c": 0 passes, 1 failure, 0 exceptions.
+Running "main"...<strong>
+Failure!: strlen_of_hello_should_be_five -> [5] shold be [4] at [strlen_test.c] line [6]</strong>
+Completed "main": 0 passes, 1 failure, 0 exceptions.
 ]]></sh>
                 Cgreen appends the location of the test failure to
                 our error string.
@@ -143,8 +167,7 @@ Completed "strlen_test.c": 0 passes, 1 failure, 0 exceptions.
 <c><![CDATA[
 ...<strong>
 static void strlen_of_empty_string_should_be_zero() {
-    int length = strlen("\0");
-    assert_equal(length, 0, "Should be 0, but was %d", length);
+    assert_equal(strlen("\0"), 0);
 }</strong>
 
 TestSuite *<strong>our_tests</strong>() {
@@ -189,7 +212,7 @@ static void can_add_person_to_database() {
     set_person_name(person, "Fred");
     save_person(person);
     Person *found = find_person_by_name("Fred");
-    assert_string_equal(get_person_name(person), "Fred", NULL);
+    assert_string_equal(get_person_name(person), "Fred");
     <strong>drop_schema();</strong>
 }
 
@@ -197,10 +220,10 @@ static void cannot_add_duplicate_person() {
     <strong>create_schema();</strong>
     Person *person = create_person();
     set_person_name(person, "Fred");
-    assert_true(save_person(person), NULL);
+    assert_true(save_person(person));
     Person *duplicate = create_person();
     set_person_name(duplicate, "Fred");
-    assert_false(save_person(duplicate), NULL);
+    assert_false(save_person(duplicate));
     <strong>drop_schema();</strong>
 }
 
@@ -242,16 +265,16 @@ static void can_add_person_to_database() {
     set_person_name(person, "Fred");
     save_person(person);
     Person *found = find_person_by_name("Fred");
-    assert_string_equal(get_person_name(person), "Fred", NULL);
+    assert_string_equal(get_person_name(person), "Fred");
 }
 
 static void cannot_add_duplicate_person() {
     Person *person = create_person();
     set_person_name(person, "Fred");
-    assert_true(save_person(person), NULL);
+    assert_true(save_person(person));
     Person *duplicate = create_person();
     set_person_name(duplicate, "Fred");
-    assert_false(save_person(duplicate), NULL);
+    assert_false(save_person(duplicate));
 }
 
 TestSuite *person_tests() {
@@ -292,11 +315,11 @@ TestSuite *person_tests() {
         <section name="fork" title="Each test in it's own process">
             <p>
                 Consider this test method...
-<c><![CDATA[
+<c><![CDATA[<strong>
 void will_seg_fault() {
     int *p = NULL;
     (*p)++;
-}
+}</strong>
 ]]></c>
                 Crashes are not something you would normally want to have
                 in a test run.
@@ -334,9 +357,9 @@ int main(int argc, char **argv) {
 ]]></c>
                 When built and run, this gives...
 <sh><![CDATA[
-Running "crash_test.c"...
+Running "main"...
 Exception!: will_seg_fault -> Test "will_seg_fault" failed to complete
-Completed "crash_test.c": 0 passes, 0 failures, 1 exception.
+Completed "main": 0 passes, 0 failures, 1 exception.
 ]]></sh>
                 The obvious thing to do now is to fire up the debugger.
                 Unfortunately, the constant <code>fork()</code>'ing of
@@ -348,10 +371,10 @@ Completed "crash_test.c": 0 passes, 0 failures, 1 exception.
                 one test at a time, Cgreen has the <code>run_single_test()</code>
                 function.
                 The signatures of the two run methods are...
-<c><![CDATA[
-int run_test_suite(TestSuite *suite, TestReporter *reporter);
-int run_single_test(TestSuite *suite, <strong>char *test</strong>, TestReporter *reporter);
-]]></c>
+<table>
+<tr><td><code><![CDATA[int run_test_suite(TestSuite *suite, TestReporter *reporter);]]></code></td></tr>
+<tr><td><code><![CDATA[int run_single_test(TestSuite *suite, char *test, TestReporter *reporter);]]></code></td></tr>
+</table>
                 The extra parameter of <code>run_single_test()</code>, the
                 <code>test</code> string, is the name of the test to select.
                 This could be any test, even in nested test suites (see below).
@@ -399,10 +422,10 @@ int main(int argc, char **argv) {
                 When executed, the code will slow for a second, and
                 then finish with...
 <sh><![CDATA[
-Running "crash_test.c"...
+Running "main"...
 Exception!: will_seg_fault -> Test "will_seg_fault" failed to complete
 Exception!: will_stall -> Test "this_would_stall" failed to complete
-Completed "crash_test.c": 0 passes, 0 failures, 2 exceptions.
+Completed "main": 0 passes, 0 failures, 2 exceptions.
 ]]></sh>
                 Note that you see the test results as they come in.
                 Cgreen streams the results as they happen, making it easier
@@ -488,13 +511,13 @@ int main(int argc, char **argv) {
                 If we do place several suites in the same file, then
                 all the suites will be named the same
                 in the breadcrumb trail in the test message.
-                They will all be named after the current file.
+                They will all be named after the function the create call sits in.
                 If you want to get around this, or you just like to name
                 your test suites, you can use <code>create_named_test_suite()</code>
                 instead of <code>create_test_suite()</code>.
                 This takes a single string parameter.
                 In fact <code>create_test_suite()</code> is just a macro that
-                inserts the <code>__FILE__</code> constant into
+                inserts the <code>__func__</code> constant into
                 <code>create_named_test_suite()</code>.
             </p>
             <p>
@@ -605,6 +628,7 @@ TestSuite *connection_fixture(TestSuite *suite) {</strong>
     return fixture;<strong>
 }</strong>
 ]]></c>
+                This allows the reuse of common fixtures across projects.
             </p>
         </section>
     </content>

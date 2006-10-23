@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<page title="Mocking callbacks in Cgreen" here="mock_callbacks">
+<page title="Mocking functions in Cgreen" here="mock_callbacks">
     <long_title>
-        Creating mock callbacks in the Cgreen unit testing framework
+        Creating mock functions in the Cgreen unit testing framework
     </long_title>
     <content>
         <p>

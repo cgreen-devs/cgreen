@@ -316,7 +316,7 @@ TestSuite *words_tests() {
                 Sure enough, we get a failure...
 <sh><![CDATA[
 Running "main"...
-Failure!: words_test -> spaces_should_be_converted_to_zeroes -> [-32] shoudl be [0] at [words_test.c] line [16]
+Failure!: words_test -> spaces_should_be_converted_to_zeroes -> [-32] should be [0] at [words_test.c] line [16]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
                 Not surprising given that we haven't written the code yet.
