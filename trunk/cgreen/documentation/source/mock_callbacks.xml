@@ -61,18 +61,34 @@ char *read_paragraph(<strong>int (*read)(void *), void *stream</strong>) {
                 are plenty of nasty boundary conditions.
                 I really want this code tested before I deploy it.
             </p>
+			<p>
+				The problem is getting the stream to behave correctly.
+				We could use a real stream, but that will cause all sorts of
+				headaches.
+				It makes the test of our paragraph formatter dependent
+				on a working stream.
+				It means we have to write the stream first, bottom up coding
+				rather than top down.
+				It means we will have to simulate stream failures - not easy.
+				It will also mean setting up external resources.
+				This is more work, will run slower, and could lead
+				to spurious test failures.
+			</p>
+			<p>
+				By contrast we could write a simulation of the stream for each
+				test, called a &quot;server stub&quot;.
+				We can try this for an easy example.
+			</p>
             <p>
-                First we'll test something easy.
                 When the stream is empty, nothing should happen.
                 We just get <code>NULL</code>s when the stream is
                 exhausted.
-                This is easy to test if we write our own stream...
 <c><![CDATA[
-<strong>int empty_stream(void *stream) {
+static <strong>int empty_stream(void *stream) {
     return EOF;
 }</strong>
 
-void reading_lines_from_empty_stream_gives_null() {
+static void reading_lines_from_empty_stream_gives_null() {
     assert_equal(read_paragraph(<strong>&empty_stream, NULL</strong>), NULL);
 }
 
@@ -84,12 +100,28 @@ TestSuite *stream_tests() {
 ]]></c>
                 It's easy, because our fake stream returns only
                 one value.
-                We don't even need the <code>stream</code> pointer for
-                the test, so we just use <code>NULL</code>.
-            </p>
-            <p>
                 Things are harder when the function result changes from
                 call to call.
+				This would mean messing around with static variables and counters
+				that are reset for each test.
+				That's a lot of clutter.
+				Cgreen handles this clutter for us.
+				It does it by letting us write a programmable function.
+			</p>
+			<p>
+				We start by creating a <code>mock_stream()</code>...
+<c><![CDATA[
+static int mock_stream(void *stream) {
+	checked_integer(stream);
+	return (int)stubbed_result();
+}
+]]></c>
+				Slightly longer that our trivial server stub above, but we
+				can reuse this in test after test.
+			</p>
+			<p>
+			</p>
+			<p>
                 If we want to test a one character line, we have to send
                 the terminating <code>EOF</code> or <code><![CDATA["\n"]]></code>.
                 Otherwise our code will loop forever, giving an infinite
