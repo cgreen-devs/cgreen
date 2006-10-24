@@ -61,24 +61,24 @@ char *read_paragraph(<strong>int (*read)(void *), void *stream</strong>) {
                 are plenty of nasty boundary conditions.
                 I really want this code tested before I deploy it.
             </p>
-			<p>
-				The problem is getting the stream to behave correctly.
-				We could use a real stream, but that will cause all sorts of
-				headaches.
-				It makes the test of our paragraph formatter dependent
-				on a working stream.
-				It means we have to write the stream first, bottom up coding
-				rather than top down.
-				It means we will have to simulate stream failures - not easy.
-				It will also mean setting up external resources.
-				This is more work, will run slower, and could lead
-				to spurious test failures.
-			</p>
-			<p>
-				By contrast we could write a simulation of the stream for each
-				test, called a &quot;server stub&quot;.
-				We can try this for an easy example.
-			</p>
+            <p>
+                The problem is getting the stream to behave correctly.
+                We could use a real stream, but that will cause all sorts of
+                headaches.
+                It makes the test of our paragraph formatter dependent
+                on a working stream.
+                It means we have to write the stream first, bottom up coding
+                rather than top down.
+                It means we will have to simulate stream failures - not easy.
+                It will also mean setting up external resources.
+                This is more work, will run slower, and could lead
+                to spurious test failures.
+            </p>
+            <p>
+                By contrast we could write a simulation of the stream for each
+                test, called a &quot;server stub&quot;.
+                We can try this for an easy example.
+            </p>
             <p>
                 When the stream is empty, nothing should happen.
                 We just get <code>NULL</code>s when the stream is
@@ -102,26 +102,26 @@ TestSuite *stream_tests() {
                 one value.
                 Things are harder when the function result changes from
                 call to call.
-				This would mean messing around with static variables and counters
-				that are reset for each test.
-				That's a lot of clutter.
-				Cgreen handles this clutter for us.
-				It does it by letting us write a programmable function.
-			</p>
-			<p>
-				We start by creating a <code>mock_stream()</code>...
+                This would mean messing around with static variables and counters
+                that are reset for each test.
+                That's a lot of clutter.
+                Cgreen handles this clutter for us.
+                It does it by letting us write a programmable function.
+            </p>
+            <p>
+                We start by creating a <code>mock_stream()</code>...
 <c><![CDATA[
 static int mock_stream(void *stream) {
-	checked_integer(stream);
-	return (int)stubbed_result();
+    checked_integer(stream);
+    return (int)stubbed_result();
 }
 ]]></c>
-				Slightly longer that our trivial server stub above, but we
-				can reuse this in test after test.
-			</p>
-			<p>
-			</p>
-			<p>
+                Slightly longer that our trivial server stub above, but we
+                can reuse this in test after test.
+            </p>
+            <p>
+            </p>
+            <p>
                 If we want to test a one character line, we have to send
                 the terminating <code>EOF</code> or <code><![CDATA["\n"]]></code>.
                 Otherwise our code will loop forever, giving an infinite
@@ -159,10 +159,10 @@ void reading_lines_from_one_character_gives_one_character_line() {
                 </ul>
                 To make our lives much easier, Cgreen includes a sequence
                 concept to handle all of the switching for us.
-			</p>
-		</section>
-		<section name="stubbing" title="Stubbing with sequences">
-		    <p>
+            </p>
+        </section>
+        <section name="stubbing" title="Stubbing with sequences">
+            <p>
                 Here is our callback test rewritten to use Cgreen sequences...
 <c><![CDATA[
 int one_character_stream(void *stream) {<strong>
@@ -210,12 +210,12 @@ void test_typical_streams() {
     assert_string_equal("", read_paragraph(<strong>&line_ending_only</strong>, NULL), NULL);
 }
 ]]></c>
-				As each test runs in it's own process, I haven't bothered
-				to free the pointers,
-				I've just let the operating system do it.
-				Purists may want to add the extra code.
-			</p>
-			<p>
+                As each test runs in it's own process, I haven't bothered
+                to free the pointers,
+                I've just let the operating system do it.
+                Purists may want to add the extra code.
+            </p>
+            <p>
                 Even though all the sequences run in the same test, they
                 are separate sequences as they are called on separate lines.
                 This should be avoided...
@@ -269,41 +269,41 @@ void by_paragraph(int (*read)(void *), void *in, <strong>void (*write)(char *, v
                 Our current interests are: does it loop through the paragraphs, and does
                 it crash?
             </p>
-			<p>
-				We could test correct paragraph formation by writing a stub
-				that collects the paragraphs into a <code>struct</code>.
-				We could then pick apart that <code>struct</code> and test
-				each piece with assertions.
-				This approach is extremely clumsy in C.
-				The language is just not suited to building and tearing down
-				complex edifices, never mind navigating them with assertions.
-				We would badly clutter our tests.
-			</p>
-			<p>
-				Instead we'll test the output as soon as possible, right in
-				the called function...
+            <p>
+                We could test correct paragraph formation by writing a stub
+                that collects the paragraphs into a <code>struct</code>.
+                We could then pick apart that <code>struct</code> and test
+                each piece with assertions.
+                This approach is extremely clumsy in C.
+                The language is just not suited to building and tearing down
+                complex edifices, never mind navigating them with assertions.
+                We would badly clutter our tests.
+            </p>
+            <p>
+                Instead we'll test the output as soon as possible, right in
+                the called function...
 <c><![CDATA[<strong>
 void expect_one_letter_paragraph(char *paragraph, void *stream) {
-	assert_string_equal(paragraph, "a", NULL);
+    assert_string_equal(paragraph, "a", NULL);
 }</strong>
 
 void one_character_is_made_into_a_one_letter_paragraph() {
-	by_paragraph(
-			<strong>&one_character_stream</strong>,
-			NULL,
-			<strong>&expect_one_letter_paragraph</strong>,
-			NULL);
+    by_paragraph(
+            <strong>&one_character_stream</strong>,
+            NULL,
+            <strong>&expect_one_letter_paragraph</strong>,
+            NULL);
 }
 ]]></c>
-				By placing the assertions into the mocked function, we
-				keep the tests minimal.
-				With a bit of obvious naming, we keep the test clear too.
-			</p>
-			<p>
-				The catch with this method is that if the function
-				<code>expect_one_letter_paragraph</code> is never
-				called, then no failure will be raised in the tests.
-			</p>
+                By placing the assertions into the mocked function, we
+                keep the tests minimal.
+                With a bit of obvious naming, we keep the test clear too.
+            </p>
+            <p>
+                The catch with this method is that if the function
+                <code>expect_one_letter_paragraph</code> is never
+                called, then no failure will be raised in the tests.
+            </p>
         </section>
     </content>
     <internal>
