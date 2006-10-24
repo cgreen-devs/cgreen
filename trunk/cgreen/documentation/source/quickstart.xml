@@ -406,8 +406,8 @@ void mocked_callback(char *word, void *memo) {
 }
 
 void single_word_sentence_invokes_callback_once() {
-	expect(mocked_callback, "Word", NULL);
-	words("Word", &mocked_callback, NULL);
+    expect(mocked_callback, "Word", NULL);
+    words("Word", &mocked_callback, NULL);
 }</strong>
 
 TestSuite *words_tests() {
@@ -461,9 +461,9 @@ Failure!: words_tests -> single_word_sentence_invokes_callback_once -> Unused mo
 Failure!: words_tests -> single_word_sentence_invokes_callback_once -> Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [27]
 Completed "all_tests.c": 2 passes, 2 failures, 0 exceptions.
 ]]></sh>
-				Cgreen reports each unused parameter that was set up.
-				It expected the parameter checks to be called once each,
-				but they weren't.
+                Cgreen reports each unused parameter that was set up.
+                It expected the parameter checks to be called once each,
+                but they weren't.
                 We can easily get the test to pass by filling out the
                 implementation with...
 <c><![CDATA[
@@ -471,25 +471,25 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
     <strong>(*walker)(sentence, memo);</strong>
 }
 ]]></c>
-				Now everything should pass, although it's not much of a test yet.
-			</p>
-			<p>
+                Now everything should pass, although it's not much of a test yet.
+            </p>
+            <p>
                 That was all pretty conventional, but let's tackle the trickier
                 case of actually splitting the sentence.
                 Here is the test function we will add to <em>words_test.c</em>...
 <c><![CDATA[<strong>
 void phrase_invokes_callback_for_each_word() {
-	expect(mocked_callback, "Birds", NULL);
-	expect(mocked_callback, "of", NULL);
-	expect(mocked_callback, "a", NULL);
-	expect(mocked_callback, "feather", NULL);
-	words("Birds of a feather", &mocked_callback, NULL);
+    expect(mocked_callback, "Birds", NULL);
+    expect(mocked_callback, "of", NULL);
+    expect(mocked_callback, "a", NULL);
+    expect(mocked_callback, "feather", NULL);
+    words("Birds of a feather", &mocked_callback, NULL);
 }</strong>
 ]]></c>
-				Each call is expected in sequence.
-				Any failures, or left over calls, or extra calls, and we
-				get failures.
-				We can see all this when we run the tests...
+                Each call is expected in sequence.
+                Any failures, or left over calls, or extra calls, and we
+                get failures.
+                We can see all this when we run the tests...
 <sh><![CDATA[
 Running "main"...
 Failure!: words_tests -> phrase_invokes_callback_for_each_word -> mocked_callback(..., word, ...) is [Birds of a feather], and should be [Birds] at [words_test.c] line [32]
@@ -501,9 +501,9 @@ Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_
 Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [35]
 Completed "main": 5 passes, 7 failures, 0 exceptions.
 ]]></sh>
-				The first failure tells the story.
-				Our little <code>words()</code> function called the mock callback
-				with the entire sentence.
+                The first failure tells the story.
+                Our little <code>words()</code> function called the mock callback
+                with the entire sentence.
             </p>
             <p>
                 Although not relevant to this guide, I cannot resist getting these
@@ -521,19 +521,19 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
     free(words);</strong>
 }
 ]]></c>
-				And with some work we are rewarded with...
+                And with some work we are rewarded with...
 <sh><![CDATA[
 Running "main"...
 Completed "main": 12 passes, 0 failures, 0 exceptions.
 ]]></sh>
                 It took me three goes to get this right.
-				I firstly
+                I firstly
                 forgot the <code>+ 1</code> added on to <code>strlen()</code>,
                 then forgot to swap <code>sentence</code> for
                 <code>word</code> in the <code>(*walker)()</code> call,
-				and finally third time lucky.
-			</p>
-			<p>
+                and finally third time lucky.
+            </p>
+            <p>
                 Of course running the tests each time made these mistakes
                 very obvious.
                 It's taken me far longer to write this paragraph than
