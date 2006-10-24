@@ -77,12 +77,12 @@ char *read_paragraph(<strong>int (*read)(void *), void *stream</strong>) {
             <p>
                 By contrast we could write a simulation of the stream for each
                 test, called a &quot;server stub&quot;.
-                We can try this for an easy example.
+                We can try this as an introduction.
             </p>
             <p>
                 When the stream is empty, nothing should happen.
-                We just get <code>NULL</code>s when the stream is
-                exhausted.
+                We just get <code>NULL</code> from <code>read_paragraph</code>
+				when the stream is exhausted.
 <c><![CDATA[
 static <strong>int empty_stream(void *stream) {
     return EOF;
@@ -105,8 +105,8 @@ TestSuite *stream_tests() {
                 This would mean messing around with static variables and counters
                 that are reset for each test.
                 That's a lot of clutter.
-                Cgreen handles this clutter for us.
-                It does it by letting us write a programmable function.
+                Cgreen handles this clutter for us
+                by letting us write a programmable function.
             </p>
             <p>
                 We start by creating a <code>mock_stream()</code>...
@@ -118,63 +118,43 @@ static int mock_stream(void *stream) {
 ]]></c>
                 Slightly longer that our trivial server stub above, but we
                 can reuse this in test after test.
-            </p>
-            <p>
+			</p>
+			<p>
+				For our simple stub we just tell it to always return
+				<code>EOF</code>...
+<c><![CDATA[
+static void reading_lines_from_empty_stream_gives_null() {
+	always_mock(mock_stream, EOF, NULL);
+    assert_equal(read_paragraph(<strong>&mock_stream, NULL</strong>), NULL);
+}
+]]></c>
+				The <code>always_mock()</code> macro takes as arguments the
+				function name, the return value, and then the expected calling
+				parameters.
+				So we have told <code>mock_stream()</code> to always return
+				<code>EOF</code> when called, and to always throw an error
+				when not called with <code>NULL</code>.
             </p>
             <p>
                 If we want to test a one character line, we have to send
-                the terminating <code>EOF</code> or <code><![CDATA["\n"]]></code>.
+                the terminating <code>EOF</code> or <code><![CDATA["\n"]]></code>
+				as well as the single character.
                 Otherwise our code will loop forever, giving an infinite
                 line of just one character.
             </p>
             <p>
-                Here is a way we could do this...
+                Here is how we could do this...
 <c><![CDATA[
-<strong>static int call_count = 0;
-
-int one_character_stream(void *stream) {
-    if (call_count++ == 0) {
-        return 'a';
-    } else {
-        return EOF;
-    }
-}</strong>
-
-void reading_lines_from_one_character_gives_one_character_line() {
-    char *line = read_paragraph(<strong>&one_character_stream</strong>, NULL);<strong>
-    assert_string_equal("a", line, NULL);</strong>
+void one_character_stream_gives_one_character_line() {
+	mock(mock_stream, 'a', NULL);
+	mock(mock_stream, EOF, NULL);
+    char *line = read_paragraph(&mock_stream, NULL);<strong>
+    assert_string_equal("a", line);</strong>
     free(line);
 }
 ]]></c>
-                We simply keep track of the number of calls in the
-                callback.
-            </p>
-            <p>
-                There are a bunch of problems with this:
-                <ul>
-                    <li>It's tedious.</li>
-                    <li>It's error prone with many switches</li>
-                    <li>We cannot reuse this function in other tests without
-                        resetting the counter each time.</li>
-                </ul>
-                To make our lives much easier, Cgreen includes a sequence
-                concept to handle all of the switching for us.
-            </p>
-        </section>
-        <section name="stubbing" title="Stubbing with sequences">
-            <p>
-                Here is our callback test rewritten to use Cgreen sequences...
-<c><![CDATA[
-int one_character_stream(void *stream) {<strong>
-    return integer_sequence('a', EOF);</strong>
-}
 
-void reading_lines_from_one_character_gives_one_character_line() {
-    char *line = read_paragraph(&one_character_stream, NULL);
-    assert_string_equal("a", line, NULL);
-    free(line);
-}
-]]></c>
+
                 The <code>integer_sequence()</code> call is a macro that
                 does two things:
                 <ol>
