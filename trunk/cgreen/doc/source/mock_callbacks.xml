@@ -426,6 +426,11 @@ void one_character_is_made_into_a_one_letter_paragraph() {<strong>
                     <tr><td><code>always_mock(function, result, arguments...)</code></td><td>Combines <code>always_return()</code> and <code>always_expect()</code>.</td></tr>
                 </table>
             </p>
+            <p>
+                It's about time we actually ran our test...
+<sh><![CDATA[
+]]></sh>
+            </p>
         </section>
     </content>
     <internal>
