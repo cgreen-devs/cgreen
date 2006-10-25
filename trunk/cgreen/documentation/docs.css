@@ -2,16 +2,21 @@ body {
     padding-left: 3%;
     padding-right: 3%;
 }
+h1, h2, h3 {
+	font-family: sans-serif;
+}
 pre {
-    font-family: courier;
+    font-family: courier, typewriter, monospace;
     font-size: 80%;
     border: 1px solid;
-    background-color: #cccccc;
+	border-color: #999966;
+    background-color: #ffffcc;
     padding: 5px;
-    margin-left: 5%;
-    margin-right: 8%;
+    margin-left: 20px;
+    margin-right: 40px;
 }
 .code, .new_code, pre.new_code {
+    font-family: courier, typewriter, monospace;
     font-weight: bold;
 }
 div.copyright {
@@ -60,9 +65,6 @@ table {
     margin-left: 5%;
     margin-right: 5%;
 }
-td {
-    font-size: 80%;
-}
 .shell {
     color: white;
 }
@@ -73,7 +75,8 @@ pre.shell {
     margin: 5px;
     margin-left: 20px;
     margin-right: 40px;
-    background-color: black;
+    background-color: #000100;
+	color: #99ff99;
 }
 pre.file {
     color: black;
