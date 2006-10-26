@@ -7,7 +7,7 @@ h1, h2, h3 {
 }
 pre {
     font-family: courier, typewriter, monospace;
-    font-size: 80%;
+    font-size: 90%;
     border: 1px solid;
 	border-color: #999966;
     background-color: #ffffcc;
@@ -65,6 +65,9 @@ table {
     margin-left: 5%;
     margin-right: 5%;
 }
+td {
+    font-size: 90%;
+}
 .shell {
     color: white;
 }
@@ -77,6 +80,7 @@ pre.shell {
     margin-right: 40px;
     background-color: #000100;
 	color: #99ff99;
+    font-size: 90%;
 }
 pre.file {
     color: black;
@@ -87,6 +91,7 @@ pre.file {
     margin-left: 20px;
     margin-right: 40px;
     background-color: white;
+    font-size: 90%;
 }
 form.demo {
     background-color: lightgray;

@@ -42,7 +42,7 @@ char *read_paragraph(<strong>int (*read)(void *), void *stream</strong>) {
     int ch;
     while (<strong>(ch = (*read)(stream)) != EOF</strong>) {
         if (++length > buffer_size) {
-            size += 100;
+            buffer_size += 100;
             buffer = realloc(buffer, buffer_size + 1);
         }
         if ((buffer[length] = ch) == '\n') {
@@ -145,6 +145,8 @@ static void reading_lines_from_empty_stream_gives_null() {
             <p>
                 Let's see if our production code actually works...
 <sh><![CDATA[
+Running "main"...
+Completed "main": 1 pass, 0 failures, 0 exceptions.
 ]]></sh>
             </p>
             <p>
