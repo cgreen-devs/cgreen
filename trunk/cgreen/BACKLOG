@@ -6,3 +6,5 @@ Allow multiple setup() and teardown() as a stack.
 Add a coloured text reporter.
 Investigate adding a SmartFrog reporter.
 longjmp() trap for internal errors.
+Sort out counting glitches, especially in expect_never().
+Add expect_call_count().
