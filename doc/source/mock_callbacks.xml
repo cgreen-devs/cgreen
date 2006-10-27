@@ -109,19 +109,21 @@ TestSuite *stream_tests() {
                 That's a lot of clutter.
             </p>
             <p>
-                 Cgreen handles this clutter for us
+                Cgreen handles this clutter for us
                 by letting us write a single programmable function.
             </p>
+        </section>
+        <section name="stubs" title="Record and playback">
             <p>
                 We can redo our example by creating a <code>stub_stream()</code> function
                 (any name will do)...
-<c><![CDATA[<strong>
-static int stub_stream(void *stream) {
+<c><![CDATA[
+<strong>static int stub_stream(void *stream) {
     return (int)stubbed_result();
 }</strong>
 ]]></c>
                 Hardly longer that our trivial server stub above,
-                tt is just a macro to generate a return value,
+                it is just a macro to generate a return value,
                 but we can reuse this in test after test.
             </p>
             <p>
@@ -510,6 +512,8 @@ static void no_line_endings_makes_one_paragraph() {<strong>
     by_paragraph(&reader, NULL, &writer, NULL);
 }
 ]]></c>
+                A more intelligent programmer than me would place all
+                these calls in a loop.
                 Next, checking an output sequence...
 <c><![CDATA[
 static void line_endings_generate_separate_paragraphs() {
@@ -558,6 +562,11 @@ Completed "main": 39 passes, 2 failures, 0 exceptions.
                 <em>Cgreen</em> is being rather zealous here as it's reporting
                 an error for each parameter that was unexpected.
                 In fact we have just one unexpected call to <code>writer()</code>.
+                Counting glitches will hopefully be fixed in post alpha releases.
+            </p>
+            <p>
+                Obviously blank lines are still being dispatched to the
+                <code>writer()</code>.
                 Once this is pointed out, the fix is obvious...
 <c><![CDATA[
 void by_paragraph(int (*read)(void *), void *in, void (*write)(void *, char *), void *out) {

@@ -199,10 +199,10 @@ gcc -c all_tests.c
 gcc words_test.o all_tests.o cgreen/cgreen.a -o all_tests
 </sh>
                 ...and executing the result gives the familiar...
-<sh>
+<sh><![CDATA[
 Running "main"...
 Completed "main": 0 passes, 0 failures, 0 exceptions.
-</sh>
+]]></sh>
                 All this scaffolding is pure overhead, but from now on adding tests
                 will be a lot easier.
             </p>
@@ -255,7 +255,8 @@ gcc all_tests.o words_test.o words.o cgreen/cgreen.a -o all_tests
                 ...and we get the more useful response...
 <sh><![CDATA[
 Running "main"...
-Failure!: words_test -> word_count_returned_from_split -> [0] should be [4] at [words_test.c] line [8]
+Failure!: words_test -> word_count_returned_from_split ->
+        [0] should be [4] at [words_test.c] line [8]
 Completed "main": 0 passes, 1 failure, 0 exceptions.
 ]]></sh>
                 The breadcrumb trail is the nesting of the tests.
@@ -316,7 +317,8 @@ TestSuite *words_tests() {
                 Sure enough, we get a failure...
 <sh><![CDATA[
 Running "main"...
-Failure!: words_test -> spaces_should_be_converted_to_zeroes -> [-32] should be [0] at [words_test.c] line [16]
+Failure!: words_test -> spaces_should_be_converted_to_zeroes ->
+        [-32] should be [0] at [words_test.c] line [16]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
                 Not surprising given that we haven't written the code yet.
@@ -338,7 +340,8 @@ int split_words(char *sentence) {
                 ...reveals our previous hack...
 <sh><![CDATA[
 Running "main"...
-Failure!: words_test -> word_count_returned_from_split -> [2] should be [4] at [words_test.c] line [8]
+Failure!: words_test -> word_count_returned_from_split ->
+        [2] should be [4] at [words_test.c] line [8]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
                 Our earlier test now fails, because we have affected
@@ -457,8 +460,10 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
                 This gives us the expected failing tests...
 <sh><![CDATA[
 Running "all_tests.c"...
-Failure!: words_tests -> single_word_sentence_invokes_callback_once -> Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [27]
-Failure!: words_tests -> single_word_sentence_invokes_callback_once -> Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [27]
+Failure!: words_tests -> single_word_sentence_invokes_callback_once ->
+        Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [27]
+Failure!: words_tests -> single_word_sentence_invokes_callback_once ->
+        Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [27]
 Completed "all_tests.c": 2 passes, 2 failures, 0 exceptions.
 ]]></sh>
                 Cgreen reports each unused parameter that was set up.
@@ -492,13 +497,20 @@ void phrase_invokes_callback_for_each_word() {
                 We can see all this when we run the tests...
 <sh><![CDATA[
 Running "main"...
-Failure!: words_tests -> phrase_invokes_callback_for_each_word -> mocked_callback(..., word, ...) is [Birds of a feather], and should be [Birds] at [words_test.c] line [32]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [33]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [33]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [34]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [34]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [35]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word -> Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [35]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+        mocked_callback(..., word, ...) is [Birds of a feather], and should be [Birds] at [words_test.c] line [32]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+        Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [33]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+        Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [33]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+        Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [34]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+        Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [34]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+        Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [35]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+        Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [35]
 Completed "main": 5 passes, 7 failures, 0 exceptions.
 ]]></sh>
                 The first failure tells the story.
@@ -555,7 +567,7 @@ Completed "main": 12 passes, 0 failures, 0 exceptions.
             <a href="#tdd">Test driven development example</a> with Cgreen.
         </link>
         <link>
-            Simulating interactions with <a href="#mock">mock callbacks</a>.
+            Interaction testing with <a href="#mock">mock callbacks</a>.
         </link>
     </internal>
     <external>
@@ -563,7 +575,7 @@ Completed "main": 12 passes, 0 failures, 0 exceptions.
             The <a href="http://sourceforge.net/projects/cgreen">Cgreen SourceForge page</a>.
         </link>
         <link>
-            Unit testing was popularised by <a href="http://extremeprogramming.org">eXtreme Programming</a>.
+            Unit testing was popularised by <a href="http://extremeprogramming.org/">eXtreme Programming</a>.
         </link>
     </external>
     <meta>

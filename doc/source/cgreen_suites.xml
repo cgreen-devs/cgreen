@@ -153,7 +153,8 @@ static void strlen_of_hello_should_be_five() {
                 ...we'll get the helpful message...
 <sh><![CDATA[
 Running "main"...<strong>
-Failure!: strlen_of_hello_should_be_five -> [5] shold be [4] at [strlen_test.c] line [6]</strong>
+Failure!: strlen_of_hello_should_be_five ->
+        [5] shold be [4] at [strlen_test.c] line [6]</strong>
 Completed "main": 0 passes, 1 failure, 0 exceptions.
 ]]></sh>
                 Cgreen appends the location of the test failure to

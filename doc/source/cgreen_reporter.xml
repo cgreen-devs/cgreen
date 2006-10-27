@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<page title="Cgreen Quickstart Guide" here="cgreen">
+    <long_title>
+		Changing the reporting mechanism of Cgreen.
+    </long_title>
+    <content>
+        <section name="base" title="The TestReporter structure">
+            <p>
+				The reporter in Cgreen is a pseudo class that looks
+				something like...
+<c><![CDATA[
+typedef struct _TestReporter TestReporter;
+struct _TestReporter {
+    void (*destroy)(TestReporter *);
+	void (*start)(TestReporter *, const char *name);
+	void (*finish)(TestReporter *, const char *name);
+    void (*show_pass)(TestReporter *, const char *, int, const char *, va_list);
+    void (*show_fail)(TestReporter *, const char *, int, const char *, va_list);
+    void (*show_incomplete)(TestReporter *, const char *);
+    void (*assert_true)(TestReporter *, const char *, int, int, const char *, ...);
+	int passes;
+	int failures;
+	int exceptions;
+	void *breadcrumb;
+	int ipc;
+	void *memo;
+};
+]]></c>
+				The first block are the methods that can be overridden.
+			</p>
+        </section>
+    </content>
+    <internal>
+        <link>
+            What is the <a href="#what">Cgreen unit tester</a>?
+        </link>
+        <link>
+            <a href="#install">Installing Cgreen</a> and testing the installation.
+        </link>
+        <link>
+            <a href="#tdd">Test driven development example</a> with Cgreen.
+        </link>
+        <link>
+            Interaction testing with <a href="#mock">mock callbacks</a>.
+        </link>
+    </internal>
+    <external>
+        <link>
+            The <a href="http://sourceforge.net/projects/cgreen">Cgreen SourceForge page</a>.
+        </link>
+        <link>
+            Unit testing was popularised by <a href="http://extremeprogramming.org/">eXtreme Programming</a>.
+        </link>
+    </external>
+    <meta>
+        <keywords>
+        </keywords>
+    </meta>
+</page>
