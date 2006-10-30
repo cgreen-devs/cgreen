@@ -1,34 +1,205 @@
 <?xml version="1.0"?>
 <page title="Cgreen Quickstart Guide" here="cgreen">
     <long_title>
-		Changing the reporting mechanism of Cgreen.
+        Changing the reporting mechanism of Cgreen.
     </long_title>
     <content>
-        <section name="base" title="The TestReporter structure">
+        <section name="extending" title="Replacing the reporter">
+			<p>
+				In every test suite so far, we have run the tests
+				with this line...
+<c><![CDATA[
+return run_test_suite(our_tests(), <strong>create_text_reporter()</strong>);
+]]></c>
+				We can change the reporting mechanism just by changing this
+				method.
+				Here is the code for <code>create_text_reporter()</code>...
+<c><![CDATA[
+TestReporter *create_text_reporter() {
+    TestReporter *reporter = create_reporter();
+	reporter->start = &text_reporter_start;
+	reporter->finish = &text_reporter_finish;
+	reporter->show_fail = &show_fail;
+	reporter->show_incomplete = &show_incomplete;
+    return reporter;
+}
+]]></c>
+				The <code>TestReporter</code> structure contains function
+				pointers that control the reporting.
+				When called from <code>create_reporter()</code> constructor, these
+				pointers are set up with functions that display nothing.
+				The text reporter code replaces these with something more
+				dramatic, and then returns a pointer to this new object.
+				Thus the <code>create_text_reporter()</code> function effectively
+				extends the object from <code>create_reporter()</code>.
+			</p>
+			<p>
+				The text reporter only outputs content at the start of the first test,
+				at the end of the test run to display the results, when a failure
+				occours, and when a test fails to complete.
+				A quick look at the <em>text_reporter.c</em> file in <em>Cgreen</em>
+				reveals that the overrides just output a message and
+				chain to the versions in <em>reporter.h</em>.
+			</p>
+			<p>
+				To change the reporting mechanism ourselves, we just have to know a little
+				about the methods in the <code>TestReporter</code> structure.
+			</p>
+		</section>
+	    <section name="base" title="The TestReporter structure">
             <p>
-				The reporter in Cgreen is a pseudo class that looks
-				something like...
+                The Cgreen <code>TestReporter</code> is a pseudo class that looks
+                something like...
 <c><![CDATA[
 typedef struct _TestReporter TestReporter;
 struct _TestReporter {
     void (*destroy)(TestReporter *);
-	void (*start)(TestReporter *, const char *name);
-	void (*finish)(TestReporter *, const char *name);
+    void (*start)(TestReporter *, const char *);
+    void (*finish)(TestReporter *, const char *);
     void (*show_pass)(TestReporter *, const char *, int, const char *, va_list);
     void (*show_fail)(TestReporter *, const char *, int, const char *, va_list);
     void (*show_incomplete)(TestReporter *, const char *);
     void (*assert_true)(TestReporter *, const char *, int, int, const char *, ...);
-	int passes;
-	int failures;
-	int exceptions;
-	void *breadcrumb;
-	int ipc;
-	void *memo;
+    int passes;
+    int failures;
+    int exceptions;
+    void *breadcrumb;
+    int ipc;
+    void *memo;
 };
 ]]></c>
-				The first block are the methods that can be overridden.
+                The first block are the methods that can be overridden.
+				<dl>
+					<dt><code>void (*destroy)(TestReporter *)</code></dt>
+					<dd>
+						This is the destructor for the default structure.
+						If this is overridden, then the overriding function
+						must call <code>destroy_reporter(TestReporter *reporter)</code>
+						to finish the clean up.
+					</dd>
+					<dt><code>void (*start)(TestReporter *, const char *)</code></dt>
+					<dd>
+						The first of the callbacks.
+						At the start of each test suite <em>Cgreen</em> will
+						call this method on the reporter with the name of the
+						suite being entered.
+						The default version keeps track of the stack of tests
+						in the <code>breadcrumb</code> pointer of
+						<code>TestReporter</code>.
+						If you make use of the breadcrumb functions, as the defaults
+						do, then you will need to call <code>reporter_start()</code> to
+						keep the book keeping in sync.
+					</dd>
+					<dt><code>void (*finish)(TestReporter *, const char *)</code></dt>
+					<dd>
+						The counterpart to the <code>(*start)()</code> call called
+						on leaving the test suite.
+						It needs to be chained to the <code>reporter_finish()</code>
+						to keep track of the breadcrumb book keeping.
+						The text reporter uses the state of the breadcrumb to decide
+						if it is ending teh top level test.
+						If so, it prints the familiar summary of passes and fails.
+					</dd>
+					<dt><code>void (*show_pass)(TestReporter *, const char *, int, const char *, va_list)</code></dt>
+					<dd>
+						This method is initially empty, so there is no need to chain
+						the call to any other function.
+						Besides the pointer to the reporter structure, <em>Cgreen</em>
+						also passes the file name of the test, the line number of failed
+						assertion, the message to show and any additional parameters to
+						substitute into the message.
+						The message comes in as <code>printf()</code> style format string,
+						and so the variable argument list should match the substitutions.
+					</dd>
+					<dt><code>void (*show_fail)(TestReporter *, const char *, int, const char *, va_list)</code></dt>
+					<dd>
+						The partner of <code>show_pass()</code>, and the one you'll likely
+						overload first.
+					</dd>
+					<dt><code>void (*show_incomplete)(TestReporter *, const char *)</code></dt>
+					<dd>
+						When a test fails to complete, this is the handler that is called.
+						As it's an unexpected outcome, no message is received, but
+						we do get the name of the test.
+						The text reporter combines this with the breadcrumb to produce the
+						exception report.
+					</dd>
+					<dt><code>void (*assert_true)(TestReporter *, const char *, int, int, const char *, ...)</code></dt>
+					<dd>
+						This is not normally overridden and is really internal.
+						It is the raw entry point for the test messages from the test suite.
+						By default it dispatches teh call to either <code>show_pass()</code>
+						or <code>show_fail()</code>.
+					</dd>
+				</dl>
+				The second block is simply resources and book keeping that the reporter
+				can use to liven up the messages...
+				<dl>
+					<dt><code>passes</code></dt>
+					<dd>The number of passes so far.</dd>
+					<dt><code>failures</code></dt>
+					<dd>The number of failures generated so far.</dd>
+					<dt><code>exceptions</code></dt>
+					<dd>The number of test functions that have failed to complete so far.</dd>
+					<dt><code>breadcrumb</code></dt>
+					<dd>This is a pointer to the list of test names in the stack.</dd>
+				</dl>
+				The <code>breadcrumb</code> pointer is different and needs a
+				little explanation.
+				Basically it is a stack, analagous to the breadcrumb trail you
+				see on websites.
+				Everytime the <code>start()</code> handler is invoked, the
+				name is placed in this stack.
+				When the <code>finish()</code> message handler is invoked, a
+				name is popped off.
+			</p>
+			<p>
+				There are a bunch of utility functions in <em>cgreen/breadcrumb.h</em>
+				that can read the state of this stack.
+				Most useful are <code>get_current_from_breadcrumb()</code> which
+				takes the breadcrumb pointer and returns the curent test name,
+				and <code>get_breadcrumb_depth()</code> which gives the current
+				depth of the stack.
+				A depth of zero means that the test run has finished.
+            </p>
+			<p>
+				If you need to traverse all the names in the breadcrumb,
+				then you can call <code>walk_breadcrumb()</code>.
+				Here is the full signature...
+<c><![CDATA[
+void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *), void *memo);
+]]></c>
+				The <code>void (*walker)(const char *, void *)</code> is a callback
+				that will be passed the name of the test suite for each
+				level of nesting.
+				It is also poassed the <code>memo</code> pointer that was
+				passed to the <code>walk_breadcrumb()</code> call.
+				You can use this pointer for anything you want, as
+				all <em>Cgreen</em> does is pass it from call to call.
+				This is so aggregate information can be kept track of whilst
+				still being reentrant.
+			</p>
+			<p>
+				The last parts of the <code>TestReporter</code> structure are...
+				<dl>
+					<dt><code>ipc</code></dt>
+					<dd>
+						This is an internal structure for handling the messaging between
+						reporter and test suite.
+						You shouldn't touch this.
+					</dd>
+					<dt><code>memo</code></dt>
+					<dd>
+						By contrast, this is a spare pointer for your own expansion.
+					</dd>
+				</dl>
 			</p>
         </section>
+	    <section name="xml" title="An example XML reporter">
+			<p>
+				Let's make things real with an example.
+			</p>
+		</section>
     </content>
     <internal>
         <link>

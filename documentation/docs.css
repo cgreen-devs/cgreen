@@ -100,3 +100,7 @@ form.demo {
     padding: 10px;
     margin-right: 40%;
 }
+dl, dd {
+	margin:  10px;
+	margin-left:  30px;
+}
