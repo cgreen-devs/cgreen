@@ -8,8 +8,8 @@ typedef struct _TestContext TestContext;
 typedef struct _TestReporter TestReporter;
 struct _TestReporter {
     void (*destroy)(TestReporter *);
-	void (*start)(TestReporter *, const char *name);
-	void (*finish)(TestReporter *, const char *name);
+	void (*start)(TestReporter *, const char *);
+	void (*finish)(TestReporter *, const char *);
     void (*show_pass)(TestReporter *, const char *, int, const char *, va_list);
     void (*show_fail)(TestReporter *, const char *, int, const char *, va_list);
     void (*show_incomplete)(TestReporter *, const char *);
