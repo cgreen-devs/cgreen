@@ -198,6 +198,57 @@ void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *
 	    <section name="xml" title="An example XML reporter">
 			<p>
 				Let's make things real with an example.
+				Suppose we want to send the output from <em>Cgreen</em> in XML format,
+				say for storing in a repository or for sending across the network.
+			</p>
+			<p>
+				Suppose also that we have come up with the following format...
+<pre><![CDATA[
+<?xml?>
+<test name="Top Level">
+	<test name="A Group">
+		<test name="a_test_that_passes">
+		</test>
+		<test name="a_test_that_fails">
+			<fail>
+				<message><![CDATA[A failure]]>]]<![CDATA[></message>
+				<location file="test_as_xml.c" line="6"/>
+			</fail>
+		</test>
+	</test>
+</test>
+]]></pre>
+				In other words a simple nesting of tests with only failures
+				encoded.
+				The absence of failure is a pass.
+			</p>
+			<p>
+				Here is a test script that we can use to construct the
+				above output...
+<c><![CDATA[
+#include "cgreen/cgreen.h"
+
+void <strong>a_test_that_passes()</strong> {
+	assert_true(1);
+}
+
+void <strong>a_test_that_fails()</strong> {
+	assert_true_with_message(0, <strong>"A failure"</strong>);
+}
+
+void create_test_group() {
+	TestSuite *suite = <strong>create_named_test_suite("A Group")</strong>;
+	add_test(suite, a_test_that_passes);
+	add_test(suite, a_test_that_fails);
+	return suite;
+}
+
+int main(int argc, char **argv) {
+	TestSuite *suite = <strong>create_named_test_suite("Top Level")</strong>;
+	add_suite(suite, create_test_group());
+	return run_suite(suite, <strong>create_text_reporter()</strong>);
+}
+]]></c>
 			</p>
 		</section>
     </content>
