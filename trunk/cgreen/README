@@ -26,8 +26,8 @@ streamed to the reporter psuedo-class, one that is easily
 overridden by the end user.
 
 The other main extra feature is the support for writing mock
-callbacks. This includes counting invocations, and generating
-sequences for return values or parameter assertions.
+callbacks. This includes generating sequences for return values
+or parameter expectations.
 
 There is only one make file of signficance, and that's in the
 root directory. Running make will build cgreen.a and cgreen.h

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <page title="Building Cgreen test suites" here="cgreen">
     <long_title>
-        Creating C test suites using the Cgreen unit testing framework
+        Tutorial: C test suites using the Cgreen unit testing framework
     </long_title>
     <content>
         <p>
@@ -11,6 +11,10 @@
             Even though the test suites are created by software developers,
             they are intended to be human readable C code, as part of
             their function is an executable specification.
+            Used in this way, the test harness delivers constant quality assurance.
+        </p>
+        <p>
+            In other words you'll get less bugs.
         </p>
         <section name="writing" title="Writing basic tests">
             <p>
@@ -635,7 +639,7 @@ TestSuite *connection_fixture(TestSuite *suite) {</strong>
     </content>
     <internal>
         <link>
-            Writing <a href="#writing">Cgreen tests</a>.
+            Writing a <a href="#writing">Cgreen unit test</a>.
         </link>
         <link>
             The <a href="#fixtures">setup() and teardown()</a> fixtures.
@@ -644,7 +648,7 @@ TestSuite *connection_fixture(TestSuite *suite) {</strong>
             <a href="#fork">Each test in it's own process</a>.
         </link>
         <link>
-            Creating <a href="#suites">composite test suites</a>.
+            Creating a <a href="#suites">composite test harness</a>.
         </link>
     </internal>
     <external>
@@ -664,7 +668,9 @@ TestSuite *connection_fixture(TestSuite *suite) {</strong>
             automated testing, c programming, c tools, c unit tests, unit testing in c,
             check unit tester, test coverage, TDD, extreme programming, agile development,
             tdd in C, c regression testing, cunit, cppunit, c unit testing frameworks, sourceforge,
-            open source, open source framework, gnu licence, lgpl
+            open source, open source framework, gnu licence, lgpl, software testing,
+            executable specification, software requirements, quality assurance,
+            automated software testing for c development teams, software quality assurance
         </keywords>
     </meta>
 </page>
