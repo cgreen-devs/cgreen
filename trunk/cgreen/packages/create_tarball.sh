@@ -1,6 +1,8 @@
 #!/bin/sh
 cd ../..
-tar -zcf cgreen.tar.gz cgreen/LICENSE \
+tar -zcf cgreen_`cat cgreen/VERSION`.tar.gz \
+                         cgreen/LICENSE \
+                         cgreen/VERSION \
                          cgreen/makefile \
                          cgreen/*.c \
                          cgreen/*.h \
