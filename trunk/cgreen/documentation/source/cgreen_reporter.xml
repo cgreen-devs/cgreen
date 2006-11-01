@@ -251,16 +251,16 @@ int main(int argc, char **argv) {
 ]]></c>
                 The text reporter is used just to confirm that everything
                 is working.
-                So far it is...
+                So far it is.
 <sh><![CDATA[
 Running "Top Level"...
 Failure!: A Group -> a_test_that_fails -> A failure at [test_as_xml.c] line [8]
 Completed "Top Level": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
             </p>
-			<p>
-				Our first move is to switch the reporter from text, to our
-				not yet written XML version...
+            <p>
+                Our first move is to switch the reporter from text, to our
+                not yet written XML version...
 <c><![CDATA[
 #include "cgreen/cgreen.h<strong>
 #include "xml_reporter.h"</strong>
@@ -273,19 +273,246 @@ int main(int argc, char **argv) {
     return run_test_suite(suite, <strong>create_xml_reporter()</strong>);
 }
 ]]></c>
-				We'll start the ball rolling with the <em>xml_reporter.h</em>
-				header file...
+                We'll start the ball rolling with the <em>xml_reporter.h</em>
+                header file...
 <c><![CDATA[
 #ifndef _XML_REPORTER_HEADER_
 #define _XML_REPORTER_HEADER_
-
+<strong>
 #include "cgreen/reporter.h"
 
-TestReporter *create_xml_reporter();
+TestReporter *create_xml_reporter();</strong>
 
 #endif
 ]]></c>
-			</p>
+                ...and the simplest possible reporter in <em>reporter.c</em>.
+<c><![CDATA[
+#include "xml_reporter.h"
+#include "cgreen/reporter.h"
+
+TestReporter *create_xml_reporter() {
+    TestReporter *reporter = create_reporter();
+    return reporter;
+}
+]]></c>
+                One that outputs nothing.
+<sh><![CDATA[
+gcc -c test_as_xml.c
+gcc -c xml_reporter.c
+gcc xml_reporter.o test_as_xml.o cgreen/cgreen.a -o xml
+./xml
+]]></sh>
+                Yep, nothing.
+            </p>
+            <p>
+                Let's add the outer test tags first, so that we can see
+                <em>Cgreen</em> navigating the test suite...
+<c><![CDATA[
+#include "xml_reporter.h"
+#include "cgreen/reporter.h"<strong>
+#include <stdio.h>
+
+static void xml_reporter_start(TestReporter *reporter, const char *name);
+static void xml_reporter_finish(TestReporter *reporter, const char *name);</strong>
+
+TestReporter *create_xml_reporter() {
+    TestReporter *reporter = create_reporter();<strong>
+    reporter->start = &xml_reporter_start;
+    reporter->finish = &xml_reporter_finish;</strong>
+    return reporter;
+}
+<strong>
+static void xml_reporter_start(TestReporter *reporter, const char *name) {
+    printf("<test name=\"%s\">\n", name);
+    reporter_start(reporter, name);
+}
+
+static void xml_reporter_finish(TestReporter *reporter, const char *name) {
+    reporter_finish(reporter, name);
+    printf("</test>\n");
+}</strong>
+]]></c>
+                Although chaining to the underlying <code>reporter_start()</code>
+                and <code>reporter_finish()</code> functions is optional, I want to
+                make use of some of the facilities later.
+            </p>
+            <p>
+                Our output meanwhile, is making it's first tentative steps...
+<sh><![CDATA[
+<test name="Top Level">
+<test name="A Group">
+<test name="a_test_that_passes">
+</test>
+<test name="a_test_that_fails">
+</test>
+</test>
+</test>
+]]></sh>
+                We don't want a passing message, so the <code>show_fail()</code> function is all we
+                need...
+<c><![CDATA[
+...<strong>
+static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);</strong>
+
+TestReporter *create_xml_reporter() {
+    TestReporter *reporter = create_reporter();
+    reporter->start = &xml_reporter_start;
+    reporter->finish = &xml_reporter_finish;<strong>
+    reporter->show_fail = &xml_show_fail;</strong>
+    return reporter;
+}
+
+...
+<strong>
+static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+    printf("<fail>\n");
+    printf("\t<message><![CDATA[");
+    vprintf(message, arguments);
+    printf("]]>]]&gt;<![CDATA[</message>\n");
+    printf("\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
+    printf("</fail>\n");
+}</strong>
+]]></c>
+                We have to use <code>vprintf()</code> to handle the variable argument
+                list passed to us.
+                This will probably mean including the <em>stdarg.h</em> header
+                as well as <em>stdio.h</em>.
+            </p>
+            <p>
+                This gets us pretty close to what we want...
+<sh><![CDATA[
+<test name="Top Level">
+<test name="A Group">
+<test name="a_test_that_passes">
+</test>
+<test name="a_test_that_fails">
+<fail>
+    <message><![CDATA[A failure]]>]]&gt;<![CDATA[</message>
+    <location file="test_as_xml.c" line="9"/></fail>
+</test>
+</test>
+</test>
+]]></sh>
+                For completeness we should add a tag for an incomplete test.
+                We'll output this as a failure, athough we don't get a location this
+                time...
+<c><![CDATA[
+<strong>static void xml_show_incomplete(TestReporter *reporter, const char *name) {
+    printf("<fail>\n");
+    printf("\t<message><![CDATA[Failed to complete]]>]]&gt;<![CDATA[</message>\n");
+    printf("</fail>\n");
+}</strong>
+]]></c>
+                All that's left then is the XML declaration and the thorny issue of
+                indenting.
+                Although the indenting is not strictly necessary, it would make the
+                output a lot more readable.
+            </p>
+            <p>
+                The test depth is kept track of for us with the <code>breadcrumb</code>
+                object in the <code>TestReporter</code> structure.
+                We'll add an <code>indent()</code> function that outputs the
+                correct number of tabs...
+<c><![CDATA[
+static indent(TestReporter *reporter) {
+    int depth = <strong>get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb)</strong>;
+    while (depth-- > 0) {
+        printf("\t");
+    }
+}
+]]></c>
+                The <code>get_breadcrumb_depth()</code> function just gives the
+                current test depth.
+                As that is just the number of tabs to output, the implementation
+                is trivial.
+            </p>
+            <p>
+                We can then use this function in the rest of the code.
+                Here is the complete listing...
+<c><![CDATA[
+#include "xml_reporter.h"
+#include "cgreen/reporter.h"
+#include "cgreen/breadcrumb.h"
+#include <stdio.h>
+#include <stdarg.h>
+<strong>
+static indent(TestReporter *reporter);</strong>
+static void xml_reporter_start(TestReporter *reporter, const char *name);
+static void xml_reporter_finish(TestReporter *reporter, const char *name);
+static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
+static void xml_show_incomplete(TestReporter *reporter, const char *name);
+
+TestReporter *create_xml_reporter() {
+    TestReporter *reporter = create_reporter();
+    reporter->start = &xml_reporter_start;
+    reporter->finish = &xml_reporter_finish;
+    reporter->show_fail = &xml_show_fail;
+    reporter->show_incomplete = &xml_show_incomplete;
+    return reporter;
+}
+<strong>
+static indent(TestReporter *reporter) {
+    int depth = get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb);
+    while (depth-- > 0) {
+        printf("\t");
+    }
+}</strong>
+
+static void xml_reporter_start(TestReporter *reporter, const char *name) {<strong>
+    if (get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb) == 0) {
+        printf("<?xml?>\n");
+    }
+    indent(reporter);</strong>
+    printf("<test name=\"%s\">\n", name);
+    reporter_start(reporter, name);
+}
+
+static void xml_reporter_finish(TestReporter *reporter, const char *name) {
+    reporter_finish(reporter, name);
+    <strong>indent(reporter);</strong>
+    printf("</test>\n");
+}
+
+static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+    <strong>indent(reporter);</strong>
+    printf("<fail>\n");
+    <strong>indent(reporter);</strong>
+    printf("\t<message><![CDATA[");
+    vprintf(message, arguments);
+    printf("]]>]]&gt;<![CDATA[</message>\n");
+    <strong>indent(reporter);</strong>
+    printf("\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
+    <strong>indent(reporter);</strong>
+    printf("</fail>\n");
+}
+
+static void xml_show_incomplete(TestReporter *reporter, const char *name) {
+    <strong>indent(reporter);</strong>
+    printf("<fail>\n");
+    <strong>indent(reporter);</strong>
+    printf("\t<message><![CDATA[Failed to complete]]>]]&gt;<![CDATA[</message>\n");
+    <strong>indent(reporter);</strong>
+    printf("</fail>\n");
+}
+]]></c>
+                And finally the desired output...
+<sh><![CDATA[
+<?xml?>
+<test name="Top Level">
+    <test name="A Group">
+        <test name="a_test_that_passes">
+        </test>
+        <test name="a_test_that_fails">
+            <fail>
+                <message><![CDATA[A failure]]>]]&gt;<![CDATA[</message>
+                <location file="test_as_xml.c" line="9"/>
+            </fail>
+        </test>
+    </test>
+</test>
+]]></sh>
+                Job done.
+            </p>
         </section>
     </content>
     <internal>
