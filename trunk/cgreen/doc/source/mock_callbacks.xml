@@ -351,7 +351,7 @@ static void good_test() {
                 This gets us into the same territory as mock objects.
             </p>
         </section>
-        <section name="assertions" title="Setting expectations on mock functions">
+        <section name="mocks" title="Setting expectations on mock functions">
             <p>
                 To swap the traffic flow, we'll look at an outgoing example instead.
                 Here is the prewritten production code...
@@ -592,15 +592,24 @@ Completed "main": 38 passes, 0 failures, 0 exceptions.
     </content>
     <internal>
         <link>
-            <a href="#iteration">Simulating iterators</a> in tests.
+            The trouble with <a href="#problem">simulating iterators and streams</a> in tests.
+        </link>
+        <link>
+            Creating <a href="#stubs">server stubs</a> using Cgreen's record and playback approach.
+        </link>
+        <link>
+            <a href="#mocks">Expectations in mock functions</a> for each unit test.
         </link>
     </internal>
     <external>
         <link>
-            The <a href="http://sourceforge.net/projects/cgreen">Cgreen SourceForge page</a>.
+            The <a href="http://sourceforge.net/projects/cgreen">Cgreen Sourceforge page</a>.
         </link>
         <link>
             Unit testing was popularised by <a href="http://extremeprogramming.org">eXtreme Programming</a>.
+        </link>
+        <link>
+            <a href="http://www.mockobjects.com/">Mock objects</a> come from the agile OO community.
         </link>
     </external>
     <meta>

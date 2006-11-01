@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<page title="Cgreen Quickstart Guide" here="cgreen">
+<page title="Cgreen Reporter" here="cgreen">
     <long_title>
         Changing the reporting mechanism of Cgreen.
     </long_title>
@@ -195,7 +195,7 @@ void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *
                 </dl>
             </p>
         </section>
-        <section name="xml" title="An example XML reporter">
+        <section name="example" title="An example XML reporter">
             <p>
                 Let's make things real with an example.
                 Suppose we want to send the output from <em>Cgreen</em> in XML format,
@@ -212,7 +212,7 @@ void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *
         <test name="a_test_that_fails">
             <fail>
                 <message><![CDATA[A failure]]>]]<![CDATA[></message>
-                <location file="test_as_xml.c" line="6"/>
+                <location file="test_as_xml.c" line="8"/>
             </fail>
         </test>
     </test>
@@ -513,11 +513,22 @@ static void xml_show_incomplete(TestReporter *reporter, const char *name) {
 ]]></sh>
                 Job done.
             </p>
+            <p>
+                Possible other extensions include reporters that write to <em>syslog</em>,
+                talk to IDE plug-ins, paint pretty printed documents or just return a boolean
+                for monitoring purposes.
+            </p>
         </section>
     </content>
     <internal>
         <link>
-            What is the <a href="#what">Cgreen unit tester</a>?
+            <a href="#extending">Replacing and extending the reporting</a> from Cgreen.
+        </link>
+        <link>
+            The <a href="#base">Cgreen TestReporter pseudo class</a>.
+        </link>
+        <link>
+            An <a href="#example">example of an XML Cgreen reporter</a>.
         </link>
     </internal>
     <external>

@@ -5,6 +5,9 @@ body {
 h1, h2, h3 {
 	font-family: sans-serif;
 }
+h1 {
+    text-align: center;
+}
 pre {
     font-family: courier, typewriter, monospace;
     font-size: 90%;
@@ -24,18 +27,23 @@ div.copyright {
     color: gray;
 }
 div.copyright a {
+    margin-top: 1em;
     color: gray;
 }
 ul.api {
-    padding-left: 0em;
-    padding-right: 25%;
+    border: 2px outset;
+    border-color: gray;
+    background-color: white;
+    margin: 5px;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 ul.api li {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
     list-style: none;
     text-indent: -3em;
-    padding-left: 3em;
+    padding-left: 1em;
 }
 div.demo {
     border: 4px ridge;
@@ -56,6 +64,9 @@ div.demo h1 {
     font-size: 12pt;
     text-align: left;
     font-weight: bold;
+}
+div.menu {
+    text-align: center;
 }
 table {
     border: 2px outset;
@@ -103,4 +114,8 @@ form.demo {
 dl, dd {
 	margin:  10px;
 	margin-left:  30px;
+}
+em {
+    font-weight: bold;
+    font-family: courier, typewriter, monospace;
 }

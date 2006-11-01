@@ -7,6 +7,8 @@
         <section name="what" title="What is Cgreen?">
             <p>
                 Cgreen is a unit tester for the C software developer.
+                It is completely open source published under the
+                <a href="http://www.gnu.org/licenses/lgpl.html">LGPL</a>.
             </p>
             <p>
                 Unit testing is a development practice popularised by the
@@ -564,10 +566,10 @@ Completed "main": 12 passes, 0 failures, 0 exceptions.
             <a href="#install">Installing Cgreen</a> and testing the installation.
         </link>
         <link>
-            <a href="#tdd">Test driven development example</a> with Cgreen.
+            <a href="#tdd">Test driven development example</a> with Cgreen in 5 minutes.
         </link>
         <link>
-            Interaction testing with <a href="#mock">mock callbacks</a>.
+            Interaction testing with <a href="#mock">mock functions</a>.
         </link>
     </internal>
     <external>
@@ -577,9 +579,17 @@ Completed "main": 12 passes, 0 failures, 0 exceptions.
         <link>
             Unit testing was popularised by <a href="http://extremeprogramming.org/">eXtreme Programming</a>.
         </link>
+        <link>
+            Cgreen is heavily influenced by the <a href="http://check.sourceforge.net/">Check</a> unit tester.
+        </link>
     </external>
     <meta>
         <keywords>
+            unit testing, test-first, test first, code quality, automate unit testing,
+            automated testing, c programming, c tools, c unit tests, unit testing in c,
+            check unit tester, mock objects, mocking functions, mocks in c, test coverage,
+            tdd in C, c regression testing, cunit, cppunit, c unit testing frameworks,
+            open source, open source framework, gnu licence, lgpl, free software
         </keywords>
     </meta>
 </page>
