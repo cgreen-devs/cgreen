@@ -1,4 +1,5 @@
 #include "cgreen/cgreen.h"
+#include "xml_reporter.h"
 
 void a_test_that_passes() {
     assert_true(1);
@@ -18,5 +19,5 @@ TestSuite *create_test_group() {
 int main(int argc, char **argv) {
     TestSuite *suite = create_named_test_suite("Top Level");
     add_suite(suite, create_test_group());
-    return run_test_suite(suite, create_text_reporter());
+    return run_test_suite(suite, create_xml_reporter());
 }
