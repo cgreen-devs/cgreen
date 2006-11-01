@@ -545,7 +545,7 @@ static void xml_show_incomplete(TestReporter *reporter, const char *name) {
             automated testing, c programming, c tools, c unit tests, unit testing in c,
             check unit tester, test coverage, TDD, extreme programming, agile development,
             tdd in C, c regression testing, cunit, cppunit, c unit testing frameworks, sourceforge,
-            open source, open source framework, gnu licence, lgpl, software testing,
+            open source, open source framework, lesser gnu licence, lgpl, software testing,
             executable specification, software requirements, quality assurance,
             test driven design, software decoupling, XML reports, error logging, software monitoring
         </keywords>
