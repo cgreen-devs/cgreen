@@ -6,7 +6,7 @@
     <content>
         <p>
             Cgreen is a tool for building unit tests in the C language.
-            These are usually alongside writing the production code
+            These are usually written alongside the production code
             by the programmer to prevent bugs.
             Even though the test suites are created by software developers,
             they are intended to be human readable C code, as part of
@@ -372,10 +372,10 @@ Completed "main": 0 passes, 0 failures, 1 exception.
                 one test at a time, Cgreen has the <code>run_single_test()</code>
                 function.
                 The signatures of the two run methods are...
-<table>
-<tr><td><code><![CDATA[int run_test_suite(TestSuite *suite, TestReporter *reporter);]]></code></td></tr>
-<tr><td><code><![CDATA[int run_single_test(TestSuite *suite, char *test, TestReporter *reporter);]]></code></td></tr>
-</table>
+<ul class="api">
+<li><code><![CDATA[int run_test_suite(TestSuite *suite, TestReporter *reporter);]]></code></li>
+<li><code><![CDATA[int run_single_test(TestSuite *suite, char *test, TestReporter *reporter);]]></code></li>
+</ul>
                 The extra parameter of <code>run_single_test()</code>, the
                 <code>test</code> string, is the name of the test to select.
                 This could be any test, even in nested test suites (see below).
@@ -654,9 +654,17 @@ TestSuite *connection_fixture(TestSuite *suite) {</strong>
         <link>
             Unit testing was popularised by <a href="http://extremeprogramming.org">eXtreme Programming</a>.
         </link>
+        <link>
+            Cgreen is heavily influenced by the <a href="http://check.sourceforge.net/">Check</a> unit tester.
+        </link>
     </external>
     <meta>
         <keywords>
+            unit testing, test-first, test first, code quality, automate unit testing,
+            automated testing, c programming, c tools, c unit tests, unit testing in c,
+            check unit tester, test coverage, TDD, extreme programming, agile development,
+            tdd in C, c regression testing, cunit, cppunit, c unit testing frameworks, sourceforge,
+            open source, open source framework, gnu licence, lgpl
         </keywords>
     </meta>
 </page>

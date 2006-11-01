@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <!-- $Id: bundled_docs.xslt,v 1.2 2005/04/29 00:01:34 lastcraft Exp $ -->
+    <!-- $Id: bundled_docs.xslt,v 1.1 2006/09/27 12:26:00 lastcraft Exp $ -->
 
     <xsl:output method="html" indent="yes" />
     <xsl:preserve-space elements="*"/>
@@ -23,9 +23,12 @@
         <body>
             <xsl:call-template name="menu"/>
             <xsl:call-template name="masthead"/>
+            <xsl:call-template name="internal_links"/>
             <div class="content">
                 <xsl:apply-templates select="//content/node()"/>
             </div>
+            <xsl:call-template name="external_links"/>
+            <xsl:call-template name="menu"/>
             <xsl:call-template name="copyright"/>
         </body>
     </xsl:template>
@@ -34,12 +37,10 @@
         <div class="menu_back">
             <div class="menu">
                 <xsl:variable name="map" select="document('bundled_map.xml')/page"/>
-                <h2>
-                    <xsl:call-template name="menu_item">
-                        <xsl:with-param name="here" select="/page/@here"/>
-                        <xsl:with-param name="map" select="$map"/>
-                    </xsl:call-template>
-                </h2>
+                <xsl:call-template name="menu_item">
+                    <xsl:with-param name="here" select="/page/@here"/>
+                    <xsl:with-param name="map" select="$map"/>
+                </xsl:call-template>
                 <xsl:call-template name="menu_layer">
                     <xsl:with-param name="here" select="/page/@here"/>
                     <xsl:with-param name="map" select="$map"/>
@@ -87,16 +88,13 @@
         <xsl:param name="here"/>
         <xsl:param name="map"/>
         <xsl:if test="$map/page">
-            <ul>
-                <xsl:for-each select="$map/page">
-                    <li>
-                        <xsl:call-template name="show_menu_entry">
-                            <xsl:with-param name="here" select="$here"/>
-                            <xsl:with-param name="map" select="."/>
-                        </xsl:call-template>
-                    </li>
-                </xsl:for-each>
-            </ul>
+            <xsl:for-each select="$map/page">
+                |
+                <xsl:call-template name="show_menu_entry">
+                    <xsl:with-param name="here" select="$here"/>
+                    <xsl:with-param name="map" select="."/>
+                </xsl:call-template>
+            </xsl:for-each>
         </xsl:if>
     </xsl:template>
     
@@ -128,6 +126,20 @@
      
     <xsl:template name="masthead">
         <h1><xsl:value-of select="//page/@title"/></h1>
+    </xsl:template>
+    
+    <xsl:template name="internal_links">
+        This page...
+        <ul>
+            <xsl:apply-templates select="//internal/link" mode="links"/>
+        </ul>
+    </xsl:template>
+   
+    <xsl:template name="external_links">
+        References and related information...
+        <ul>
+            <xsl:apply-templates select="//external/link" mode="links"/>
+        </ul>
     </xsl:template>
     
     <xsl:template name="copyright">
