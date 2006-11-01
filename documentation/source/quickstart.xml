@@ -7,7 +7,9 @@
         <section name="what" title="What is Cgreen?">
             <p>
                 Cgreen is a unit tester for the C software developer.
-                It is completely open source published under the
+                This is a test automation and software quality assurance tool for
+                development teams.
+                The tool is completely open source published under the
                 <a href="http://www.gnu.org/licenses/lgpl.html">LGPL</a>.
             </p>
             <p>
@@ -38,11 +40,12 @@
                     <li>Ability to mock functions.</li>
                     <li>The reporting mechanism can be easily extended.</li>
                 </ul>
+                Note that this tool is for C programming, not C++.
             </p>
         </section>
         <section name="install" title="Installing Cgreen">
             <p>
-                Installing Cgreen is as simple as running <em>make</em>
+                Installing Cgreen is as simple as running <a href="http://www.gnu.org/software/make/">make</a>
                 in the unzipped <em>cgreen</em> folder.
                 The makefile will create a unix library called <em>cgreen.a</em>
                 which can be used in conjunction with the <em>cgreen.h</em>
@@ -589,7 +592,8 @@ Completed "main": 12 passes, 0 failures, 0 exceptions.
             automated testing, c programming, c tools, c unit tests, unit testing in c,
             check unit tester, mock objects, mocking functions, mocks in c, test coverage,
             tdd in C, c regression testing, cunit, cppunit, c unit testing frameworks,
-            open source, open source framework, gnu licence, lgpl, free software
+            open source, open source framework, gnu licence, lgpl, free software, code quality,
+            test harness
         </keywords>
     </meta>
 </page>

@@ -8,4 +8,6 @@ tar -zcf cgreen.tar.gz cgreen/LICENSE \
                          cgreen/tests/makefile \
                          cgreen/samples/*.c \
                          cgreen/samples/makefile \
+                         cgreen/documentation/*.html \
+                         cgreen/documentation/docs.css \
                          cgreen/README
