@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <!-- $Id: lastcraft.xslt,v 1.4 2005/04/29 00:20:02 lastcraft Exp $ -->
+    <!-- $Id: lastcraft.xslt,v 1.2 2005/04/29 00:01:34 lastcraft Exp $ -->
 
     <xsl:output method="html" indent="yes" />
     <xsl:preserve-space elements="*"/>
@@ -222,8 +222,17 @@
         </span>
     </xsl:template>
     
+    
     <xsl:template match="sh">
         <pre class="shell">
+            <xsl:call-template name="preserve_strong">
+                <xsl:with-param name="raw" select="."/>
+            </xsl:call-template>
+        </pre>
+    </xsl:template>
+    
+    <xsl:template match="c">
+        <pre>
             <xsl:call-template name="preserve_strong">
                 <xsl:with-param name="raw" select="."/>
             </xsl:call-template>
