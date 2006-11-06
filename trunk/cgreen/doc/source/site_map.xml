@@ -14,9 +14,9 @@
         <page title="Scriptable browser" file="browser_documentation.php"/>
     </page>
     <page title="Cgreen" file="cgreen.php">
-		<page title="Test suites" file="cgreen_suites.php"/>
-		<page title="Mock functions" file="mock_callbacks.php"/>
-		<page title="Changing the reporting" file="cgreen_reporter.php"/>
+		<page title="Cgreen test suites" file="cgreen_suites.php"/>
+		<page title="Mocking functions" file="mock_callbacks.php"/>
+		<page title="Cgreen reporting" file="cgreen_reporter.php"/>
 	</page>
     <page title="Fakemail" file="fakemail.php"/>
     <page title="PHP unit testing" file="first_test_tutorial.php">
