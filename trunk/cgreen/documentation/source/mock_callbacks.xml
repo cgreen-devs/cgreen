@@ -230,7 +230,7 @@ static void one_word_stream_gives_one_word_line() {<strong>
 ]]></c>
                 I've been a bit naughty.
                 As each test runs in it's own process, I haven't bothered
-                to free the pointers,
+                to free the pointers.
                 I've just let the operating system do it.
                 Purists may want to add the extra code.
             </p>
@@ -480,7 +480,7 @@ static void one_character_is_made_into_a_one_letter_paragraph() {<strong>
                 Here is the full list of instructions that can be sent to the mocks...
                 <table>
                     <tr><th>Macro</th><th>Parameters</th></tr>
-                    <tr><td><code>will_return(function, result)</code></td><td>Returns result once only, but successive calls will be replayed in order. Generates a failure when called twice.</td></tr>
+                    <tr><td><code>will_return(function, result)</code></td><td>Returns result once only, but successive calls will be replayed in order. Generates a failure when called too many times.</td></tr>
                     <tr><td><code>always_return(function, result)</code></td><td>Returns result repeatedly.</td></tr>
                     <tr><td><code>expect(function, arguments...)</code></td><td>Sets up an expectation on each argument. If there is a mismatch, or a call is made without an expectation, a failure is generated.</td></tr>
                     <tr><td><code>always_expect(function, arguments...)</code></td><td>Must receive exactly these arguments from now on.</td></tr>
