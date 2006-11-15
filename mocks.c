@@ -1,6 +1,7 @@
 #include "mocks.h"
 #include "reporter.h"
 #include "vector.h"
+#include "assertions.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -88,8 +89,12 @@ void _checked_string(const char *check_file, int check_line, const char *functio
                 get_test_reporter(),
                 expectation->test_file,
                 expectation->test_line,
-                strcmp((char *)(expectation->expected), string) == 0,
-                "%s(..., %s, ...) is [%s], and should be [%s]", function, parameter, string, (char *)(expectation->expected));
+                strings_are_equal((char *)(expectation->expected), string),
+                "%s(..., %s, ...) is [%s], and should be [%s]",
+                function,
+                parameter,
+                show_null_as_the_string_null(string),
+                show_null_as_the_string_null((char *)(expectation->expected)));
         if (! expectation->should_keep) {
             free(expectation);
         }

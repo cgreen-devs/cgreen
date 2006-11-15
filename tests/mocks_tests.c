@@ -97,6 +97,11 @@ static void string_expectation_confirmed() {
     string_in("hello");
 }
 
+static void string_expectation_confirmed_even_when_null() {
+    expect(string_in, NULL);
+    string_in(NULL);
+}
+
 static void string_expectation_sequence() {
     expect(string_in, "hello");
     expect(string_in, "goodbye");
@@ -161,6 +166,7 @@ TestSuite *mock_tests() {
     add_test(suite, always_expected_keeps_affirming_parameter);
     add_test(suite, expectation_sequence);
     add_test(suite, string_expectation_confirmed);
+    add_test(suite, string_expectation_confirmed_even_when_null);
     add_test(suite, string_expectation_sequence);
     add_test(suite, confirming_multiple_parameters_multiple_times);
     add_test(suite, can_mock_full_function_call);
