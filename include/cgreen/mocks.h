@@ -4,8 +4,6 @@
 #include <inttypes.h>
 #include "reporter.h"
 
-#define ANYTHING "__anything__"
-
 #define checked_integer(i) _checked_integer(__FILE__, __LINE__, __func__, #i, (intptr_t)i)
 #define checked_string(s) _checked_string(__FILE__, __LINE__, __func__, #s, s)
 #define expect(f, ...) _expect(#f, __FILE__, __LINE__); _mask(#__VA_ARGS__); f(__VA_ARGS__); _play()
