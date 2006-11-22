@@ -151,9 +151,6 @@ void _will_return(const char *function, intptr_t result) {
     vector_add(result_queue, record);
 }
 
-void _mask(const char *parameters) {
-}
-
 void _always() {
     should_keep = 1;
 }
