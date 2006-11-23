@@ -126,23 +126,23 @@ static int sample_mock(int i, char *s) {
 }
 
 static void can_mock_full_function_call() {
-    mock(sample_mock, 5, 666, "devil");
+    mock_exactly(sample_mock, 5, 666, "devil");
     assert_equal(sample_mock(666, "devil"), 5);
 }
 
 static void when_called_with_always_should_not_tally_counts() {
-    always_mock(sample_mock, 5, 666, "devil");
+    always_mock_exactly(sample_mock, 5, 666, "devil");
 }
 
 static void can_mock_full_sequence() {
-    mock(sample_mock, 5, 666, "devil");
-    mock(sample_mock, 6, 667, "beastie");
+    mock_exactly(sample_mock, 5, 666, "devil");
+    mock_exactly(sample_mock, 6, 667, "beastie");
     assert_equal(sample_mock(666, "devil"), 5);
     assert_equal(sample_mock(667, "beastie"), 6);
 }
 
 static void can_always_mock_full_function_call() {
-    always_mock(sample_mock, 5, 666, "devil");
+    always_mock_exactly(sample_mock, 5, 666, "devil");
     assert_equal(sample_mock(666, "devil"), 5);
     assert_equal(sample_mock(666, "devil"), 5);
     assert_equal(sample_mock(666, "devil"), 5);
