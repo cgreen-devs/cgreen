@@ -149,12 +149,12 @@ static void expectation_fails_when_called_without_presets() {
 }
 
 static void expectation_confirmed() {
-    expect(takes_integer, 3);
+    expect_exactly(takes_integer, 3);
     takes_integer(3);
 }
 
 static void expectation_dashed() {
-    expect(takes_integer, 3);
+    expect_exactly(takes_integer, 3);
     takes_integer(4);
 }
 static void mixed_parameters(int i, char *s) {
@@ -163,21 +163,21 @@ static void mixed_parameters(int i, char *s) {
 }
 
 static void confirming_multiple_parameters_multiple_times() {
-    expect(mixed_parameters, 1, "Hello");
-    expect(mixed_parameters, 2, "Goodbye");
+    expect_exactly(mixed_parameters, 1, "Hello");
+    expect_exactly(mixed_parameters, 2, "Goodbye");
     mixed_parameters(1, "Hello");
     mixed_parameters(2, "Goodbye");
 }
 
 static void breaking_multiple_parameters_multiple_times() {
-    expect(mixed_parameters, 1, "Hello");
-    expect(mixed_parameters, 2, "Goodbye");
+    expect_exactly(mixed_parameters, 1, "Hello");
+    expect_exactly(mixed_parameters, 2, "Goodbye");
     mixed_parameters(10, "Helloo");
     mixed_parameters(20, "Gooodbye");
 }
 
 static void uncalled_expectations_should_throw_errors() {
-    expect(mixed_parameters, 1, "Hello");
+    expect_exactly(mixed_parameters, 1, "Hello");
 }
 
 static void unexpected_call_should_throw_error() {

@@ -127,6 +127,16 @@ void _expect(const char *function, const char *test_file, int test_line) {
     set_test_location(test_file, test_line);
 }
 
+void _always() {
+    should_keep = 1;
+}
+
+void _play() {
+    recording_state = playing;
+    should_keep = 0;
+    clear_test_location();
+}
+
 void _expect_never(const char *function) {
     ensure_unwanted_calls();
     UnwantedCall *unwanted = (UnwantedCall *)malloc(sizeof(UnwantedCall));
@@ -136,12 +146,6 @@ void _expect_never(const char *function) {
     vector_add(unwanted_calls, unwanted);
 }
 
-void _play() {
-    recording_state = playing;
-    should_keep = 0;
-    clear_test_location();
-}
-
 void _will_return(const char *function, intptr_t result) {
     ensure_result_queue();
     RecordedResult *record = (RecordedResult *)malloc(sizeof(RecordedResult));
@@ -149,10 +153,6 @@ void _will_return(const char *function, intptr_t result) {
     record->result = result;
     record->should_keep = should_keep;
     vector_add(result_queue, record);
-}
-
-void _always() {
-    should_keep = 1;
 }
 
 void clear_mocks() {

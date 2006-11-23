@@ -52,15 +52,15 @@ void empty_breadcrumb_does_not_trigger_walker() {
 }
 
 void single_item_breadcrumb_does_calls_walker_only_once() {
-    expect(mock_walker, "Hello", NULL);
+    expect_exactly(mock_walker, "Hello", NULL);
     Breadcrumb *breadcrumb = create_breadcrumb();
     push_breadcrumb(breadcrumb, "Hello");
     walk_breadcrumb(breadcrumb, &mock_walker, NULL);
 }
 
 void double_item_breadcrumb_does_calls_walker_only_once() {
-    expect(mock_walker, "Hello", NULL);
-    expect(mock_walker, "Goodbye", NULL);
+    expect_exactly(mock_walker, "Hello", NULL);
+    expect_exactly(mock_walker, "Goodbye", NULL);
     Breadcrumb *breadcrumb = create_breadcrumb();
     push_breadcrumb(breadcrumb, "Hello");
     push_breadcrumb(breadcrumb, "Goodbye");

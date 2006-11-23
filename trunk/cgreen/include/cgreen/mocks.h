@@ -6,8 +6,8 @@
 
 #define checked_integer(i) _checked_integer(__FILE__, __LINE__, __func__, #i, (intptr_t)i)
 #define checked_string(s) _checked_string(__FILE__, __LINE__, __func__, #s, s)
-#define expect(f, ...) _expect(#f, __FILE__, __LINE__); f(__VA_ARGS__); _play()
-#define always_expect(f, ...) _always(); _expect(#f, __FILE__, __LINE__); f(__VA_ARGS__); _play()
+#define expect_exactly(f, ...) _expect(#f, __FILE__, __LINE__); f(__VA_ARGS__); _play()
+#define always_expect_exactly(f, ...) _always(); _expect(#f, __FILE__, __LINE__); f(__VA_ARGS__); _play()
 #define expect_never(f) _expect(#f, __FILE__, __LINE__); _expect_never(#f); _play()
 #define will_return(f, r) _will_return(#f, (intptr_t)r); _play()
 #define always_return(f, r) _always(); _will_return(#f, (intptr_t)r); _play()
