@@ -11,8 +11,8 @@
 #define expect_never(f) _expect(#f, __FILE__, __LINE__); _expect_never(#f); _play()
 #define will_return(f, r) _will_return(#f, (intptr_t)r); _play()
 #define always_return(f, r) _always(); _will_return(#f, (intptr_t)r); _play()
-#define mock(f, r, ...) _expect(#f, __FILE__, __LINE__); f(__VA_ARGS__); _will_return(#f, (intptr_t)r); _play()
-#define always_mock(f, r, ...) _always(); _expect(#f, __FILE__, __LINE__); f(__VA_ARGS__); _will_return(#f, (intptr_t)r); _play()
+#define mock_exactly(f, r, ...) _expect(#f, __FILE__, __LINE__); f(__VA_ARGS__); _will_return(#f, (intptr_t)r); _play()
+#define always_mock_exactly(f, r, ...) _always(); _expect(#f, __FILE__, __LINE__); f(__VA_ARGS__); _will_return(#f, (intptr_t)r); _play()
 #define stubbed_result() _stubbed_result(__func__, __FILE__, __LINE__)
 
 void _checked_integer(const char *check_file, int check_line, const char *function, const char *parameter, intptr_t integer);
