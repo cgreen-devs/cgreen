@@ -122,7 +122,10 @@ intptr_t _stubbed_result(const char *function, const char *file, int line) {
     return value;
 }
 
-void _expect(const char *function, const char *test_file, int test_line) {
+void _expect(const char *function, const char *file, int line, ...) {
+}
+
+void _record(const char *function, const char *test_file, int test_line) {
     recording_state = recording;
     set_test_location(test_file, test_line);
 }
