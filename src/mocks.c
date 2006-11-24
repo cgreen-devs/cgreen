@@ -9,6 +9,12 @@ enum {playing = 1, recording};
 static int recording_state = playing;
 static int should_keep = 0;
 
+struct _CgreenConstraint {
+    void *compare;
+    void (*destroy)(CgreenConstraint *);
+    intptr_t target;
+};
+
 typedef struct _RecordedResult {
     const char *function;
     intptr_t result;

@@ -67,19 +67,24 @@ static void integer_in(int i) {
     checked_integer(i);
 }
 
-static void expect_exactlyation_confirmed() {
+static void expecting_once_with_any_parameters() {
+    expect(integer_in);
+    integer_in(3);
+}
+
+static void expect_exactly_confirmed() {
     expect_exactly(integer_in, 3);
     integer_in(3);
 }
 
-static void always_expect_exactlyed_keeps_affirming_parameter() {
+static void always_expect_exactly_keeps_affirming_parameter() {
     always_expect_exactly(integer_in, 3);
     integer_in(3);
     integer_in(3);
     integer_in(3);
 }
 
-static void expect_exactlyation_sequence() {
+static void expect_exactly_a_sequence() {
     expect_exactly(integer_in, 1);
     expect_exactly(integer_in, 2);
     expect_exactly(integer_in, 3);
@@ -92,17 +97,17 @@ static void string_in(char *s) {
     checked_string(s);
 }
 
-static void string_expect_exactlyation_confirmed() {
+static void string_expect_exactly_is_confirmed() {
     expect_exactly(string_in, "hello");
     string_in("hello");
 }
 
-static void string_expect_exactlyation_confirmed_even_when_null() {
+static void string_expect_exactly_confirmed_even_when_null() {
     expect_exactly(string_in, NULL);
     string_in(NULL);
 }
 
-static void string_expect_exactlyation_sequence() {
+static void string_expect_exactly_sequence() {
     expect_exactly(string_in, "hello");
     expect_exactly(string_in, "goodbye");
     string_in("hello");
@@ -162,12 +167,12 @@ TestSuite *mock_tests() {
     add_test(suite, stub_uses_the_always_value_once_hit);
     add_test(suite, can_stub_a_string_return);
     add_test(suite, can_stub_a_string_sequence);
-    add_test(suite, expect_exactlyation_confirmed);
-    add_test(suite, always_expect_exactlyed_keeps_affirming_parameter);
-    add_test(suite, expect_exactlyation_sequence);
-    add_test(suite, string_expect_exactlyation_confirmed);
-    add_test(suite, string_expect_exactlyation_confirmed_even_when_null);
-    add_test(suite, string_expect_exactlyation_sequence);
+    add_test(suite, expect_exactly_confirmed);
+    add_test(suite, always_expect_exactly_keeps_affirming_parameter);
+    add_test(suite, expect_exactly_a_sequence);
+    add_test(suite, string_expect_exactly_is_confirmed);
+    add_test(suite, string_expect_exactly_confirmed_even_when_null);
+    add_test(suite, string_expect_exactly_sequence);
     add_test(suite, confirming_multiple_parameters_multiple_times);
     add_test(suite, can_mock_full_function_call);
     add_test(suite, when_called_with_always_should_not_tally_counts);
