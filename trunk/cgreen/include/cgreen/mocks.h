@@ -2,11 +2,12 @@
 #define _MOCKS_HEADER_
 
 #include <inttypes.h>
+#include <stdarg.h>
 #include "reporter.h"
 
 #define checked_integer(i) _checked_integer(__FILE__, __LINE__, __func__, #i, (intptr_t)i)
 #define checked_string(s) _checked_string(__FILE__, __LINE__, __func__, #s, s)
-#define expect(f, ...) _expect(#f, __FILE__, __LINE__, __VA_ARGS__)
+#define expect(f, ...) _expect(#f, __FILE__, __LINE__, (CgreenConstraint *)__VA_ARGS__ +0, (CgreenConstraint *)0)
 #define expect_exactly(f, ...) _record(#f, __FILE__, __LINE__); f(__VA_ARGS__); _play()
 #define always_expect_exactly(f, ...) _always(); _record(#f, __FILE__, __LINE__); f(__VA_ARGS__); _play()
 #define expect_never(f) _record(#f, __FILE__, __LINE__); _expect_never(#f); _play()
@@ -15,6 +16,8 @@
 #define mock_exactly(f, r, ...) _record(#f, __FILE__, __LINE__); f(__VA_ARGS__); _will_return(#f, (intptr_t)r); _play()
 #define always_mock_exactly(f, r, ...) _always(); _record(#f, __FILE__, __LINE__); f(__VA_ARGS__); _will_return(#f, (intptr_t)r); _play()
 #define stubbed_result() _stubbed_result(__func__, __FILE__, __LINE__)
+
+typedef struct _CgreenConstraint CgreenConstraint;
 
 void _checked_integer(const char *check_file, int check_line, const char *function, const char *parameter, intptr_t integer);
 void _checked_string(const char *check_file, int check_line, const char *function, const char *parameter, const char *string);
