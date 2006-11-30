@@ -3,10 +3,12 @@
 
 #include <inttypes.h>
 
-#define exactly(parameter, x) _exactly(#parameter, x)
+#define is(parameter, x) _is(#parameter, x)
+#define string_is(parameter, x) _string_is(#parameter, x)
 
 typedef struct _CgreenConstraint CgreenConstraint;
 
-CgreenConstraint *_exactly(const char *parameter, intptr_t comparison);
+CgreenConstraint *_is(const char *parameter, intptr_t comparison);
+CgreenConstraint *_string_is(const char *parameter, char *comparison);
 
 #endif

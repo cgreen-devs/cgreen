@@ -7,5 +7,8 @@ struct _CgreenConstraint {
     intptr_t target;
 };
 
-CgreenConstraint *_exactly(const char *parameter, intptr_t comparison) {
+CgreenConstraint *_is(const char *parameter, intptr_t comparison) {
+}
+
+CgreenConstraint *_string_is(const char *parameter, char *comparison) {
 }
