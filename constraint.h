@@ -3,20 +3,21 @@
 
 #include <inttypes.h>
 
-#define is(parameter, x) _is(#parameter, x)
-#define string_is(parameter, x) _string_is(#parameter, x)
+#define is(parameter, x) _is(#parameter, (intptr_t)x)
+#define is_string(parameter, x) _is_string(#parameter, x)
+#define compare_constraint(c, x) _compare_constraint(c, (intptr_t)x)
 
 typedef struct _CgreenConstraint CgreenConstraint;
 struct _CgreenConstraint {
     const char *parameter;
     void (*destroy)(CgreenConstraint *);
-    int (*compare)(intptr_t);
+    int (*compare)(CgreenConstraint *, intptr_t);
     intptr_t expected;
 };
 
+void destroy_constraint(CgreenConstraint *constraint);
+int _compare_constraint(CgreenConstraint *constraint, intptr_t comparison);
 CgreenConstraint *_is(const char *parameter, intptr_t expected);
-void is_constraint_destroy(CgreenConstraint *constraint);
-int is_constraint_compare(intptr_t comparison);
-CgreenConstraint *_string_is(const char *parameter, char *expected);
+CgreenConstraint *_is_string(const char *parameter, char *expected);
 
 #endif
