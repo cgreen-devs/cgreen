@@ -38,6 +38,13 @@ static void can_compare_null_strings_as_well_as_real_ones() {
     destroy_constraint(is_hello);
 }
 
+static void can_expect_null_strings_as_well_as_real_ones() {
+    CgreenConstraint *is_hello = is_string(label, NULL);
+    assert_equal(compare_constraint(is_hello, NULL), 1);
+    assert_equal(compare_constraint(is_hello, "Hello"), 0);
+    destroy_constraint(is_hello);
+}
+
 TestSuite *constraint_tests() {
     TestSuite *suite = create_test_suite();
     add_test(suite, can_construct_and_destroy_an_is_constraint);
@@ -46,5 +53,6 @@ TestSuite *constraint_tests() {
     add_test(suite, can_construct_and_destroy_an_is_string_constraint);
     add_test(suite, can_compare_strings_as_equal);
     add_test(suite, can_compare_null_strings_as_well_as_real_ones);
+    add_test(suite, can_expect_null_strings_as_well_as_real_ones);
     return suite;
 }

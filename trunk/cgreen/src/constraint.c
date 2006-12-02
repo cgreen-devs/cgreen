@@ -38,8 +38,8 @@ int compare_is(CgreenConstraint *constraint, intptr_t comparison) {
 }
 
 int compare_is_string(CgreenConstraint *constraint, intptr_t comparison) {
-    if ((const char *)comparison == NULL) {
-        return ((const char *)constraint->expected == (const char *)comparison);
+    if (((void *)comparison == NULL) || ((void *)constraint->expected == NULL)) {
+        return ((void *)constraint->expected == (void *)comparison);
     }
     return (strcmp((const char *)constraint->expected, (const char *)comparison) == 0);
 }
