@@ -3,8 +3,8 @@
 #include <stdlib.h>
 
 void destroy_empty_constraint(CgreenConstraint *constraint);
-int compare_is(CgreenConstraint *constraint, intptr_t comparison);
-int compare_is_string(CgreenConstraint *constraint, intptr_t comparison);
+int compare_want(CgreenConstraint *constraint, intptr_t comparison);
+int compare_want_string(CgreenConstraint *constraint, intptr_t comparison);
 CgreenConstraint *create_constraint(const char *parameter);
 
 void destroy_constraint(CgreenConstraint *constraint) {
@@ -15,16 +15,16 @@ int _compare_constraint(CgreenConstraint *constraint, intptr_t comparison) {
     (*constraint->compare)(constraint, comparison);
 }
 
-CgreenConstraint *_is(const char *parameter, intptr_t expected) {
+CgreenConstraint *_want(const char *parameter, intptr_t expected) {
     CgreenConstraint *constraint = create_constraint(parameter);
-    constraint->compare = &compare_is;
+    constraint->compare = &compare_want;
     constraint->expected = expected;
     return constraint;
 }
 
-CgreenConstraint *_is_string(const char *parameter, char *expected) {
+CgreenConstraint *_want_string(const char *parameter, char *expected) {
     CgreenConstraint *constraint = create_constraint(parameter);
-    constraint->compare = &compare_is_string;
+    constraint->compare = &compare_want_string;
     constraint->expected = (intptr_t)expected;
     return constraint;
 }
@@ -33,11 +33,11 @@ void destroy_empty_constraint(CgreenConstraint *constraint) {
     free(constraint);
 }
 
-int compare_is(CgreenConstraint *constraint, intptr_t comparison) {
+int compare_want(CgreenConstraint *constraint, intptr_t comparison) {
     return (constraint->expected == comparison);
 }
 
-int compare_is_string(CgreenConstraint *constraint, intptr_t comparison) {
+int compare_want_string(CgreenConstraint *constraint, intptr_t comparison) {
     if (((void *)comparison == NULL) || ((void *)constraint->expected == NULL)) {
         return ((void *)constraint->expected == (void *)comparison);
     }
