@@ -72,7 +72,7 @@ static void expecting_once_with_any_parameters() {
     integer_in(3);
 }
 
-static void expect_is_confirmed() {
+static void expecting_once_with_parameter_checks_parameter() {
     //expect(integer_in, is(i, 3));
     //integer_in(3);
 }
@@ -167,7 +167,7 @@ TestSuite *mock_tests() {
     add_test(suite, stub_uses_the_always_value_once_hit);
     add_test(suite, can_stub_a_string_return);
     add_test(suite, can_stub_a_string_sequence);
-    add_test(suite, expect_is_confirmed);
+    add_test(suite, expecting_once_with_parameter_checks_parameter);
     add_test(suite, always_expect_is_keeps_affirming_parameter);
     add_test(suite, expect_is_a_sequence);
     add_test(suite, string_expect_is_is_confirmed);
