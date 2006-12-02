@@ -73,21 +73,21 @@ static void expecting_once_with_any_parameters() {
 }
 
 static void expecting_once_with_parameter_checks_parameter() {
-    //expect(integer_in, is(i, 3));
+    //expect(integer_in, want(i, 3));
     //integer_in(3);
 }
 
-static void always_expect_is_keeps_affirming_parameter() {
-    //always_expect(integer_in, is(i, 3));
+static void always_expect_keeps_affirming_parameter() {
+    //always_expect(integer_in, want(i, 3));
     //integer_in(3);
     //integer_in(3);
     //integer_in(3);
 }
 
-static void expect_is_a_sequence() {
-    //expect(integer_in, is(i, 1));
-    //expect(integer_in, is(i, 2));
-    //expect(integer_in, is(i, 3));
+static void expect_a_sequence() {
+    //expect(integer_in, want(i, 1));
+    //expect(integer_in, want(i, 2));
+    //expect(integer_in, want(i, 3));
     //integer_in(1);
     //integer_in(2);
     //integer_in(3);
@@ -97,19 +97,19 @@ static void string_in(char *s) {
     checked_string(s);
 }
 
-static void string_expect_is_is_confirmed() {
-    //expect(string_in, string_is(s, "hello"));
+static void string_expect_is_confirmed() {
+    //expect(string_in, want_string(s, "hello"));
     //string_in("hello");
 }
 
 static void string_expect_is_confirmed_even_when_null() {
-    //expect(string_in, is(s, NULL));
+    //expect(string_in, want(s, NULL));
     //string_in(NULL);
 }
 
-static void string_expect_is_sequence() {
-    //expect(string_in, string_is(s, "hello"));
-    //expect(string_in, string_is(s, "goodbye"));
+static void string_expect_sequence() {
+    //expect(string_in, want_string(s, "hello"));
+    //expect(string_in, want_string(s, "goodbye"));
     //string_in("hello");
     //string_in("goodbye");
 }
@@ -119,8 +119,8 @@ static void mixed_parameters(int i, char *s) {
 }
 
 static void confirming_multiple_parameters_multiple_times() {
-    //expect(mixed_parameters, is(i, 1), string_is(s, "Hello"));
-    //expect(mixed_parameters, is(i, 2), string_is(s, "Goodbye"));
+    //expect(mixed_parameters, want(i, 1), want_string(s, "Hello"));
+    //expect(mixed_parameters, want(i, 2), want_string(s, "Goodbye"));
     //mixed_parameters(1, "Hello");
     //mixed_parameters(2, "Goodbye");
 }
@@ -131,23 +131,23 @@ static int sample_mock(int i, char *s) {
 }
 
 static void can_mock_full_function_call() {
-    //mock(sample_mock, 5, is(i, 666), string_is(s, "devil"));
+    //mock(sample_mock, 5, want(i, 666), want_string(s, "devil"));
     //assert_equal(sample_mock(666, "devil"), 5);
 }
 
 static void when_called_with_always_should_not_tally_counts() {
-    //always_mock(sample_mock, 5, is(i, 666), string_is(s, "devil"));
+    //always_mock(sample_mock, 5, want(i, 666), want_string(s, "devil"));
 }
 
 static void can_mock_full_sequence() {
-    //mock(sample_mock, 5, is(i, 666), string_is(s, "devil"));
-    //mock(sample_mock, 6, is(i, 667), string_is(s, "beastie"));
+    //mock(sample_mock, 5, want(i, 666), want_string(s, "devil"));
+    //mock(sample_mock, 6, want(i, 667), want_string(s, "beastie"));
     //assert_equal(sample_mock(666, "devil"), 5);
     //assert_equal(sample_mock(667, "beastie"), 6);
 }
 
 static void can_always_mock_full_function_call() {
-    //always_mock(sample_mock, 5, is(i, 666), string_is(s, "devil"));
+    //always_mock(sample_mock, 5, want(i, 666), want_string(s, "devil"));
     //assert_equal(sample_mock(666, "devil"), 5);
     //assert_equal(sample_mock(666, "devil"), 5);
     //assert_equal(sample_mock(666, "devil"), 5);
@@ -168,11 +168,11 @@ TestSuite *mock_tests() {
     add_test(suite, can_stub_a_string_return);
     add_test(suite, can_stub_a_string_sequence);
     add_test(suite, expecting_once_with_parameter_checks_parameter);
-    add_test(suite, always_expect_is_keeps_affirming_parameter);
-    add_test(suite, expect_is_a_sequence);
-    add_test(suite, string_expect_is_is_confirmed);
+    add_test(suite, always_expect_keeps_affirming_parameter);
+    add_test(suite, expect_a_sequence);
+    add_test(suite, string_expect_is_confirmed);
     add_test(suite, string_expect_is_confirmed_even_when_null);
-    add_test(suite, string_expect_is_sequence);
+    add_test(suite, string_expect_sequence);
     add_test(suite, confirming_multiple_parameters_multiple_times);
     add_test(suite, can_mock_full_function_call);
     add_test(suite, when_called_with_always_should_not_tally_counts);

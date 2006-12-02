@@ -3,8 +3,8 @@
 
 #include <inttypes.h>
 
-#define is(parameter, x) _is(#parameter, (intptr_t)x)
-#define is_string(parameter, x) _is_string(#parameter, x)
+#define want(parameter, x) _want(#parameter, (intptr_t)x)
+#define want_string(parameter, x) _want_string(#parameter, x)
 #define compare_constraint(c, x) _compare_constraint(c, (intptr_t)x)
 
 typedef struct _CgreenConstraint CgreenConstraint;
@@ -17,7 +17,7 @@ struct _CgreenConstraint {
 
 void destroy_constraint(CgreenConstraint *constraint);
 int _compare_constraint(CgreenConstraint *constraint, intptr_t comparison);
-CgreenConstraint *_is(const char *parameter, intptr_t expected);
-CgreenConstraint *_is_string(const char *parameter, char *expected);
+CgreenConstraint *_want(const char *parameter, intptr_t expected);
+CgreenConstraint *_want_string(const char *parameter, char *expected);
 
 #endif
