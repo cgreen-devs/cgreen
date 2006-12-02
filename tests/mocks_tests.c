@@ -69,7 +69,7 @@ static void integer_in(int i) {
 
 static void expecting_once_with_any_parameters() {
     expect(integer_in);
-    integer_in(3);
+    //integer_in(3);
 }
 
 static void expecting_once_with_parameter_checks_parameter() {

@@ -7,17 +7,17 @@
 #define want_string(parameter, x) _want_string(#parameter, x)
 #define compare_constraint(c, x) _compare_constraint(c, (intptr_t)x)
 
-typedef struct _CgreenConstraint CgreenConstraint;
-struct _CgreenConstraint {
+typedef struct _Constraint Constraint;
+struct _Constraint {
     const char *parameter;
-    void (*destroy)(CgreenConstraint *);
-    int (*compare)(CgreenConstraint *, intptr_t);
+    void (*destroy)(Constraint *);
+    int (*compare)(Constraint *, intptr_t);
     intptr_t expected;
 };
 
-void destroy_constraint(CgreenConstraint *constraint);
-int _compare_constraint(CgreenConstraint *constraint, intptr_t comparison);
-CgreenConstraint *_want(const char *parameter, intptr_t expected);
-CgreenConstraint *_want_string(const char *parameter, char *expected);
+void destroy_constraint(Constraint *constraint);
+int _compare_constraint(Constraint *constraint, intptr_t comparison);
+Constraint *_want(const char *parameter, intptr_t expected);
+Constraint *_want_string(const char *parameter, char *expected);
 
 #endif

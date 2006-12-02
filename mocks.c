@@ -12,6 +12,13 @@ typedef struct _RecordedResult {
     int should_keep;
 } RecordedResult;
 
+typedef struct _RecordedExpectation {
+    const char *function;
+    const char *test_file;
+    int test_line;
+    int should_keep;
+} RecordedExpectation;
+
 typedef struct _UnwantedCall {
     const char *test_file;
     int test_line;
@@ -19,22 +26,14 @@ typedef struct _UnwantedCall {
 } UnwantedCall;
 
 static Vector *result_queue = NULL;
+static Vector *expectation_queue = NULL;
 static Vector *unwanted_calls = NULL;
 
-typedef struct _TestLocation {
-    const char *file;
-    int line;
-} TestLocation;
-
-static TestLocation location = {"", 0};
-
-static void ensure_result_queue();
-static void ensure_unwanted_calls();
-static void record_expectation(const char *check_file, int check_line, const char *function, const char *parameter, intptr_t expected);
+static void ensure_result_queue_exists();
+static void ensure_expectation_queue_exists();
+static void ensure_unwanted_calls_list_exists();
 RecordedResult *find_result(const char *function);
 static void unwanted_check(const char *function, const char *parameter);
-static void set_test_location(const char *file, int line);
-static void clear_test_location();
 
 void _checked_integer(const char *check_file, int check_line, const char *function, const char *parameter, intptr_t integer) {
     unwanted_check(function, parameter);
@@ -62,11 +61,21 @@ intptr_t _stubbed_result(const char *function, const char *file, int line) {
     return value;
 }
 
-void _expect(const char *function, const char *file, int line, ...) {
+void _expect(const char *function, const char *test_file, int test_line, ...) {
+    ensure_expectation_queue_exists();
+    RecordedExpectation *expectation = (RecordedExpectation *)malloc(sizeof(RecordedExpectation));
+    expectation->function = function;
+    expectation->test_file = test_file;
+    expectation->test_line = test_line;
+    expectation->should_keep = 0;
+    vector_add(expectation_queue, expectation);
+}
+
+void _expect_always(const char *function, const char *test_file, int test_line, ...) {
 }
 
 void _expect_never(const char *function, const char *test_file, int test_line) {
-    ensure_unwanted_calls();
+    ensure_unwanted_calls_list_exists();
     UnwantedCall *unwanted = (UnwantedCall *)malloc(sizeof(UnwantedCall));
     unwanted->test_file = test_file;
     unwanted->test_line = test_line;
@@ -75,7 +84,7 @@ void _expect_never(const char *function, const char *test_file, int test_line) {
 }
 
 void _will_return(const char *function, intptr_t result) {
-    ensure_result_queue();
+    ensure_result_queue_exists();
     RecordedResult *record = (RecordedResult *)malloc(sizeof(RecordedResult));
     record->function = function;
     record->result = result;
@@ -84,7 +93,7 @@ void _will_return(const char *function, intptr_t result) {
 }
 
 void _always_return(const char *function, intptr_t result) {
-    ensure_result_queue();
+    ensure_result_queue_exists();
     RecordedResult *record = (RecordedResult *)malloc(sizeof(RecordedResult));
     record->function = function;
     record->result = result;
@@ -96,23 +105,31 @@ void clear_mocks() {
     if (result_queue != NULL) {
         destroy_vector(result_queue);
     }
+    if (expectation_queue != NULL) {
+        destroy_vector(expectation_queue);
+    }
     if (unwanted_calls != NULL) {
         destroy_vector(unwanted_calls);
     }
-    clear_test_location();
 }
 
 void tally_mocks(TestReporter *reporter) {
     clear_mocks();
 }
 
-static void ensure_result_queue() {
+static void ensure_result_queue_exists() {
     if (result_queue == NULL) {
         result_queue = create_vector(&free);
     }
 }
 
-static void ensure_unwanted_calls() {
+static void ensure_expectation_queue_exists() {
+    if (expectation_queue == NULL) {
+        expectation_queue = create_vector(&free);
+    }
+}
+
+static void ensure_unwanted_calls_list_exists() {
     if (unwanted_calls == NULL) {
         unwanted_calls = create_vector(&free);
     }
@@ -145,14 +162,4 @@ static void unwanted_check(const char *function, const char *parameter) {
                     "Unexpected call %s(..., %s, ...)", function, parameter);
         }
     }
-}
-
-static void set_test_location(const char *file, int line) {
-    location.file = file;
-    location.line = line;
-}
-
-static void clear_test_location() {
-    location.file = "";
-    location.line = 0;
 }
