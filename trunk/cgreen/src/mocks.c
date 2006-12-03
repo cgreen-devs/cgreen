@@ -29,11 +29,13 @@ static Vector *result_queue = NULL;
 static Vector *expectation_queue = NULL;
 static Vector *unwanted_calls = NULL;
 
+static RecordedResult *create_recorded_result(const char *function, intptr_t result);
 static void ensure_result_queue_exists();
 static void ensure_expectation_queue_exists();
 static void ensure_unwanted_calls_list_exists();
 RecordedResult *find_result(const char *function);
 static void unwanted_check(const char *function, const char *parameter);
+void trigger_unfulfilled_expectations(Vector *xpectation_queue, TestReporter *reporter);
 
 void _checked_integer(const char *check_file, int check_line, const char *function, const char *parameter, intptr_t integer) {
     unwanted_check(function, parameter);
@@ -84,21 +86,13 @@ void _expect_never(const char *function, const char *test_file, int test_line) {
 }
 
 void _will_return(const char *function, intptr_t result) {
-    ensure_result_queue_exists();
-    RecordedResult *record = (RecordedResult *)malloc(sizeof(RecordedResult));
-    record->function = function;
-    record->result = result;
+    RecordedResult *record = create_recorded_result(function, result);
     record->should_keep = 0;
-    vector_add(result_queue, record);
 }
 
 void _always_return(const char *function, intptr_t result) {
-    ensure_result_queue_exists();
-    RecordedResult *record = (RecordedResult *)malloc(sizeof(RecordedResult));
-    record->function = function;
-    record->result = result;
+    RecordedResult *record = create_recorded_result(function, result);
     record->should_keep = 1;
-    vector_add(result_queue, record);
 }
 
 void clear_mocks() {
@@ -114,7 +108,17 @@ void clear_mocks() {
 }
 
 void tally_mocks(TestReporter *reporter) {
+    trigger_unfulfilled_expectations(expectation_queue, reporter);
     clear_mocks();
+}
+
+static RecordedResult *create_recorded_result(const char *function, intptr_t result) {
+    ensure_result_queue_exists();
+    RecordedResult *record = (RecordedResult *)malloc(sizeof(RecordedResult));
+    record->function = function;
+    record->result = result;
+    vector_add(result_queue, record);
+    return record;
 }
 
 static void ensure_result_queue_exists() {
@@ -160,6 +164,21 @@ static void unwanted_check(const char *function, const char *parameter) {
                     unwanted->test_line,
                     0,
                     "Unexpected call %s(..., %s, ...)", function, parameter);
+        }
+    }
+}
+
+void trigger_unfulfilled_expectations(Vector *expectation_queue, TestReporter *reporter) {
+    int i;
+    for (i = 0; i < vector_size(expectation_queue); i++) {
+        RecordedExpectation *expectation = vector_get(expectation_queue, i);
+        if (! expectation->should_keep) {
+            (*reporter->assert_true)(
+                    get_test_reporter(),
+                    expectation->test_file,
+                    expectation->test_line,
+                    0,
+                    "Call was not made to %s", expectation->function);
         }
     }
 }

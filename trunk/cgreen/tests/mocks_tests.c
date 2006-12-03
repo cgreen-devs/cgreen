@@ -69,7 +69,7 @@ static void integer_in(int i) {
 
 static void expecting_once_with_any_parameters() {
     expect(integer_in);
-    //integer_in(3);
+    integer_in(3);
 }
 
 static void expecting_once_with_parameter_checks_parameter() {
@@ -154,7 +154,7 @@ static void can_always_mock_full_function_call() {
 }
 
 static void can_declare_function_never_called() {
-    expect_never(sample_mock);
+    expect_never(sample_mock);    
 }
 
 TestSuite *mock_tests() {
@@ -167,6 +167,7 @@ TestSuite *mock_tests() {
     add_test(suite, stub_uses_the_always_value_once_hit);
     add_test(suite, can_stub_a_string_return);
     add_test(suite, can_stub_a_string_sequence);
+    add_test(suite, expecting_once_with_any_parameters);
     add_test(suite, expecting_once_with_parameter_checks_parameter);
     add_test(suite, always_expect_keeps_affirming_parameter);
     add_test(suite, expect_a_sequence);
