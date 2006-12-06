@@ -41,8 +41,7 @@ void popping_last_name_leaves_breadcrumb_empty() {
 }
 
 void mock_walker(const char *name, void *memo) {
-    checked_string(name);
-    checked_integer(memo);
+    mock(name, memo);
 }
 
 void empty_breadcrumb_does_not_trigger_walker() {

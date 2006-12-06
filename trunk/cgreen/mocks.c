@@ -29,38 +29,20 @@ static Vector *result_queue = NULL;
 static Vector *expectation_queue = NULL;
 static Vector *unwanted_calls = NULL;
 
+intptr_t _stubbed_result(const char *function);
 static RecordedResult *create_recorded_result(const char *function, intptr_t result);
 static void ensure_result_queue_exists();
 static void ensure_expectation_queue_exists();
 static void ensure_unwanted_calls_list_exists();
 RecordedResult *find_result(const char *function);
-static void unwanted_check(const char *function, const char *parameter);
-void trigger_unfulfilled_expectations(Vector *xpectation_queue, TestReporter *reporter);
+static void unwanted_check(const char *function);
+void trigger_unfulfilled_expectations(Vector *expectation_queue, TestReporter *reporter);
+RecordedExpectation *find_expectation(const char *function);
 
-void _checked_integer(const char *check_file, int check_line, const char *function, const char *parameter, intptr_t integer) {
-    unwanted_check(function, parameter);
-}
-
-void _checked_string(const char *check_file, int check_line, const char *function, const char *parameter, const char *string) {
-    unwanted_check(function, parameter);
-}
-
-intptr_t _stubbed_result(const char *function, const char *file, int line) {
-    RecordedResult *result = find_result(function);
-    if (result == NULL) {
-        (*get_test_reporter()->assert_true)(
-                get_test_reporter(),
-                file,
-                line,
-                0,
-                "No return value set for function [%s]", function);
-        return 0;
-    }
-    intptr_t value = result->result;
-    if (! result->should_keep) {
-        free(result);
-    }
-    return value;
+intptr_t _mock(const char *function, const char *parameters, ...) {
+    unwanted_check(function);
+    RecordedExpectation *expectation = find_expectation(function);
+    return _stubbed_result(function);
 }
 
 void _expect(const char *function, const char *test_file, int test_line, ...) {
@@ -112,6 +94,18 @@ void tally_mocks(TestReporter *reporter) {
     clear_mocks();
 }
 
+intptr_t _stubbed_result(const char *function) {
+    RecordedResult *result = find_result(function);
+    if (result == NULL) {
+        return 0;
+    }
+    intptr_t value = result->result;
+    if (! result->should_keep) {
+        free(result);
+    }
+    return value;
+}
+
 static RecordedResult *create_recorded_result(const char *function, intptr_t result) {
     ensure_result_queue_exists();
     RecordedResult *record = (RecordedResult *)malloc(sizeof(RecordedResult));
@@ -153,7 +147,7 @@ RecordedResult *find_result(const char *function) {
     return NULL;
 }
 
-static void unwanted_check(const char *function, const char *parameter) {
+static void unwanted_check(const char *function) {
     int i;
     for (i = 0; i < vector_size(unwanted_calls); i++) {
         UnwantedCall *unwanted = vector_get(unwanted_calls, i);
@@ -163,7 +157,7 @@ static void unwanted_check(const char *function, const char *parameter) {
                     unwanted->test_file,
                     unwanted->test_line,
                     0,
-                    "Unexpected call %s(..., %s, ...)", function, parameter);
+                    "Unexpected call to function [%s]");
         }
     }
 }
@@ -178,7 +172,21 @@ void trigger_unfulfilled_expectations(Vector *expectation_queue, TestReporter *r
                     expectation->test_file,
                     expectation->test_line,
                     0,
-                    "Call was not made to %s", expectation->function);
+                    "Call was not made to function [%s]", expectation->function);
         }
     }
+}
+
+RecordedExpectation *find_expectation(const char *function) {
+    int i;
+    for (i = 0; i < vector_size(expectation_queue); i++) {
+        RecordedExpectation *expectation = (RecordedExpectation *)vector_get(expectation_queue, i);
+        if (strcmp(expectation->function, function) == 0) {
+            if (! expectation->should_keep) {
+                return vector_remove(expectation_queue, i);
+            }
+            return expectation;
+        }
+    }
+    return NULL;
 }
