@@ -1,0 +1,15 @@
+TODO for Cgreen
+===============
+
+Unit tester
+-----------
+Can compare doubles.
+
+Mocks
+-----
+Remove global dependency on reporter.
+Get simple constraint passing and failing.
+Get string constraint working.
+Get always expectation working.
+Can combine expect() with will_return().
+Sort out counting glitches, especially in expect_never().

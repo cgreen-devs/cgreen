@@ -15,7 +15,7 @@ struct _Constraint {
     intptr_t expected;
 };
 
-void destroy_constraint(Constraint *constraint);
+void destroy_constraint(void *constraint);
 int _compare_constraint(Constraint *constraint, intptr_t comparison);
 Constraint *_want(const char *parameter, intptr_t expected);
 Constraint *_want_string(const char *parameter, char *expected);
