@@ -7,7 +7,8 @@ int compare_want(Constraint *constraint, intptr_t comparison);
 int compare_want_string(Constraint *constraint, intptr_t comparison);
 Constraint *create_constraint(const char *parameter);
 
-void destroy_constraint(Constraint *constraint) {
+void destroy_constraint(void *abstract) {
+    Constraint *constraint = (Constraint *)abstract;
     (*constraint->destroy)(constraint);
 }
 

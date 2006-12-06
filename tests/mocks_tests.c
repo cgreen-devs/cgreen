@@ -72,9 +72,9 @@ static void expecting_once_with_any_parameters() {
     integer_in(3);
 }
 
-static void expecting_once_with_parameter_checks_parameter() {
-    //expect(integer_in, want(i, 3));
-    //integer_in(3);
+static void expecting_once_with_parameter_checks_that_parameter() {
+    expect(integer_in, want(i, 3));
+    integer_in(4);
 }
 
 static void always_expect_keeps_affirming_parameter() {
@@ -167,7 +167,7 @@ TestSuite *mock_tests() {
     add_test(suite, can_stub_a_string_return);
     add_test(suite, can_stub_a_string_sequence);
     add_test(suite, expecting_once_with_any_parameters);
-    add_test(suite, expecting_once_with_parameter_checks_parameter);
+    add_test(suite, expecting_once_with_parameter_checks_that_parameter);
     add_test(suite, always_expect_keeps_affirming_parameter);
     add_test(suite, expect_a_sequence);
     add_test(suite, string_expect_is_confirmed);

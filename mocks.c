@@ -3,6 +3,7 @@
 #include "reporter.h"
 #include "vector.h"
 #include "assertions.h"
+#include "parameters.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -17,6 +18,7 @@ typedef struct _RecordedExpectation {
     const char *test_file;
     int test_line;
     int should_keep;
+    Vector *constraints;
 } RecordedExpectation;
 
 typedef struct _UnwantedCall {
@@ -32,6 +34,8 @@ static Vector *unwanted_calls = NULL;
 intptr_t _stubbed_result(const char *function);
 static RecordedResult *create_recorded_result(const char *function, intptr_t result);
 static void ensure_result_queue_exists();
+static RecordedExpectation *create_recorded_expectation(const char *function, const char *test_file, int test_line, va_list constraints);
+static void destroy_expectation(void *expectation);
 static void ensure_expectation_queue_exists();
 static void ensure_unwanted_calls_list_exists();
 RecordedResult *find_result(const char *function);
@@ -42,20 +46,25 @@ RecordedExpectation *find_expectation(const char *function);
 intptr_t _mock(const char *function, const char *parameters, ...) {
     unwanted_check(function);
     RecordedExpectation *expectation = find_expectation(function);
+    Vector *names = create_vector_of_names(parameters);
+    destroy_vector(names);
     return _stubbed_result(function);
 }
 
 void _expect(const char *function, const char *test_file, int test_line, ...) {
-    ensure_expectation_queue_exists();
-    RecordedExpectation *expectation = (RecordedExpectation *)malloc(sizeof(RecordedExpectation));
-    expectation->function = function;
-    expectation->test_file = test_file;
-    expectation->test_line = test_line;
+    va_list constraints;
+    va_start(constraints, test_line);
+    RecordedExpectation *expectation = create_recorded_expectation(function, test_file, test_line, constraints);
+    va_end(constraints);
     expectation->should_keep = 0;
-    vector_add(expectation_queue, expectation);
 }
 
 void _expect_always(const char *function, const char *test_file, int test_line, ...) {
+    va_list constraints;
+    va_start(constraints, test_line);
+    RecordedExpectation *expectation = create_recorded_expectation(function, test_file, test_line, constraints);
+    va_end(constraints);
+    expectation->should_keep = 1;
 }
 
 void _expect_never(const char *function, const char *test_file, int test_line) {
@@ -121,9 +130,30 @@ static void ensure_result_queue_exists() {
     }
 }
 
+static RecordedExpectation *create_recorded_expectation(const char *function, const char *test_file, int test_line, va_list constraints) {
+    ensure_expectation_queue_exists();
+    RecordedExpectation *expectation = (RecordedExpectation *)malloc(sizeof(RecordedExpectation));
+    expectation->function = function;
+    expectation->test_file = test_file;
+    expectation->test_line = test_line;
+    expectation->constraints = create_vector(&destroy_constraint);
+    Constraint *constraint;
+    while ((constraint = va_arg(constraints, Constraint *)) != (Constraint *)0) {
+        vector_add(expectation->constraints, constraint);
+    }
+    vector_add(expectation_queue, expectation);
+    return expectation;
+}
+
+static void destroy_expectation(void *abstract) {
+    RecordedExpectation *expectation = (RecordedExpectation *)abstract;
+    destroy_vector(expectation->constraints);
+    free(expectation);
+}
+
 static void ensure_expectation_queue_exists() {
     if (expectation_queue == NULL) {
-        expectation_queue = create_vector(&free);
+        expectation_queue = create_vector(&destroy_expectation);
     }
 }
 
