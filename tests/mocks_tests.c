@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 static int integer_out() {
-    return (int)stubbed_result();
+    return (int)mock();
 }
 
 static void can_stub_an_integer_return() {
@@ -48,7 +48,7 @@ static void stub_uses_the_always_value_once_hit() {
 }
 
 static char *string_out() {
-    return (char *)stubbed_result();
+    return (char *)mock();
 }
 
 static void can_stub_a_string_return() {
@@ -64,7 +64,7 @@ static void can_stub_a_string_sequence() {
 }
 
 static void integer_in(int i) {
-    checked_integer(i);
+    mock(i);
 }
 
 static void expecting_once_with_any_parameters() {
@@ -94,7 +94,7 @@ static void expect_a_sequence() {
 }
 
 static void string_in(char *s) {
-    checked_string(s);
+    mock(s);
 }
 
 static void string_expect_is_confirmed() {
@@ -115,7 +115,7 @@ static void string_expect_sequence() {
 }
 
 static void mixed_parameters(int i, char *s) {
-    checked_integer(i); checked_string(s);
+    mock(i, s);
 }
 
 static void confirming_multiple_parameters_multiple_times() {
@@ -126,28 +126,27 @@ static void confirming_multiple_parameters_multiple_times() {
 }
 
 static int sample_mock(int i, char *s) {
-    checked_integer(i); checked_string(s);
-    return (int)stubbed_result();
+    return (int)mock(i, s);
 }
 
 static void can_mock_full_function_call() {
-    //mock(sample_mock, 5, want(i, 666), want_string(s, "devil"));
+    //expect_and_return(sample_mock, 5, want(i, 666), want_string(s, "devil"));
     //assert_equal(sample_mock(666, "devil"), 5);
 }
 
 static void when_called_with_always_should_not_tally_counts() {
-    //always_mock(sample_mock, 5, want(i, 666), want_string(s, "devil"));
+    //always_expect_and_return(sample_mock, 5, want(i, 666), want_string(s, "devil"));
 }
 
 static void can_mock_full_sequence() {
-    //mock(sample_mock, 5, want(i, 666), want_string(s, "devil"));
-    //mock(sample_mock, 6, want(i, 667), want_string(s, "beastie"));
+    //expect_and_return(sample_mock, 5, want(i, 666), want_string(s, "devil"));
+    //expect_and_return(sample_mock, 6, want(i, 667), want_string(s, "beastie"));
     //assert_equal(sample_mock(666, "devil"), 5);
     //assert_equal(sample_mock(667, "beastie"), 6);
 }
 
 static void can_always_mock_full_function_call() {
-    //always_mock(sample_mock, 5, want(i, 666), want_string(s, "devil"));
+    //always_expect_and_return(sample_mock, 5, want(i, 666), want_string(s, "devil"));
     //assert_equal(sample_mock(666, "devil"), 5);
     //assert_equal(sample_mock(666, "devil"), 5);
     //assert_equal(sample_mock(666, "devil"), 5);
