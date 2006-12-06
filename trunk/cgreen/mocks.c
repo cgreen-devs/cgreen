@@ -42,11 +42,19 @@ RecordedResult *find_result(const char *function);
 static void unwanted_check(const char *function);
 void trigger_unfulfilled_expectations(Vector *expectation_queue, TestReporter *reporter);
 RecordedExpectation *find_expectation(const char *function);
+void check_constraint(RecordedExpectation *expectation, const char *parameter, intptr_t actual);
 
 intptr_t _mock(const char *function, const char *parameters, ...) {
     unwanted_check(function);
     RecordedExpectation *expectation = find_expectation(function);
     Vector *names = create_vector_of_names(parameters);
+    int i;
+    va_list actual;
+    va_start(actual, parameters);
+    for (i = 0; i < vector_size(names); i++) {
+        check_constraint(expectation, vector_get(names, i), va_arg(actual, intptr_t));
+    }
+    va_end(actual);
     destroy_vector(names);
     return _stubbed_result(function);
 }
@@ -219,4 +227,7 @@ RecordedExpectation *find_expectation(const char *function) {
         }
     }
     return NULL;
+}
+
+void check_constraint(RecordedExpectation *expectation, const char *parameter, intptr_t actual) {
 }
