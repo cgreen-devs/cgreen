@@ -5,6 +5,7 @@ TestSuite *assertion_tests();
 TestSuite *sequence_tests();
 TestSuite *vector_tests();
 TestSuite *constraint_tests();
+TestSuite *parameter_tests();
 TestSuite *mock_tests();
 TestSuite *breadcrumb_tests();
 
@@ -14,6 +15,7 @@ int main(int argc, char **argv) {
     add_suite(suite, assertion_tests());
     add_suite(suite, vector_tests());
     add_suite(suite, constraint_tests());
+    add_suite(suite, parameter_tests());
     add_suite(suite, mock_tests());
     add_suite(suite, breadcrumb_tests());
     if (argc > 1) {
