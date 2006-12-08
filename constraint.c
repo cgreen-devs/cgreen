@@ -1,6 +1,7 @@
 #include "constraint.h"
 #include <inttypes.h>
 #include <stdlib.h>
+#include <string.h>
 
 void destroy_empty_constraint(Constraint *constraint);
 int compare_want(Constraint *constraint, intptr_t comparison);
@@ -12,12 +13,17 @@ void destroy_constraint(void *abstract) {
     (*constraint->destroy)(constraint);
 }
 
+int is_constraint_parameter(Constraint *constraint, const char *parameter) {
+    return strcmp(constraint->parameter, parameter) == 0;
+}
+
 int _compare_constraint(Constraint *constraint, intptr_t comparison) {
     (*constraint->compare)(constraint, comparison);
 }
 
 Constraint *_want(const char *parameter, intptr_t expected) {
     Constraint *constraint = create_constraint(parameter);
+    constraint->parameter = parameter;
     constraint->compare = &compare_want;
     constraint->expected = expected;
     return constraint;
