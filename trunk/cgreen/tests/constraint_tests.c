@@ -7,6 +7,13 @@ static void can_construct_and_destroy_an_want_constraint() {
     destroy_constraint(any_old_want);
 }
 
+static void parameter_name_gives_true_if_matching() {
+    Constraint *any_old_want = want(label, 37);
+    assert_equal(is_constraint_parameter(any_old_want, "wrong_label"), 0);
+    assert_equal(is_constraint_parameter(any_old_want, "label"), 1);
+    destroy_constraint(any_old_want);
+}
+
 static void equal_integers_compare_true_with_a_want_constraint() {
     Constraint *want_37 = want(label, 37);
     assert_equal(compare_constraint(want_37, 37), 1);
@@ -48,6 +55,7 @@ static void can_expect_null_strings_as_well_as_real_ones() {
 TestSuite *constraint_tests() {
     TestSuite *suite = create_test_suite();
     add_test(suite, can_construct_and_destroy_an_want_constraint);
+    add_test(suite, parameter_name_gives_true_if_matching);
     add_test(suite, equal_integers_compare_true_with_a_want_constraint);
     add_test(suite, equal_pointers_compare_true_with_a_want_constraint);
     add_test(suite, can_construct_and_destroy_an_want_string_constraint);

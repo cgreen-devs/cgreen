@@ -31,7 +31,7 @@ static Vector *result_queue = NULL;
 static Vector *expectation_queue = NULL;
 static Vector *unwanted_calls = NULL;
 
-intptr_t _stubbed_result(const char *function);
+intptr_t stubbed_result(const char *function);
 static RecordedResult *create_recorded_result(const char *function, intptr_t result);
 static void ensure_result_queue_exists();
 static RecordedExpectation *create_recorded_expectation(const char *function, const char *test_file, int test_line, va_list constraints);
@@ -42,7 +42,7 @@ RecordedResult *find_result(const char *function);
 static void unwanted_check(const char *function);
 void trigger_unfulfilled_expectations(Vector *expectation_queue, TestReporter *reporter);
 RecordedExpectation *find_expectation(const char *function);
-void check_constraint(RecordedExpectation *expectation, const char *parameter, intptr_t actual);
+void apply_any_constraints(Vector *constraints, const char *parameter, intptr_t actual);
 
 intptr_t _mock(const char *function, const char *parameters, ...) {
     unwanted_check(function);
@@ -52,11 +52,11 @@ intptr_t _mock(const char *function, const char *parameters, ...) {
     va_list actual;
     va_start(actual, parameters);
     for (i = 0; i < vector_size(names); i++) {
-        check_constraint(expectation, vector_get(names, i), va_arg(actual, intptr_t));
+        apply_any_constraints(expectation->constraints, vector_get(names, i), va_arg(actual, intptr_t));
     }
     va_end(actual);
     destroy_vector(names);
-    return _stubbed_result(function);
+    return stubbed_result(function);
 }
 
 void _expect(const char *function, const char *test_file, int test_line, ...) {
@@ -111,7 +111,7 @@ void tally_mocks(TestReporter *reporter) {
     clear_mocks();
 }
 
-intptr_t _stubbed_result(const char *function) {
+intptr_t stubbed_result(const char *function) {
     RecordedResult *result = find_result(function);
     if (result == NULL) {
         return 0;
@@ -229,5 +229,11 @@ RecordedExpectation *find_expectation(const char *function) {
     return NULL;
 }
 
-void check_constraint(RecordedExpectation *expectation, const char *parameter, intptr_t actual) {
+void apply_any_constraints(Vector *constraints, const char *parameter, intptr_t actual) {
+    int i;
+    for (i = 0; i < vector_size(constraints); i++) {
+        Constraint *constraint = (Constraint *)vector_get(constraints, i);
+        if (is_constraint_parameter(constraint, parameter)) {
+        }
+    }
 }
