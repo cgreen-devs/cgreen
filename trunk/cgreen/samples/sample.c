@@ -132,52 +132,39 @@ TestSuite *isolation_tests() {
     return suite;
 }
 
-static int gives_integer() {
-    return stubbed_result();
-}
-
-static void stub_fails_when_called_without_presets() {
-    gives_integer();
-}
-
 static void takes_integer(int i) {
-    checked_integer(i);
-}
-
-static void expectation_fails_when_called_without_presets() {
-    takes_integer(1);
+    mock(i);
 }
 
 static void expectation_confirmed() {
-    expect_exactly(takes_integer, 3);
+    expect(takes_integer, want(i, 3));
     takes_integer(3);
 }
 
 static void expectation_dashed() {
-    expect_exactly(takes_integer, 3);
+    expect(takes_integer, want(i, 3));
     takes_integer(4);
 }
 static void mixed_parameters(int i, char *s) {
-    checked_integer(i);
-    checked_string(s);
+    mock(i, s);
 }
 
 static void confirming_multiple_parameters_multiple_times() {
-    expect_exactly(mixed_parameters, 1, "Hello");
-    expect_exactly(mixed_parameters, 2, "Goodbye");
+    expect(mixed_parameters, want(i, 1), want_string(s, "Hello"));
+    expect(mixed_parameters, want(i, 2), want_string(s, "Goodbye"));
     mixed_parameters(1, "Hello");
     mixed_parameters(2, "Goodbye");
 }
 
 static void breaking_multiple_parameters_multiple_times() {
-    expect_exactly(mixed_parameters, 1, "Hello");
-    expect_exactly(mixed_parameters, 2, "Goodbye");
+    expect(mixed_parameters, want(i, 1), want_string(s, "Hello"));
+    expect(mixed_parameters, want(i, 2), want_string(s, "Goodbye"));
     mixed_parameters(10, "Helloo");
     mixed_parameters(20, "Gooodbye");
 }
 
 static void uncalled_expectations_should_throw_errors() {
-    expect_exactly(mixed_parameters, 1, "Hello");
+    expect(mixed_parameters, want(i, 1), want_string(s, "Hello"));
 }
 
 static void unexpected_call_should_throw_error() {
@@ -187,8 +174,6 @@ static void unexpected_call_should_throw_error() {
 
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, stub_fails_when_called_without_presets);
-    add_test(suite, expectation_fails_when_called_without_presets);
     add_test(suite, expectation_confirmed);
     add_test(suite, expectation_dashed);
     add_test(suite, confirming_multiple_parameters_multiple_times);

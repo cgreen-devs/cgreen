@@ -479,8 +479,8 @@ TestSuite *person_tests();</strong>
 
 int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
-    add_suite(suite, our_tests);
-    add_suite(suite, person_tests);<strong>
+    add_suite(suite, our_tests());
+    add_suite(suite, person_tests());<strong>
     if (argc > 1) {</strong>
         return run_single_test(suite, <strong>argv[1]</strong>, create_text_reporter());<strong>
     }</strong>
