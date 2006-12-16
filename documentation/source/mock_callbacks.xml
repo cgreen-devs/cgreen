@@ -5,17 +5,22 @@
     </long_title>
     <content>
         <p>
+            When testing you want certainty above all else.
+            Random events destroy confidence in your test suite
+            and force needless extra runs &quot;to be sure&quot;.
             A good test places the subject under test into a
             tightly controlled environment.
             A test chamber if you like.
             This makes the tests fast, repeatable and reliable.
         </p>
         <p>
-            To create a test chamber for testing code, it means we have
+            To create a test chamber for testing code, we have
             to control any outgoing calls from the code under test.
             We won't believe our test failure if our code is making
             calls to the internet for example.
-            Not only that, but it means we have to get dependent components
+            The internet can fail all by itself.
+            Not only do we not have total control, but it means
+            we have to get dependent components
             working before we can test the higher level code.
             This makes it difficult to code top down.
         </p>
@@ -53,8 +58,9 @@ char *read_paragraph(<strong>int (*read)(void *), void *stream</strong>) {
 }
 ]]></c>
                 This is a fairly generic stream filter that turns
-                the incoming characters into C string paragraphs, returning
-                <code>NULL</code> if there is no paragraph.
+                the incoming characters into C string paragraphs.
+                Each call creates one paragraph, returning a pointer
+                to it or returning <code>NULL</code> if there is no paragraph.
                 The paragraph has memory allocated to it and the
                 stream is advanced ready for the next call.
                 That's quite a bit of functionality, and there
@@ -62,7 +68,7 @@ char *read_paragraph(<strong>int (*read)(void *), void *stream</strong>) {
                 I really want this code tested before I deploy it.
             </p>
             <p>
-                The problem is getting the stream to behave correctly.
+                The problem is the stream dependency.
                 We could use a real stream, but that will cause all sorts of
                 headaches.
                 It makes the test of our paragraph formatter dependent
@@ -98,7 +104,7 @@ TestSuite *stream_tests() {
     return suite;
 }
 ]]></c>
-                Our simulation is easy, because our fake stream returns only
+                Our simulation is easy here, because our fake stream returns only
                 one value.
                 Things are harder when the function result changes from
                 call to call as a real stream would.
@@ -110,7 +116,8 @@ TestSuite *stream_tests() {
             </p>
             <p>
                 Cgreen handles this clutter for us
-                by letting us write a single programmable function.
+                by letting us write a single programmable function
+                for all our tests.
             </p>
         </section>
         <section name="stubs" title="Record and playback">
@@ -119,7 +126,7 @@ TestSuite *stream_tests() {
                 (any name will do)...
 <c><![CDATA[
 <strong>static int stub_stream(void *stream) {
-    return (int)stubbed_result();
+    return (int)mock();
 }</strong>
 ]]></c>
                 Hardly longer that our trivial server stub above,
@@ -131,7 +138,7 @@ TestSuite *stream_tests() {
                 <code>EOF</code>...
 <c><![CDATA[
 static int stub_stream(void *stream) {
-    return (int)stubbed_result();
+    return (int)mock();
 }
 
 static void reading_lines_from_empty_stream_gives_null() {
@@ -140,8 +147,8 @@ static void reading_lines_from_empty_stream_gives_null() {
 }
 ]]></c>
                 The <code>always_return()</code> macro takes as arguments the
-                function name and the return value,
-                so we have told <code>stub_stream()</code> to always return
+                function name and the return value.
+                We have told <code>stub_stream()</code> to always return
                 <code>EOF</code> when called.
             </p>
             <p>
@@ -151,6 +158,7 @@ Running "main"...
 Completed "main": 1 pass, 0 failures, 0 exceptions.
 ]]></sh>
                 So far, so good.
+                On to the next test.
             </p>
             <p>
                 If we want to test a one character line, we have to send
@@ -160,7 +168,7 @@ Completed "main": 1 pass, 0 failures, 0 exceptions.
                 line of that character.
             </p>
             <p>
-                Here is how we could do this...
+                Here is how we can do this...
 <c><![CDATA[
 static void one_character_stream_gives_one_character_line() {<strong>
     will_return(stub_stream, 'a');
@@ -177,14 +185,15 @@ static void one_character_stream_gives_one_character_line() {<strong>
                 given back once the test proper starts.
             </p>
             <p>
-                We'll run this test too...
+                We'll add this test to the suite and run it...
 <sh><![CDATA[
 Running "main"...
 Failure!: stream_tests -> one_character_stream_gives_one_character_line ->
         [] should match [a] at [stream_test.c] line [19]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
-                Oops. Already we need a fix...
+                Oops. Our code under test doesn't work.
+                Already we need a fix...
 <c><![CDATA[
 char *read_paragraph(int (*read)(void *), void *stream) {
     int buffer_size = 0, length = 0;
@@ -212,13 +221,13 @@ Completed "main": 2 passes, 0 failures, 0 exceptions.
                 How do the Cgreen stubs work?
                 The <code>will_return()</code> calls build up a static list of
                 return values which are cleared between tests.
-                The <code>stubbed_result()</code> macro captures the <code>__func__</code>,
-                <code>__FILE__</code> and <code>__LINE__</code> properties.
+                The <code>mock()</code> macro captures the
+                <code>__func__</code> property.
                 It uses these to look up entries in the return list, and also to
                 generate more helpful messages.
             </p>
             <p>
-                We can crank out tests quite quickly...
+                We can crank out our tests quite quickly now...
 <c><![CDATA[
 static void one_word_stream_gives_one_word_line() {<strong>
     will_return(stub_stream, 't');
@@ -230,24 +239,24 @@ static void one_word_stream_gives_one_word_line() {<strong>
 ]]></c>
                 I've been a bit naughty.
                 As each test runs in it's own process, I haven't bothered
-                to free the pointers.
+                to free the pointers to the paragraphs.
                 I've just let the operating system do it.
-                Purists may want to add the extra code.
+                Purists may want to add the extra clean up code.
             </p>
             <p>
                 I've also used <code>always_return()</code> for the last instruction.
-                If the stub is given an instruction is does not expect, it will
-                throw a test failure.
+                Withou this, if the stub is given an instruction is does
+                not expect, it will throw a test failure.
                 This is overly restrictive, as our <code>read_paragraph()</code>
                 function could quite legitimately call the stream after it had
                 run off of the end.
-                At least we are not testing that restriction here.
+                OK, that would be odd behaviour, but that's not what we are testing here.
                 If we were, it would be placed in a test of it's own.
                 The <code>always_return()</code> call tells <em>Cgreen</em> to keep
-                going after the first three letters.
+                going after the first three letters, allowing extra calls.
             </p>
             <p>
-                As we build up the tests, they start to look like a specification
+                As we build more tests, they start to look like a specification
                 of the behaviour...
 <c><![CDATA[
 static void drops_line_ending_from_word_and_stops() {<strong>
@@ -257,13 +266,15 @@ static void drops_line_ending_from_word_and_stops() {<strong>
     will_return(stub_stream, '\n');</strong>
     assert_string_equal(read_paragraph(&stub_stream, NULL), <strong>"the"</strong>);
 }
-
+]]></c>
+                ...and just for luck...
+<c><![CDATA[
 static void single_line_ending_gives_empty_line() {<strong>
     will_return(stub_stream, '\n');</strong>
     assert_string_equal(read_paragraph(&stub_stream, NULL), <strong>""</strong>);
 }
 ]]></c>
-                This time we don't use <code>always_return()</code>.
+                This time we musn't use <code>always_return()</code>.
                 We want to leave the stream where it is, ready for the next
                 call to <code>read_paragraph()</code>.
                 If we call the stream beyond the line ending, we want to fail.
@@ -311,7 +322,7 @@ Completed "main": 5 passes, 0 failures, 0 exceptions.
                 So this will cause problems...
 <c><![CDATA[
 static int stub_stream(void *stream) {
-    return (int)stubbed_result();
+    return (int)mock();
 }
 <strong>
 static void bad_test() {
@@ -319,14 +330,14 @@ static void bad_test() {
     do_stuff(&stub_stream, &stub_stream);
 }</strong>
 ]]></c>
-                It will be necessary to have two stubs to mak ethis test behave...
+                It will be necessary to have two stubs to make this test behave...
 <c><![CDATA[
 static int first_stream(void *stream) {
-    return (int)stubbed_result();
+    return (int)mock();
 }
 
 static int second_stream(void *stream) {
-    return (int)stubbed_result();
+    return (int)mock();
 }
 <strong>
 static void good_test() {
@@ -335,7 +346,8 @@ static void good_test() {
     do_stuff(&first_stream, &second_stream);
 }</strong>
 ]]></c>
-                We now have a way of writing fast, clear tests with no external dependencies.
+                We now have a way of writing fast, clear tests with no
+                external dependencies.
                 The information flow is still one way though, from stub to the
                 code under test.
                 When our code calls complex procedures, we won't want to pick
@@ -343,7 +355,7 @@ static void good_test() {
                 That's too much like detective work.
                 And why should we?
                 We just want to know that we dispatched the correct information
-                downteh line.
+                down the line.
             </p>
             <p>
                 Things get more interesting when we thing of
@@ -356,7 +368,7 @@ static void good_test() {
                 To swap the traffic flow, we'll look at an outgoing example instead.
                 Here is the prewritten production code...
 <c><![CDATA[
-void by_paragraph(int (*read)(void *), void *in, <strong>void (*write)(char *, void *), void *out</strong>) {
+void by_paragraph(int (*read)(void *), void *in, <strong>void (*write)(void *, char *), void *out</strong>) {
     while (1) {
         char *line = read_paragraph(read, in);
         if (line == NULL) {
@@ -370,7 +382,7 @@ void by_paragraph(int (*read)(void *), void *in, <strong>void (*write)(char *, v
                 This is the start of a formatter utility.
                 Later filters will probably break the paragaphs up into justified text,
                 but right now that is all abstracted behind the
-                <code>void write(char *, void *)</code> interface.
+                <code>void write(void *, char *)</code> interface.
                 Our current interests are: does it loop through the paragraphs, and does
                 it crash?
             </p>
@@ -406,75 +418,46 @@ void one_character_is_made_into_a_one_letter_paragraph() {
                 keep the tests minimal.
                 The catch with this method is that we are back to writing
                 individual functions for each test.
+                We have the same problem as we had with hand coded stubs.
             </p>
             <p>
                 Again, <em>Cgreen</em> has a way to automate this.
                 Here is the rewritten test...
 <c><![CDATA[
-static int reader(void *stream) {<strong>
-    checked_integer(stream);</strong>
-    return (int)stubbed_result();
+static int reader(void *stream) {
+    return (int)mock(<strong>stream</strong>);
 }
 
-static void writer(void *stream, char *paragraph) {<strong>
-    checked_integer(stream);
-    checked_string(paragraph);</strong>
+static void writer(void *stream, char *paragraph) {
+    <strong>mock(stream, paragraph);</strong>
 }
 
 void one_character_is_made_into_a_one_letter_paragraph() {<strong>
     will_return(reader, 'a');
     always_return(reader, EOF);
-    always_expect(reader, NULL);
-    expect(writer, NULL, "a");</strong>
+    expect(writer, want_string(paragraph, "a"));</strong>
     by_paragraph(<strong>&reader</strong>, NULL, <strong>&writer</strong>, NULL);
 }
 ]]></c>
                 Where are the assertions?
             </p>
             <p>
-                Unlike our earlier stub, <code>reader()</code> now checks it's
+                Unlike our earlier stub, <code>reader()</code> can now check it's
                 parameters.
                 In object oriented circles, an object that checks it's
                 parameters as well as simulating behaviour is called a
                 mock object.
                 By analogy <code>reader()</code> is a mock function, or
                 mock callback.
-                The <code>expect_always()</code> macro told the <code>reader()</code>
-                that it will be called with the single argument of <code>NULL</code>
-                for the stream.
             </p>
             <p>
-                In the same way, we have stated that <code>writer()</code> will
-                be called just once.
-                That call must have the string <code>"a"</code> and the stream
-                <code>NULL</code>.
-                If any part of this does not match, the mock function will
+                Using the <code>expect</code> macro, we have stated that
+                <code>writer()</code> will be called just once.
+                That call must have the string <code>"a"</code> for the
+                paragraph parameter.
+                If this parameter does not match, the mock function will
                 issue a failure straight to the test suite.
                 This is what saves us writing a lot of assertions.
-            </p>
-            <p>
-                We could actually rewrite this test slightly to save another line
-                of code...
-<c><![CDATA[
-static int reader(void *stream) {
-    checked_integer(stream);
-    return (int)stubbed_result();
-}
-
-static void writer(void *stream, char *paragraph) {
-    checked_integer(stream);
-    checked_string(paragraph);
-}
-
-static void one_character_is_made_into_a_one_letter_paragraph() {<strong>
-    mock(reader, EOF, 'a');
-    always_mock(reader, EOF, NULL);</strong>
-    expect(writer, NULL, "a");
-    by_paragraph(<strong>&reader</strong>, NULL, <strong>&writer</strong>, NULL);
-}
-]]></c>
-                The <code>mock()</code> macro combines the <code>will_return()</code>
-                and the <code>expect()</code> calls into one call.
             </p>
             <p>
                 Here is the full list of instructions that can be sent to the mocks...
@@ -485,30 +468,40 @@ static void one_character_is_made_into_a_one_letter_paragraph() {<strong>
                     <tr><td><code>expect(function, arguments...)</code></td><td>Sets up an expectation on each argument. If there is a mismatch, or a call is made without an expectation, a failure is generated.</td></tr>
                     <tr><td><code>always_expect(function, arguments...)</code></td><td>Must receive exactly these arguments from now on.</td></tr>
                     <tr><td><code>expect_never(function)</code></td><td>This function must not be called or a failure is generated.</td></tr>
-                    <tr><td><code>mock(function, result, arguments...)</code></td><td>Combines <code>will_return()</code> and <code>expect()</code>.</td></tr>
-                    <tr><td><code>always_mock(function, result, arguments...)</code></td><td>Combines <code>always_return()</code> and <code>always_expect()</code>.</td></tr>
+                    <tr><td><code>will_respond(function, result, arguments...)</code></td><td>Combines <code>will_return()</code> and <code>expect()</code>.</td></tr>
+                    <tr><td><code>always_respond(function, result, arguments...)</code></td><td>Combines <code>always_return()</code> and <code>always_expect()</code>.</td></tr>
                 </table>
                 The <code>expect_never()</code> macro is slightly different.
                 It's only task is to confirm that a method was never run.
             </p>
             <p>
+                The <code>will_respond()</code> macro combines the <code>will_return()</code>
+                and the <code>expect()</code> calls into one call, as does <code>always_respond</code>.
+            </p>
+            <p>
+                Each parameter can be tested with a constraint.
+                Two constraints are available:
+                <code>want(parameter, expected)</code> for integers and pointers, and
+                <code>want_string(parameter, expected)</code> does a string comparison.
+            </p>
+            <p>
                 It's about time we actually ran our test...
 <sh><![CDATA[
 Running "main"...
-Completed "main": 10 passes, 0 failures, 0 exceptions.
+Completed "main": 6 passes, 0 failures, 0 exceptions.
 ]]></sh>
                 Confident that a single character works, we can further
                 specify the behaviour.
                 Firstly an input sequence...
 <c><![CDATA[
-static void no_line_endings_makes_one_paragraph() {<strong>
-    mock(reader, 'a', NULL);
-    mock(reader, ' ', NULL);
-    mock(reader, 'b', NULL);
-    mock(reader, ' ', NULL);
-    mock(reader, 'c', NULL);</strong>
-    always_mock(reader, EOF, NULL);
-    expect(writer, NULL, "a b c");
+static void no_line_endings_makes_one_paragraph() {
+    will_return(reader, 'a');
+    will_return(reader, ' ');
+    will_return(reader, 'b');
+    will_return(reader, ' ');
+    will_return(reader, 'c');
+    always_return(reader, EOF);<strong>
+    expect(writer, want_string(paragraph, "a b c"));</strong>
     by_paragraph(&reader, NULL, &writer, NULL);
 }
 ]]></c>
@@ -517,26 +510,34 @@ static void no_line_endings_makes_one_paragraph() {<strong>
                 Next, checking an output sequence...
 <c><![CDATA[
 static void line_endings_generate_separate_paragraphs() {
-    mock(reader, 'a', NULL);
-    mock(reader, '\n', NULL);
-    mock(reader, 'b', NULL);
-    mock(reader, '\n', NULL);
-    mock(reader, 'c', NULL);
-    always_mock(reader, EOF, NULL);<strong>
-    expect(writer, NULL, "a");
-    expect(writer, NULL, "b");
-    expect(writer, NULL, "c");</strong>
+    will_return(reader, 'a');
+    will_return(reader, '\n');
+    will_return(reader, 'b');
+    will_return(reader, '\n');
+    will_return(reader, 'c');
+    always_return(reader, EOF);<strong>
+    expect(writer, want_string(paragraph, "a"));
+    expect(writer, want_string(paragraph, "b"));
+    expect(writer, want_string(paragraph, "c"));</strong>
     by_paragraph(&reader, NULL, &writer, NULL);
 }
 ]]></c>
+                Like the <code>will_return()</code> stubs above, the
+                <code>expect()</code> calls follow a record and playback model.
+                Each one tests a successive call.
+                This sequence confirms that we get <code><![CDATA["a"]]></code>,
+                <code><![CDATA["b"]]></code> and <code><![CDATA["c"]]></code> in
+                order.
+            </p>
+            <p>
                 Then we'll make sure the correct stream pointers are passed to
                 the correct functions.
                 This is a more realistic parameter check...
 <c><![CDATA[
 static void resources_are_paired_with_the_functions() {
-    mock(reader, 'a', (void *)1);
-    always_mock(reader, EOF, (void *)1);
-    expect(writer, (void *)2, "a");
+    will_respond(reader, 'a', want(stream, 1));
+    always_respond(reader, EOF, want(stream, 1));
+    expect(writer, want(stream, 2));
     by_paragraph(&reader, (void *)1, &writer, (void *)2);
 }
 ]]></c>
@@ -544,8 +545,8 @@ static void resources_are_paired_with_the_functions() {
                 there is no paragraph.
 <c><![CDATA[
 static void empty_paragraphs_are_ignored() {
-    mock(reader, '\n', NULL);
-    always_mock(reader, EOF, NULL);<strong>
+    will_return(reader, '\n');
+    always_return(reader, EOF);<strong>
     expect_never(writer);</strong>
     by_paragraph(&reader, NULL, &writer, NULL);
 }
@@ -554,17 +555,9 @@ static void empty_paragraphs_are_ignored() {
 <sh><![CDATA[
 Running "main"...
 Failure!: stream_tests -> empty_paragraphs_are_ignored ->
-        Unexpected call writer(..., stream, ...) at [stream_test.c] line [96]
-Failure!: stream_tests -> empty_paragraphs_are_ignored ->
-        Unexpected call writer(..., paragraph, ...) at [stream_test.c] line [96]
-Completed "main": 39 passes, 2 failures, 0 exceptions.
+        Unexpected call to function [writer] at [stream_test.c] line [96]
+Completed "main": 14 passes, 1 failure, 0 exceptions.
 ]]></sh>
-                <em>Cgreen</em> is being rather zealous here as it's reporting
-                an error for each parameter that was unexpected.
-                In fact we have just one unexpected call to <code>writer()</code>.
-                Counting glitches will hopefully be fixed in post alpha releases.
-            </p>
-            <p>
                 Obviously blank lines are still being dispatched to the
                 <code>writer()</code>.
                 Once this is pointed out, the fix is obvious...
@@ -584,7 +577,7 @@ void by_paragraph(int (*read)(void *), void *in, void (*write)(void *, char *), 
                 at uncovering subtle bugs.
 <sh><![CDATA[
 Running "main"...
-Completed "main": 38 passes, 0 failures, 0 exceptions.
+Completed "main": 14 passes, 0 failures, 0 exceptions.
 ]]></sh>
                 All done.
             </p>

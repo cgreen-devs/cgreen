@@ -2,7 +2,6 @@
 #include "constraint.h"
 #include "reporter.h"
 #include "vector.h"
-#include "assertions.h"
 #include "parameters.h"
 #include <stdlib.h>
 #include <string.h>
@@ -42,20 +41,22 @@ RecordedResult *find_result(const char *function);
 static void unwanted_check(const char *function);
 void trigger_unfulfilled_expectations(Vector *expectation_queue, TestReporter *reporter);
 RecordedExpectation *find_expectation(const char *function);
-void apply_any_constraints(Vector *constraints, const char *parameter, intptr_t actual);
+void apply_any_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual);
 
 intptr_t _mock(const char *function, const char *parameters, ...) {
     unwanted_check(function);
     RecordedExpectation *expectation = find_expectation(function);
-    Vector *names = create_vector_of_names(parameters);
-    int i;
-    va_list actual;
-    va_start(actual, parameters);
-    for (i = 0; i < vector_size(names); i++) {
-        apply_any_constraints(expectation->constraints, vector_get(names, i), va_arg(actual, intptr_t));
+    if (expectation != NULL) {
+        Vector *names = create_vector_of_names(parameters);
+        int i;
+        va_list actual;
+        va_start(actual, parameters);
+        for (i = 0; i < vector_size(names); i++) {
+            apply_any_constraints(expectation, vector_get(names, i), va_arg(actual, intptr_t));
+        }
+        va_end(actual);
+        destroy_vector(names);
     }
-    va_end(actual);
-    destroy_vector(names);
     return stubbed_result(function);
 }
 
@@ -67,7 +68,7 @@ void _expect(const char *function, const char *test_file, int test_line, ...) {
     expectation->should_keep = 0;
 }
 
-void _expect_always(const char *function, const char *test_file, int test_line, ...) {
+void _always_expect(const char *function, const char *test_file, int test_line, ...) {
     va_list constraints;
     va_start(constraints, test_line);
     RecordedExpectation *expectation = create_recorded_expectation(function, test_file, test_line, constraints);
@@ -195,7 +196,7 @@ static void unwanted_check(const char *function) {
                     unwanted->test_file,
                     unwanted->test_line,
                     0,
-                    "Unexpected call to function [%s]");
+                    "Unexpected call to function [%s]", function);
         }
     }
 }
@@ -206,7 +207,7 @@ void trigger_unfulfilled_expectations(Vector *expectation_queue, TestReporter *r
         RecordedExpectation *expectation = vector_get(expectation_queue, i);
         if (! expectation->should_keep) {
             (*reporter->assert_true)(
-                    get_test_reporter(),
+                    reporter,
                     expectation->test_file,
                     expectation->test_line,
                     0,
@@ -229,11 +230,18 @@ RecordedExpectation *find_expectation(const char *function) {
     return NULL;
 }
 
-void apply_any_constraints(Vector *constraints, const char *parameter, intptr_t actual) {
+void apply_any_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual) {
     int i;
-    for (i = 0; i < vector_size(constraints); i++) {
-        Constraint *constraint = (Constraint *)vector_get(constraints, i);
+    for (i = 0; i < vector_size(expectation->constraints); i++) {
+        Constraint *constraint = (Constraint *)vector_get(expectation->constraints, i);
         if (is_constraint_parameter(constraint, parameter)) {
+            test_constraint(
+                    constraint,
+                    expectation->function,
+                    actual,
+                    expectation->test_file,
+                    expectation->test_line,
+                    get_test_reporter());
         }
     }
 }

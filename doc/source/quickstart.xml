@@ -409,12 +409,11 @@ words("This is a sentence", &act_on_word, &memo);</strong>
 #include <stdlib.h>
 ...<strong>
 void mocked_callback(char *word, void *memo) {
-    checked_string(word);
-    checked_integer(memo);
+    mock(word, memo);
 }
 
 void single_word_sentence_invokes_callback_once() {
-    expect(mocked_callback, "Word", NULL);
+    expect(mocked_callback, want_string(word, "Word"), want(memo, NULL));
     words("Word", &mocked_callback, NULL);
 }</strong>
 
@@ -430,13 +429,10 @@ TestSuite *words_tests() {
             <p>
                 A mock is basically a programmable object.
                 In C objects are limited to functions, so this is a mock function.
-                The macro <code>checked_string()</code> behaves differently
-                depending on context.
-                In record mode, when the mock is being set up, it records
-                parameters for later comparison.
-                When in playback mode, it compares the incoming parameters with
-                the expected values and dispatches messages to the test suite if
+                The macro <code>mock()</code> compares the incoming parameters with
+                any expected values and dispatches messages to the test suite if
                 there is a mismatch.
+                It also returns any values that have been preprohrammed in the test.
             </p>
             <p>
                 The test function is <code>single_word_sentence_invokes_callback_once()</code>.
@@ -465,13 +461,9 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
                 This gives us the expected failing tests...
 <sh><![CDATA[
 Running "all_tests.c"...
-Failure!: words_tests -> single_word_sentence_invokes_callback_once ->
-        Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [27]
-Failure!: words_tests -> single_word_sentence_invokes_callback_once ->
-        Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [27]
 Completed "all_tests.c": 2 passes, 2 failures, 0 exceptions.
 ]]></sh>
-                Cgreen reports each unused parameter that was set up.
+                Cgreen reports each missing parameter that was expected.
                 It expected the parameter checks to be called once each,
                 but they weren't.
                 We can easily get the test to pass by filling out the
@@ -502,20 +494,6 @@ void phrase_invokes_callback_for_each_word() {
                 We can see all this when we run the tests...
 <sh><![CDATA[
 Running "main"...
-Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
-        mocked_callback(..., word, ...) is [Birds of a feather], and should be [Birds] at [words_test.c] line [32]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
-        Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [33]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
-        Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [33]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
-        Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [34]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
-        Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [34]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
-        Unused mocked_callback(..., word, ...) expectation at [words_test.c] line [35]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
-        Unused mocked_callback(..., memo, ...) expectation at [words_test.c] line [35]
 Completed "main": 5 passes, 7 failures, 0 exceptions.
 ]]></sh>
                 The first failure tells the story.

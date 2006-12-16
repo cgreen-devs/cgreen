@@ -51,19 +51,19 @@ void empty_breadcrumb_does_not_trigger_walker() {
 }
 
 void single_item_breadcrumb_does_calls_walker_only_once() {
-    //expect(mock_walker, string_is(name, "Hello"));
-    //Breadcrumb *breadcrumb = create_breadcrumb();
-    //push_breadcrumb(breadcrumb, "Hello");
-    //walk_breadcrumb(breadcrumb, &mock_walker, NULL);
+    expect(mock_walker, want_string(name, "Hello"));
+    Breadcrumb *breadcrumb = create_breadcrumb();
+    push_breadcrumb(breadcrumb, "Hello");
+    walk_breadcrumb(breadcrumb, &mock_walker, NULL);
 }
 
 void double_item_breadcrumb_does_calls_walker_only_once() {
-    //expect(mock_walker, string_is(name, "Hello"));
-    //expect(mock_walker, string_is(name, "Goodbye"));
-    //Breadcrumb *breadcrumb = create_breadcrumb();
-    //push_breadcrumb(breadcrumb, "Hello");
-    //push_breadcrumb(breadcrumb, "Goodbye");
-    //walk_breadcrumb(breadcrumb, &mock_walker, NULL);
+    expect(mock_walker, want_string(name, "Hello"));
+    expect(mock_walker, want_string(name, "Goodbye"));
+    Breadcrumb *breadcrumb = create_breadcrumb();
+    push_breadcrumb(breadcrumb, "Hello");
+    push_breadcrumb(breadcrumb, "Goodbye");
+    walk_breadcrumb(breadcrumb, &mock_walker, NULL);
 }
 
 TestSuite *breadcrumb_tests() {
