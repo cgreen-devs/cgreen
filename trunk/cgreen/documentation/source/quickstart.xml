@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
                 On compiling and running, we now get the output...
 <sh><![CDATA[
 Running "main"...
-Failure!: this_test_should_fail -> This should be false at [first_test.c] line [8]
+Failure!: this_test_should_fail -> Problem at [first_test.c] line [8]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
                 The <code>TextReporter</code>, created by the
@@ -251,7 +251,7 @@ int split_words(char *sentence) {
 </c>
                 A full build later...
 <sh>
-gcc -c all_words.c
+gcc -c all_tests.c
 gcc -c words_test.c
 gcc -c words.c
 gcc all_tests.o words_test.o words.o cgreen/cgreen.a -o all_tests
@@ -260,8 +260,8 @@ gcc all_tests.o words_test.o words.o cgreen/cgreen.a -o all_tests
                 ...and we get the more useful response...
 <sh><![CDATA[
 Running "main"...
-Failure!: words_test -> word_count_returned_from_split ->
-        [0] should be [4] at [words_test.c] line [8]
+Failure!: words_tests -> word_count_returned_from_split ->
+        [0] should match [4] at [words_test.c] line [8]
 Completed "main": 0 passes, 1 failure, 0 exceptions.
 ]]></sh>
                 The breadcrumb trail is the nesting of the tests.
@@ -322,8 +322,8 @@ TestSuite *words_tests() {
                 Sure enough, we get a failure...
 <sh><![CDATA[
 Running "main"...
-Failure!: words_test -> spaces_should_be_converted_to_zeroes ->
-        [-32] should be [0] at [words_test.c] line [16]
+Failure!: words_tests -> spaces_should_be_converted_to_zeroes ->
+        [-32] should match [0] at [words_test.c] line [16]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
                 Not surprising given that we haven't written the code yet.
@@ -345,8 +345,8 @@ int split_words(char *sentence) {
                 ...reveals our previous hack...
 <sh><![CDATA[
 Running "main"...
-Failure!: words_test -> word_count_returned_from_split ->
-        [2] should be [4] at [words_test.c] line [8]
+Failure!: words_tests -> word_count_returned_from_split ->
+        [2] should match [4] at [words_test.c] line [8]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ]]></sh>
                 Our earlier test now fails, because we have affected
@@ -408,7 +408,7 @@ words("This is a sentence", &act_on_word, &memo);</strong>
 ...
 #include <stdlib.h>
 ...<strong>
-void mocked_callback(char *word, void *memo) {
+void mocked_callback(const char *word, void *memo) {
     mock(word, memo);
 }
 
@@ -424,7 +424,7 @@ TestSuite *words_tests() {
     return suite;
 }
 ]]></c>
-                What is the funny looking <code>mocked_callback()</code> function?
+                What is the funny looking <code>mock()</code> function?
             </p>
             <p>
                 A mock is basically a programmable object.
@@ -432,7 +432,7 @@ TestSuite *words_tests() {
                 The macro <code>mock()</code> compares the incoming parameters with
                 any expected values and dispatches messages to the test suite if
                 there is a mismatch.
-                It also returns any values that have been preprohrammed in the test.
+                It also returns any values that have been preprogrammed in the test.
             </p>
             <p>
                 The test function is <code>single_word_sentence_invokes_callback_once()</code>.
@@ -451,7 +451,7 @@ TestSuite *words_tests() {
                 look like...
 <c><![CDATA[
 int split_words(char *sentence);<strong>
-void words(const char *sentence, void (*walker)(const char *, void *), void *);</strong>
+void words(const char *sentence, void (*walker)(const char *, void *), void *memo);</strong>
 ]]></c>
                 ...and the <em>words.c</em> file should have the stub...
 <c><![CDATA[<strong>
@@ -460,12 +460,12 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
 ]]></c>
                 This gives us the expected failing tests...
 <sh><![CDATA[
-Running "all_tests.c"...
-Completed "all_tests.c": 2 passes, 2 failures, 0 exceptions.
+Running "main"...
+Failure!: words_tests -> single_word_sentence_invokes_callback_once ->
+        Call was not made to function [mocked_callback] at [words_test.c] line [25]
+Completed "main": 2 passes, 1 failure, 0 exceptions.
 ]]></sh>
-                Cgreen reports each missing parameter that was expected.
-                It expected the parameter checks to be called once each,
-                but they weren't.
+                Cgreen reports that the callback was never invoked.
                 We can easily get the test to pass by filling out the
                 implementation with...
 <c><![CDATA[
@@ -473,20 +473,22 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
     <strong>(*walker)(sentence, memo);</strong>
 }
 ]]></c>
+                That is, we just invoke it once with the whole string.
+                This is a temporary measure to get us moving.
                 Now everything should pass, although it's not much of a test yet.
             </p>
             <p>
                 That was all pretty conventional, but let's tackle the trickier
                 case of actually splitting the sentence.
                 Here is the test function we will add to <em>words_test.c</em>...
-<c><![CDATA[<strong>
-void phrase_invokes_callback_for_each_word() {
-    expect(mocked_callback, "Birds", NULL);
-    expect(mocked_callback, "of", NULL);
-    expect(mocked_callback, "a", NULL);
-    expect(mocked_callback, "feather", NULL);
-    words("Birds of a feather", &mocked_callback, NULL);
-}</strong>
+<c><![CDATA[
+void phrase_invokes_callback_for_each_word() {<strong>
+    expect(mocked_callback, want_string(word, "Birds"));
+    expect(mocked_callback, want_string(word, "of"));
+    expect(mocked_callback, want_string(word, "a"));
+    expect(mocked_callback, want_string(word, "feather"));</strong>
+    words(<strong>"Birds of a feather"</strong>, &mocked_callback, NULL);
+}
 ]]></c>
                 Each call is expected in sequence.
                 Any failures, or left over calls, or extra calls, and we
@@ -494,11 +496,20 @@ void phrase_invokes_callback_for_each_word() {
                 We can see all this when we run the tests...
 <sh><![CDATA[
 Running "main"...
-Completed "main": 5 passes, 7 failures, 0 exceptions.
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+        Wanted [Birds], but got [Birds of a feather] in function [mocked_callback] parameter [word] at [words_test.c] line [30]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+        Call was not made to function [mocked_callback] at [words_test.c] line [31]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+        Call was not made to function [mocked_callback] at [words_test.c] line [32]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+        Call was not made to function [mocked_callback] at [words_test.c] line [33]
+Completed "main": 4 passes, 4 failures, 0 exceptions.
 ]]></sh>
                 The first failure tells the story.
                 Our little <code>words()</code> function called the mock callback
                 with the entire sentence.
+                This makes sense, because that was the hack to get to the next test.
             </p>
             <p>
                 Although not relevant to this guide, I cannot resist getting these
@@ -519,16 +530,14 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
                 And with some work we are rewarded with...
 <sh><![CDATA[
 Running "main"...
-Completed "main": 12 passes, 0 failures, 0 exceptions.
+Completed "main": 8 passes, 0 failures, 0 exceptions.
 ]]></sh>
-                It took me three goes to get this right.
+                More work than I like to admit as it took me three goes to get this right.
                 I firstly
                 forgot the <code>+ 1</code> added on to <code>strlen()</code>,
                 then forgot to swap <code>sentence</code> for
                 <code>word</code> in the <code>(*walker)()</code> call,
                 and finally third time lucky.
-            </p>
-            <p>
                 Of course running the tests each time made these mistakes
                 very obvious.
                 It's taken me far longer to write these paragraphs than
