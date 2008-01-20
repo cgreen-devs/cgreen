@@ -1,11 +1,13 @@
 CC=gcc
 CFLAGS=-g
+TEST_OBJECTS=all_tests.o breadcrumb_tests.o messaging_tests.o assertion_tests.o vector_tests.o constraint_tests.o parameters_test.o mocks_tests.o
 
-all_tests: cgreen ../cgreen.h all_tests.o breadcrumb_tests.o messaging_tests.o assertion_tests.o vector_tests.o constraint_tests.o parameters_test.o mocks_tests.o
-	gcc all_tests.o breadcrumb_tests.o messaging_tests.o assertion_tests.o vector_tests.o constraint_tests.o parameters_test.o mocks_tests.o ../cgreen.a -o all_tests
+all_tests: ../cgreen.a ../cgreen.h $(TEST_OBJECTS)
+	gcc $(TEST_OBJECTS) ../cgreen.a -o all_tests
 
-test: all_tests
-	./all_tests
+cgreen.a:
+	cd ..; make cgreen.a
 
-cgreen:
-	cd ..; make
+clean:
+	rm -f *.o; true
+	rm -f all_tests; true
