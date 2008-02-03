@@ -2,6 +2,17 @@
 #include <sys/msg.h>
 #include <stdlib.h>
 
+typedef struct CgreenMessageQueue_ {
+    int queue;
+    pid_t owner;
+    int tag;
+} CgreenMessageQueue;
+
+typedef struct CgreenMessage_ {
+    long type;
+    int result;
+} CgreenMessage;
+
 static CgreenMessageQueue *queues = NULL;
 static int queue_count = 0;
 

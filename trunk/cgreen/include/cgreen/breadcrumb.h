@@ -1,11 +1,7 @@
 #ifndef BREADCRUMB_HEADER
 #define BREADCRUMB_HEADER
 
-typedef struct CgreenBreadcrumb_ {
-    const char **trail;
-    int depth;
-    int space;
-} CgreenBreadcrumb;
+typedef struct CgreenBreadcrumb_ CgreenBreadcrumb;
 
 CgreenBreadcrumb *create_breadcrumb();
 void destroy_breadcrumb(CgreenBreadcrumb *breadcrumb);

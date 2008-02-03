@@ -1,6 +1,13 @@
 #include "vector.h"
 #include <stdlib.h>
 
+struct CgreenVector_ {
+    int size;
+    void (*destructor)(void *);
+    int space;
+    void **items;
+};
+
 static void increase_space(CgreenVector *vector);
 
 CgreenVector *create_vector(void (*destructor)(void *)) {
