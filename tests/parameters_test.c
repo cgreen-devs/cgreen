@@ -3,7 +3,7 @@
 #include "../parameters.h"
 #include <stdlib.h>
 
-static Vector *names = NULL;
+static CgreenVector *names = NULL;
 
 static void destroy_names() {
     destroy_vector(names);

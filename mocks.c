@@ -17,7 +17,7 @@ typedef struct RecordedExpectation_ {
     const char *test_file;
     int test_line;
     int should_keep;
-    Vector *constraints;
+    CgreenVector *constraints;
 } RecordedExpectation;
 
 typedef struct UnwantedCall_ {
@@ -26,9 +26,9 @@ typedef struct UnwantedCall_ {
     const char *function;
 } UnwantedCall;
 
-static Vector *result_queue = NULL;
-static Vector *expectation_queue = NULL;
-static Vector *unwanted_calls = NULL;
+static CgreenVector *result_queue = NULL;
+static CgreenVector *expectation_queue = NULL;
+static CgreenVector *unwanted_calls = NULL;
 
 intptr_t stubbed_result(const char *function);
 static RecordedResult *create_recorded_result(const char *function, intptr_t result);
@@ -39,7 +39,7 @@ static void ensure_expectation_queue_exists();
 static void ensure_unwanted_calls_list_exists();
 RecordedResult *find_result(const char *function);
 static void unwanted_check(const char *function);
-void trigger_unfulfilled_expectations(Vector *expectation_queue, TestReporter *reporter);
+void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestReporter *reporter);
 RecordedExpectation *find_expectation(const char *function);
 void apply_any_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual);
 
@@ -47,7 +47,7 @@ intptr_t mock_(const char *function, const char *parameters, ...) {
     unwanted_check(function);
     RecordedExpectation *expectation = find_expectation(function);
     if (expectation != NULL) {
-        Vector *names = create_vector_of_names(parameters);
+        CgreenVector *names = create_vector_of_names(parameters);
         int i;
         va_list actual;
         va_start(actual, parameters);
@@ -201,7 +201,7 @@ static void unwanted_check(const char *function) {
     }
 }
 
-void trigger_unfulfilled_expectations(Vector *expectation_queue, TestReporter *reporter) {
+void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestReporter *reporter) {
     int i;
     for (i = 0; i < vector_size(expectation_queue); i++) {
         RecordedExpectation *expectation = vector_get(expectation_queue, i);
