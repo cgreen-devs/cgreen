@@ -1,10 +1,10 @@
 #include "vector.h"
 #include <stdlib.h>
 
-static void increase_space(Vector *vector);
+static void increase_space(CgreenVector *vector);
 
-Vector *create_vector(void (*destructor)(void *)) {
-    Vector *vector = (Vector *)malloc(sizeof(Vector));
+CgreenVector *create_vector(void (*destructor)(void *)) {
+    CgreenVector *vector = (CgreenVector *)malloc(sizeof(CgreenVector));
     vector->size = 0;
     vector->destructor = destructor;
     vector->space = 0;
@@ -12,7 +12,7 @@ Vector *create_vector(void (*destructor)(void *)) {
     return vector;
 }
 
-void destroy_vector(Vector *vector) {
+void destroy_vector(CgreenVector *vector) {
     int i;
     if (vector->destructor != NULL) {
         for (i = 0; i < vector->size; i++) {
@@ -23,7 +23,7 @@ void destroy_vector(Vector *vector) {
     free(vector);
 }
 
-void vector_add(Vector *vector, void *item) {
+void vector_add(CgreenVector *vector, void *item) {
     if (vector->size == vector->space) {
         increase_space(vector);
     }
@@ -31,7 +31,7 @@ void vector_add(Vector *vector, void *item) {
     vector->size++;
 }
 
-void *vector_remove(Vector *vector, int position) {
+void *vector_remove(CgreenVector *vector, int position) {
     void *item = vector->items[position];
     int i;
     for (i = position; i < vector->size; i++) {
@@ -41,15 +41,15 @@ void *vector_remove(Vector *vector, int position) {
     return item;
 }
 
-void *vector_get(Vector *vector, int position) {
+void *vector_get(CgreenVector *vector, int position) {
     return vector->items[position];
 }
 
-int vector_size(Vector *vector) {
+int vector_size(CgreenVector *vector) {
     return (vector == NULL ? 0 : vector->size);
 }
 
-static void increase_space(Vector *vector) {
+static void increase_space(CgreenVector *vector) {
     vector->space += 100;
     vector->items = realloc(vector->items, sizeof(void *) * vector->space);
 }

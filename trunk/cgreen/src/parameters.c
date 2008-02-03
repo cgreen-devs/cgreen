@@ -8,8 +8,8 @@ static char *tokenise_by_commas_and_whitespace(char *list);
 static char *skip_nulls(char *pointer);
 static char *end_of_token(char *token);
 
-Vector *create_vector_of_names(const char *parameters) {
-    Vector *names = create_vector(&free);
+CgreenVector *create_vector_of_names(const char *parameters) {
+    CgreenVector *names = create_vector(&free);
     if ((parameters == NULL) || (strlen(parameters) == 0)) {
         return names;
     }

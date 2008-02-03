@@ -3,6 +3,6 @@
 
 #include "vector.h"
 
-Vector *create_vector_of_names(const char *parameters);
+CgreenVector *create_vector_of_names(const char *parameters);
 
 #endif

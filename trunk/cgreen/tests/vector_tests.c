@@ -2,7 +2,7 @@
 #include "../vector.h"
 #include <stdlib.h>
 
-static Vector *vector;
+static CgreenVector *vector;
 static char a = 'a', b = 'b', c = 'c';
 
 static void set_up_vector() {
@@ -79,20 +79,20 @@ static void sample_destructor(void *item) {
 }
 
 static void destructor_is_called_on_single_item() {
-    Vector *vector = create_vector(&sample_destructor);
+    CgreenVector *vector = create_vector(&sample_destructor);
     vector_add(vector, &a);
     destroy_vector(vector);
     assert_equal(times_called, 1);
 }
 
 static void destructor_is_not_called_on_empty_vector() {
-    Vector *vector = create_vector(&sample_destructor);
+    CgreenVector *vector = create_vector(&sample_destructor);
     destroy_vector(vector);
     assert_equal(times_called, 0);
 }
 
 static void destructor_is_called_three_times_on_three_item_vector() {
-    Vector *vector = create_vector(&sample_destructor);
+    CgreenVector *vector = create_vector(&sample_destructor);
     vector_add(vector, &a);
     vector_add(vector, &b);
     vector_add(vector, &c);
