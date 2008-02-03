@@ -2,7 +2,7 @@
 #include <sys/msg.h>
 #include <stdlib.h>
 
-static MessageQueue *queues = NULL;
+static CgreenMessageQueue *queues = NULL;
 static int queue_count = 0;
 
 static void clean_up_messaging();
@@ -11,7 +11,7 @@ int start_messaging(int tag) {
     if (queue_count == 0) {
         atexit(&clean_up_messaging);
     }
-    queues = (MessageQueue *)realloc(queues, sizeof(MessageQueue) * ++queue_count);
+    queues = (CgreenMessageQueue *)realloc(queues, sizeof(CgreenMessageQueue) * ++queue_count);
     queues[queue_count - 1].queue = msgget((long)getpid(), 0666 | IPC_CREAT);
     queues[queue_count - 1].owner = getpid();
     queues[queue_count - 1].tag = tag;
@@ -19,16 +19,16 @@ int start_messaging(int tag) {
 }
 
 void send_message(int messaging, int result) {
-    Message *message = (Message *)malloc(sizeof(Message));
+    CgreenMessage *message = (CgreenMessage *)malloc(sizeof(CgreenMessage));
     message->type = queues[messaging].tag;
     message->result = result;
-    msgsnd(queues[messaging].queue, message, sizeof(Message), 0);
+    msgsnd(queues[messaging].queue, message, sizeof(CgreenMessage), 0);
     free(message);
 }
 
 int receive_message(int messaging) {
-    Message *message = (Message *)malloc(sizeof(Message));
-    ssize_t received = msgrcv(queues[messaging].queue, message, sizeof(Message), queues[messaging].tag, IPC_NOWAIT);
+    CgreenMessage *message = (CgreenMessage *)malloc(sizeof(CgreenMessage));
+    ssize_t received = msgrcv(queues[messaging].queue, message, sizeof(CgreenMessage), queues[messaging].tag, IPC_NOWAIT);
     int result = (received > 0 ? message->result : 0);
     free(message);
     return result;

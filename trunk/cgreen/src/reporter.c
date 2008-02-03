@@ -42,18 +42,18 @@ TestReporter *create_reporter() {
 }
 
 void destroy_reporter(TestReporter *reporter) {
-	destroy_breadcrumb((Breadcrumb *)reporter->breadcrumb);
+	destroy_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
     free(reporter);
     context.reporter = NULL;
 }
 
 void reporter_start(TestReporter *reporter, const char *name)  {
-	push_breadcrumb((Breadcrumb *)reporter->breadcrumb, name);
+	push_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb, name);
 }
 
 void reporter_finish(TestReporter *reporter, const char *name) {
     read_reporter_results(reporter);
-    pop_breadcrumb((Breadcrumb *)reporter->breadcrumb);
+    pop_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 }
 
 void add_reporter_result(TestReporter *reporter, int result) {
@@ -98,7 +98,7 @@ static void read_reporter_results(TestReporter *reporter) {
         }
     }
     if (! completed) {
-        (*reporter->show_incomplete)(reporter, get_current_from_breadcrumb((Breadcrumb *)reporter->breadcrumb));
+        (*reporter->show_incomplete)(reporter, get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb));
         reporter->exceptions++;
     }
 }
