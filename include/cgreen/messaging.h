@@ -3,16 +3,16 @@
 
 #include <sys/msg.h>
 
-typedef struct MessageQueue_ {
+typedef struct CgreenMessageQueue_ {
     int queue;
     pid_t owner;
     int tag;
-} MessageQueue;
+} CgreenMessageQueue;
 
-typedef struct Message_ {
+typedef struct CgreenMessage_ {
     long type;
     int result;
-} Message;
+} CgreenMessage;
 
 int start_messaging(int tag);
 void send_message(int messaging, int result);
