@@ -51,11 +51,11 @@ intptr_t mock_(const char *function, const char *parameters, ...) {
         int i;
         va_list actual;
         va_start(actual, parameters);
-        for (i = 0; i < vector_size(names); i++) {
-            apply_any_constraints(expectation, vector_get(names, i), va_arg(actual, intptr_t));
+        for (i = 0; i < cgreen_vector_size(names); i++) {
+            apply_any_constraints(expectation, cgreen_vector_get(names, i), va_arg(actual, intptr_t));
         }
         va_end(actual);
-        destroy_vector(names);
+        destroy_cgreen_vector(names);
     }
     return stubbed_result(function);
 }
@@ -82,7 +82,7 @@ void expect_never_(const char *function, const char *test_file, int test_line) {
     unwanted->test_file = test_file;
     unwanted->test_line = test_line;
     unwanted->function = function;
-    vector_add(unwanted_calls, unwanted);
+    cgreen_vector_add(unwanted_calls, unwanted);
 }
 
 void will_return_(const char *function, intptr_t result) {
@@ -97,13 +97,13 @@ void always_return_(const char *function, intptr_t result) {
 
 void clear_mocks() {
     if (result_queue != NULL) {
-        destroy_vector(result_queue);
+        destroy_cgreen_vector(result_queue);
     }
     if (expectation_queue != NULL) {
-        destroy_vector(expectation_queue);
+        destroy_cgreen_vector(expectation_queue);
     }
     if (unwanted_calls != NULL) {
-        destroy_vector(unwanted_calls);
+        destroy_cgreen_vector(unwanted_calls);
     }
 }
 
@@ -129,13 +129,13 @@ static RecordedResult *create_recorded_result(const char *function, intptr_t res
     RecordedResult *record = (RecordedResult *)malloc(sizeof(RecordedResult));
     record->function = function;
     record->result = result;
-    vector_add(result_queue, record);
+    cgreen_vector_add(result_queue, record);
     return record;
 }
 
 static void ensure_result_queue_exists() {
     if (result_queue == NULL) {
-        result_queue = create_vector(&free);
+        result_queue = create_cgreen_vector(&free);
     }
 }
 
@@ -145,40 +145,40 @@ static RecordedExpectation *create_recorded_expectation(const char *function, co
     expectation->function = function;
     expectation->test_file = test_file;
     expectation->test_line = test_line;
-    expectation->constraints = create_vector(&destroy_constraint);
+    expectation->constraints = create_cgreen_vector(&destroy_constraint);
     Constraint *constraint;
     while ((constraint = va_arg(constraints, Constraint *)) != (Constraint *)0) {
-        vector_add(expectation->constraints, constraint);
+        cgreen_vector_add(expectation->constraints, constraint);
     }
-    vector_add(expectation_queue, expectation);
+    cgreen_vector_add(expectation_queue, expectation);
     return expectation;
 }
 
 static void destroy_expectation(void *abstract) {
     RecordedExpectation *expectation = (RecordedExpectation *)abstract;
-    destroy_vector(expectation->constraints);
+    destroy_cgreen_vector(expectation->constraints);
     free(expectation);
 }
 
 static void ensure_expectation_queue_exists() {
     if (expectation_queue == NULL) {
-        expectation_queue = create_vector(&destroy_expectation);
+        expectation_queue = create_cgreen_vector(&destroy_expectation);
     }
 }
 
 static void ensure_unwanted_calls_list_exists() {
     if (unwanted_calls == NULL) {
-        unwanted_calls = create_vector(&free);
+        unwanted_calls = create_cgreen_vector(&free);
     }
 }
 
 RecordedResult *find_result(const char *function) {
     int i;
-    for (i = 0; i < vector_size(result_queue); i++) {
-        RecordedResult *result = (RecordedResult *)vector_get(result_queue, i);
+    for (i = 0; i < cgreen_vector_size(result_queue); i++) {
+        RecordedResult *result = (RecordedResult *)cgreen_vector_get(result_queue, i);
         if (strcmp(result->function, function) == 0) {
             if (! result->should_keep) {
-                return vector_remove(result_queue, i);
+                return cgreen_vector_remove(result_queue, i);
             }
             return result;
         }
@@ -188,8 +188,8 @@ RecordedResult *find_result(const char *function) {
 
 static void unwanted_check(const char *function) {
     int i;
-    for (i = 0; i < vector_size(unwanted_calls); i++) {
-        UnwantedCall *unwanted = vector_get(unwanted_calls, i);
+    for (i = 0; i < cgreen_vector_size(unwanted_calls); i++) {
+        UnwantedCall *unwanted = cgreen_vector_get(unwanted_calls, i);
         if (strcmp(unwanted->function, function) == 0) {
             (*get_test_reporter()->assert_true)(
                     get_test_reporter(),
@@ -203,8 +203,8 @@ static void unwanted_check(const char *function) {
 
 void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestReporter *reporter) {
     int i;
-    for (i = 0; i < vector_size(expectation_queue); i++) {
-        RecordedExpectation *expectation = vector_get(expectation_queue, i);
+    for (i = 0; i < cgreen_vector_size(expectation_queue); i++) {
+        RecordedExpectation *expectation = cgreen_vector_get(expectation_queue, i);
         if (! expectation->should_keep) {
             (*reporter->assert_true)(
                     reporter,
@@ -218,11 +218,12 @@ void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestRepor
 
 RecordedExpectation *find_expectation(const char *function) {
     int i;
-    for (i = 0; i < vector_size(expectation_queue); i++) {
-        RecordedExpectation *expectation = (RecordedExpectation *)vector_get(expectation_queue, i);
+    for (i = 0; i < cgreen_vector_size(expectation_queue); i++) {
+        RecordedExpectation *expectation =
+                (RecordedExpectation *)cgreen_vector_get(expectation_queue, i);
         if (strcmp(expectation->function, function) == 0) {
             if (! expectation->should_keep) {
-                return vector_remove(expectation_queue, i);
+                return cgreen_vector_remove(expectation_queue, i);
             }
             return expectation;
         }
@@ -232,8 +233,8 @@ RecordedExpectation *find_expectation(const char *function) {
 
 void apply_any_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual) {
     int i;
-    for (i = 0; i < vector_size(expectation->constraints); i++) {
-        Constraint *constraint = (Constraint *)vector_get(expectation->constraints, i);
+    for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
+        Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
         if (is_constraint_parameter(constraint, parameter)) {
             test_constraint(
                     constraint,
