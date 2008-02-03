@@ -1,12 +1,7 @@
 #ifndef VECTOR_HEADER
 #define VECTOR_HEADER
 
-typedef struct CgreenVector_ {
-    int size;
-    void (*destructor)(void *);
-    int space;
-    void **items;
-} CgreenVector;
+typedef struct CgreenVector_ CgreenVector;
 
 CgreenVector *create_vector(void (*destructor)(void *));
 void destroy_vector(CgreenVector *vector);

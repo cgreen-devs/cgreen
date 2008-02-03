@@ -1,6 +1,12 @@
 #include "breadcrumb.h"
 #include <stdlib.h>
 
+struct CgreenBreadcrumb_ {
+    const char **trail;
+    int depth;
+    int space;
+};
+
 CgreenBreadcrumb *create_breadcrumb() {
     CgreenBreadcrumb *breadcrumb = (CgreenBreadcrumb *)malloc(sizeof(CgreenBreadcrumb));
 	breadcrumb->trail = NULL;
