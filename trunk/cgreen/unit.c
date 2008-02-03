@@ -20,7 +20,7 @@ typedef struct UnitTest {
     char *name;
 } UnitTest;
 
-struct _TestSuite {
+struct TestSuite_ {
 	const char *name;
     UnitTest *tests;
     void (*setup)();
@@ -59,7 +59,7 @@ void destroy_test_suite(TestSuite *suite) {
     free(suite);
 }
 
-void _add_test(TestSuite *suite, char *name, void (*test)()) {
+void add_test_(TestSuite *suite, char *name, void (*test)()) {
     suite->size++;
     suite->tests = (UnitTest *)realloc(suite->tests, sizeof(UnitTest) * suite->size);
     suite->tests[suite->size - 1].type = test_function;
@@ -67,7 +67,7 @@ void _add_test(TestSuite *suite, char *name, void (*test)()) {
     suite->tests[suite->size - 1].test = test;
 }
 
-void _add_suite(TestSuite *owner, char *name, TestSuite *suite) {
+void add_suite_(TestSuite *owner, char *name, TestSuite *suite) {
     owner->size++;
     owner->tests = (UnitTest *)realloc(owner->tests, sizeof(UnitTest) * owner->size);
     owner->tests[owner->size - 1].type = test_suite;
@@ -75,11 +75,11 @@ void _add_suite(TestSuite *owner, char *name, TestSuite *suite) {
     owner->tests[owner->size - 1].suite = suite;
 }
 
-void _setup(TestSuite *suite, void (*setup)()) {
+void setup_(TestSuite *suite, void (*setup)()) {
     suite->setup = setup;
 }
 
-void _teardown(TestSuite *suite, void (*teardown)()) {
+void teardown_(TestSuite *suite, void (*teardown)()) {
     suite->teardown = teardown;
 }
 
