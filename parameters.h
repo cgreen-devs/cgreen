@@ -1,5 +1,5 @@
-#ifndef _PARAMETERS_HEADER_
-#define _PARAMETERS_HEADER_
+#ifndef PARAMETERS_HEADER
+#define PARAMETERS_HEADER
 
 #include "vector.h"
 

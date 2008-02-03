@@ -24,7 +24,7 @@ void test_constraint(Constraint *constraint, const char *function, intptr_t actu
     (*constraint->test)(constraint, function, actual, test_file, test_line, reporter);
 }
 
-Constraint *_want(const char *parameter, intptr_t expected) {
+Constraint *want_(const char *parameter, intptr_t expected) {
     Constraint *constraint = create_constraint(parameter);
     constraint->parameter = parameter;
     constraint->compare = &compare_want;
@@ -33,7 +33,7 @@ Constraint *_want(const char *parameter, intptr_t expected) {
     return constraint;
 }
 
-Constraint *_want_string(const char *parameter, char *expected) {
+Constraint *want_string_(const char *parameter, char *expected) {
     Constraint *constraint = create_constraint(parameter);
     constraint->parameter = parameter;
     constraint->compare = &compare_want_string;

@@ -1,5 +1,5 @@
-#ifndef _TEXT_REPORTER_HEADER_
-#define _TEXT_REPORTER_HEADER_
+#ifndef TEXT_REPORTER_HEADER
+#define TEXT_REPORTER_HEADER
 
 #include "reporter.h"
 

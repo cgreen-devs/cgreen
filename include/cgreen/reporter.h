@@ -1,12 +1,12 @@
-#ifndef _REPORTER_HEADER_
-#define _REPORTER_HEADER_
+#ifndef REPORTER_HEADER
+#define REPORTER_HEADER
 
 #include <stdarg.h>
 
-typedef struct _TestContext TestContext;
+typedef struct TestContext_ TestContext;
 
-typedef struct _TestReporter TestReporter;
-struct _TestReporter {
+typedef struct TestReporter_ TestReporter;
+struct TestReporter_ {
     void (*destroy)(TestReporter *);
 	void (*start)(TestReporter *, const char *);
 	void (*finish)(TestReporter *, const char *);
