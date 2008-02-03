@@ -1,7 +1,7 @@
-#ifndef _VECTOR_HEADER_
-#define _VECTOR_HEADER_
+#ifndef VECTOR_HEADER
+#define VECTOR_HEADER
 
-typedef struct _Vector {
+typedef struct Vector_ {
     int size;
     void (*destructor)(void *);
     int space;

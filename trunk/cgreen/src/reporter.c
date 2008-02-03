@@ -8,7 +8,7 @@
 
 enum {pass = 1, fail, completion};
 
-struct _TestContext {
+struct TestContext_ {
 	TestReporter *reporter;
 };
 static TestContext context;

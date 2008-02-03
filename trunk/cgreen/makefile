@@ -8,7 +8,7 @@ cgreen.o: cgreen.a
 cgreen.a: $(OBJECTS)
 	ar -rs cgreen.a $(OBJECTS)
 
-test: cgreen.o
+test: clean cgreen.o
 	cd tests; make all_tests
 	tests/all_tests
 

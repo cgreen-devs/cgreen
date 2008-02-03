@@ -1,7 +1,7 @@
-#ifndef _BREADCRUMB_HEADER_
-#define _BREADCRUMB_HEADER_
+#ifndef BREADCRUMB_HEADER
+#define BREADCRUMB_HEADER
 
-typedef struct _Breadcrumb {
+typedef struct Breadcrumb_ {
     const char **trail;
     int depth;
     int space;

@@ -2,7 +2,7 @@
 #include "reporter.h"
 #include <stdlib.h>
 
-void _assert_equal(const char *file, int line, intptr_t tried, intptr_t expected) {
+void assert_equal_(const char *file, int line, intptr_t tried, intptr_t expected) {
     (*get_test_reporter()->assert_true)(
             get_test_reporter(),
             file,
@@ -11,7 +11,7 @@ void _assert_equal(const char *file, int line, intptr_t tried, intptr_t expected
             "[%d] should match [%d]", tried, expected);
 }
 
-void _assert_not_equal(const char *file, int line, intptr_t tried, intptr_t expected) {
+void assert_not_equal_(const char *file, int line, intptr_t tried, intptr_t expected) {
     (*get_test_reporter()->assert_true)(
             get_test_reporter(),
             file,
@@ -20,7 +20,7 @@ void _assert_not_equal(const char *file, int line, intptr_t tried, intptr_t expe
             "[%d] should not match [%d]", tried, expected);
 }
 
-void _assert_string_equal(const char *file, int line, const char *tried, const char *expected) {
+void assert_string_equal_(const char *file, int line, const char *tried, const char *expected) {
     (*get_test_reporter()->assert_true)(
             get_test_reporter(),
             file,
@@ -29,7 +29,7 @@ void _assert_string_equal(const char *file, int line, const char *tried, const c
             "[%s] should match [%s]", show_null_as_the_string_null(tried), show_null_as_the_string_null(expected));
 }
 
-void _assert_string_not_equal(const char *file, int line, const char *tried, const char *expected) {
+void assert_string_not_equal_(const char *file, int line, const char *tried, const char *expected) {
     (*get_test_reporter()->assert_true)(
             get_test_reporter(),
             file,

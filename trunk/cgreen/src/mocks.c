@@ -6,13 +6,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _RecordedResult {
+typedef struct RecordedResult_ {
     const char *function;
     intptr_t result;
     int should_keep;
 } RecordedResult;
 
-typedef struct _RecordedExpectation {
+typedef struct RecordedExpectation_ {
     const char *function;
     const char *test_file;
     int test_line;
@@ -20,7 +20,7 @@ typedef struct _RecordedExpectation {
     Vector *constraints;
 } RecordedExpectation;
 
-typedef struct _UnwantedCall {
+typedef struct UnwantedCall_ {
     const char *test_file;
     int test_line;
     const char *function;
@@ -43,7 +43,7 @@ void trigger_unfulfilled_expectations(Vector *expectation_queue, TestReporter *r
 RecordedExpectation *find_expectation(const char *function);
 void apply_any_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual);
 
-intptr_t _mock(const char *function, const char *parameters, ...) {
+intptr_t mock_(const char *function, const char *parameters, ...) {
     unwanted_check(function);
     RecordedExpectation *expectation = find_expectation(function);
     if (expectation != NULL) {
@@ -60,7 +60,7 @@ intptr_t _mock(const char *function, const char *parameters, ...) {
     return stubbed_result(function);
 }
 
-void _expect(const char *function, const char *test_file, int test_line, ...) {
+void expect_(const char *function, const char *test_file, int test_line, ...) {
     va_list constraints;
     va_start(constraints, test_line);
     RecordedExpectation *expectation = create_recorded_expectation(function, test_file, test_line, constraints);
@@ -68,7 +68,7 @@ void _expect(const char *function, const char *test_file, int test_line, ...) {
     expectation->should_keep = 0;
 }
 
-void _always_expect(const char *function, const char *test_file, int test_line, ...) {
+void always_expect_(const char *function, const char *test_file, int test_line, ...) {
     va_list constraints;
     va_start(constraints, test_line);
     RecordedExpectation *expectation = create_recorded_expectation(function, test_file, test_line, constraints);
@@ -76,7 +76,7 @@ void _always_expect(const char *function, const char *test_file, int test_line, 
     expectation->should_keep = 1;
 }
 
-void _expect_never(const char *function, const char *test_file, int test_line) {
+void expect_never_(const char *function, const char *test_file, int test_line) {
     ensure_unwanted_calls_list_exists();
     UnwantedCall *unwanted = (UnwantedCall *)malloc(sizeof(UnwantedCall));
     unwanted->test_file = test_file;
@@ -85,12 +85,12 @@ void _expect_never(const char *function, const char *test_file, int test_line) {
     vector_add(unwanted_calls, unwanted);
 }
 
-void _will_return(const char *function, intptr_t result) {
+void will_return_(const char *function, intptr_t result) {
     RecordedResult *record = create_recorded_result(function, result);
     record->should_keep = 0;
 }
 
-void _always_return(const char *function, intptr_t result) {
+void always_return_(const char *function, intptr_t result) {
     RecordedResult *record = create_recorded_result(function, result);
     record->should_keep = 1;
 }

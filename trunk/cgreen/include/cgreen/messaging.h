@@ -1,15 +1,15 @@
-#ifndef _MESSAGING_HEADER_
-#define _MESSAGING_HEADER_
+#ifndef MESSAGING_HEADER
+#define MESSAGING_HEADER
 
 #include <sys/msg.h>
 
-typedef struct _MessageQueue {
+typedef struct MessageQueue_ {
     int queue;
     pid_t owner;
     int tag;
 } MessageQueue;
 
-typedef struct _Message {
+typedef struct Message_ {
     long type;
     int result;
 } Message;
