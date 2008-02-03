@@ -4,6 +4,7 @@ TODO for Cgreen
 Unit tester
 -----------
 Can compare doubles.
+Change underscored variable names to have underscores at the end.
 
 Mocks
 -----
