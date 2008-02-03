@@ -36,7 +36,7 @@ TestReporter *create_reporter() {
 	reporter->failures = 0;
 	reporter->exceptions = 0;
 	reporter->breadcrumb = (void *)create_breadcrumb();
-	reporter->ipc = start_messaging(45);
+	reporter->ipc = start_cgreen_messaging(45);
 	context.reporter = reporter;
     return reporter;
 }
@@ -57,11 +57,11 @@ void reporter_finish(TestReporter *reporter, const char *name) {
 }
 
 void add_reporter_result(TestReporter *reporter, int result) {
-    send_message(reporter->ipc, result ? pass : fail);
+    send_cgreen_message(reporter->ipc, result ? pass : fail);
 }
 
 void send_reporter_completion_notification(TestReporter *reporter) {
-    send_message(reporter->ipc, completion);
+    send_cgreen_message(reporter->ipc, completion);
 }
 
 static void show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
@@ -88,7 +88,7 @@ static void assert_true(TestReporter *reporter, const char *file, int line, int 
 static void read_reporter_results(TestReporter *reporter) {
     int completed = 0;
     int result;
-    while ((result = receive_message(reporter->ipc)) > 0) {
+    while ((result = receive_cgreen_message(reporter->ipc)) > 0) {
         if (result == pass) {
             reporter->passes++;
         } else if (result == fail) {

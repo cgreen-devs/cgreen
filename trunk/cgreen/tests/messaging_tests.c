@@ -21,9 +21,9 @@ TestSuite *highly_nested_test_suite() {
 }
 
 void can_send_message() {
-    int messaging = start_messaging(33);
-    send_message(messaging, 99);
-    assert_equal(receive_message(messaging), 99);
+    int messaging = start_cgreen_messaging(33);
+    send_cgreen_message(messaging, 99);
+    assert_equal(receive_cgreen_message(messaging), 99);
 }
 
 TestSuite *messaging_tests() {

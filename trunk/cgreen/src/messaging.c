@@ -18,7 +18,7 @@ static int queue_count = 0;
 
 static void clean_up_messaging();
 
-int start_messaging(int tag) {
+int start_cgreen_messaging(int tag) {
     if (queue_count == 0) {
         atexit(&clean_up_messaging);
     }
@@ -29,7 +29,7 @@ int start_messaging(int tag) {
     return queue_count - 1;
 }
 
-void send_message(int messaging, int result) {
+void send_cgreen_message(int messaging, int result) {
     CgreenMessage *message = (CgreenMessage *)malloc(sizeof(CgreenMessage));
     message->type = queues[messaging].tag;
     message->result = result;
@@ -37,7 +37,7 @@ void send_message(int messaging, int result) {
     free(message);
 }
 
-int receive_message(int messaging) {
+int receive_cgreen_message(int messaging) {
     CgreenMessage *message = (CgreenMessage *)malloc(sizeof(CgreenMessage));
     ssize_t received = msgrcv(queues[messaging].queue, message, sizeof(CgreenMessage), queues[messaging].tag, IPC_NOWAIT);
     int result = (received > 0 ? message->result : 0);
