@@ -10,7 +10,7 @@ struct CgreenVector_ {
 
 static void increase_space(CgreenVector *vector);
 
-CgreenVector *create_vector(void (*destructor)(void *)) {
+CgreenVector *create_cgreen_vector(void (*destructor)(void *)) {
     CgreenVector *vector = (CgreenVector *)malloc(sizeof(CgreenVector));
     vector->size = 0;
     vector->destructor = destructor;
@@ -19,7 +19,7 @@ CgreenVector *create_vector(void (*destructor)(void *)) {
     return vector;
 }
 
-void destroy_vector(CgreenVector *vector) {
+void destroy_cgreen_vector(CgreenVector *vector) {
     int i;
     if (vector->destructor != NULL) {
         for (i = 0; i < vector->size; i++) {
@@ -30,7 +30,7 @@ void destroy_vector(CgreenVector *vector) {
     free(vector);
 }
 
-void vector_add(CgreenVector *vector, void *item) {
+void cgreen_vector_add(CgreenVector *vector, void *item) {
     if (vector->size == vector->space) {
         increase_space(vector);
     }
@@ -38,7 +38,7 @@ void vector_add(CgreenVector *vector, void *item) {
     vector->size++;
 }
 
-void *vector_remove(CgreenVector *vector, int position) {
+void *cgreen_vector_remove(CgreenVector *vector, int position) {
     void *item = vector->items[position];
     int i;
     for (i = position; i < vector->size; i++) {
@@ -48,11 +48,11 @@ void *vector_remove(CgreenVector *vector, int position) {
     return item;
 }
 
-void *vector_get(CgreenVector *vector, int position) {
+void *cgreen_vector_get(CgreenVector *vector, int position) {
     return vector->items[position];
 }
 
-int vector_size(CgreenVector *vector) {
+int cgreen_vector_size(CgreenVector *vector) {
     return (vector == NULL ? 0 : vector->size);
 }
 

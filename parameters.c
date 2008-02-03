@@ -9,7 +9,7 @@ static char *skip_nulls(char *pointer);
 static char *end_of_token(char *token);
 
 CgreenVector *create_vector_of_names(const char *parameters) {
-    CgreenVector *names = create_vector(&free);
+    CgreenVector *names = create_cgreen_vector(&free);
     if ((parameters == NULL) || (strlen(parameters) == 0)) {
         return names;
     }
@@ -17,7 +17,7 @@ CgreenVector *create_vector_of_names(const char *parameters) {
     char *token = tokens;
     while (token < tokens + strlen(parameters)) {
         token = skip_nulls(token);
-        vector_add(names, strdup(token));
+        cgreen_vector_add(names, strdup(token));
         token = end_of_token(token);
     }
     free(tokens);
