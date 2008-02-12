@@ -4,15 +4,26 @@ TODO for Cgreen
 Unit tester
 -----------
 Can compare doubles.
-Change underscored variable names to have underscores at the end.
+Change underscored variable names to have underscores at the end - done.
+Move non-visible files into source directory.
+Add Test typedef to allow tests to be marked.
 
 Mocks
 -----
 Sort out counting glitches, especially in expect_never().
 
+Suites
+------
+Add add_tests() macro and function.
+
+Collector
+---------
+Should write back to the same file.
+Parser should handle bracket/string nesting of a comma in TEST_ADDER mode.
+
 Packages
 --------
-Rename all symbols starting with an underscore.
+Move build over to automake.
 Make sure only the public symbols are exported in the library.
 
 Documentation
