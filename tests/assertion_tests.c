@@ -52,3 +52,5 @@ TestSuite *assertion_tests() {
     add_test(suite, null_string_should_only_match_another_null_string_even_with_messages);
     return suite;
 }
+
+// add_tests(suite, stuff);
