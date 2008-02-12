@@ -4,9 +4,7 @@ TODO for Cgreen
 Unit tester
 -----------
 Can compare doubles.
-Change underscored variable names to have underscores at the end - done.
 Move non-visible files into source directory.
-Add Test typedef to allow tests to be marked.
 
 Mocks
 -----
@@ -30,3 +28,4 @@ Documentation
 -------------
 Change cgreen.a to cgreen.o on docs.
 Add tests for examples.
+Add collector behaviour and Ensure macro.

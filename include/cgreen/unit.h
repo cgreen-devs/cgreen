@@ -10,6 +10,7 @@
 #define setup(suite, function) setup_(suite, &function)
 #define teardown(suite, function) teardown_(suite, &function)
 
+#define Ensure static void
 typedef struct TestSuite_ TestSuite;
 
 TestSuite *create_named_test_suite(const char *name);

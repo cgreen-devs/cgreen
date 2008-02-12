@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-g
 OBJECTS=unit.o messaging.o breadcrumb.o reporter.o assertions.o vector.o mocks.o constraint.o parameters.o text_reporter.o
 
-all: cgreen.o collector test
+all: clean cgreen.o collector test
 
 cgreen.o: cgreen.a
 	ld -dn -s $(OBJECTS) -r -o cgreen.o

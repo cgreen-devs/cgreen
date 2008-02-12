@@ -6,22 +6,22 @@ static int integer_out() {
     return (int)mock();
 }
 
-static void no_errors_thrown_when_no_presets() {
+Ensure no_errors_thrown_when_no_presets() {
     integer_out();
 }
 
-static void can_stub_an_integer_return() {
+Ensure can_stub_an_integer_return() {
     will_return(integer_out, 3);
     assert_equal(integer_out(), 3);
 }
 
-static void repeats_return_value_when_set_to_always() {
+Ensure repeats_return_value_when_set_to_always() {
     always_return(integer_out, 3);
     assert_equal(integer_out(), 3);
     assert_equal(integer_out(), 3);
 }
 
-static void can_stub_an_integer_return_sequence() {
+Ensure can_stub_an_integer_return_sequence() {
     will_return(integer_out, 1);
     will_return(integer_out, 2);
     will_return(integer_out, 3);
@@ -30,16 +30,16 @@ static void can_stub_an_integer_return_sequence() {
     assert_equal(integer_out(), 3);
 }
 
-static void set_stub_just_to_be_cleared() {
+Ensure set_stub_just_to_be_cleared() {
     will_return(integer_out, 1);
 }
 
-static void confirm_stub_is_reset_between_tests() {
+Ensure confirm_stub_is_reset_between_tests() {
     will_return(integer_out, 2);
     assert_equal(integer_out(), 2);
 }
 
-static void stub_uses_the_always_value_once_hit() {
+Ensure stub_uses_the_always_value_once_hit() {
     will_return(integer_out, 1);
     will_return(integer_out, 2);
     always_return(integer_out, 3);
@@ -55,12 +55,12 @@ static char *string_out() {
     return (char *)mock();
 }
 
-static void can_stub_a_string_return() {
+Ensure can_stub_a_string_return() {
     will_return(string_out, "hello");
     assert_string_equal(string_out(), "hello");
 }
 
-static void can_stub_a_string_sequence() {
+Ensure can_stub_a_string_sequence() {
     will_return(string_out, "hello");
     will_return(string_out, "goodbye");
     assert_string_equal(string_out(), "hello");
@@ -71,24 +71,24 @@ static void integer_in(int i) {
     mock(i);
 }
 
-static void expecting_once_with_any_parameters() {
+Ensure expecting_once_with_any_parameters() {
     expect(integer_in);
     integer_in(3);
 }
 
-static void expecting_once_with_parameter_checks_that_parameter() {
+Ensure expecting_once_with_parameter_checks_that_parameter() {
     expect(integer_in, want(i, 3));
     integer_in(3);
 }
 
-static void always_expect_keeps_affirming_parameter() {
+Ensure always_expect_keeps_affirming_parameter() {
     always_expect(integer_in, want(i, 3));
     integer_in(3);
     integer_in(3);
     integer_in(3);
 }
 
-static void expect_a_sequence() {
+Ensure expect_a_sequence() {
     expect(integer_in, want(i, 1));
     expect(integer_in, want(i, 2));
     expect(integer_in, want(i, 3));
@@ -101,17 +101,17 @@ static void string_in(char *s) {
     mock(s);
 }
 
-static void string_expect_is_confirmed() {
+Ensure string_expect_is_confirmed() {
     expect(string_in, want_string(s, "hello"));
     string_in("hello");
 }
 
-static void string_expect_is_confirmed_even_when_null() {
+Ensure string_expect_is_confirmed_even_when_null() {
     expect(string_in, want_string(s, NULL));
     string_in(NULL);
 }
 
-static void string_expect_sequence() {
+Ensure string_expect_sequence() {
     expect(string_in, want_string(s, "hello"));
     expect(string_in, want_string(s, "goodbye"));
     string_in("hello");
@@ -122,7 +122,7 @@ static void mixed_parameters(int i, char *s) {
     mock(i, s);
 }
 
-static void confirming_multiple_parameters_multiple_times() {
+Ensure confirming_multiple_parameters_multiple_times() {
     expect(mixed_parameters, want(i, 1), want_string(s, "Hello"));
     expect(mixed_parameters, want(i, 2), want_string(s, "Goodbye"));
     mixed_parameters(1, "Hello");
@@ -133,16 +133,16 @@ static int sample_mock(int i, char *s) {
     return (int)mock(i, s);
 }
 
-static void can_mock_full_function_call() {
+Ensure can_mock_full_function_call() {
     will_respond(sample_mock, 5, want(i, 666), want_string(s, "devil"));
     assert_equal(sample_mock(666, "devil"), 5);
 }
 
-static void when_called_with_always_should_not_tally_counts() {
+Ensure when_called_with_always_should_not_tally_counts() {
     always_respond(sample_mock, 5, want(i, 666), want_string(s, "devil"));
 }
 
-static void can_mock_full_sequence() {
+Ensure can_mock_full_sequence() {
     will_respond(sample_mock, 5, want(i, 666), want_string(s, "devil"));
     will_respond(sample_mock, 6, want(i, 667), want_string(s, "beastie"));
     assert_equal(sample_mock(666, "devil"), 5);
@@ -156,7 +156,7 @@ static void can_always_mock_full_function_call() {
     assert_equal(sample_mock(666, "devil"), 5);
 }
 
-static void can_declare_function_never_called() {
+Ensure can_declare_function_never_called() {
     expect_never(sample_mock);    
 }
 

@@ -2,38 +2,38 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void integer_one_should_assert_true() {
+Ensure integer_one_should_assert_true() {
     assert_true(1);
 }
 
-void integer_zero_should_assert_false() {
+Ensure integer_zero_should_assert_false() {
     assert_false(0);
 }
 
-void one_should_assert_equal_to_one() {
+Ensure one_should_assert_equal_to_one() {
     assert_equal(1, 1);
 }
 
-void zero_should_assert_not_equal_to_one() {
+Ensure zero_should_assert_not_equal_to_one() {
     assert_not_equal(0, 1);
 }
 
-void identical_string_copies_should_match() {
+Ensure identical_string_copies_should_match() {
     assert_string_equal("Hello", "Hello");
 }
 
-void case_different_strings_should_not_match() {
+Ensure case_different_strings_should_not_match() {
     assert_string_not_equal("Hello", "hello");
 }
 
-void null_string_should_only_match_another_null_string() {
+Ensure null_string_should_only_match_another_null_string() {
     assert_string_equal(NULL, NULL);
     assert_string_equal("", "");
     assert_string_not_equal(NULL, "");
     assert_string_not_equal("", NULL);
 }
 
-void null_string_should_only_match_another_null_string_even_with_messages() {
+Ensure null_string_should_only_match_another_null_string_even_with_messages() {
     assert_string_equal_with_message(NULL, NULL, "Oh dear");
     assert_string_equal_with_message("", "", "Oh dear");
     assert_string_not_equal_with_message(NULL, "", "Oh dear");
