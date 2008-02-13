@@ -20,7 +20,6 @@ Parser should handle bracket/string nesting of a comma in TEST_ADDER mode.
 
 Packages
 --------
-Reverse the decision to move from a .a to a .o file.
 Move build over to automake.
 Make sure only the public symbols are exported in the library.
 
