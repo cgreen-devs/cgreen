@@ -1,6 +1,7 @@
 #include "unit.h"
 #include "reporter.h"
 #include "mocks.h"
+#include "parameters.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -59,12 +60,24 @@ void destroy_test_suite(TestSuite *suite) {
     free(suite);
 }
 
-void add_test_(TestSuite *suite, char *name, void (*test)()) {
+void add_test_(TestSuite *suite, char *name, CgreenTest *test) {
     suite->size++;
     suite->tests = (UnitTest *)realloc(suite->tests, sizeof(UnitTest) * suite->size);
     suite->tests[suite->size - 1].type = test_function;
     suite->tests[suite->size - 1].name = name;
     suite->tests[suite->size - 1].test = test;
+}
+
+void add_tests_(TestSuite *suite, const char *names, ...) {
+    CgreenVector *test_names = create_vector_of_names(names);
+    int i;
+    va_list tests;
+    va_start(tests, names);
+    for (i = 0; i < cgreen_vector_size(test_names); i++) {
+        add_test_(suite, (char *)cgreen_vector_get(test_names, i), va_arg(tests, CgreenTest *));
+    }
+    va_end(tests);
+    destroy_cgreen_vector(test_names);
 }
 
 void add_suite_(TestSuite *owner, char *name, TestSuite *suite) {
