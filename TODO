@@ -15,8 +15,7 @@ Suites
 
 Collector
 ---------
-Should write back to the same file when given a single file paarmeter, steams otherwise.
-Parser should handle bracket/string nesting of a comma in TEST_ADDER mode.
+Should write back to the same file when given a single file parameter, streams otherwise.
 
 Packages
 --------
