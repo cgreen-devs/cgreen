@@ -1,6 +1,8 @@
 %s TEST_NAME
 %s TEST_ADDER
 %s TEST_LIST
+%s IN_BRACKETS
+%s IN_STRING
 
     #include "vector.h"
     #include <string.h>
@@ -10,6 +12,7 @@
     void destroy_string(void *string);
     
     CgreenVector *tests;
+    int bracket_nesting = 0;
 %%
 add_tests\(                     { ECHO; BEGIN TEST_ADDER; }
 [ \n]*Ensure[ ]+                { ECHO; BEGIN TEST_NAME; }
@@ -20,11 +23,28 @@ add_tests\(                     { ECHO; BEGIN TEST_ADDER; }
                                     ECHO;
                                 }
 
-<TEST_ADDER>\)                  { ECHO; BEGIN 0; }
-<TEST_ADDER>[,)][ ]*            { printf(", "); BEGIN TEST_LIST; }
+<TEST_ADDER>\(                  { ECHO; BEGIN IN_BRACKETS; }
+<TEST_ADDER>[),][ ]*            { printf(", "); BEGIN TEST_LIST; }
 <TEST_ADDER>[^(),]+             { ECHO; }
+
+<IN_BRACKETS>\)                 {
+                                    ECHO;
+                                    if (! bracket_nesting) {
+                                        printf(", ");
+                                        BEGIN TEST_LIST;
+                                    } else {
+                                        bracket_nesting--;
+                                    }
+                                }
+<IN_BRACKETS>\(                 { ECHO; bracket_nesting++; }
+<IN_BRACKETS>\"                 { ECHO; BEGIN IN_STRING; }
+<IN_BRACKETS>[^()"]+            { ECHO; }
+
+<IN_STRING>\\\"                 { ECHO; }
+<IN_STRING>\"                   { ECHO; BEGIN IN_BRACKETS; }
+<IN_STRING>[^"]+                { ECHO; }
                                 
-<TEST_LIST>[^)]+\)              {
+<TEST_LIST>[^)]*\)              {
                                     as_function_list(tests);
                                     printf(")");
                                     destroy_cgreen_vector(tests);
