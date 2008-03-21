@@ -4,18 +4,21 @@ TODO for Cgreen
 Unit tester
 -----------
 Can compare doubles.
-Move non-visible files into source directory.
+Move non-visible files into source/ directory.
 
 Mocks
 -----
 Sort out counting glitches, especially in expect_never().
+Allow modification of incoming parameters?
+Unfulfilled expectations should send a failure.
+Add expect_call_count().
 
 Suites
 ------
 
 Collector
 ---------
-Should write back to the same file when given a single file parameter, streams otherwise.
+Should write back to the same file when given a single file parameter, stdout otherwise.
 
 Packages
 --------
