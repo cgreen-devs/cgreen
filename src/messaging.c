@@ -2,6 +2,8 @@
 #include <sys/msg.h>
 #include <stdlib.h>
 
+#define message_content_size(Type) (sizeof(Type) - sizeof(long))
+
 typedef struct CgreenMessageQueue_ {
     int queue;
     pid_t owner;
@@ -33,7 +35,7 @@ void send_cgreen_message(int messaging, int result) {
     CgreenMessage *message = (CgreenMessage *)malloc(sizeof(CgreenMessage));
     message->type = queues[messaging].tag;
     message->result = result;
-    msgsnd(queues[messaging].queue, message, sizeof(CgreenMessage) - sizeof(long), 0);
+    msgsnd(queues[messaging].queue, message, message_content_size(CgreenMessage), 0);
     free(message);
 }
 
@@ -41,7 +43,7 @@ int receive_cgreen_message(int messaging) {
     CgreenMessage *message = (CgreenMessage *)malloc(sizeof(CgreenMessage));
     ssize_t received = msgrcv(queues[messaging].queue,
                               message,
-                              sizeof(CgreenMessage) - sizeof(long),
+                              message_content_size(CgreenMessage),
                               queues[messaging].tag,
                               IPC_NOWAIT);
     int result = (received > 0 ? message->result : 0);
