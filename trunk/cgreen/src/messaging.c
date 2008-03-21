@@ -33,13 +33,17 @@ void send_cgreen_message(int messaging, int result) {
     CgreenMessage *message = (CgreenMessage *)malloc(sizeof(CgreenMessage));
     message->type = queues[messaging].tag;
     message->result = result;
-    msgsnd(queues[messaging].queue, message, sizeof(CgreenMessage), 0);
+    msgsnd(queues[messaging].queue, message, sizeof(CgreenMessage) - sizeof(long), 0);
     free(message);
 }
 
 int receive_cgreen_message(int messaging) {
     CgreenMessage *message = (CgreenMessage *)malloc(sizeof(CgreenMessage));
-    ssize_t received = msgrcv(queues[messaging].queue, message, sizeof(CgreenMessage), queues[messaging].tag, IPC_NOWAIT);
+    ssize_t received = msgrcv(queues[messaging].queue,
+                              message,
+                              sizeof(CgreenMessage) - sizeof(long),
+                              queues[messaging].tag,
+                              IPC_NOWAIT);
     int result = (received > 0 ? message->result : 0);
     free(message);
     return result;
