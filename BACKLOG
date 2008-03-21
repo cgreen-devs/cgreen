@@ -1,9 +1,0 @@
-Cgreen TODO
------------
-Allow multiple setup() and teardown() as a stack.
-Add a coloured text reporter.
-Investigate adding a SmartFrog reporter.
-longjmp() trap for internal errors.
-Add expect_call_count().
-Allow testing of structs.
-Change messaging to unix_messaging.
