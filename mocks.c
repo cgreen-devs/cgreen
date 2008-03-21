@@ -56,6 +56,9 @@ intptr_t mock_(const char *function, const char *parameters, ...) {
         }
         va_end(actual);
         destroy_cgreen_vector(names);
+        if (! expectation->should_keep) {
+            destroy_expectation(expectation);
+        }
     }
     return stubbed_result(function);
 }
