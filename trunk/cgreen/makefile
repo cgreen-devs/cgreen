@@ -7,7 +7,7 @@ all: clean cgreen.a collector test
 cgreen.a: $(OBJECTS)
 	ar -rs cgreen.a $(OBJECTS)
 
-collector: collector.l vector.o
+collector: collector.l vector.o slurp.o
 	lex -B -t collector.l > collector.c
 	$(CC) $(CFLAGS) collector.c vector.o -o collector
 
