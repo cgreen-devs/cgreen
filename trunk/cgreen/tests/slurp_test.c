@@ -10,8 +10,7 @@ static void clean_up() {
 }
 
 Ensure missing_file_gives_null() {
-    assert_equal(garbage = slurp("tests/samples/not_there", 1024),
-                 NULL);
+    assert_equal(slurp("tests/samples/not_there", 1024), NULL);
 }
 
 Ensure whole_file_can_be_read() {
