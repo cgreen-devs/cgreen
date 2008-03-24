@@ -4,22 +4,18 @@
 %s IN_BRACKETS
 %s IN_STRING
 
-    #include "vector.h"
+    #include "collector_test_list.h"
     #include <string.h>
     #include <stdio.h>
-    
-    void as_function_list(CgreenVector *vector);
-    void destroy_string(void *string);
-    
-    CgreenVector *tests;
-    int bracket_nesting = 0;
 %%
+    int bracket_nesting = 0;
+
 add_tests\(                     { ECHO; BEGIN TEST_ADDER; }
 [ \n]*Ensure[ ]+                { ECHO; BEGIN TEST_NAME; }
 
 <TEST_NAME>\(\)                 { ECHO; BEGIN 0; }
 <TEST_NAME>[a-zA-Z0-9_]+        {
-                                    cgreen_vector_add(tests, strdup(yytext));
+                                    add_to_test_list(strdup(yytext));
                                     ECHO;
                                 }
 
@@ -45,10 +41,9 @@ add_tests\(                     { ECHO; BEGIN TEST_ADDER; }
 <IN_STRING>[^"]+                { ECHO; }
                                 
 <TEST_LIST>[^)]*\)              {
-                                    as_function_list(tests);
+                                    print_test_list();
                                     printf(")");
-                                    destroy_cgreen_vector(tests);
-                                    tests = create_cgreen_vector(&destroy_string);
+                                    reset_test_list();
                                     BEGIN 0;
                                 }
 %%
@@ -56,20 +51,9 @@ add_tests\(                     { ECHO; BEGIN TEST_ADDER; }
         return 1;
     }
     
-    void destroy_string(void *string) {
-        free((char *)string);
-    }
-    
-    void as_function_list(CgreenVector *vector) {
-        int i;
-        for (i = 0; i < cgreen_vector_size(vector); i++) {
-            printf("%s&%s", (i == 0 ? "" : ", "), cgreen_vector_get(vector, i));
-        }
-    }
-    
     int main(int argc, char **argv) {
-        tests = create_cgreen_vector(&destroy_string);
+        create_test_list();
         yylex();
-        destroy_cgreen_vector(tests);
+        destroy_test_list();
         return 0;
     }

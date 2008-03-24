@@ -15,14 +15,19 @@ char *slurp(const char *file_name, int gulp) {
 }
 
 static char *read_all(FILE *file, int gulp) {
-    char *content = (char *)malloc(gulp * sizeof(char));
+    char *content = (char *)malloc((gulp + 1) * sizeof(char));
     char *block = content;
     for ( ; ; ) {
+        printf("Get %d bytes into %p of %p\n", gulp + 1, block, content);
         if (fgets(block, gulp + 1, file) == NULL) {
+            printf("Bye bye\n");
             break;
         }
         block += gulp;
-        content = (char *)realloc(content, (block - content) * sizeof(char));
+        printf("%d byte%s at %p in %p -> ", gulp, gulp == 1 ? "" : "s", block, content);
+        content = (char *)realloc(content, (block - content + 1) * sizeof(char));
+        printf("%p of %d bytes [%s]\n", content, block - content + 1, content);
     }
+    printf("Read %s\n", content);
     return content;
 }
