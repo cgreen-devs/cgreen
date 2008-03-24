@@ -16,12 +16,12 @@ Ensure missing_file_gives_null() {
 
 Ensure whole_file_can_be_read() {
     assert_string_equal(garbage = slurp("tests/samples/some_file", 1024),
-                        "Just some stuff\n");
+                        "Some stuff\n");
 }
 
 Ensure whole_file_can_be_read_in_multiple_small_blocks() {
     assert_string_equal(garbage = slurp("tests/samples/some_file", 1),
-                        "Just some stuff\n");
+                        "Some stuff\n");
 }
 
 TestSuite *slurp_tests() {
