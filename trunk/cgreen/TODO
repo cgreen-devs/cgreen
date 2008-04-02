@@ -4,7 +4,7 @@ TODO for Cgreen
 Unit tester
 -----------
 Can compare doubles.
-Move non-visible files into source/ directory.
+Move non-visible files into src/ directory.
 
 Mocks
 -----
