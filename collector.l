@@ -5,6 +5,7 @@
 %s IN_STRING
 
     #include "collector_test_list.h"
+    #include "slurp.h"
     #include <string.h>
     #include <stdio.h>
 %%
@@ -53,7 +54,19 @@ add_tests\(                     { ECHO; BEGIN TEST_ADDER; }
     
     int main(int argc, char **argv) {
         create_test_list();
-        yylex();
+        YY_BUFFER_STATE buffer = NULL;
+        if (argc > 1) {
+            char *source = slurp(argv[1], 1024);
+            if (source == NULL) {
+                return 1;
+            }
+            buffer = yy_scan_string(source);
+            yylex();
+            yy_delete_buffer(buffer);
+            free(source);
+        } else {
+            yylex();
+        }
         destroy_test_list();
         return 0;
     }
