@@ -1,4 +1,0 @@
-This is the target folder for the generation of the documentation.
-
-The HTML docs come from the cgreen/documentation/source folder and
-are transformed by a script in the packages folder.
