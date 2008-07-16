@@ -1,4 +1,4 @@
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 #include <string.h>
 
 static void strlen_of_hello_should_be_five() {

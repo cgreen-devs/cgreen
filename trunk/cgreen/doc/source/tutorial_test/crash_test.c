@@ -1,4 +1,4 @@
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 #include <stdlib.h>
 
 static void will_seg_fault() {

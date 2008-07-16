@@ -1,4 +1,4 @@
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 #include <stdio.h>
 
 char *read_paragraph(int (*read)(void *), void *stream);

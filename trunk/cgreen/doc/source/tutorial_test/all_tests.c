@@ -1,4 +1,4 @@
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 
 TestSuite *words_tests();
 
