@@ -4,8 +4,8 @@
 %s IN_BRACKETS
 %s IN_STRING
 
-    #include "collector_test_list.h"
-    #include "slurp.h"
+    #include <cgreen/collector_test_list.h>
+    #include <cgreen/slurp.h>
     #include <string.h>
     #include <stdio.h>
 %%

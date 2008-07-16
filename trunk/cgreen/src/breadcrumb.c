@@ -1,4 +1,4 @@
-#include "breadcrumb.h"
+#include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 
 struct CgreenBreadcrumb_ {

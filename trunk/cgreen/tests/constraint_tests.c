@@ -1,5 +1,5 @@
-#include "../cgreen.h"
-#include "../constraint.h"
+#include <cgreen/cgreen.h>
+#include <cgreen/constraint.h>
 #include <stdlib.h>
 
 Ensure can_construct_and_destroy_an_want_constraint() {

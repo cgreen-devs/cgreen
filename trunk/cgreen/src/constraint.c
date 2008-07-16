@@ -1,5 +1,5 @@
-#include "constraint.h"
-#include "assertions.h"
+#include <cgreen/constraint.h>
+#include <cgreen/assertions.h>
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>

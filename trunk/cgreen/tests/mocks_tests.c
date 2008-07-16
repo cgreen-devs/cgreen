@@ -1,5 +1,5 @@
-#include "../cgreen.h"
-#include "../mocks.h"
+#include <cgreen/cgreen.h>
+#include <cgreen/mocks.h>
 #include <stdlib.h>
 
 static int integer_out() {

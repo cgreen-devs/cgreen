@@ -1,4 +1,4 @@
-#include "vector.h"
+#include <cgreen/vector.h>
 #include <stdlib.h>
 
 struct CgreenVector_ {

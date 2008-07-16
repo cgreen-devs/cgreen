@@ -1,8 +1,8 @@
 #ifndef UNIT_HEADER
 #define UNIT_HEADER
 
-#include "reporter.h"
-#include "mocks.h"
+#include <cgreen/reporter.h>
+#include <cgreen/mocks.h>
 
 #define create_test_suite() create_named_test_suite(__func__)
 #define add_test(suite, test) add_test_(suite, #test, &test)

@@ -1,5 +1,5 @@
-#include "../cgreen.h"
-#include "../breadcrumb.h"
+#include <cgreen/cgreen.h>
+#include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 
 Ensure can_destroy_empty_breadcrumb() {

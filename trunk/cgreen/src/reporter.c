@@ -1,6 +1,6 @@
-#include "reporter.h"
-#include "messaging.h"
-#include "breadcrumb.h"
+#include <cgreen/reporter.h>
+#include <cgreen/messaging.h>
+#include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/msg.h>
