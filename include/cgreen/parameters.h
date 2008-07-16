@@ -1,7 +1,7 @@
 #ifndef PARAMETERS_HEADER
 #define PARAMETERS_HEADER
 
-#include "vector.h"
+#include <cgreen/vector.h>
 
 CgreenVector *create_vector_of_names(const char *parameters);
 

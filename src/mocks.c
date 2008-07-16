@@ -1,8 +1,8 @@
-#include "mocks.h"
-#include "constraint.h"
-#include "reporter.h"
-#include "vector.h"
-#include "parameters.h"
+#include <cgreen/mocks.h>
+#include <cgreen/constraint.h>
+#include <cgreen/reporter.h>
+#include <cgreen/vector.h>
+#include <cgreen/parameters.h>
 #include <stdlib.h>
 #include <string.h>
 

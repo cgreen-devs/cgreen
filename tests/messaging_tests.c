@@ -1,5 +1,5 @@
-#include "../cgreen.h"
-#include "../messaging.h"
+#include <cgreen/cgreen.h>
+#include <cgreen/messaging.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/msg.h>

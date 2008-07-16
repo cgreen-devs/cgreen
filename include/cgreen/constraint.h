@@ -2,7 +2,7 @@
 #define CONSTRAINT_HEADER
 
 #include <inttypes.h>
-#include "reporter.h"
+#include <cgreen/reporter.h>
 
 #define want(parameter, x) want_(#parameter, (intptr_t)x)
 #define want_string(parameter, x) want_string_(#parameter, x)

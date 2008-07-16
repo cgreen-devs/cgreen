@@ -1,5 +1,5 @@
-#include "../cgreen.h"
-#include "../vector.h"
+#include <cgreen/cgreen.h>
+#include <cgreen/vector.h>
 #include <stdlib.h>
 
 static CgreenVector *vector;

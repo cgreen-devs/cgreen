@@ -1,6 +1,6 @@
-#include "text_reporter.h"
-#include "reporter.h"
-#include "breadcrumb.h"
+#include <cgreen/text_reporter.h>
+#include <cgreen/reporter.h>
+#include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 #include <stdio.h>
 

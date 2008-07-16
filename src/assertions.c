@@ -1,5 +1,5 @@
-#include "assertions.h"
-#include "reporter.h"
+#include <cgreen/assertions.h>
+#include <cgreen/reporter.h>
 #include <stdlib.h>
 
 void assert_equal_(const char *file, int line, intptr_t tried, intptr_t expected) {

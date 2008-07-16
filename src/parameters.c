@@ -1,5 +1,5 @@
-#include "parameters.h"
-#include "vector.h"
+#include <cgreen/parameters.h>
+#include <cgreen/vector.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>

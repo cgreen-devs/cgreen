@@ -3,8 +3,8 @@
 
 #include <inttypes.h>
 #include <stdarg.h>
-#include "reporter.h"
-#include "constraint.h"
+#include <cgreen/reporter.h>
+#include <cgreen/constraint.h>
 
 #define mock(...) mock_(__func__, #__VA_ARGS__, (intptr_t)__VA_ARGS__ +0)
 #define expect(f, ...) expect_(#f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)

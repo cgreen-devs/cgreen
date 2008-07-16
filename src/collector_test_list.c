@@ -1,5 +1,5 @@
-#include "collector_test_list.h"
-#include "vector.h"
+#include <cgreen/collector_test_list.h>
+#include <cgreen/vector.h>
 #include <stdio.h>
 
 static CgreenVector *tests;

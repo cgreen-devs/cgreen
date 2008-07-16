@@ -1,6 +1,6 @@
-#include "../cgreen.h"
-#include "../vector.h"
-#include "../parameters.h"
+#include <cgreen/cgreen.h>
+#include <cgreen/vector.h>
+#include <cgreen/parameters.h>
 #include <stdlib.h>
 
 static CgreenVector *names = NULL;
