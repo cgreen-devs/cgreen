@@ -1,6 +1,6 @@
 #include "xml_reporter.h"
-#include "cgreen/reporter.h"
-#include "cgreen/breadcrumb.h"
+#include <cgreen/reporter.h>
+#include <cgreen/breadcrumb.h>
 #include <stdio.h>
 #include <stdarg.h>
 

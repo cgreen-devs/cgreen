@@ -1,4 +1,4 @@
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 #include <stdlib.h>
 #include <mysql/mysql.h>
 #include "person.h"

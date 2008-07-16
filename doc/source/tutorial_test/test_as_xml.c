@@ -1,4 +1,4 @@
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 #include "xml_reporter.h"
 
 void a_test_that_passes() {

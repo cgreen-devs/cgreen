@@ -1,4 +1,4 @@
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 
 void this_test_should_pass() {
     assert_true(1);
