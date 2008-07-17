@@ -2,7 +2,7 @@
 %define version	@VERSION@
 %define release 1
 
-Summary:	cgreen a unit test suite for C language
+Summary:	Cgreen a unit test suite for C language
 Name:		%{name}
 Version:	%{version}
 Release:	%{release}
@@ -22,13 +22,13 @@ Because of the peculiarities of C programming, each test function
 is normally run in it's own process.
 
 %package devel
-Summary: Development files for cgreen
+Summary: Development files for Cgreen
 Group: Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description devel
-The cgreen package contains the header files and documentation
-needed to develop and test with cgreen.
+The Cgreen package contains the header files and documentation
+needed to develop and test with Cgreen.
 
 %prep
 %setup -q -n %{name}-%{version}
