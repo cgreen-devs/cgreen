@@ -22,7 +22,6 @@ Should write back to the same file when given a single file parameter, stdout ot
 
 Packages
 --------
-Move build over to automake.
 Make sure only the public symbols are exported in the library.
 
 Documentation
