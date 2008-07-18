@@ -26,4 +26,4 @@ Make sure only the public symbols are exported in the library.
 Documentation
 -------------
 Add tests for examples.
-Add collector behaviour and Ensure macro.
+Add collector behaviour and Ensure macro to docs.
