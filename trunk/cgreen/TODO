@@ -9,7 +9,6 @@ Move non-visible files into src/ directory.
 Mocks
 -----
 Sort out counting glitches, especially in expect_never().
-Allow modification of incoming parameters?
 Unfulfilled expectations should send a failure.
 Add expect_call_count().
 
