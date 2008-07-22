@@ -1,0 +1,545 @@
+<section xml:id="what">
+  <title>What is Cgreen?</title>
+      <para>
+          Cgreen is a unit tester for the C software developer.
+          This is a test automation and software quality assurance tool for
+          development teams.
+          The tool is completely open source published under the
+          <link xlink:href="http://www.gnu.org/licenses/lgpl.html">LGPL</link>.
+      </para>
+      <para>
+          Unit testing is a development practice popularised by the
+          agile development community.
+          It is characterised by writing many small tests alongside
+          the normal code.
+          Often the tests are written before the code they are testing,
+          in a tight test-code-refactor loop.
+          Done this way, the practice is known as Test Driven Development.
+          Cgreen supports this style of working.
+      </para>
+      <para>
+          Unit tests are written in the same language as the code, in
+          our case C.
+          This avoids the mental overhead of constantly switching language,
+          and also allows you to use any application code in your tests.
+      </para>
+      <para>
+          The feature list is:
+          <itemizedlist mark='opencircle'>
+              <listitem><para>Fully composable test suites.</para></listitem>
+              <listitem><para><code>setup()</code> and <code>teardown()</code> for
+                  tests and test suites.</para></listitem>
+              <listitem><para>Each test runs in it's own process.</para></listitem>
+              <listitem><para>An isolated test can be run in a single process for
+                  debugging.</para></listitem>
+              <listitem><para>Ability to mock functions.</para></listitem>
+              <listitem><para>The reporting mechanism can be easily extended.</para></listitem>
+          </itemizedlist>
+          Note that this tool is for C programming, not C++.
+      </para>
+  </section>
+  <section xml:id="install">
+    <title>Installing Cgreen</title>
+      <para>
+          Installing Cgreen is as simple as running <link xlink:href="http://www.gnu.org/software/make/">make</link>
+          in the unzipped <emphasis>cgreen</emphasis> folder.
+          The makefile will create a unix library called <filename>cgreen.a</filename>
+          which can be used in conjunction with the <filename>cgreen.h</filename>
+          header file to compile test code.
+      </para>
+      <para>
+          We'll first write a test to confirm everything is working.
+          Let's start with a simple test script with no tests, called
+          <filename>first_test.c</filename>...
+<programlisting><emphasis role="strong">
+#include "cgreen/cgreen.h"</emphasis>
+
+int main(int argc, char **argv) {<emphasis role="strong">
+TestSuite *suite = create_test_suite();
+return run_test_suite(suite, create_text_reporter());</emphasis>
+}
+</programlisting>
+          This is a very unexciting test.
+          It just creates an empty test suite and runs it.
+          It's usually easier to proceed in small steps, though,
+          and this is the smallest one I could think of.
+          The only complication is the <filename>cgreen.h</filename> header
+          file.
+          Here I am assuming we have symlinked the Cgreen folder
+          into the same location as our test script, or placed
+          the Cgreen folder in the path.
+      </para>
+      <para>
+          Building this test is, of course, trivial...
+<screen>
+gcc -c first_test.c
+gcc first_test.o cgreen/cgreen.a -o first_test
+./first_test
+</screen>
+          Invoking the executable should give...
+<screen>
+Running "main"...
+Completed "main": 0 passes, 0 failures, 0 exceptions.
+</screen>
+          All of the above rather assumes you are working in a
+          Unix like environment, probably with <emphasis>gcc</emphasis>.
+          The code is pretty much standard C99, so any C compiler
+          should work.
+          Cgreen should compile on all systems that support the
+          <filename>sys/msg.h</filename> messaging library.
+          This has been tested on Linux and Mac OSX so far, but
+          not Windows, although that might work too.
+      </para>
+      <para>
+          So far we have tested compilation, and that the test suite
+          actually runs.
+          Let's add a meaningless test or two so that you can see how
+          it runs...
+<programlisting>
+#include "cgreen/cgreen.h"
+<emphasis role="strong">
+void this_test_should_pass() {
+assert_true(1);
+}
+
+void this_test_should_fail() {
+assert_true(0);
+}
+</emphasis>
+int main(int argc, char **argv) {
+TestSuite *suite = create_test_suite();<emphasis role="strong">
+add_test(suite, this_test_should_pass);
+add_test(suite, this_test_should_fail);</emphasis>
+return run_test_suite(suite, create_text_reporter());
+}
+</programlisting>
+          A test can be any function with a <code>void (void)</code>
+          signature.
+          <code>add_test()</code> is a macro, hence
+          there is no <code>&amp;</code> with the function
+          pointer.
+      </para>
+      <para>
+          On compiling and running, we now get the output...
+<screen>
+Running "main"...
+Failure!: this_test_should_fail -> Problem at [first_test.c] line [8]
+Completed "main": 1 pass, 1 failure, 0 exceptions.
+</screen>
+          The <code>TextReporter</code>, created by the
+          <code>create_text_reporter()</code> call, is the
+          simplest way to output the test results.
+          It just streams the failures as text.
+          Currently it's the only method supported.
+      </para>
+  </section>
+  <section xml:id="tdd">
+    <title>Five minutes doing TDD with Cgreen</title>
+      <para>
+          For a more realistic example we need something to test.
+          We'll pretend that we are writing a function to split
+          the words of a sentence in place.
+          It does this by replacing any spaces with string
+          terminators and returns the number of conversions plus one.
+          Here is an example of what we have in mind...
+<programlisting>
+char *sentence = strdup("Just the first test");
+word_count = split_words(sentence);
+</programlisting>
+          <code>sentence</code> should now point at
+          <code>"Just\0the\0first\0test"</code>.
+          Not an obviously useful function, but we'll be using it
+          for something more practical below.
+      </para>
+      <para>
+          This time around we'll add a little more structure to our tests.
+          Rather than having the test as a stand alone program, we'll
+          separate the runner from the test cases.
+          That way, multiple test suites of test cases can be
+          included in the <code>main()</code> runner file.
+          This makes it less work to add more tests.
+      </para>
+      <para>
+          Here is the, so far empty, test case in <filename>words_test.c</filename>...
+<programlisting>
+#include "cgreen/cgreen.h"
+<emphasis role="strong">
+TestSuite *words_tests() {
+TestSuite *suite = create_test_suite();
+return suite;
+}</emphasis>
+</programlisting>
+          Here is the <filename>all_tests.c</filename> test runner...
+<programlisting>
+#include "cgreen/cgreen.h"
+
+TestSuite *words_tests();
+
+int main(int argc, char **argv) {
+TestSuite *suite = create_test_suite();<emphasis role="strong">
+add_suite(suite, words_tests());</emphasis>
+if (argc > 1) {<emphasis role="strong">
+  return run_single_test(suite, argv[1], create_text_reporter());</emphasis>
+}
+return run_test_suite(suite, create_text_reporter());
+}
+</programlisting>
+          Cgreen has two ways of running tests.
+          The default is with each test run in it's own process.
+          This is what happens if you invoke <code>run_test_suite()</code>.
+          While this makes all the tests independent, the constant
+          <code>fork()</code>'ing can make the tests difficult to debug.
+          To make debugging simpler, Cgreen does not <code>fork()</code>
+          when only a single test is run by name with
+          <code>run_single_test()</code>.
+      </para>
+      <para>
+          Building this scaffolding...
+<screen>
+gcc -c words_test.c
+gcc -c all_tests.c
+gcc words_test.o all_tests.o cgreen/cgreen.a -o all_tests
+</screen>
+          ...and executing the result gives the familiar...
+<screen>
+Running "main"...
+Completed "main": 0 passes, 0 failures, 0 exceptions.
+</screen>
+          All this scaffolding is pure overhead, but from now on adding tests
+          will be a lot easier.
+      </para>
+      <para>
+          Here is a first test of <code>split_words()</code>...
+<programlisting>
+#include "cgreen/cgreen.h"<emphasis role="strong">
+#include "words.h"
+#include &lt;string.h&gt;
+
+void word_count_returned_from_split() {
+char *sentence = strdup("Birds of a feather");
+int word_count = split_words(sentence);
+assert_equal(word_count, 4);
+free(sentence);
+}</emphasis>
+
+TestSuite *words_tests() {
+TestSuite *suite = create_test_suite();<emphasis role="strong">
+add_test(suite, word_count_returned_from_split);</emphasis>
+return suite;
+}
+</programlisting>
+          The <code>assert_equal()</code> macro takes in the two
+          values to compare.
+          With the default <code>TextReporter</code> the message
+          is sent to <code>STDOUT</code>.
+      </para>
+      <para>
+          To get this to compile we need to create the <filename>words.h</filename>
+          header file...
+<programlisting>
+int split_words(char *sentence);
+</programlisting>
+          ...and to get the code to link we need a stub function in
+          <filename>words.c</filename>...
+<programlisting>
+int split_words(char *sentence) {
+return 0;
+}
+</programlisting>
+          A full build later...
+<screen>
+gcc -c all_tests.c
+gcc -c words_test.c
+gcc -c words.c
+gcc all_tests.o words_test.o words.o cgreen/cgreen.a -o all_tests
+./all_tests
+</screen>
+          ...and we get the more useful response...
+<screen>
+Running "main"...
+Failure!: words_tests -> word_count_returned_from_split ->
+  [0] should match [4] at [words_test.c] line [8]
+Completed "main": 0 passes, 1 failure, 0 exceptions.
+</screen>
+          The breadcrumb trail is the nesting of the tests.
+          It goes from the
+          test suites, which can nested in each other, through the test
+          function, and finally to the message from the assertion.
+          In the language of Cgreen, a failure is a mismatched
+          assertion, an exception is accumulated
+          when a test fails to complete for any reason.
+      </para>
+      <para>
+          We could get this to pass just by returning the value 4.
+          Doing TDD in really small steps, you would actually do this,
+          but frankly this example is too simple.
+          Instead we'll go straight to the refactoring...
+<programlisting>
+<emphasis role="strong">#include &lt;string.h&gt;</emphasis>
+
+int split_words(char *sentence) {<emphasis role="strong">
+int i, count = 1;
+for (i = 0; i &lt; strlen(sentence); i++) {
+  if (sentence[i] == ' ') {
+      count++;
+  }
+}
+return count;</emphasis>
+}
+</programlisting>
+          There is a hidden problem here, but our tests still pass
+          so we'll pretend we didn't notice.
+      </para>
+      <para>
+          Time to add another test.
+          We want to confirm that the string is broken into
+          separate words...
+<programlisting>
+#include "cgreen/cgreen.h"
+#include "words.h"
+#include &lt;string.h&gt;
+
+void word_count_returned_from_split() { ... }
+<emphasis role="strong">
+void spaces_should_be_converted_to_zeroes() {
+char *sentence = strdup("Birds of a feather");
+split_words(sentence);
+int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
+assert_equal(comparison, 0);
+free(sentence); 
+}</emphasis>
+
+TestSuite *words_tests() {
+TestSuite *suite = create_test_suite();
+add_test(suite, word_count_returned_from_split);<emphasis role="strong">
+add_test(suite, spaces_should_be_converted_to_zeroes);</emphasis>
+return suite;
+}
+</programlisting>
+          Sure enough, we get a failure...
+<screen>
+Running "main"...
+Failure!: words_tests -> spaces_should_be_converted_to_zeroes ->
+  [-32] should match [0] at [words_test.c] line [16]
+Completed "main": 1 pass, 1 failure, 0 exceptions.
+</screen>
+          Not surprising given that we haven't written the code yet.
+      </para>
+      <para>
+          The fix...
+<programlisting>
+int split_words(char *sentence) {
+int i, count = 1;
+for (i = 0; i &lt; strlen(sentence); i++) {
+  if (sentence[i] == ' ') {<emphasis role="strong">
+      sentence[i] = '\0';</emphasis>
+      count++;
+  }
+}
+return count;
+}
+</programlisting>
+          ...reveals our previous hack...
+<screen>
+Running "main"...
+Failure!: words_tests -> word_count_returned_from_split ->
+  [2] should match [4] at [words_test.c] line [8]
+Completed "main": 1 pass, 1 failure, 0 exceptions.
+</screen>
+          Our earlier test now fails, because we have affected
+          the <code>strlen()</code> call in our loop.
+          Moving the length calculation out of the loop...
+<programlisting>
+int split_words(char *sentence) {
+int i, count = 1, <emphasis role="strong">length = strlen(sentence)</emphasis>;
+for (i = 0; <emphasis role="strong">i &lt; length</emphasis>; i++) {
+  ...
+}
+return count;
+}
+</programlisting>
+          ...restores order...
+<screen>
+Running "main"...
+Completed "main": 2 passes, 0 failures, 0 exceptions.
+</screen>
+          It's nice to keep the code under control while we are
+          actually writing it, rather than debugging later when things
+          are more complicated.
+      </para>
+      <para>
+          That was pretty straight forward.
+          Let's do something more interesting.
+      </para>
+  </section>
+  <section xml:id="mock">
+    <title>What are mock functions?</title>
+      <para>
+          The next example is more realistic.
+          Still in our <filename>words.h</filename> file, we want to write
+          a function that invokes a callback on each word in a
+          sentence.
+          Something like...
+<programlisting>
+void act_on_word(const char *word, void *memo) { ... }<emphasis role="strong">
+words("This is a sentence", &amp;act_on_word, &amp;memo);</emphasis>
+</programlisting>
+          Here the <code>memo</code> pointer is just some accumulated
+          data that the <code>act_on_word()</code> callback is working with.
+          Other people will write the <code>act_on_word()</code> function
+          and probably many other functions like it.
+          The callback is actually a flex point, and not of interest
+          right now.
+      </para>
+      <para>
+          The function under test is the <code>words()</code>
+          function and we want to make sure it walks the sentence
+          correctly, dispatching individual words as it goes.
+          How to test this?
+      </para>
+      <para>
+          Let's start with a one word sentence.
+          In this case we would expect the callback to be invoked
+          once with the only word, right?
+          Here is the test for that...
+<programlisting>
+...
+#include &lt;stdlib.h&gt;
+...<emphasis role="strong">
+void mocked_callback(const char *word, void *memo) {
+mock(word, memo);
+}
+
+void single_word_sentence_invokes_callback_once() {
+expect(mocked_callback, want_string(word, "Word"), want(memo, NULL));
+words("Word", &amp;mocked_callback, NULL);
+}</emphasis>
+
+TestSuite *words_tests() {
+TestSuite *suite = create_test_suite();
+...
+add_test(suite, <emphasis role="strong">single_word_sentence_invokes_callback_once</emphasis>);
+return suite;
+}
+</programlisting>
+          What is the funny looking <code>mock()</code> function?
+      </para>
+      <para>
+          A mock is basically a programmable object.
+          In C objects are limited to functions, so this is a mock function.
+          The macro <code>mock()</code> compares the incoming parameters with
+          any expected values and dispatches messages to the test suite if
+          there is a mismatch.
+          It also returns any values that have been preprogrammed in the test.
+      </para>
+      <para>
+          The test function is <code>single_word_sentence_invokes_callback_once()</code>.
+          Using the <code>expect()</code> macro it programs the mock function
+          to expect a single call.
+          That call will have parameters <code>"Word"</code> and
+          <code>NULL</code>.
+          If they don't match later, we will get a test failure.
+      </para>
+      <para>
+          Only the test method, not the mock callback, is added to the test
+          suite.
+      </para>
+      <para>
+          For a successful compile and link, the <filename>words.h</filename> file must now
+          look like...
+<programlisting>
+int split_words(char *sentence);<emphasis role="strong">
+void words(const char *sentence, void (*walker)(const char *, void *), void *memo);</emphasis>
+</programlisting>
+          ...and the <filename>words.c</filename> file should have the stub...
+<programlisting><emphasis role="strong">
+void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
+}</emphasis>
+</programlisting>
+          This gives us the expected failing tests...
+<screen>
+Running "main"...
+Failure!: words_tests -> single_word_sentence_invokes_callback_once ->
+  Call was not made to function [mocked_callback] at [words_test.c] line [25]
+Completed "main": 2 passes, 1 failure, 0 exceptions.
+</screen>
+          Cgreen reports that the callback was never invoked.
+          We can easily get the test to pass by filling out the
+          implementation with...
+<programlisting>
+void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
+<emphasis role="strong">(*walker)(sentence, memo);</emphasis>
+}
+</programlisting>
+          That is, we just invoke it once with the whole string.
+          This is a temporary measure to get us moving.
+          Now everything should pass, although it's not much of a test yet.
+      </para>
+      <para>
+          That was all pretty conventional, but let's tackle the trickier
+          case of actually splitting the sentence.
+          Here is the test function we will add to <filename>words_test.c</filename>...
+<programlisting>
+void phrase_invokes_callback_for_each_word() {<emphasis role="strong">
+expect(mocked_callback, want_string(word, "Birds"));
+expect(mocked_callback, want_string(word, "of"));
+expect(mocked_callback, want_string(word, "a"));
+expect(mocked_callback, want_string(word, "feather"));</emphasis>
+words(<emphasis role="strong">"Birds of a feather"</emphasis>, &amp;mocked_callback, NULL);
+}
+</programlisting>
+          Each call is expected in sequence.
+          Any failures, or left over calls, or extra calls, and we
+          get failures.
+          We can see all this when we run the tests...
+<screen>
+Running "main"...
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+  Wanted [Birds], but got [Birds of a feather] in function [mocked_callback] parameter [word] at [words_test.c] line [30]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+  Call was not made to function [mocked_callback] at [words_test.c] line [31]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+  Call was not made to function [mocked_callback] at [words_test.c] line [32]
+Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
+  Call was not made to function [mocked_callback] at [words_test.c] line [33]
+Completed "main": 4 passes, 4 failures, 0 exceptions.
+</screen>
+          The first failure tells the story.
+          Our little <code>words()</code> function called the mock callback
+          with the entire sentence.
+          This makes sense, because that was the hack to get to the next test.
+      </para>
+      <para>
+          Although not relevant to this guide, I cannot resist getting these
+          tests to pass.
+          Besides, we get to use the function we created earlier...
+<programlisting>
+void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {<emphasis role="strong">
+char *words = strdup(sentence);
+int word_count = split_words(words);
+char *word = words;
+while (word_count-- > 0) {
+  (*walker)(word, memo);
+  word = word + strlen(word) + 1;
+}
+free(words);</emphasis>
+}
+</programlisting>
+          And with some work we are rewarded with...
+<screen>
+Running "main"...
+Completed "main": 8 passes, 0 failures, 0 exceptions.
+</screen>
+          More work than I like to admit as it took me three goes to get this right.
+          I firstly
+          forgot the <code>+ 1</code> added on to <code>strlen()</code>,
+          then forgot to swap <code>sentence</code> for
+          <code>word</code> in the <code>(*walker)()</code> call,
+          and finally third time lucky.
+          Of course running the tests each time made these mistakes
+          very obvious.
+          It's taken me far longer to write these paragraphs than
+          it has to write the code.
+      </para>
+
+  </section>
