@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<!DOCTYPE book [
+<!ENTITY freedoc-license SYSTEM "include/copying-fdl.sgml">
+<!ENTITY cgreen_quickstart SYSTEM "quickstart.xml">
+<!ENTITY cgreen_suites SYSTEM "suites.xml">
+<!ENTITY cgreen_mock_callbacks SYSTEM "mock_callbacks.xml">
+<!ENTITY cgreen_reporter SYSTEM "reporter">
+]>
+<book xmlns="http://docbook.org/ns/docbook"
+      xmlns:xl="http://www.w3.org/1999/xlink"
+      version="5.0" xml:lang="en">
+<title>Cgreen Unit Test for C language</title>
+<titleabbrev>Cgreen Quickstart Guide</titleabbrev>
+<info>  
+  <authorgroup>
+    <author>
+      <personname>
+        <firstname>Marcus</firstname>
+        <surname>Baker</surname>
+        <othername>lastcraft</othername>
+      </personname>
+      <email>marcus@lastcraft.com</email>
+      <affiliation>
+        <shortaffil>Director, M. Behn School of Coop. Eng.</shortaffil>
+        <jobtitle>Director of Cooperative Efforts</jobtitle>
+        <orgname>The Marguerite Behn International School of
+        Cooperative Engineering</orgname>
+      </affiliation>
+    </author>
+    <editor>
+      <personname>
+        <firstname>João Henrique</firstname>
+        <surname>Freitas</surname>
+        <othername>joaohf</othername>
+      </personname>
+      <email>joaohf@gmail.com</email>
+      <personblurb>
+        <para>Peter's a super hero in his spare time.</para>
+      </personblurb>
+    </editor>
+  </authorgroup>  
+  <edition>Document revision: $Id$</edition>
+    <pubdate>$Date$</pubdate>
+    <copyright>
+    <year>2006-2008</year>
+    <holder>BIG</holder>
+  </copyright>
+  <legalnotice>
+    <para>
+  	Permission is granted to copy, distribute and/or modify this
+	document under the terms of the <link linkend="copying-FDL">
+	  <citetitle>GNU Free Documentation License</citetitle></link>,
+	Version 1.1 or any later version published by the Free Software
+	Foundation; with no Invariant Sections, with no	Front-Cover Texts,
+	and with no Back-Cover Texts.  A copy of the license is included in
+	<xref linkend="copying-FDL"/>.
+    </para>
+  </legalnotice>
+  <abstract>
+    <para>
+    Cgreen is a unit tester for the C software developer.
+    This is a test automation and software quality assurance tool for
+    development teams.
+    </para>
+  </abstract>    
+</info>
+<dedication>
+<para>This book is dedicated to you.
+</para>
+</dedication>
+<preface><title>Foreword</title>
+<para>Some content is always required.
+</para>
+</preface>
+
+<chapter><title>Cgreen Quickstart Guide</title>
+ &cgreen_quickstart;
+</chapter>
+
+<chapter><title>Building Cgreen test suites</title>
+ &cgreen_suites;
+</chapter>
+
+<chapter><title>Mocking functions with Cgreen</title>
+ &cgreen_mock_callbacks;
+</chapter>
+
+<chapter><title>Changing Cgreen Reporting</title>
+ &cgreen_reporter;
+</chapter>
+
+&freedoc-license;
+</book>
