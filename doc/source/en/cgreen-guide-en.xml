@@ -6,7 +6,7 @@
 <!ENTITY cgreen_reporter SYSTEM "reporter.xml">
 <!ENTITY freedoc-license SYSTEM "../include/copying-fdl.xml">
 ]>
-<book xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en" xmlns:xl="http://www.w3.org/1999/xlink">
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
   <title xmlns="http://docbook.org/ns/docbook">Cgreen Unit Test for C language</title>
   <titleabbrev xmlns="http://docbook.org/ns/docbook">Cgreen Quickstart Guide</titleabbrev>
   <info xmlns="http://docbook.org/ns/docbook">
