@@ -154,8 +154,8 @@ AC_ARG_ENABLE(docs,
 	[  ac_docs="NO" ])
 
 if test "$ac_docs" = "YES"; then
-dnl   AC_PATH_PROGS(myjade, openjade jade)
-dnl   if test "x$myjade" != "x"; then
+dnl   AC_PATH_PROGS(myxsltproc, xsltproc fop)
+dnl   if test "x$myxsltproc" != "x"; then
       docs_subdirs="doc"
 dnl   else
 dnl      docs_subdirs=""
