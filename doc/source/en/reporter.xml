@@ -215,8 +215,7 @@ void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *
             </para>
             <para>
                 Suppose also that we have come up with the following format...
-<screen>
-<![CDATA[
+<screen><![CDATA[
 <?xml?>
 <test name="Top Level">
     <test name="A Group">
@@ -230,8 +229,7 @@ void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *
         </test>
     </test>
 </test>
-]]>
-</screen>
+]]></screen>
                 In other words a simple nesting of tests with only failures
                 encoded.
                 The absence of failure is a pass.
