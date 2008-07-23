@@ -458,7 +458,7 @@ void one_character_is_made_into_a_one_letter_paragraph() {<emphasis role="strong
             </para>
             <para>
                 Here is the full list of instructions that can be sent to the mocks...
-                                <informaltable>
+                <informaltable>
                   <tgroup cols="2">
                    <thead>
                      <row>
@@ -469,7 +469,8 @@ void one_character_is_made_into_a_one_letter_paragraph() {<emphasis role="strong
                   <tbody>
                        <row>
                          <entry><code>will_return(function, result)</code></entry>
-                         <entry>Returns result once only, but successive calls will be replayed in order. Generates a failure when called too many times.</entry>
+                         <entry>Returns result once only, but successive calls will be replayed in order.
+                          Generates a failure when called too many times.</entry>
                        </row>
                        <row>
                          <entry><code>always_return(function, result)</code></entry>
@@ -477,7 +478,8 @@ void one_character_is_made_into_a_one_letter_paragraph() {<emphasis role="strong
                        </row>
                        <row>
                          <entry><code>expect(function, arguments...)</code></entry>
-                         <entry>Sets up an expectation on each argument. If there is a mismatch, or a call is made without an expectation, a failure is generated.</entry>
+                         <entry>Sets up an expectation on each argument. If there is a mismatch, or a
+                          call is made without an expectation, a failure is generated.</entry>
                        </row>
                        <row>
                          <entry><code>always_expect(function, arguments...)</code></entry>

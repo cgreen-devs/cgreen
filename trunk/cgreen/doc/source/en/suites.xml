@@ -78,7 +78,7 @@ static void <emphasis role="strong">strlen_of_hello_should_be_five</emphasis>() 
                 If you want to substitute your own failure messages, then you
                 must use the <code>*_with_message()</code> counterparts...
                 <informaltable>
-                  <tgroup cols="2">
+                  <tgroup cols="1">
                    <thead>
                      <row>
                       <entry>Assertion</entry>
