@@ -170,8 +170,8 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 doc_DATA = source/en/cgreen-guide-en.xml source/en/suites.xml source/en/mock_callbacks.xml source/en/quickstart.xml source/en/reporter.xml
 EXTRA_DIST = $(doc_DATA)  $(programmers_sources)
-XSLSTYLEHTML = /home_local/usuario/docbook-xsl-ns-1.74.0/html/docbook.xsl
-XSLSTYLEFO = /home_local/usuario/docbook-xsl-ns-1.74.0/fo/docbook.xsl
+XSLSTYLEHTML = tools/xsl/html/docbook.xsl
+XSLSTYLEFO = source/include/customfo.xsl
 all: all-am
 
 .SUFFIXES:
@@ -400,7 +400,8 @@ lastcraft-html:
 all: html
 
 distclean: clean
-	rm -f cgreen-guide.pdf
+	rm -f *.pdf
+	rm -f *.fo
 	rm -rf cgreen-guide
 	rm -rf cgreen-bundled
 	rm -rf lastcraft
