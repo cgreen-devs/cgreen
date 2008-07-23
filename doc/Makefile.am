@@ -7,8 +7,8 @@ docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
 doc_DATA = source/en/cgreen-guide-en.xml source/en/suites.xml source/en/mock_callbacks.xml source/en/quickstart.xml source/en/reporter.xml
 
 EXTRA_DIST = $(doc_DATA)  $(programmers_sources)
-XSLSTYLEHTML=/home_local/usuario/docbook-xsl-ns-1.74.0/html/docbook.xsl
-XSLSTYLEFO=/home_local/usuario/docbook-xsl-ns-1.74.0/fo/docbook.xsl
+XSLSTYLEHTML=tools/xsl/html/docbook.xsl
+XSLSTYLEFO=source/include/customfo.xsl
 
 
 %.html:  source/en/cgreen-guide-en.xml

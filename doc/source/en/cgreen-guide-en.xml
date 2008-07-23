@@ -1,5 +1,5 @@
 <?xml version = '1.0'?>
-<!DOCTYPE book SYSTEM "/home_local/usuario/docbook-5.0/dtd/docbook.dtd" [ 
+<!DOCTYPE book SYSTEM "../../tools/docbook-5.0/dtd/docbook.dtd" [ 
 <!ENTITY cgreen_quickstart SYSTEM "quickstart.xml">
 <!ENTITY cgreen_suites SYSTEM "suites.xml">
 <!ENTITY cgreen_mock_callbacks SYSTEM "mock_callbacks.xml">
