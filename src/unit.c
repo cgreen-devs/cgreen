@@ -4,6 +4,7 @@
 #include <cgreen/reporter.h>
 #include <cgreen/mocks.h>
 #include <cgreen/parameters.h>
+#include <cgreen/assertions.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -26,6 +27,7 @@ typedef struct UnitTest {
 struct TestSuite_ {
 	const char *name;
     UnitTest *tests;
+    TestAsserts *assert;
     void (*setup)();
     void (*teardown)();
     int size;
@@ -54,10 +56,12 @@ TestSuite *create_named_test_suite(const char *name) {
     suite->setup = &do_nothing;
     suite->teardown = &do_nothing;
     suite->size = 0;
+    suite->assert = NULL;
     return suite;
 }
 
 void destroy_test_suite(TestSuite *suite) {
+	destroy_assert(suite->assert);
     free(suite->tests);
     free(suite);
 }
@@ -68,6 +72,7 @@ void add_test_(TestSuite *suite, char *name, CgreenTest *test) {
     suite->tests[suite->size - 1].type = test_function;
     suite->tests[suite->size - 1].name = name;
     suite->tests[suite->size - 1].test = test;
+    suite->assert = create_assert();
 }
 
 void add_tests_(TestSuite *suite, const char *names, ...) {
