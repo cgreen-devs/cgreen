@@ -7,7 +7,7 @@ typedef struct TestContextAssert_ TestContextAssert;
 
 typedef struct TestAsserts_ TestAsserts;
 struct TestAsserts_ {
-    void (*set_significant_figures)(TestAsserts *, double epsilon);
+    void (*set_double_figures)(TestAsserts *, double epsilon);
     double epsilon;
 };
 
@@ -32,7 +32,7 @@ void destroy_assert(TestAsserts *asserts);
 #define assert_string_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, strings_are_equal(tried, expected), __VA_ARGS__)
 #define assert_string_not_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, ! strings_are_equal(tried, expected), __VA_ARGS__)
 
-#define set_significant_figures(epsilon) (*get_test_assert()->set_significant_figures)(get_test_assert(),epsilon)
+#define set_significant_figures(epsilon) (*get_test_assert()->set_double_figures)(get_test_assert(),epsilon)
 
 void assert_equal_(const char *file, int line, intptr_t tried, intptr_t expected);
 void assert_not_equal_(const char *file, int line, intptr_t tried, intptr_t expected);
