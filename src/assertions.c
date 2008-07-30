@@ -13,12 +13,12 @@ TestAsserts *get_test_assert() {
     return contextassert.assert;
 }
 
-static void set_significant_figures(TestAsserts *assert, double epsilon);
+static void set_double_figures(TestAsserts *assert, double epsilon);
 
 TestAsserts *create_assert() {
     TestAsserts *assert = (TestAsserts *)malloc(sizeof(TestAsserts));
-    assert->set_significant_figures = &set_significant_figures;
-    assert->epsilon = 0.1;
+    assert->set_double_figures = &set_double_figures;
+    assert->epsilon = 0.0000001;
     contextassert.assert = assert;
     return assert;
 }
@@ -37,7 +37,7 @@ void assert_equal_(const char *file, int line, intptr_t tried, intptr_t expected
             "[%d] should match [%d]", tried, expected);
 }
 
-static void set_significant_figures(TestAsserts *assert, double epsilon) {
+static void set_double_figures(TestAsserts *assert, double epsilon) {
 	assert->epsilon = epsilon;
 }
 
