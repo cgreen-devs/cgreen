@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-<xsl:import href="/home_local/usuario/docbook-xsl-ns-1.74.0/fo/docbook.xsl"/>
+<xsl:import href="../../tools/xsl/fo/docbook.xsl"/>
 <xsl:param name="html.stylesheet" select="'corpstyle.css'"/>
 <xsl:param name="admon.graphics" select="1"/>
 <xsl:param name="paper.type" select="'A4'"/> 
