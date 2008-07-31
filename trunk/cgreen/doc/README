@@ -46,6 +46,9 @@ II. COMPILING THE DOCS
 
    The default build process expects to the stylesheets to be in
    doc/tools/xsl/.
+   
+   We provide the xsl used in Cgreen. Check the svn repository on vendor
+   branch
 
 2. Fetch the DocBook 5 and place them in doc/tools/docbook.
    
@@ -58,6 +61,10 @@ II. COMPILING THE DOCS
 
    The default build process expects to the DocBook to be in
    doc/tools/docbook-5.0/.
+   
+   We provide the docbook used in Cgreen. Check the svn repository on vendor
+   branch
+
    
 3. Use XSLT to transform the book.
 
