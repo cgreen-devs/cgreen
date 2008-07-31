@@ -7,7 +7,7 @@ docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
 doc_DATA = source/en/cgreen-guide-en.xml source/en/suites.xml source/en/mock_callbacks.xml source/en/quickstart.xml source/en/reporter.xml
 
 EXTRA_DIST = $(doc_DATA)  $(programmers_sources)
-XSLSTYLEHTML=tools/xsl/html/docbook.xsl
+XSLSTYLEHTML=source/include/customhtml.xsl
 XSLSTYLEFO=source/include/customfo.xsl
 
 
@@ -54,7 +54,7 @@ lastcraft-html:
 	Xalan -o lastcraft/mock_callbacks.php mock_callbacks.xml source/include/lastcraft.xslt
 	Xalan -o lastcraft/cgreen_reporter.php cgreen_reporter.xml source/include/lastcraft.xslt	
 
-all: html
+all: html pdf
 
 distclean: clean
 	rm -f *.pdf
