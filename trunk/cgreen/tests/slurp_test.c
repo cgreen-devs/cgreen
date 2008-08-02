@@ -1,5 +1,5 @@
-#include "../cgreen.h"
-#include "../slurp.h"
+#include <cgreen/cgreen.h>
+#include <cgreen/slurp.h>
 #include <stdlib.h>
 #include <string.h>
 

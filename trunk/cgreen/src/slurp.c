@@ -1,4 +1,4 @@
-#include "slurp.h"
+#include <cgreen/slurp.h>
 #include <stdlib.h>
 #include <stdio.h>
 
