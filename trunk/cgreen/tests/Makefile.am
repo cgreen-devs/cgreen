@@ -8,8 +8,8 @@ all_tests_SOURCES = all_tests.c breadcrumb_tests.c messaging_tests.c assertion_t
 all_tests_LDFLAGS = 
 all_tests_LDADD = -lm -lcgreen
 
-INCLUDES = -I@includedir@
-CFLAGS = -g 
+INCLUDES = -I@includedir@ -I$(top_srcdir)/include
+CFLAGS = -L$(top_srcdir)/src/.libs -g 
 AM_CPPFLAGS=
 
 debug:
