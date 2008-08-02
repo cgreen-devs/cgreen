@@ -54,7 +54,7 @@ am__DEPENDENCIES_1 =
 libcgreen_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_libcgreen_la_OBJECTS = unit.lo messaging.lo breadcrumb.lo \
 	reporter.lo assertions.lo vector.lo mocks.lo constraint.lo \
-	parameters.lo text_reporter.lo
+	parameters.lo text_reporter.lo slurp.lo
 libcgreen_la_OBJECTS = $(am_libcgreen_la_OBJECTS)
 libcgreen_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -195,7 +195,7 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/include
 lib_LTLIBRARIES = libcgreen.la
-libcgreen_la_SOURCES = unit.c messaging.c breadcrumb.c reporter.c assertions.c vector.c mocks.c constraint.c parameters.c text_reporter.c
+libcgreen_la_SOURCES = unit.c messaging.c breadcrumb.c reporter.c assertions.c vector.c mocks.c constraint.c parameters.c text_reporter.c slurp.c
 libcgreen_la_LIBADD = $(LIBADD_DL)
 libcgreen_la_LDFLAGS = -version-info @LIB_CURRENT@:@LIB_REVISION@:@LIB_AGE@ -no-undefined
 all: all-am
@@ -274,6 +274,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mocks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parameters.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reporter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slurp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/text_reporter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vector.Plo@am__quote@
