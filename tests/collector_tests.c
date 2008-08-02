@@ -1,5 +1,5 @@
-#include "../cgreen.h"
-#include "../breadcrumb.h"
+#include <cgreen/cgreen.h>
+#include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 
 Ensure a_test_that_passes() {
