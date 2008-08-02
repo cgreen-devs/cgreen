@@ -45,7 +45,8 @@ CONFIG_CLEAN_FILES =
 am_all_tests_OBJECTS = all_tests.$(OBJEXT) breadcrumb_tests.$(OBJEXT) \
 	messaging_tests.$(OBJEXT) assertion_tests.$(OBJEXT) \
 	vector_tests.$(OBJEXT) constraint_tests.$(OBJEXT) \
-	parameters_test.$(OBJEXT) mocks_tests.$(OBJEXT)
+	parameters_test.$(OBJEXT) mocks_tests.$(OBJEXT) \
+	slurp_test.$(OBJEXT) collector_tests.$(OBJEXT)
 all_tests_OBJECTS = $(am_all_tests_OBJECTS)
 all_tests_DEPENDENCIES =
 all_tests_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -185,8 +186,7 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-all_tests_SOURCES = all_tests.c breadcrumb_tests.c messaging_tests.c assertion_tests.c vector_tests.c constraint_tests.c parameters_test.c mocks_tests.c
-# slurp_test.c
+all_tests_SOURCES = all_tests.c breadcrumb_tests.c messaging_tests.c assertion_tests.c vector_tests.c constraint_tests.c parameters_test.c mocks_tests.c slurp_test.c collector_tests.c
 all_tests_LDFLAGS = 
 all_tests_LDADD = -lm -lcgreen
 INCLUDES = -I@includedir@
@@ -244,10 +244,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/all_tests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assertion_tests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/breadcrumb_tests.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/collector_tests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/constraint_tests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/messaging_tests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mocks_tests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parameters_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slurp_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vector_tests.Po@am__quote@
 
 .c.o:
