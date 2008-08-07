@@ -4,8 +4,26 @@ AUTOMAKE_OPTIONS = foreign
 
 docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
 
-doc_DATA = source/en/cgreen-guide-en.xml source/en/suites.xml source/en/mock_callbacks.xml source/en/quickstart.xml source/en/reporter.xml
-
+doc_DATA = source/en/cgreen-guide-en.xml source/en/suites.xml \
+           source/en/mock_callbacks.xml source/en/quickstart.xml \
+           source/en/reporter.xml \
+           source/pt_BR/cgreen-guide-pt_br.xml source/pt_BR/suites.xml \
+           source/pt_BR/mock_callbacks.xml source/pt_BR/quickstart.xml \
+           source/pt_BR/reporter.xml \
+           source/include/bundled_docs.xslt source/include/bundled_map.xml \
+           source/include/copying-fdl.xml source/include/customfo.xsl \
+           source/include/customhtml.xsl source/include/docs.css \
+           source/include/lastcraft.xslt source/include/site_map.xml \
+           source/site/cgreen_reporter.xml source/site/cgreen_suites.xml \
+           source/site/mock_callbacks.xml source/site/quickstart.xml \
+           source/tutorial_test/all_tests.c source/tutorial_test/crash_test.c \
+           source/tutorial_test/first_test.c source/tutorial_test/person.h \
+           source/tutorial_test/person_test.c source/tutorial_test/stream.c \
+           source/tutorial_test/stream_test.c source/tutorial_test/strlen_test.c \
+           source/tutorial_test/test_as_xml.c source/tutorial_test/words.c \
+           source/tutorial_test/words.h source/tutorial_test/words_test.c \
+           source/tutorial_test/xml_reporter.c source/tutorial_test/xml_reporter.h
+           
 EXTRA_DIST = $(doc_DATA)  $(programmers_sources)
 XSLSTYLEHTML=source/include/customhtml.xsl
 XSLSTYLEFO=source/include/customfo.xsl
