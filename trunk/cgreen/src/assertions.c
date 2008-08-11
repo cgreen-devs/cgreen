@@ -3,30 +3,12 @@
 #include <stdlib.h>
 #include <math.h>
 
-struct TestContextAssert_ {
-    TestAsserts *assert;
-};
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) > (b) ? (b) : (a))
 
-static TestContextAssert contextassert;
+static double accuracy(int significant_figures, double largest);
 
-TestAsserts *get_test_assert() {
-    return contextassert.assert;
-}
-
-static void set_double_figures(TestAsserts *assert, double epsilon);
-
-TestAsserts *create_assert() {
-    TestAsserts *assert = (TestAsserts *)malloc(sizeof(TestAsserts));
-    assert->set_double_figures = &set_double_figures;
-    assert->epsilon = 0.0000001;
-    contextassert.assert = assert;
-    return assert;
-}
-
-void destroy_assert(TestAsserts *assert) {
-    free(assert);
-    contextassert.assert = NULL;
-}
+static int significant_figures = 8;
 
 void assert_equal_(const char *file, int line, intptr_t tried, intptr_t expected) {
     (*get_test_reporter()->assert_true)(
@@ -35,10 +17,6 @@ void assert_equal_(const char *file, int line, intptr_t tried, intptr_t expected
             line,
             (tried == expected),
             "[%d] should match [%d]", tried, expected);
-}
-
-static void set_double_figures(TestAsserts *assert, double epsilon) {
-	assert->epsilon = epsilon;
 }
 
 void assert_not_equal_(const char *file, int line, intptr_t tried, intptr_t expected) {
@@ -55,8 +33,8 @@ void assert_double_equal_(const char *file, int line, double tried, double expec
             get_test_reporter(),
             file,
             line,
-            double_are_equal(tried, expected, get_test_assert()->epsilon),
-            "[%f] should match [%f]", tried, expected);
+            doubles_are_equal(tried, expected),
+            "[%f] should match [%f] within %d significant figures %f", tried, expected, significant_figures);
 }
 
 void assert_double_not_equal_(const char *file, int line, double tried, double expected) {
@@ -64,8 +42,8 @@ void assert_double_not_equal_(const char *file, int line, double tried, double e
             get_test_reporter(),
             file,
             line,
-            ! double_are_equal(tried, expected, get_test_assert()->epsilon),
-            "[%f] should not match [%f]", tried, expected);
+            ! doubles_are_equal(tried, expected),
+            "[%f] should not match [%f] within %d significant figures", tried, expected, significant_figures);
 }
 
 void assert_string_equal_(const char *file, int line, const char *tried, const char *expected) {
@@ -86,6 +64,10 @@ void assert_string_not_equal_(const char *file, int line, const char *tried, con
             "[%s] should not match [%s]", show_null_as_the_string_null(tried), show_null_as_the_string_null(expected));
 }
 
+int significant_figures_for_assert_double_are(int figures) {
+    significant_figures = figures;
+}
+
 const char *show_null_as_the_string_null(const char *string) {
     return (string == NULL ? "NULL" : string);
 }
@@ -98,20 +80,10 @@ int strings_are_equal(const char *tried, const char *expected) {
     }
 }
 
-int double_are_equal(double tried, double expected, double epsilon) {
-    int exponent;
-    double delta;
-    double difference;
+int doubles_are_equal(const double tried, const double expected) {
+    return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(tried, expected));
+}
 
-    frexp(fabs(tried) > fabs(expected) ? tried : expected, &exponent);
-    delta = ldexp(epsilon, exponent);
-    difference = tried - expected;
-    //printf("x1: %f x2: %f epsilon: %f, \tDelta: %f \tDifference: %f\n", tried,expected, epsilon, delta, difference);
-
-    if (difference > delta)
-        return 0; /* x1 > x2 */
-    else if (difference < -delta)
-        return 0;  /* x1 < x2 */
-    else /* -delta <= difference <= delta */
-       return 1;  /* x1 == x2 */
+static double accuracy(int significant_figures, double largest) {
+    return pow(10, 1 + (int)log10(largest) - significant_figures);
 }
