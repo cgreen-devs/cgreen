@@ -41,7 +41,7 @@ Ensure double_differences_matter_past_significant_figures() {
 }
 
 Ensure double_assertions_can_have_custom_messages() {
-	significant_figures_for_assert_double_are(8);
+	significant_figures_for_assert_double_are(3);
 	assert_double_equal_with_message(1.113, 1.115, "This should pass");
 }
 
@@ -77,9 +77,7 @@ TestSuite *assertion_tests() {
     add_test(suite, zero_should_assert_double_not_equal_to_one);
     add_test(suite, double_differences_do_not_matter_past_significant_figures);
     add_test(suite, double_differences_matter_past_significant_figures);
-    //add_test(suite,a_double_without_four_digits);
-    //add_test(suite, a_double_with_eigth_digits);
-    //add_test(suite, a_double_with_classic_value);
+    add_test(suite, double_assertions_can_have_custom_messages);
     add_test(suite, identical_string_copies_should_match);
     add_test(suite, case_different_strings_should_not_match);
     add_test(suite, null_string_should_only_match_another_null_string);
