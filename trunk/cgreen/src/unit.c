@@ -216,6 +216,7 @@ static void stop() {
 }
 
 static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *reporter) {
+    significant_figures_for_assert_double_are(8);
     clear_mocks();
 	(*suite->setup)();
     (*test->test)();
