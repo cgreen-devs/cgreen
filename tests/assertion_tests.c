@@ -40,6 +40,11 @@ Ensure double_differences_matter_past_significant_figures() {
 	assert_double_not_equal(1113000, 1115000);
 }
 
+Ensure double_assertions_can_have_custom_messages() {
+	significant_figures_for_assert_double_are(8);
+	assert_double_equal_with_message(1.113, 1.115, "This should pass");
+}
+
 Ensure identical_string_copies_should_match() {
     assert_string_equal("Hello", "Hello");
 }
