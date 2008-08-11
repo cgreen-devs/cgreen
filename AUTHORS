@@ -2,8 +2,9 @@ The following people have been involved in cgreen development:
 
 Main developers:
 * Marcus Baker
+  - Initial version
+* João Henrique F. Freitas
+  - configure/Makefile/libtool 
 
 These people have also contributed to the project:
 (if we forgot you, please let us know!)
-* João Henrique F. Freitas
-  - configure/Makefile/libtool 
