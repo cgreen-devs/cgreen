@@ -3,8 +3,9 @@ TODO for Cgreen
 
 Unit tester
 -----------
-Can compare doubles.
-Move non-visible files into src/ directory.
+Can compare doubles
+    - need to allow significant figues as well as decimal places.
+Move non-visible files into src/ directory - done.
 
 Mocks
 -----
@@ -18,10 +19,15 @@ Suites
 Collector
 ---------
 Should write back to the same file when given a single file parameter, stdout otherwise.
+Fix bug in slurp.c file.
 
 Packages
 --------
+Write script for building tarball.
+    - HTML docs must be pre-built (no docbook dependency for users).
+    - Need to build preprocessor tool once finished.
 Make sure only the public symbols are exported in the library.
+Users should just be able to go "#include <cgreen.h>".
 
 Documentation
 -------------

@@ -3,19 +3,6 @@
 
 #include <inttypes.h>
 
-typedef struct TestContextAssert_ TestContextAssert;
-
-typedef struct TestAsserts_ TestAsserts;
-struct TestAsserts_ {
-    void (*set_double_figures)(TestAsserts *, double epsilon);
-    double epsilon;
-};
-
-TestAsserts *get_test_assert();
-TestAsserts *create_assert();
-void destroy_assert(TestAsserts *asserts);
-
-
 #define assert_true(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, result, NULL)
 #define assert_false(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, ! result, NULL)
 #define assert_equal(tried, expected) assert_equal_(__FILE__, __LINE__, (intptr_t)tried, (intptr_t)expected)
@@ -32,16 +19,15 @@ void destroy_assert(TestAsserts *asserts);
 #define assert_string_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, strings_are_equal(tried, expected), __VA_ARGS__)
 #define assert_string_not_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, ! strings_are_equal(tried, expected), __VA_ARGS__)
 
-#define set_significant_figures(epsilon) (*get_test_assert()->set_double_figures)(get_test_assert(),epsilon)
-
 void assert_equal_(const char *file, int line, intptr_t tried, intptr_t expected);
 void assert_not_equal_(const char *file, int line, intptr_t tried, intptr_t expected);
 void assert_double_equal_(const char *file, int line, double tried, double expected);
 void assert_double_not_equal_(const char *file, int line, double tried, double expected);
 void assert_string_equal_(const char *file, int line, const char *tried, const char *expected);
 void assert_string_not_equal_(const char *file, int line, const char *tried, const char *expected);
+int significant_figures_for_assert_double_are(int figures);
 const char *show_null_as_the_string_null(const char *string);
 int strings_are_equal(const char *tried, const char *expected);
-int double_are_equal(double tried, double expected, double epsilon);
+int doubles_are_equal(const double tried, const double expected);
 
 #endif
