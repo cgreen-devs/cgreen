@@ -118,6 +118,22 @@ Ensure string_expect_sequence() {
     string_in("goodbye");
 }
 
+static void double_in(double d) {
+    mock(d(d));
+}
+
+Ensure double_expect_is_confirmed() {
+    expect(double_in, want_double(d, 3.14));
+    double_in(3.14);
+}
+
+Ensure double_expect_sequence() {
+    expect(double_in, want_double(d, 1.0));
+    expect(double_in, want_double(d, 2.0));
+    double_in(1.0);
+    double_in(2.0);
+}
+
 static void mixed_parameters(int i, char *s) {
     mock(i, s);
 }
@@ -149,7 +165,7 @@ Ensure can_mock_full_sequence() {
     assert_equal(sample_mock(667, "beastie"), 6);
 }
 
-static void can_always_mock_full_function_call() {
+Ensure can_always_mock_full_function_call() {
     always_respond(sample_mock, 5, want(i, 666), want_string(s, "devil"));
     assert_equal(sample_mock(666, "devil"), 5);
     assert_equal(sample_mock(666, "devil"), 5);
@@ -157,7 +173,7 @@ static void can_always_mock_full_function_call() {
 }
 
 Ensure can_declare_function_never_called() {
-    expect_never(sample_mock);    
+    expect_never(sample_mock);
 }
 
 TestSuite *mock_tests() {
@@ -178,6 +194,8 @@ TestSuite *mock_tests() {
     add_test(suite, string_expect_is_confirmed);
     add_test(suite, string_expect_is_confirmed_even_when_null);
     add_test(suite, string_expect_sequence);
+    add_test(suite, double_expect_is_confirmed);
+    add_test(suite, double_expect_sequence);
     add_test(suite, confirming_multiple_parameters_multiple_times);
     add_test(suite, can_mock_full_function_call);
     add_test(suite, when_called_with_always_should_not_tally_counts);
