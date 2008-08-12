@@ -3,8 +3,8 @@ TODO for Cgreen
 
 Unit tester
 -----------
-Can compare doubles
-    - need to allow significant figues as well as decimal places.
+Can compare doubles - done.
+    - need to allow significant figues - done.
 Move non-visible files into src/ directory - done.
 
 Mocks
@@ -15,24 +15,24 @@ Add expect_call_count().
 
 Suites
 ------
+Exceptions, as well as failures, should cause a bad exit code.
 
 Collector
 ---------
 Should write back to the same file when given a single file parameter, stdout otherwise.
-Fix bug in slurp.c file.
+Fix memory bug in slurp.c file.
 
 Packages
 --------
 Write script for building tarball.
     - HTML docs must be pre-built (no docbook dependency for users).
-    - Need to build preprocessor tool once finished.
+    - Need to build collector tool (once it's finished).
 Make sure only the public symbols are exported in the library.
-Users should just be able to go "#include <cgreen.h>".
+Users should just be able to go "#include <cgreen.h> by default".
 
 Documentation
 -------------
 Add tests for examples.
-Add collector behaviour and Ensure macro to docs.
+Add collector behaviour (once finished) and Ensure macro to docs.
 Add install section
 Fix margin size in pdf docs
-
