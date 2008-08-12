@@ -13,7 +13,7 @@
 
 enum {test_function, test_suite};
 
-typedef struct UnitTest {
+typedef struct {
     int type;
     union {
         void (*test)();

@@ -27,7 +27,7 @@ Ensure equal_pointers_compare_true_with_a_want_constraint() {
     destroy_constraint(want_pointed_at_37);
 }
 
-Ensure can_construct_and_destroy_an_want_string_constraint() {
+Ensure can_construct_and_destroy_a_want_string_constraint() {
     Constraint *any_old_string_want = want_string(label, "Hello");
     destroy_constraint(any_old_string_want);
 }
@@ -52,15 +52,39 @@ Ensure can_expect_null_strings_as_well_as_real_ones() {
     destroy_constraint(want_hello);
 }
 
+Ensure equal_doubles_compare_true_with_a_want_double_constraint() {
+    Constraint *want_37 = want_double(label, 37.0);
+    assert_equal(compare_constraint(want_37, box_double(37.0)), 1);
+    destroy_constraint(want_37);
+}
+
+Ensure unequal_doubles_compare_false_with_a_want_double_constraint() {
+    Constraint *want_37 = want_double(label, 37.0);
+    assert_equal(compare_constraint(want_37, box_double(36.0)), 0);
+    destroy_constraint(want_37);
+}
+
+Ensure constraints_on_doubles_respect_significant_figure_setting() {
+	significant_figures_for_assert_double_are(2);
+    Constraint *want_337 = want_double(label, 337.0);
+    assert_equal(compare_constraint(want_337, box_double(339.0)), 1);
+	significant_figures_for_assert_double_are(3);
+    assert_equal(compare_constraint(want_337, box_double(339.0)), 0);
+    destroy_constraint(want_337);
+}
+
 TestSuite *constraint_tests() {
     TestSuite *suite = create_test_suite();
     add_test(suite, can_construct_and_destroy_an_want_constraint);
     add_test(suite, parameter_name_gives_true_if_matching);
     add_test(suite, equal_integers_compare_true_with_a_want_constraint);
     add_test(suite, equal_pointers_compare_true_with_a_want_constraint);
-    add_test(suite, can_construct_and_destroy_an_want_string_constraint);
+    add_test(suite, can_construct_and_destroy_a_want_string_constraint);
     add_test(suite, can_compare_strings_as_equal);
     add_test(suite, can_compare_null_strings_as_well_as_real_ones);
     add_test(suite, can_expect_null_strings_as_well_as_real_ones);
+    add_test(suite, equal_doubles_compare_true_with_a_want_double_constraint);
+    add_test(suite, unequal_doubles_compare_false_with_a_want_double_constraint);
+    add_test(suite, constraints_on_doubles_respect_significant_figure_setting);
     return suite;
 }
