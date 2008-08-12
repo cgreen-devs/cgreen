@@ -6,7 +6,12 @@
 
 #define want(parameter, x) want_(#parameter, (intptr_t)x)
 #define want_string(parameter, x) want_string_(#parameter, x)
+#define want_double(parameter, x) want_double_(#parameter, box_double(x))
 #define compare_constraint(c, x) (*c->compare)(c, (intptr_t)x)
+
+typedef union {
+    double d;
+} BoxedDouble;
 
 typedef struct Constraint_ Constraint;
 struct Constraint_ {
@@ -22,5 +27,7 @@ int is_constraint_parameter(Constraint *constraint, const char *label);
 void test_constraint(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 Constraint *want_(const char *parameter, intptr_t expected);
 Constraint *want_string_(const char *parameter, char *expected);
+Constraint *want_double_(const char *parameter, intptr_t expected);
+intptr_t box_double(double d);
 
 #endif
