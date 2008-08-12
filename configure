@@ -1483,7 +1483,7 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --disable-docs	  do not build and install the documentation.
+  --enable-docs	  build and install the documentation.
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -20925,10 +20925,10 @@ done
 
 
 
-ac_docs="YES"
+ac_docs="NO"
 # Check whether --enable-docs was given.
 if test "${enable_docs+set}" = set; then
-  enableval=$enable_docs;   ac_docs="NO"
+  enableval=$enable_docs;   ac_docs="YES"
 fi
 
 

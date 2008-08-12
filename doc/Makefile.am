@@ -24,7 +24,7 @@ doc_DATA = source/en/cgreen-guide-en.xml source/en/suites.xml \
            source/tutorial_test/words.h source/tutorial_test/words_test.c \
            source/tutorial_test/xml_reporter.c source/tutorial_test/xml_reporter.h
            
-EXTRA_DIST = $(doc_DATA)  $(programmers_sources)
+EXTRA_DIST = $(doc_DATA) cgreen-guide
 XSLSTYLEHTML=source/include/customhtml.xsl
 XSLSTYLEFO=source/include/customfo.xsl
 
@@ -80,4 +80,6 @@ distclean: clean
 	rm -rf cgreen-guide
 	rm -rf cgreen-bundled
 	rm -rf lastcraft
-	
+
+dist-hook: html
+
