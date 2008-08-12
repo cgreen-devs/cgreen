@@ -188,7 +188,7 @@ doc_DATA = source/en/cgreen-guide-en.xml source/en/suites.xml \
            source/tutorial_test/words.h source/tutorial_test/words_test.c \
            source/tutorial_test/xml_reporter.c source/tutorial_test/xml_reporter.h
 
-EXTRA_DIST = $(doc_DATA)  $(programmers_sources)
+EXTRA_DIST = $(doc_DATA) cgreen-guide
 XSLSTYLEHTML = source/include/customhtml.xsl
 XSLSTYLEFO = source/include/customfo.xsl
 all: all-am
@@ -279,6 +279,9 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 check-am: all-am
 check: check-am
 all-am: Makefile $(DATA)
@@ -361,16 +364,16 @@ uninstall-am: uninstall-docDATA
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic clean-libtool \
-	distclean distclean-generic distclean-libtool distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-docDATA install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	uninstall uninstall-am uninstall-docDATA
+	dist-hook distclean distclean-generic distclean-libtool \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-data install-data-am install-docDATA \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
+	ps ps-am uninstall uninstall-am uninstall-docDATA
 
 
 %.html:  source/en/cgreen-guide-en.xml
@@ -424,6 +427,8 @@ distclean: clean
 	rm -rf cgreen-guide
 	rm -rf cgreen-bundled
 	rm -rf lastcraft
+
+dist-hook: html
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
