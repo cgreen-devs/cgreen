@@ -1,88 +1,53 @@
-<?xml version="1.0"?>
-<page title="Mudando o relatóri do Cgreen" here="Cgreen reporting">
-    <long_title>
-    	Mudando o mecanismo de relatório do Cgreen.
-    	
-        Changing the reporting mechanism of Cgreen.
-    </long_title>
-    <content>
-        <section name="extending" title="Trocando o relatório">
-            <p>
+        <section xml:id="extending">
+         <title>Trocando o relatório</title>
+            <para>
                 Em toda suite de teste, nos temos que executar os testes com
                 esta linha...
-            
-                In every test suite so far, we have run the tests
-                with this line...
-<c><![CDATA[
-return run_test_suite(our_tests(), <strong>create_text_reporter()</strong>);
-]]></c>
+<programlisting>
+return run_test_suite(our_tests(), <emphasis role="strong">create_text_reporter()</emphasis>);
+</programlisting>
                 Nos podemos mudar o mecanismo de relatório somente trocando este
                 método.
                 Aqui está um código para <code>create_text_reporter()</code>...
-                
-                We can change the reporting mechanism just by changing this
-                method.
-                Here is the code for <code>create_text_reporter()</code>...
-<c><![CDATA[
+<programlisting>
 TestReporter *create_text_reporter() {
     TestReporter *reporter = create_reporter();
-    reporter->start = &text_reporter_start;
-    reporter->finish = &text_reporter_finish;
-    reporter->show_fail = &show_fail;
-    reporter->show_incomplete = &show_incomplete;
+    reporter->start = &amp;text_reporter_start;
+    reporter->finish = &amp;text_reporter_finish;
+    reporter->show_fail = &amp;show_fail;
+    reporter->show_incomplete = &amp;show_incomplete;
     return reporter;
 }
-]]></c>
+</programlisting>
                 A estrutura <code>TestReporter</code> contem ponteiros de função 
                 no qual controlam o relatório.
                 Quando chamadas pelo construtor <code>create_reporter()</code>, estes
-                ponteiros são configurados para função que não mostram nada.
-                O código do relatório de texto troca estes com alguma coisa mais dramática
+                ponteiros são configurados com funções que não mostram nada.
+                O código do relatório de texto troca estas com alguma coisa mais dramática
                 , e então retorna um ponteiro para o novo objeto.
                 Desta maneira a função <code>create_text_reporter()</code> efetivamente
                 extende o objeto a partir de <code>create_reporter()</code>.
-
-                The <code>TestReporter</code> structure contains function
-                pointers that control the reporting.
-                When called from <code>create_reporter()</code> constructor, these
-                pointers are set up with functions that display nothing.
-                The text reporter code replaces these with something more
-                dramatic, and then returns a pointer to this new object.
-                Thus the <code>create_text_reporter()</code> function effectively
-                extends the object from <code>create_reporter()</code>.
-            </p>
-            <p>
-                O relatório de texto somente mostra o conteúdo no a partir do início do
-                primeiro teste, até o fim do teste, quando uma falha ocorre, e quando um teste
+            </para>
+            <para>
+                O relatório de texto somente mostra o conteúdo partir do início do
+                primeiro teste, até o final dos testes, quando uma falha ocorre e quando um teste
                 falha para completar.
                 
-                Uma pequena olhada no arquivo <em>text_reporter.c</em> do <em>Cgreen</em>
-                revela que isto sobrepõem somente a saída da mensagem e encadeia para a versão 
-                de <em>reporter.h</em>.
-            
-                The text reporter only outputs content at the start of the first test,
-                at the end of the test run to display the results, when a failure
-                occours, and when a test fails to complete.
-                A quick look at the <em>text_reporter.c</em> file in <em>Cgreen</em>
-                reveals that the overrides just output a message and
-                chain to the versions in <em>reporter.h</em>.
-            </p>
-            <p>
-                Para mudarmos o mecanisco de relatório, nos somente temos que conhecer um 
+                Uma pequena olhada no arquivo <filename>text_reporter.c</filename> do <emphasis>Cgreen</emphasis>
+                revela que sobrepõem somente a saída da mensagem e encadeia para a versão 
+                de <filename>reporter.h</filename>.
+            </para>
+            <para>
+                Para mudarmos o mecanisco de relatório, basta conhecermos um 
                 pouco sobre os métodos da estrutura <code>TestReporter</code>.
-                
-                To change the reporting mechanism ourselves, we just have to know a little
-                about the methods in the <code>TestReporter</code> structure.
-            </p>
+            </para>
         </section>
-        <section name="base" title="A estrutura do TestReporter">
-            <p>
+        <section xml:id="base">
+          <title>A estrutura do TestReporter</title>
+            <para>
                 O <code>TestReporter</code> do Cgreen é uma pseudo classe que se parece
-                algo como...
-                
-                The Cgreen <code>TestReporter</code> is a pseudo class that looks
-                something like...
-<c><![CDATA[
+                como...
+<programlisting>
 typedef struct _TestReporter TestReporter;
 struct _TestReporter {
     void (*destroy)(TestReporter *);
@@ -99,227 +64,145 @@ struct _TestReporter {
     int ipc;
     void *memo;
 };
-]]></c>
-                O primeiro bloco são métodos que podem ser sobrepostos.
-                
-                The first block are the methods that can be overridden.
-                <dl>
-                    <dt><code>void (*destroy)(TestReporter *)</code></dt>
-                    <dd>
-                        Este é o destrutor para a estrutura default.
+</programlisting>
+                O primeiro bloco são métodos que podem ser sobrepostos.                
+                <variablelist>
+                  <varlistentry>
+                    <term><code>void (*destroy)(TestReporter *)</code></term>
+                    <listitem><para>Este é o destrutor para a estrutura default.
                         Se for sobreposto, então a função sobreposta necessita chamar
                         <code>destroy_reporter(TestReporter *reporter)</code> para finalizar e 
-                        limpar.
-                        
-                        This is the destructor for the default structure.
-                        If this is overridden, then the overriding function
-                        must call <code>destroy_reporter(TestReporter *reporter)</code>
-                        to finish the clean up.
-                    </dd>
-                    <dt><code>void (*start)(TestReporter *, const char *)</code></dt>
-                    <dd>
-                        A primeira das callbacks.
-                        No começo de cada suite de teste <em>Cgreen</em> vai chamar
-                        este método dentro do relatório com o nome da suit iniciada.
+                        limpar.</para></listitem>
+                  </varlistentry>
+                  <varlistentry>
+                    <term><code>void (*start)(TestReporter *, const char *)</code></term>
+                    <listitem><para>A primeira das callbacks. No começo de cada suite de
+                        teste <emphasis>Cgreen</emphasis> vai chamar este método dentro do 
+                        relatório com o nome da suite iniciada.
                         A versão default mantem o registro da pilha de testes dentro do 
                         ponteiro <code>breadcrumb</code> para <code>TestReporter</code>.
-                        Se você faz uso das funções breadcrumb, como o default faz, então você
+                        Se você faz uso das funções breadcrumb, como por default faz, então você
                         precisa chamar <code>reporter_start()</code> para manter os registros
-                        sincronizados.
-                        
-                        The first of the callbacks.
-                        At the start of each test suite <em>Cgreen</em> will
-                        call this method on the reporter with the name of the
-                        suite being entered.
-                        The default version keeps track of the stack of tests
-                        in the <code>breadcrumb</code> pointer of
-                        <code>TestReporter</code>.
-                        If you make use of the breadcrumb functions, as the defaults
-                        do, then you will need to call <code>reporter_start()</code> to
-                        keep the book keeping in sync.
-                    </dd>
-                    <dt><code>void (*finish)(TestReporter *, const char *)</code></dt>
-                    <dd>
-                        Do outro lado a chamada para <code>(*start)()</code> é feita quando a test
-                        suite é deixada.
+                        sincronizados.</para></listitem>
+                  </varlistentry>
+                  <varlistentry>      
+                    <term><code>void (*finish)(TestReporter *, const char *)</code></term>
+                    <listitem><para>Do outro lado a chamada para <code>(*start)()</code> é feita
+                        quando a suite de teste é deixada. 
                         Ela precisa ser encadeiada pelo <code>reporter_finish()</code> para
                         manter o registro de breadcrumb.
                         O próximo relatório usa o estado do breadcrumb para decidir se 
                         ele está no fim do teste.
-                        Se esta, ele imprime o sumério familiar de passes e fails.
-                          
-                        The counterpart to the <code>(*start)()</code> call called
-                        on leaving the test suite.
-                        It needs to be chained to the <code>reporter_finish()</code>
-                        to keep track of the breadcrumb book keeping.
-                        The text reporter uses the state of the breadcrumb to decide
-                        if it is ending teh top level test.
-                        If so, it prints the familiar summary of passes and fails.
-                    </dd>
-                    <dt><code>void (*show_pass)(TestReporter *, const char *, int, const char *, va_list)</code></dt>
-                    <dd>
-                        Este método é inicializado vazio, então não é necessário encadear a 
+                        Se esta, ele imprime o sumário familiar de falhas e sucessos.</para></listitem>
+                  </varlistentry>
+                  <varlistentry>
+                    <term><code>void (*show_pass)(TestReporter *, const char *, int, const char *, va_list)</code></term>
+                      <listitem><para>Este método é inicializado vazio, então não é necessário encadear a 
                         chamada para nenhuma outra função.
-                        Além disso o ponteiro para a estrutura de relatório, <em>Cgreen</em>
+                        Além disso o ponteiro para a estrutura de relatório, <emphasis>Cgreen</emphasis>
                         também passa o nome do arquivo do teste, o número da linha da assertion falhada,
                         a mensagem para mostrar e qualquer parâmetro adicional para ser 
                         substituido dentro da mensagem.
                         A mensagem vem no estilo <code>printf()</code> de formatação de string,
-                        e então a lista de argumento variável faz as substituições.  
-                    
-                        This method is initially empty, so there is no need to chain
-                        the call to any other function.
-                        Besides the pointer to the reporter structure, <em>Cgreen</em>
-                        also passes the file name of the test, the line number of failed
-                        assertion, the message to show and any additional parameters to
-                        substitute into the message.
-                        The message comes in as <code>printf()</code> style format string,
-                        and so the variable argument list should match the substitutions.
-                    </dd>
-                    <dt><code>void (*show_fail)(TestReporter *, const char *, int, const char *, va_list)</code></dt>
-                    <dd>
-                        O parceiro do <code>show_pass()</code>, e é uma das que gostariamos de sobrepor primeiro.
-                        
-                        The partner of <code>show_pass()</code>, and the one you'll likely
-                        overload first.
-                    </dd>
-                    <dt><code>void (*show_incomplete)(TestReporter *, const char *)</code></dt>
-                    <dd>
-
-                        When a test fails to complete, this is the handler that is called.
-                        As it's an unexpected outcome, no message is received, but
-                        we do get the name of the test.
-                        The text reporter combines this with the breadcrumb to produce the
-                        exception report.
-                    </dd>
-                    <dt><code>void (*assert_true)(TestReporter *, const char *, int, int, const char *, ...)</code></dt>
-                    <dd>
-                        Isto não é normalmente sobreposto e é interno.
-                        Ele é ponto de entrada para as mensagesm de teste a partir da test suite.
+                        e então a lista de argumento variável faz as substituições.</para></listitem>
+                  </varlistentry>
+                  <varlistentry>                  
+                    <term><code>void (*show_fail)(TestReporter *, const char *, int, const char *, va_list)</code></term>
+                      <listitem><para>O parceiro do <code>show_pass()</code>, e é uma das que gostariamos
+                        de sobrepor primeiro.</para></listitem>
+                  </varlistentry>                      
+                  <varlistentry>                                            
+                    <term><code>void (*show_incomplete)(TestReporter *, const char *)</code></term>
+                      <list><para>Quando um teste falha, este é o handle que é chamado.
+                        Como ele é um resultado inexperado, nenhuma mensagem é recebida, mas
+                        faz chegar o nome do teste.
+                        O relatório do teste combina isto com o breadcrumb para produzir
+                        a exceção no relatório.</para></list>
+                  </varlistentry>
+                  <varlistentry>
+                    <term><code>void (*assert_true)(TestReporter *, const char *, int, int, const char *, ...)</code></term>
+                    <listitem><para>Isto não é normalmente sobreposto e é interno.
+                        Ele é ponto de entrada para as mensagesm de teste a partir da suite de teste.
                         Por default isto dispacha a chamada para <code>show_pass()</code> ou 
-                        <code>show_fail()</code>.
-                        
-                        This is not normally overridden and is really internal.
-                        It is the raw entry point for the test messages from the test suite.
-                        By default it dispatches teh call to either <code>show_pass()</code>
-                        or <code>show_fail()</code>.
-                    </dd>
-                </dl>
+                        <code>show_fail()</code>.</para></listitem>
+                  </varlistentry>
+                </variablelist>      
                 O segundo bloco é somente recursos e registro no qual o relatório pode usar
                 para exibir as mensagens...
-                
-                The second block is simply resources and book keeping that the reporter
-                can use to liven up the messages...
-                <dl>
-                    <dt><code>passes</code></dt>
-                    <dd>O número de vezes que o teste passou até agora. The number of passes so far.</dd>
-                    <dt><code>failures</code></dt>
-                    <dd>O número de falhas geradas até então. The number of failures generated so far.</dd>
-                    <dt><code>exceptions</code></dt>
-                    <dd>O número de funções de teste que falhou em completar até agora. The number of test functions that have failed to complete so far.</dd>
-                    <dt><code>breadcrumb</code></dt>
-                    <dd>Isto é um ponteiro para a lista dos nomes dos testes na pilha. This is a pointer to the list of test names in the stack.</dd>
-                </dl>
+                <variablelist>
+                  <varlistentry>
+                    <term><code>passes</code></term>
+                      <listitem><para>O número de sucesso gerado até agora.</para></listitem>
+                  </varlistentry>
+                  <varlistentry>
+                    <term><code>failures</code></term>
+                      <listitem><para>O número de falhas geradas até agora.</para></listitem>
+                  </varlistentry>
+                  <varlistentry>
+                    <term><code>exceptions</code></term>
+                      <listitem><para>O números de funções testadas que falharam em completar até agora.</para></listitem>
+                  </varlistentry>
+                  <varlistentry>
+                    <term><code>breadcrumb</code></term>
+                      <listitem><para>Este é um ponteiro para a lista de nomes dentro da stack.</para></listitem>
+                  </varlistentry>
+                </variablelist>
                 O ponteiro <code>breadcrumb</code> é diferente e necessita de uma pequena
                 explanação.
                 Basicamente ele é uma pilha, análogo a breadcrumb trail que você vê em websites.
                 Todo vez que o handle <code>start()</code> é invocado, o nome é colocado dentro da stack.
                 Quando o handle <code>finish()</code> é invocado, o nome é retirado da stack. 
-                
-                The <code>breadcrumb</code> pointer is different and needs a
-                little explanation.
-                Basically it is a stack, analagous to the breadcrumb trail you
-                see on websites.
-                Everytime the <code>start()</code> handler is invoked, the
-                name is placed in this stack.
-                When the <code>finish()</code> message handler is invoked, a
-                name is popped off.
-            </p>
-            <p>
-                Há um monte de funções uteis em <em>cgreen/breadcrumb.h</em>
+            </para>
+            <para>
+                Há um monte de funções uteis em <filename>cgreen/breadcrumb.h</filename>
                 no qual podem ajudar a ler o estado do stack.
                 As mais uteis são <code>get_current_from_breadcrumb()</code> no qual pega
                 um ponteiro breadcrumb e retorna o nome do teste corrente, e 
                 <code>get_breadcrumb_depth()</code> no qual retorna a atual profundidade
                 da stack.
-                Uma profundidade zero significa que a execução do teste acabou.
-            
-                There are a bunch of utility functions in <em>cgreen/breadcrumb.h</em>
-                that can read the state of this stack.
-                Most useful are <code>get_current_from_breadcrumb()</code> which
-                takes the breadcrumb pointer and returns the curent test name,
-                and <code>get_breadcrumb_depth()</code> which gives the current
-                depth of the stack.
-                A depth of zero means that the test run has finished.
-            </p>
-            <p>
-                Se você precisa atravesar todos os nomes dentro do breadcrumb, então 
+                Uma profundidade zero significa que a execução do teste acabou.            
+            </para>
+            <para>
+                Se você precisa atravessar todos os nomes dentro do breadcrumb, então 
                 você pode chamar <code>walk_breadcrumb()</code>.
-                Aqui está todoa a assinatura...
-                
-                If you need to traverse all the names in the breadcrumb,
-                then you can call <code>walk_breadcrumb()</code>.
-                Here is the full signature...
-<c><![CDATA[
+                Aqui está a assinatura completa...
+<programlisting>
 void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *), void *memo);
-]]></c>
+</programlisting>
                 O <code>void (*walker)(const char *, void *)</code> é uma callback que vai 
-                ser passada o nome da test suite para cada nível aninhado.
+                ser passada o nome da suite de teste para cada nível aninhado.
                 Ele também passa o ponteiro <code>memo</code> que foi passado para a chamada
                 <code>walk_breadcrumb()</code>.
                 Você pode usar este ponteiro para qualquer coisa que você queira, como o
-                <em>Cgreen</em> faz é passar de chamada para chamada.
-                Trata se de um agregado de informações mantendo o registro e ainda reentrantes. 
-                                
-                The <code>void (*walker)(const char *, void *)</code> is a callback
-                that will be passed the name of the test suite for each
-                level of nesting.
-                It is also poassed the <code>memo</code> pointer that was
-                passed to the <code>walk_breadcrumb()</code> call.
-                You can use this pointer for anything you want, as
-                all <em>Cgreen</em> does is pass it from call to call.
-                This is so aggregate information can be kept track of whilst
-                still being reentrant.
-            </p>
-            <p>
-                As última partes da estrutura do <code>TestReporter</code> são... 
-            
-                The last parts of the <code>TestReporter</code> structure are...
-                <dl>
-                    <dt><code>ipc</code></dt>
-                    <dd>
-                        Isto é uma estrutura interna para manipular as mensagem entre o 
-                        relatório e test suite.
-                        Você não preciso mexer nisto.
-                    
-                        This is an internal structure for handling the messaging between
-                        reporter and test suite.
-                        You shouldn't touch this.
-                    </dd>
-                    <dt><code>memo</code></dt>
-                    <dd>
-                        Isto é um ponteiro livre para sua própria expansão.
-                        
-                        By contrast, this is a spare pointer for your own expansion.
-                    </dd>
-                </dl>
-            </p>
+                <emphasis>Cgreen</emphasis> faz é passar de chamada para chamada.
+                Trata-se de um agregado de informações mantendo o registro e ainda reentrantes. 
+            </para>
+            <para>
+                As últimas partes da estrutura do <code>TestReporter</code> são...            
+                <variablelist>
+                  <varlistentry>
+                    <term><code>ipc</code></term>
+                      <listitem><para>Isto é uma estrutura interna para manipular as mensagem entre o 
+                        relatório e a suite de testes.
+                        Você não preciso mexer nisto.</para></listitem>
+                  </varlistentry>
+                  <varlistentry>
+                    <term><code>memo</code></term>
+                      <listitem><para>Isto é um ponteiro livre para sua própria expansão.</para></listitem>
+                  </varlistentry>
+                </variablelist>
+            </para>
         </section>
-        <section name="example" title="Um exemplo de relatório XML">
-            <p>
+        <section xml:id="example">
+        <title>Um exemplo de relatório XML</title>
+            <para>
                 Vamos fazer coisas reais com um exemplo.
-                Suponha que queiremos enviar a saída do <em>Cgreen</em> no formato
+                Suponha que queiremos enviar a saída do <emphasis>Cgreen</emphasis> no formato
                 XML, para armazenar em um repositório ou para enviar atravez da rede.
-                
-                Let's make things real with an example.
-                Suppose we want to send the output from <em>Cgreen</em> in XML format,
-                say for storing in a repository or for sending across the network.
-            </p>
-            <p>
-                Suponha também que ele tenhe o seguinte formato...
-                
-                Suppose also that we have come up with the following format...
-<pre><![CDATA[
+            </para>
+            <para>
+                Suponha também que ele venha com o seguinte formato...
+<screen><![CDATA[
 <?xml?>
 <test name="Top Level">
     <test name="A Group">
@@ -327,99 +210,80 @@ void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *
         </test>
         <test name="a_test_that_fails">
             <fail>
-                <message><![CDATA[A failure]]>]]<![CDATA[></message>
+                <message>A failure</message>
                 <location file="test_as_xml.c" line="8"/>
             </fail>
         </test>
     </test>
 </test>
-]]></pre>
+]]></screen>
                 Em outras palavras um simples aninhamento de testes com somente as
-                falhas codificadas.
+                falhas reportadas.
                 A ausência da falha é o sucesso do teste.
-                
-                In other words a simple nesting of tests with only failures
-                encoded.
-                The absence of failure is a pass.
-            </p>
-            <p>
-                Aqui estã um script de teste <em>test_in_xml.c</em> no qual nos podemos usar
+            </para>
+            <para>
+                Aqui esta um script de teste <filename>test_in_xml.c</filename> no qual nos podemos usar
                 para construir a saída acima...
-                
-                Here is a test script, <em>test_in_xml.c</em> that we can use to construct the
-                above output...
-<c><![CDATA[
+<programlisting>
 #include "cgreen/cgreen.h"
 
-void <strong>a_test_that_passes()</strong> {
+void <emphasis role="strong">a_test_that_passes()</emphasis> {
     assert_true(1);
 }
 
-void <strong>a_test_that_fails()</strong> {
-    assert_true_with_message(0, <strong>"A failure"</strong>);
+void <emphasis role="strong">a_test_that_fails()</emphasis> {
+    assert_true_with_message(0, <emphasis role="strong">"A failure"</emphasis>);
 }
 
 TestSuite *create_test_group() {
-    TestSuite *suite = <strong>create_named_test_suite("A Group")</strong>;
+    TestSuite *suite = <emphasis role="strong">create_named_test_suite("A Group")</emphasis>;
     add_test(suite, a_test_that_passes);
     add_test(suite, a_test_that_fails);
     return suite;
 }
 
 int main(int argc, char **argv) {
-    TestSuite *suite = <strong>create_named_test_suite("Top Level")</strong>;
+    TestSuite *suite = <emphasis role="strong">create_named_test_suite("Top Level")</emphasis>;
     add_suite(suite, create_test_group());
-    return run_test_suite(suite, <strong>create_text_reporter()</strong>);
+    return run_test_suite(suite, <emphasis role="strong">create_text_reporter()</emphasis>);
 }
-]]></c>
+</programlisting>
                 O relatório texto é usado somente para confirmar se tudo está funcionando
-                Até agora isto é.
-                
-                The text reporter is used just to confirm that everything
-                is working.
-                So far it is.
-<sh><![CDATA[
+                Até agora ele esta.
+<screen>
 Running "Top Level"...
 Failure!: A Group -> a_test_that_fails -> A failure at [test_as_xml.c] line [8]
 Completed "Top Level": 1 pass, 1 failure, 0 exceptions.
-]]></sh>
-            </p>
-            <p>
+</screen>
+            </para>
+            <para>
                 Nosso primeiro movimento é trocar o relatório de texto, para o nosso ainda
-                não escrito versão em XML...
-                
-                Our first move is to switch the reporter from text, to our
-                not yet written XML version...
-<c><![CDATA[
-#include "cgreen/cgreen.h<strong>
-#include "xml_reporter.h"</strong>
+                não escrito na versão em XML...
+<programlisting>
+#include "cgreen/cgreen.h<emphasis role="strong">
+#include "xml_reporter.h"</emphasis>
 
 ...
 
 int main(int argc, char **argv) {
     TestSuite *suite = create_named_test_suite("Top Level");
     add_suite(suite, create_test_group());
-    return run_test_suite(suite, <strong>create_xml_reporter()</strong>);
+    return run_test_suite(suite, <emphasis role="strong">create_xml_reporter()</emphasis>);
 }
-]]></c>
-                Nos iniciaremos com o arquivo de cabeçalho <em>xml_reporter.h</em>...
-                
-                We'll start the ball rolling with the <em>xml_reporter.h</em>
-                header file...
-<c><![CDATA[
+</programlisting>
+                Nos iniciaremos com o arquivo de cabeçalho <filename>xml_reporter.h</filename>...
+<programlisting>
 #ifndef _XML_REPORTER_HEADER_
 #define _XML_REPORTER_HEADER_
-<strong>
+<emphasis role="strong">
 #include "cgreen/reporter.h"
 
-TestReporter *create_xml_reporter();</strong>
+TestReporter *create_xml_reporter();</emphasis>
 
 #endif
-]]></c>
-                ...e o relatório simplesta em <em>reporter.c</em>.
-
-                ...and the simplest possible reporter in <em>reporter.c</em>.
-<c><![CDATA[
+</programlisting>
+                ...e o relatório mais simplista possível em <filename>reporter.c</filename>.
+<programlisting>
 #include "xml_reporter.h"
 #include "cgreen/reporter.h"
 
@@ -427,64 +291,52 @@ TestReporter *create_xml_reporter() {
     TestReporter *reporter = create_reporter();
     return reporter;
 }
-]]></c>
-                A saída não é nada.
-                
-                One that outputs nothing.
-<sh><![CDATA[
+</programlisting>
+                A saída não é nada.                
+<screen>
 gcc -c test_as_xml.c
 gcc -c xml_reporter.c
 gcc xml_reporter.o test_as_xml.o cgreen/cgreen.a -o xml
 ./xml
-]]></sh>
+</screen>
                 Ainda, nada.
-                
-                Yep, nothing.
-            </p>
-            <p>
-                Vamos adicionar as tags primeiro, de modo que possamos ver o <em>Cgreen</em>
+            </para>
+            <para>
+                Vamos adicionar as tags primeiro, de modo que possamos ver o <emphasis>Cgreen</emphasis>
                 navegar na test suite...
-            
-                Let's add the outer test tags first, so that we can see
-                <em>Cgreen</em> navigating the test suite...
-<c><![CDATA[
+<programlisting>
 #include "xml_reporter.h"
-#include "cgreen/reporter.h"<strong>
-#include <stdio.h>
+#include "cgreen/reporter.h"<emphasis role="strong">
+#include &lt;stdio.h&gt;
 
 static void xml_reporter_start(TestReporter *reporter, const char *name);
-static void xml_reporter_finish(TestReporter *reporter, const char *name);</strong>
+static void xml_reporter_finish(TestReporter *reporter, const char *name);</emphasis>
 
 TestReporter *create_xml_reporter() {
-    TestReporter *reporter = create_reporter();<strong>
-    reporter->start = &xml_reporter_start;
-    reporter->finish = &xml_reporter_finish;</strong>
+    TestReporter *reporter = create_reporter();<emphasis role="strong">
+    reporter->start = &amp;xml_reporter_start;
+    reporter->finish = &amp;xml_reporter_finish;</emphasis>
     return reporter;
 }
-<strong>
+<emphasis role="strong">
 static void xml_reporter_start(TestReporter *reporter, const char *name) {
-    printf("<test name=\"%s\">\n", name);
+    printf("&lt;test name=\"%s\"&gt;\n", name);
     reporter_start(reporter, name);
 }
 
 static void xml_reporter_finish(TestReporter *reporter, const char *name) {
     reporter_finish(reporter, name);
-    printf("</test>\n");
-}</strong>
-]]></c>
+    printf("&lt;/test&gt;\n");
+}</emphasis>
+</programlisting>
                 Apesar do encadeamento subjacente as funções <code>reporter_start()</code>
-                e <code>reporter_finish()</code> são opcionais, eu quero fazer uso das
-                mesmas facilidades depois.
-                
-                Although chaining to the underlying <code>reporter_start()</code>
-                and <code>reporter_finish()</code> functions is optional, I want to
-                make use of some of the facilities later.
-            </p>
-            <p>
-                Nossa saída por enquanto isso, é fazer a tentativa em passos...
-                
-                Our output meanwhile, is making it's first tentative steps...
-<sh><![CDATA[
+                e <code>reporter_finish()</code> são opcionais, eu quero fazer uso de
+                algumas facilidades depois.
+            </para>
+            <para>
+                Nossa saída por enquanto, é fazer a tentativa em passos...                
+<screen>
+<![CDATA[
 <test name="Top Level">
 <test name="A Group">
 <test name="a_test_that_passes">
@@ -493,126 +345,99 @@ static void xml_reporter_finish(TestReporter *reporter, const char *name) {
 </test>
 </test>
 </test>
-]]></sh>
+]]>
+</screen>
                 Nos não queremos uma mensagem de sucesso, então a função <code>show_fail()</code>
                 é tudo oque precisamos...
-                 
-                We don't want a passing message, so the <code>show_fail()</code> function is all we
-                need...
-<c><![CDATA[
-...<strong>
-static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);</strong>
+<programlisting>
+...<emphasis role="strong">
+static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);</emphasis>
 
 TestReporter *create_xml_reporter() {
     TestReporter *reporter = create_reporter();
-    reporter->start = &xml_reporter_start;
-    reporter->finish = &xml_reporter_finish;<strong>
-    reporter->show_fail = &xml_show_fail;</strong>
+    reporter->start = &amp;xml_reporter_start;
+    reporter->finish = &amp;xml_reporter_finish;<emphasis role="strong">
+    reporter->show_fail = &amp;xml_show_fail;</emphasis>
     return reporter;
 }
 
 ...
-<strong>
+<![CDATA[
+<emphasis role="strong">
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     printf("<fail>\n");
-    printf("\t<message><![CDATA[");
+    printf("\t<message>");
     vprintf(message, arguments);
-    printf("]]>]]&gt;<![CDATA[</message>\n");
+    printf("]]&gt;</message>\n");
     printf("\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
     printf("</fail>\n");
-}</strong>
-]]></c>
+}</emphasis>
+]]>
+</programlisting>
                 Nos temos que usar <code>vprintf()</code> para manipular a lista de argumento
                 variável passada para nós.
-                Isto irá provavelmente significar a inclusão do cabeçalho <em>stdarg.h</em>
-                bem como <em>stdio.h</em>.
-                
-                We have to use <code>vprintf()</code> to handle the variable argument
-                list passed to us.
-                This will probably mean including the <em>stdarg.h</em> header
-                as well as <em>stdio.h</em>.
-            </p>
-            <p>
+                Isto irá provavelmente significar a inclusão do cabeçalho <filename>stdarg.h</filename>
+                bem como <filename>stdio.h</filename>.                
+            </para>
+            <para>
                 Isto nos aproxima do que queremos...
-                
-                This gets us pretty close to what we want...
-<sh><![CDATA[
+<screen>
+<![CDATA[
 <test name="Top Level">
 <test name="A Group">
 <test name="a_test_that_passes">
 </test>
 <test name="a_test_that_fails">
 <fail>
-    <message><![CDATA[A failure]]>]]&gt;<![CDATA[</message>
+    <message>A failure]]&gt;</message>
     <location file="test_as_xml.c" line="9"/></fail>
 </test>
 </test>
 </test>
-]]></sh>
+]]>
+</screen>
                 Para completar devemos adicionar uma tag para um teste incompleto.
                 Nos vamos visualizar isto como uma falha, entretando nos não vamos saber
                 a localização por enquanto...
-                
-                For completeness we should add a tag for an incomplete test.
-                We'll output this as a failure, athough we don't get a location this
-                time...
-<c><![CDATA[
-<strong>static void xml_show_incomplete(TestReporter *reporter, const char *name) {
-    printf("<fail>\n");
-    printf("\t<message><![CDATA[Failed to complete]]>]]&gt;<![CDATA[</message>\n");
-    printf("</fail>\n");
-}</strong>
-]]></c>
+<programlisting>
+<emphasis role="strong">static void xml_show_incomplete(TestReporter *reporter, const char *name) {
+    printf("&lt;fail&gt;\n");
+    printf("\t&lt;message&gt;Failed to complete]]&gt;&lt;/message&gt;\n");
+    printf("&lt;/fail&gt;\n");
+}</emphasis>
+</programlisting>
                 Tudo oque vem depois é a declaração XML e a identação.
-                Entretanto itentação não é estritamente necessária, isto pode fazer a
+                Entretanto a identação não é estritamente necessária, isto pode fazer a
                 saída muito mais clara.
-                
-                All that's left then is the XML declaration and the thorny issue of
-                indenting.
-                Although the indenting is not strictly necessary, it would make the
-                output a lot more readable.
-            </p>
-            <p>
+            </para>
+            <para>
                 A profundidade do teste é registrada para nos com o objeto <code>breadcrumb</code>
                 dentro da estrutura <code>TestReporter</code>.
                 Nos vamos adicionar a função <code>indent()</code> que imprime o correto
                 número de tabs...
-                  
-                The test depth is kept track of for us with the <code>breadcrumb</code>
-                object in the <code>TestReporter</code> structure.
-                We'll add an <code>indent()</code> function that outputs the
-                correct number of tabs...
-<c><![CDATA[
+<programlisting>
 static indent(TestReporter *reporter) {
-    int depth = <strong>get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb)</strong>;
+    int depth = <emphasis role="strong">get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb)</emphasis>;
     while (depth-- > 0) {
         printf("\t");
     }
 }
-]]></c>
+</programlisting>
                 A função <code>get_breadcrumb_depth()</code> somente dá a profundidade
                 atual do teste.
                 Como é apenas o número de tabs para imprimir, a implementação é trivial.                
-                
-                The <code>get_breadcrumb_depth()</code> function just gives the
-                current test depth.
-                As that is just the number of tabs to output, the implementation
-                is trivial.
-            </p>
-            <p>
-                nos podemos então usar esta função no restante do código.
+            </para>
+            <para>
+                Nos podemos então usar esta função no restante do código.
                 Aqui está a listagem completa...
-                
-                We can then use this function in the rest of the code.
-                Here is the complete listing...
-<c><![CDATA[
+<programlisting>
 #include "xml_reporter.h"
 #include "cgreen/reporter.h"
 #include "cgreen/breadcrumb.h"
-#include <stdio.h>
-#include <stdarg.h>
-<strong>
-static indent(TestReporter *reporter);</strong>
+#include &lt;stdio.h&gt;
+#include &lt;stdarg.h&gt;
+<emphasis role="strong">
+static indent(TestReporter *reporter);</emphasis>
 static void xml_reporter_start(TestReporter *reporter, const char *name);
 static void xml_reporter_finish(TestReporter *reporter, const char *name);
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
@@ -620,61 +445,60 @@ static void xml_show_incomplete(TestReporter *reporter, const char *name);
 
 TestReporter *create_xml_reporter() {
     TestReporter *reporter = create_reporter();
-    reporter->start = &xml_reporter_start;
-    reporter->finish = &xml_reporter_finish;
-    reporter->show_fail = &xml_show_fail;
-    reporter->show_incomplete = &xml_show_incomplete;
+    reporter->start = &amp;xml_reporter_start;
+    reporter->finish = &amp;xml_reporter_finish;
+    reporter->show_fail = &amp;xml_show_fail;
+    reporter->show_incomplete = &amp;xml_show_incomplete;
     return reporter;
 }
-<strong>
+<emphasis role="strong">
 static indent(TestReporter *reporter) {
     int depth = get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb);
     while (depth-- > 0) {
         printf("\t");
     }
-}</strong>
+}</emphasis>
 
-static void xml_reporter_start(TestReporter *reporter, const char *name) {<strong>
+static void xml_reporter_start(TestReporter *reporter, const char *name) {<emphasis role="strong">
     if (get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb) == 0) {
-        printf("<?xml?>\n");
+        printf("&lt;?xml?&gt;\n");
     }
-    indent(reporter);</strong>
-    printf("<test name=\"%s\">\n", name);
+    indent(reporter);</emphasis>
+    printf("&lt;test name=\"%s\"&gt;\n", name);
     reporter_start(reporter, name);
 }
 
 static void xml_reporter_finish(TestReporter *reporter, const char *name) {
     reporter_finish(reporter, name);
-    <strong>indent(reporter);</strong>
-    printf("</test>\n");
+    <emphasis role="strong">indent(reporter);</emphasis>
+    printf("&lt;/test&gt;\n");
 }
 
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
-    <strong>indent(reporter);</strong>
-    printf("<fail>\n");
-    <strong>indent(reporter);</strong>
-    printf("\t<message><![CDATA[");
+    <emphasis role="strong">indent(reporter);</emphasis>
+    printf("&lt;fail&gt;\n");
+    <emphasis role="strong">indent(reporter);</emphasis>
+    printf("\t&lt;message&gt;");
     vprintf(message, arguments);
-    printf("]]>]]&gt;<![CDATA[</message>\n");
-    <strong>indent(reporter);</strong>
-    printf("\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
-    <strong>indent(reporter);</strong>
-    printf("</fail>\n");
+    printf("]]&gt;&lt;/message&gt;\n");
+    <emphasis role="strong">indent(reporter);</emphasis>
+    printf("\t&lt;location file=\"%s\" line=\"%d\"/&gt;\n", file, line);
+    <emphasis role="strong">indent(reporter);</emphasis>
+    printf("&lt;/fail&gt;\n");
 }
 
 static void xml_show_incomplete(TestReporter *reporter, const char *name) {
-    <strong>indent(reporter);</strong>
-    printf("<fail>\n");
-    <strong>indent(reporter);</strong>
-    printf("\t<message><![CDATA[Failed to complete]]>]]&gt;<![CDATA[</message>\n");
-    <strong>indent(reporter);</strong>
-    printf("</fail>\n");
+    <emphasis role="strong">indent(reporter);</emphasis>
+    printf("&lt;fail&gt;\n");
+    <emphasis role="strong">indent(reporter);</emphasis>
+    printf("\t&lt;message&gt;Failed to complete]]&gt;&lt;/message&gt;\n");
+    <emphasis role="strong">indent(reporter);</emphasis>
+    printf("&lt;/fail&gt;\n");
 }
-]]></c>
+</programlisting>
                 E finalmente a saída desejada...
-                
-                And finally the desired output...
-<sh><![CDATA[
+<screen>
+<![CDATA[
 <?xml?>
 <test name="Top Level">
     <test name="A Group">
@@ -682,56 +506,19 @@ static void xml_show_incomplete(TestReporter *reporter, const char *name) {
         </test>
         <test name="a_test_that_fails">
             <fail>
-                <message><![CDATA[A failure]]>]]&gt;<![CDATA[</message>
+                <message>A failure]]&gt;</message>
                 <location file="test_as_xml.c" line="9"/>
             </fail>
         </test>
     </test>
 </test>
-]]></sh>
-                Trabalho feito.
-                
-                Job done.
-            </p>
-            <p>
-                Possivelmente outras extensões incluem relatórios que escrevem para <em>syslog</em>,
+]]>
+</screen>
+                Trabalho concluído.
+            </para>
+            <para>
+                Possivelmente outras extensões incluem relatórios que escrevem para <emphasis>syslog</emphasis>,
                 integração com IDE, imprimir documentos ou somente retornar um boleano para
-                propósitos de monitoramento.
-                 
-                Possible other extensions include reporters that write to <em>syslog</em>,
-                talk to IDE plug-ins, paint pretty printed documents or just return a boolean
-                for monitoring purposes.
-            </p>
+                propósitos de monitoramento.                
+            </para>
         </section>
-    </content>
-    <internal>
-        <link>
-            <a href="#extending">Trocando e extendendo o relatório</a> do Cgreen.
-        </link>
-        <link>
-            A <a href="#base">pseudo classe Cgreen TestReporter</a>.
-        </link>
-        <link>
-            Um <a href="#example">exemplo de relatório Cgreen com XML</a>.
-        </link>
-    </internal>
-    <external>
-        <link>
-            A <a href="http://sourceforge.net/projects/cgreen"> página do Cgreen SourceForge</a>.
-        </link>
-        <link>
-            Testes unitários foi popularizado pela <a href="http://extremeprogramming.org/">eXtreme Programming</a>.
-        </link>
-    </external>
-    <meta>
-        <keywords>
-            unit testing, test-first, test first, code quality, automate unit testing,
-            automated testing, c programming, c tools, c unit tests, unit testing in c,
-            check unit tester, test coverage, TDD, extreme programming, agile development,
-            tdd in C, c regression testing, cunit, cppunit, c unit testing frameworks, sourceforge,
-            open source, open source framework, gnu licence, lgpl, software testing,
-            executable specification, software requirements, quality assurance,
-            test driven design, software decoupling,  XML reports, error logging, software monitoring
-        </keywords>
-    </meta>
-</page>
