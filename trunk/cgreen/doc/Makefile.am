@@ -29,26 +29,26 @@ XSLSTYLEHTML=source/include/customhtml.xsl
 XSLSTYLEFO=source/include/customfo.xsl
 
 
-%.html:  source/en/cgreen-guide-en.xml
+%.html:  %.xml
 	@echo "Auto-generating Cgreen's Guide HTML...";
 	mkdir cgreen-guide	
-	xsltproc  --stringparam  html.stylesheet "docs.css"  --output  $@  $(XSLSTYLEHTML)  $<
+	xsltproc  --stringparam  html.stylesheet "docs.css"  --output  $@  $(XSLSTYLEHTML)  source/$<
 
 html:  cgreen-guide/cgreen-guide-en.html
 	cp source/include/docs.css cgreen-guide
 
-%.fo: source/en/cgreen-guide-en.xml
-	@echo "Auto-generating Cgreen's Guide FO...";
-	xsltproc  --stringparam fop1.extensions 1 --output  $@  $(XSLSTYLEFO)  $<
+pdf: cgreen-guide-en.pdf cgreen-guide-pt_BR.pdf
 
 fo: cgreen-guide-en.fo
 
-%.pdf: cgreen-guide-en.fo
-	@echo "Auto-generating Cgreen's Guide FO...";
+%.pdf: %.fo
+	@echo "Auto-generating Cgreen's Guide FO..."
 	fop $< $@
 
-pdf: cgreen-guide-en.pdf
-	
+%.fo:
+	@echo "Auto-generating Cgreen's Guide xlsproc..."
+	xsltproc  --stringparam fop1.extensions 1 --output  $@  $(XSLSTYLEFO)  source/$*.xml
+
 bundled-html:
 	mkdir cgreen-bundled
 	xsltproc --output cgreen-bundled/index.html source/include/bundled_docs.xslt  source/site/quickstart.xml
