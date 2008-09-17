@@ -113,11 +113,11 @@ struct _TestReporter {
                   </varlistentry>                      
                   <varlistentry>                                            
                     <term><code>void (*show_incomplete)(TestReporter *, const char *)</code></term>
-                      <list><para>Quando um teste falha, este é o handle que é chamado.
+                      <listitem><para>Quando um teste falha, este é o handle que é chamado.
                         Como ele é um resultado inexperado, nenhuma mensagem é recebida, mas
                         faz chegar o nome do teste.
                         O relatório do teste combina isto com o breadcrumb para produzir
-                        a exceção no relatório.</para></list>
+                        a exceção no relatório.</para></listitem>
                   </varlistentry>
                   <varlistentry>
                     <term><code>void (*assert_true)(TestReporter *, const char *, int, int, const char *, ...)</code></term>

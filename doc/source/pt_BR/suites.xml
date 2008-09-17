@@ -10,7 +10,7 @@
             Em outras palavras você terá menos bugs.
       </para>
       <section xml:id="writing">
-        <title>Escrevendo tests básicos</title>>
+        <title>Escrevendo testes básicos</title>
           <para>
                 Testes utilizando o Cgreen são funções simples em C sem parâmetros e
                 um retorno de valor <code>void</code>.
@@ -354,7 +354,7 @@ TestSuite *person_tests() {
           </para>
         </section>
         <section xml:id="fork">
-           <title>Each test in it's own process</title>
+           <title>Cada teste dentro de seu próprio processo</title>
           <para>
                 Considere este teste...
 <programlisting><emphasis role="strong">
