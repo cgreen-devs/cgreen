@@ -1,10 +1,10 @@
 <?xml version = '1.0'?>
-<!DOCTYPE book SYSTEM "../../tools/docbook-5.0/dtd/docbook.dtd" [ 
-<!ENTITY cgreen_quickstart SYSTEM "quickstart.xml">
-<!ENTITY cgreen_suites SYSTEM "suites.xml">
-<!ENTITY cgreen_mock_callbacks SYSTEM "mock_callbacks.xml">
-<!ENTITY cgreen_reporter SYSTEM "reporter.xml">
-<!ENTITY freedoc-license SYSTEM "../include/copying-fdl.xml">
+<!DOCTYPE book SYSTEM "../tools/docbook-5.0/dtd/docbook.dtd" [ 
+<!ENTITY cgreen_quickstart SYSTEM "en/quickstart.xml">
+<!ENTITY cgreen_suites SYSTEM "en/suites.xml">
+<!ENTITY cgreen_mock_callbacks SYSTEM "en/mock_callbacks.xml">
+<!ENTITY cgreen_reporter SYSTEM "en/reporter.xml">
+<!ENTITY freedoc-license SYSTEM "include/copying-fdl.xml">
 ]>
 <book xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
   <title xmlns="http://docbook.org/ns/docbook">Cgreen Unit Test for C language</title>
