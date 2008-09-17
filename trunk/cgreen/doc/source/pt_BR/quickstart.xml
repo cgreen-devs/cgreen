@@ -371,7 +371,7 @@ Completed "main": 2 passes, 0 failures, 0 exceptions.
       </para>
   </section>
   <section xml:id="mock">
-    <title>Oque são funções mock?</title>>
+    <title>Oque são funções mock?</title>
       <para>
             	O próximo exemplo é mais realista.
                 Ainda no nosso arquivo <filename>words.h</filename>, queremos escrever
@@ -478,7 +478,7 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
       <para>
                 Isso foi tudo convencional, mas vamos abordar o caso de separação
                 da sentença.
-                Aqui a função de teste será adicionada em <em>words_test.c</em>...
+                Aqui a função de teste será adicionada em <filename>words_test.c</filename>...
 <programlisting>
 void phrase_invokes_callback_for_each_word() {<emphasis role="strong">
 expect(mocked_callback, want_string(word, "Birds"));

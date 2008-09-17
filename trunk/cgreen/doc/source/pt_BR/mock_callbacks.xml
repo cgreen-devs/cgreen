@@ -365,7 +365,7 @@ static void good_test() {
             </para>
         </section>
         <section xml:id="mocks">
-           <title>Setting expectations on mock functions</title>
+           <title>Configurando valores aguardados em funções mock</title>
             <para>
                 Para trocar o sentido do tráfego, nós temos que olhar em um exemplo 
                 contrário.
