@@ -4,10 +4,10 @@ AUTOMAKE_OPTIONS = foreign
 
 docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
 
-doc_DATA = source/en/cgreen-guide-en.xml source/en/suites.xml \
+doc_DATA = source/cgreen-guide-en.xml source/en/suites.xml \
            source/en/mock_callbacks.xml source/en/quickstart.xml \
            source/en/reporter.xml \
-           source/pt_BR/cgreen-guide-pt_br.xml source/pt_BR/suites.xml \
+           source/cgreen-guide-pt_BR.xml source/pt_BR/suites.xml \
            source/pt_BR/mock_callbacks.xml source/pt_BR/quickstart.xml \
            source/pt_BR/reporter.xml \
            source/include/bundled_docs.xslt source/include/bundled_map.xml \
@@ -28,14 +28,13 @@ EXTRA_DIST = $(doc_DATA) cgreen-guide
 XSLSTYLEHTML=source/include/customhtml.xsl
 XSLSTYLEFO=source/include/customfo.xsl
 
+html:  cgreen-guide-en.html
+	cp source/include/docs.css cgreen-guide
 
-%.html:  %.xml
+%.html:  
 	@echo "Auto-generating Cgreen's Guide HTML...";
 	mkdir cgreen-guide	
-	xsltproc  --stringparam  html.stylesheet "docs.css"  --output  $@  $(XSLSTYLEHTML)  source/$<
-
-html:  cgreen-guide/cgreen-guide-en.html
-	cp source/include/docs.css cgreen-guide
+	xsltproc  --stringparam  html.stylesheet "docs.css"  --output  cgreen-guide/$@  $(XSLSTYLEHTML)  source/$*.xml
 
 pdf: cgreen-guide-en.pdf cgreen-guide-pt_BR.pdf
 
