@@ -31,12 +31,12 @@ EXTRA_DIST = $(doc_DATA) $(cgreenguide_DATA) tools
 XSLSTYLEHTML=source/include/customhtml.xsl
 XSLSTYLEFO=source/include/customfo.xsl
 
-html:  cgreen-guide-en.html
+html:  cgreen-guide-en.html cgreen-guide-pt_BR.html
 	cp source/include/docs.css cgreen-guide
 
 %.html:  
 	@echo "Auto-generating Cgreen's Guide HTML...";
-	mkdir cgreen-guide	
+	-mkdir cgreen-guide	
 	xsltproc  --stringparam  html.stylesheet "docs.css"  --output  cgreen-guide/$@  $(XSLSTYLEHTML)  source/$*.xml
 
 pdf: cgreen-guide-en.pdf cgreen-guide-pt_BR.pdf
