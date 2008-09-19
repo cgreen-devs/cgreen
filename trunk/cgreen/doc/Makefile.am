@@ -3,6 +3,7 @@
 AUTOMAKE_OPTIONS = foreign
 
 docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
+cgreenguidedir = $(docdir)/cgreen-guide
 
 doc_DATA = source/cgreen-guide-en.xml source/en/suites.xml \
            source/en/mock_callbacks.xml source/en/quickstart.xml \
@@ -22,9 +23,11 @@ doc_DATA = source/cgreen-guide-en.xml source/en/suites.xml \
            source/tutorial_test/stream_test.c source/tutorial_test/strlen_test.c \
            source/tutorial_test/test_as_xml.c source/tutorial_test/words.c \
            source/tutorial_test/words.h source/tutorial_test/words_test.c \
-           source/tutorial_test/xml_reporter.c source/tutorial_test/xml_reporter.h
+           source/tutorial_test/xml_reporter.c source/tutorial_test/xml_reporter.h 
+
+cgreenguide_DATA = cgreen-guide/*
            
-EXTRA_DIST = $(doc_DATA) cgreen-guide
+EXTRA_DIST = $(doc_DATA) $(cgreenguide_DATA) tools
 XSLSTYLEHTML=source/include/customhtml.xsl
 XSLSTYLEFO=source/include/customfo.xsl
 
@@ -73,12 +76,13 @@ lastcraft-html:
 
 all: html pdf
 
+cgreen-guide/*: html
+
+
 distclean: clean
 	rm -f *.pdf
 	rm -f *.fo
 	rm -rf cgreen-guide
 	rm -rf cgreen-bundled
 	rm -rf lastcraft
-
-dist-hook: html
 
