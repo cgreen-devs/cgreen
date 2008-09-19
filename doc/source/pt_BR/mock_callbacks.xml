@@ -252,7 +252,7 @@ static void one_word_stream_gives_one_word_line() {<emphasis role="strong">
                 pode legitimamente chamar o stream depois dele ter executado no final.
                 OK, esse pode ser um comportamento estranho, mas não é oque estamos testando aqui.
                 Se tivéssemos, isto seria colocado em um teste próprio.
-                A chamada <code>always_return()</code> diz para o <em>Cgreen</em> manter
+                A chamada <code>always_return()</code> diz para o <emphasis>Cgreen</emphasis> manter
                 após a chamada das três letras, permitindo chamadas extras.
             </para>
             <para>
@@ -424,7 +424,7 @@ void one_character_is_made_into_a_one_letter_paragraph() {
                 Nós temos o mesmo problema como tinhamos codificando stubs.
             </para>
             <para>
-                Novamente, <em>Cgreen</em> tem um jeito para automatizar isto.
+                Novamente, <emphasis>Cgreen</emphasis> tem um jeito para automatizar isto.
                 Aqui está o teste reescrito...
 <programlisting>
 static int reader(void *stream) {
