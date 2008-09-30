@@ -296,7 +296,7 @@ TestReporter *create_xml_reporter() {
 <screen>
 gcc -c test_as_xml.c
 gcc -c xml_reporter.c
-gcc xml_reporter.o test_as_xml.o cgreen/cgreen.a -o xml
+gcc xml_reporter.o test_as_xml.o -lcgreen -o xml
 ./xml
 </screen>
                 Ainda, nada.

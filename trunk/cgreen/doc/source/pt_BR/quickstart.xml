@@ -43,27 +43,35 @@
   <section xml:id="install">
     <title>Instalando o Cgreen</title>
       <para>
-                Instalar o Cgreen é simples, basta executar <link xlink:href="http://www.gnu.org/software/make/">make</link>
-                no diretório <emphasis>cgreen</emphasis> descompactado. 
-                O arquivo makefile irá criar uma biblioteca unix chamada de 
-                <filename>cgreen.a</filename> no qual pode ser utilizada em conjunto com o 
+                Instalar o Cgreen é simples, basta executar a sequencia de comandos padrão para
+                compilação de programas em ambiente *nix:
+      </para>                
+<screen>
+./configure
+make
+make install
+</screen>
+       <para>
+                Dentro do diretório <emphasis>cgreen</emphasis> descompactado. 
+                Este processo irá criar uma biblioteca unix chamada de 
+                <filename>libcgreen.so</filename> no qual pode ser utilizada em conjunto com o 
                 arquivo de cabeçalho <filename>cgreen.h</filename> para compilar o código de
-                testes.                
+                testes. A biblioteca criada é instalada no sistema, por default em <emphasis>/usr/local/lib/</emphasis>.                
       </para>
       <para>
                 Primeiro vamos escrever um teste para confirmar que tudo está 
                 funcionando.
                 Vamos começar com um simples script de teste não testado, chamado
                 <filename>first_test.c</filename>
-<programlisting><emphasis role="strong">
-#include "cgreen/cgreen.h"</emphasis>
+<programlisting>
+<emphasis role="strong">#include "cgreen/cgreen.h"</emphasis>
 
 int main(int argc, char **argv) {<emphasis role="strong">
 TestSuite *suite = create_test_suite();
 return run_test_suite(suite, create_text_reporter());</emphasis>
 }
 </programlisting>
-                Isto é um teste muito sem graça.
+                Este é um teste muito sem graça.
                 Somente cria uma suite de teste vazia e executa.
                 Geralmente é mais fácil avançar em pequenos passos, porém,
                 isso é o mais pequeno eu poderia pensar.
@@ -76,7 +84,7 @@ return run_test_suite(suite, create_text_reporter());</emphasis>
             	Fazer um build desse teste, com certeza, é algo trivial...
 <screen>
 gcc -c first_test.c
-gcc first_test.o cgreen/cgreen.a -o first_test
+gcc first_test.o <emphasis role="strong">-lcgreen</emphasis> -o first_test
 ./first_test
 </screen>
                 Invocando o executável teremos...
@@ -198,7 +206,7 @@ return run_test_suite(suite, create_text_reporter());
 <screen>
 gcc -c words_test.c
 gcc -c all_tests.c
-gcc words_test.o all_tests.o cgreen/cgreen.a -o all_tests
+gcc words_test.o all_tests.o -lcgreen -o all_tests
 </screen>
                 ...e executando temos o resultado...                
 <screen>
@@ -250,7 +258,7 @@ return 0;
 gcc -c all_tests.c
 gcc -c words_test.c
 gcc -c words.c
-gcc all_tests.o words_test.o words.o cgreen/cgreen.a -o all_tests
+gcc all_tests.o words_test.o words.o -lcgreen -o all_tests
 ./all_tests
 </screen>
                 ...e nós temos uma resposta mais útil...
