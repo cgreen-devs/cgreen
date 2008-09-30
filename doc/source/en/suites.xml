@@ -184,7 +184,7 @@ TestSuite *our_tests() {
                 Compliling and running gives...
 <screen>
 gcc -c strlen_test.c
-gcc strlen_test.o cgreen/cgreen.a -o strlen_test
+gcc strlen_test.o -lcgreen -o strlen_test
 ./strlen_test<emphasis role="strong">
 Running "main"...
 Completed "main": 1 pass, 0 failures, 0 exceptions.</emphasis>

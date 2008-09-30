@@ -41,18 +41,25 @@
   <section xml:id="install">
     <title>Installing Cgreen</title>
       <para>
-          Installing Cgreen is as simple as running <link xlink:href="http://www.gnu.org/software/make/">make</link>
-          in the unzipped <emphasis>cgreen</emphasis> folder.
-          The makefile will create a unix library called <filename>cgreen.a</filename>
+          The installing of Cgreen is simple, just run the standard sequence command
+          to compiling programs in *nix environment: 
+<screen>
+./configure
+make
+make install
+</screen>          
+          In the unzipped <emphasis>cgreen</emphasis> folder.
+          This process will create a unix library called <filename>libcgreen.so</filename>
           which can be used in conjunction with the <filename>cgreen.h</filename>
-          header file to compile test code.
+          header file to compile test code. The created library is instaled in the system, 
+          by default in the <emphasis>/usr/local/lib/</emphasis>.
       </para>
       <para>
           We'll first write a test to confirm everything is working.
           Let's start with a simple test script with no tests, called
           <filename>first_test.c</filename>...
-<programlisting><emphasis role="strong">
-#include "cgreen/cgreen.h"</emphasis>
+<programlisting>
+<emphasis role="strong">#include "cgreen/cgreen.h"</emphasis>
 
 int main(int argc, char **argv) {<emphasis role="strong">
 TestSuite *suite = create_test_suite();
@@ -73,7 +80,7 @@ return run_test_suite(suite, create_text_reporter());</emphasis>
           Building this test is, of course, trivial...
 <screen>
 gcc -c first_test.c
-gcc first_test.o cgreen/cgreen.a -o first_test
+gcc first_test.o <emphasis role="strong">-lcgreen</emphasis> -o first_test
 ./first_test
 </screen>
           Invoking the executable should give...
@@ -198,7 +205,7 @@ return run_test_suite(suite, create_text_reporter());
 <screen>
 gcc -c words_test.c
 gcc -c all_tests.c
-gcc words_test.o all_tests.o cgreen/cgreen.a -o all_tests
+gcc words_test.o all_tests.o -lcgreen -o all_tests
 </screen>
           ...and executing the result gives the familiar...
 <screen>
@@ -251,7 +258,7 @@ return 0;
 gcc -c all_tests.c
 gcc -c words_test.c
 gcc -c words.c
-gcc all_tests.o words_test.o words.o cgreen/cgreen.a -o all_tests
+gcc all_tests.o words_test.o words.o -lcgreen -o all_tests
 ./all_tests
 </screen>
           ...and we get the more useful response...
