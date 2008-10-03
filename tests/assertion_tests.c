@@ -18,12 +18,132 @@ Ensure zero_should_assert_not_equal_to_one() {
     assert_not_equal(0, 1);
 }
 
+Ensure one_should_assert_long_equal_to_one() {
+	long x = 1;
+	long y = 1;
+    assert_equal(x, y);
+}
+
+Ensure zero_should_assert_long_not_equal_to_one() {
+	long x = 0;
+	long y = 1;
+    assert_not_equal(x, y);
+}
+
+Ensure one_should_assert_unsigned_long_equal_to_one() {
+	unsigned long x = 1;
+	unsigned long y = 1;
+    assert_equal(x, y);
+}
+
+Ensure zero_should_assert_unsigned_long_not_equal_to_one() {
+	unsigned long x = 0;
+	unsigned long y = 1;
+    assert_not_equal(x, y);
+}
+
+Ensure one_should_assert_long_long_equal_to_one() {
+	long long x = 1;
+	long long y = 1;
+    assert_equal(x, y);
+}
+
+Ensure zero_should_assert_long_long_not_equal_to_one() {
+	long long x = 0;
+	long long y = 1;
+    assert_not_equal(x, y);
+}
+
+Ensure one_should_assert_unsigned_long_long_equal_to_one() {
+	unsigned long long x = 1;
+	unsigned long long y = 1;
+    assert_equal(x, y);
+}
+
+Ensure zero_should_assert_unsigned_long_long_not_equal_to_one() {
+	unsigned long long x = 0;
+	unsigned long long y = 1;
+    assert_not_equal(x, y);
+}
+
+Ensure one_should_assert_short_equal_to_one() {
+	short x = 1;
+	short y = 1;
+    assert_equal(x, y);
+}
+
+Ensure zero_should_assert_short_not_equal_to_one() {
+	short x = 0;
+	short y = 1;
+    assert_not_equal(x, y);
+}
+
+Ensure one_should_assert_unsigned_short_equal_to_one() {
+	unsigned short x = 1;
+	unsigned short y = 1;
+    assert_equal(x, y);
+}
+
+Ensure zero_should_assert_unsigned_short_not_equal_to_one() {
+	unsigned short x = 0;
+	unsigned short y = 1;
+    assert_not_equal(x, y);
+}
+
+Ensure one_should_assert_char_equal_to_one() {
+	char x = 1;
+	char y = 1;
+    assert_equal(x, y);
+}
+
+Ensure zero_should_assert_char_not_equal_to_one() {
+	char x = 0;
+	char y = 1;
+    assert_not_equal(x, y);
+}
+
+Ensure one_should_assert_unsigned_char_equal_to_one() {
+	unsigned char x = 1;
+	unsigned char y = 1;
+    assert_equal(x, y);
+}
+
+Ensure zero_should_assert_unsigned_char_not_equal_to_one() {
+	unsigned char x = 0;
+	unsigned char y = 1;
+    assert_not_equal(x, y);
+}
+
+Ensure one_should_assert_float_equal_to_one() {
+	float x = 1;
+	float y = 1;
+    assert_double_equal(x, y);
+}
+
+Ensure zero_should_assert_float_not_equal_to_one() {
+	float x = 0;
+	float y = 1;
+    assert_double_not_equal(x, y);
+}
+
 Ensure one_should_assert_double_equal_to_one() {
     assert_double_equal(1, 1);
 }
 
 Ensure zero_should_assert_double_not_equal_to_one() {
     assert_double_not_equal(0, 1);
+}
+
+Ensure one_should_assert_long_double_equal_to_one() {
+	long double x = 1;
+	long double y = 1;
+    assert_double_equal(x, y);
+}
+
+Ensure zero_should_assert_long_double_not_equal_to_one() {
+	long double x = 0;
+	long double y = 1;
+    assert_double_not_equal(x, y);
 }
 
 Ensure double_differences_do_not_matter_past_significant_figures() {
@@ -73,8 +193,28 @@ TestSuite *assertion_tests() {
     add_test(suite, integer_zero_should_assert_false);
     add_test(suite, one_should_assert_equal_to_one);
     add_test(suite, zero_should_assert_not_equal_to_one);
+    add_test(suite, one_should_assert_long_equal_to_one);
+    add_test(suite, zero_should_assert_long_not_equal_to_one);
+    add_test(suite, one_should_assert_unsigned_long_equal_to_one);
+    add_test(suite, zero_should_assert_unsigned_long_not_equal_to_one);
+    add_test(suite, one_should_assert_long_long_equal_to_one);
+    add_test(suite, zero_should_assert_long_long_not_equal_to_one);
+    add_test(suite, one_should_assert_unsigned_long_long_equal_to_one);
+    add_test(suite, zero_should_assert_unsigned_long_long_not_equal_to_one);
+    add_test(suite, one_should_assert_short_equal_to_one);
+    add_test(suite, zero_should_assert_short_not_equal_to_one);
+    add_test(suite, one_should_assert_unsigned_short_equal_to_one);
+    add_test(suite, zero_should_assert_unsigned_short_not_equal_to_one);
+    add_test(suite, one_should_assert_char_equal_to_one);
+    add_test(suite, zero_should_assert_char_not_equal_to_one);
+    add_test(suite, one_should_assert_unsigned_char_equal_to_one);
+    add_test(suite, zero_should_assert_unsigned_char_not_equal_to_one);
+    add_test(suite, one_should_assert_float_equal_to_one);
+    add_test(suite, zero_should_assert_float_not_equal_to_one);
     add_test(suite, one_should_assert_double_equal_to_one);
     add_test(suite, zero_should_assert_double_not_equal_to_one);
+    add_test(suite, one_should_assert_long_double_equal_to_one);
+    add_test(suite, zero_should_assert_long_double_not_equal_to_one);
     add_test(suite, double_differences_do_not_matter_past_significant_figures);
     add_test(suite, double_differences_matter_past_significant_figures);
     add_test(suite, double_assertions_can_have_custom_messages);
