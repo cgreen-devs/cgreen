@@ -3,12 +3,6 @@ TODO for Cgreen
 
 Unit tester
 -----------
-Needs to work will all standard C99 types:
-    - needs to work with "long long"
-    - needs to work with "unsigned long long"
-    - needs to work with "short"
-    - needs to work with "char"
-    - needs to work with "long double"
 
 Mocks
 -----
