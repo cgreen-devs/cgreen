@@ -2,7 +2,6 @@
 
 TestSuite *messaging_tests();
 TestSuite *assertion_tests();
-TestSuite *sequence_tests();
 TestSuite *vector_tests();
 TestSuite *constraint_tests();
 TestSuite *parameter_tests();
