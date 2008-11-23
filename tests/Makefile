@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-g -I../include/cgreen
+CFLAGS=-g -I../include
 LIBS=-lm
 TEST_OBJECTS=all_tests.o breadcrumb_tests.o messaging_tests.o assertion_tests.o vector_tests.o constraint_tests.o parameters_test.o mocks_tests.o slurp_test.o
 

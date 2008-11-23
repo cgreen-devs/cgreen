@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-g -I../include/cgreen 
+CFLAGS=-g -I./include 
 LIBS=-lm
 OBJECTS=src/unit.o src/messaging.o src/breadcrumb.o src/reporter.o \
         src/assertions.o src/vector.o src/mocks.o src/constraint.o \
