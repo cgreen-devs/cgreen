@@ -1,0 +1,48 @@
+HOW-TO:  Compiling the Cgreen Project
+======================================
+
+This file talk about the build process used in Cgreen project. The intention
+is to prove basic information for two distinct users groups: the users of
+Cgreen Unit test framework and to the developers. Cgreen is a singular project
+because it can be inserted in other project which use unit tests.
+
+We have two ways to use Cgreen:
+
+The first way to use is build the simple Makefile. You can see the Makefile on
+the decompressed folder (you need to run the make command to build the project).
+Within the ./contrib directory there are examples some to explain others build tool. 
+These files are there because you can use to build Cgreen with others way.
+
+Remember: the work to insert and get it work inside of owns project is your. We just
+provide a simple way to use Cgreen. Keep in mind to retain the things simple and 
+you can update the Cgreen sources when necessary.
+
+The second way to use is just recommend for the Cgreen developers. If you need to do:
+distribuition packages, build the docs, run regression tests or developer some feature,
+then it is necessary to use this second way.
+
+We are using the CMake (www.cmake.org) build system. Following we will
+demonstrate a typical session. It is know as out-of-source building. Because we will
+build all the project outside of the sources directory.
+
+Decompress the sources:
+    $ tar cgreen-1.0.0.tar.gz
+Make the build directory:
+    $ mkdir cgreen-build
+    $ cd cgreen-build
+Within the directory, we create the Makefile
+    $ cmake ../cgreen
+Following we can use some rules to do some works:
+    $make
+    $make test
+    $make packages
+To build docs, first read the file docs/README, run:
+    $ cmake ../cgreen -DENABLE_DOCS=1
+    $make pdf
+    $make html
+To build the html website:
+    $ cmake ../cgreen -DENABLE_WEBSITE=1
+    $ make bundled-html
+
+The majority of the users will choice the first option. If you choice the second way, 
+you must have the cmake tool instaled in your system.

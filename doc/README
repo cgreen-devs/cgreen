@@ -1,7 +1,7 @@
 HOW-TO:  Compiling the Cgreen Guide
 ======================================
 
-This Cgreen Guide Book is written in DocBook 5.0.
+The Cgreen Guide Book is written in DocBook 5.0.
 
 The goal of this document is to give simple instructions to anyone who
 wants to compile this book into a useful format, like HTML or PDF.  It
@@ -88,12 +88,13 @@ II. COMPILING THE DOCS
      If you don't want to compile libxslt, you can just fetch the
      appropriate OS binary package.  
 
-   * From this directory (en, or another language directory), do 
+   * Setup CMake Makefile (the instructions are describe in INSTALL file) and
+     do:
 
         $ make html
 
      This produces a single-page HTML version of the book in
-     doc/cgreen-guide/cgreen-guide-en.html.
+     doc/cgreen-guide/cgreen-guide-XX.html. Where XX is the language.
 
          
 4. Make a PDF file.
@@ -136,22 +137,13 @@ II. COMPILING THE DOCS
 
         $ export FOP_OPTS="-Xms100m -Xmx200m"
 
-   * If you want images to be included in the PDF, you'll need to use
-     the JIMI image processing library.  Grab the latest release from
-     http://java.sun.com/products/jimi/, then cp the jar file into the
-     same place as the FOP jar files:
-
-        $ cd doc/tools
-        $ tar zxvf jimi1_0.tar.Z
-        $ cp Jimi/examples/AppletDemo/JimiProClasses.jar fop/lib/
-
-     Poof!  You now have PNG support.
-
-   * From the directory doc/, do 
+   * Setup CMake Makefile (the instructions are describe in INSTALL file) and
+     do:
 
         $ make pdf
 
-     This produces PDF for the book in doc/cgreen-guide-en.pdf.
+     This produces PDF for the book in doc/cgreen-guide-XX.pdf. Where XX is
+     the language.
 
 
 III. HACKING ON THE DOCS
