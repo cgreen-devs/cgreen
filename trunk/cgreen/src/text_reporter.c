@@ -12,10 +12,12 @@ static void show_breadcrumb(const char *name, void *memo);
 
 TestReporter *create_text_reporter() {
     TestReporter *reporter = create_reporter();
-	reporter->start = &text_reporter_start;
-	reporter->finish = &text_reporter_finish;
+	reporter->start_suite = &text_reporter_start;
+	reporter->start_test = &text_reporter_start;
 	reporter->show_fail = &show_fail;
 	reporter->show_incomplete = &show_incomplete;
+	reporter->finish_test = &text_reporter_finish;
+	reporter->finish_suite = &text_reporter_finish;
     return reporter;
 }
 
