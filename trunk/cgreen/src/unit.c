@@ -170,10 +170,10 @@ static int has_test(TestSuite *suite, char *name) {
 }
 
 static void run_test_in_the_current_process(TestSuite *suite, UnitTest *test, TestReporter *reporter) {
-	(*reporter->start_suite)(reporter, test->name);
+	(*reporter->start_test)(reporter, test->name);
 	run_the_test_code(suite, test, reporter);
     send_reporter_completion_notification(reporter);
-	(*reporter->finish_suite)(reporter, test->name);
+	(*reporter->finish_test)(reporter, test->name);
 }
 
 static void run_test_in_its_own_process(TestSuite *suite, UnitTest *test, TestReporter *reporter) {
