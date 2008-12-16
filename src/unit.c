@@ -122,7 +122,7 @@ static void clean_up_test_run(TestSuite *suite, TestReporter *reporter) {
 }
 
 static void run_every_test(TestSuite *suite, TestReporter *reporter) {
-	(*reporter->start)(reporter, suite->name);
+	(*reporter->start_suite)(reporter, suite->name);
 	int i;
     for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
@@ -134,11 +134,11 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
         }
     }
     send_reporter_completion_notification(reporter);
-	(*reporter->finish)(reporter, suite->name);
+	(*reporter->finish_suite)(reporter, suite->name);
 }
 
 static void run_named_test(TestSuite *suite, char *name, TestReporter *reporter) {
-	(*reporter->start)(reporter, suite->name);
+	(*reporter->start_suite)(reporter, suite->name);
 	int i;
     for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
@@ -152,7 +152,7 @@ static void run_named_test(TestSuite *suite, char *name, TestReporter *reporter)
         }
     }
     send_reporter_completion_notification(reporter);
-	(*reporter->finish)(reporter, suite->name);
+	(*reporter->finish_suite)(reporter, suite->name);
 }
 
 static int has_test(TestSuite *suite, char *name) {
@@ -170,21 +170,21 @@ static int has_test(TestSuite *suite, char *name) {
 }
 
 static void run_test_in_the_current_process(TestSuite *suite, UnitTest *test, TestReporter *reporter) {
-	(*reporter->start)(reporter, test->name);
+	(*reporter->start_suite)(reporter, test->name);
 	run_the_test_code(suite, test, reporter);
     send_reporter_completion_notification(reporter);
-	(*reporter->finish)(reporter, test->name);
+	(*reporter->finish_suite)(reporter, test->name);
 }
 
 static void run_test_in_its_own_process(TestSuite *suite, UnitTest *test, TestReporter *reporter) {
-	(*reporter->start)(reporter, test->name);
+	(*reporter->start_test)(reporter, test->name);
     if (in_child_process()) {
         run_the_test_code(suite, test, reporter);
         send_reporter_completion_notification(reporter);
         stop();
     } else {
         wait_for_child_process();
-        (*reporter->finish)(reporter, test->name);
+        (*reporter->finish_test)(reporter, test->name);
     }
 }
 

@@ -12,10 +12,12 @@ static void xml_show_incomplete(TestReporter *reporter, const char *name);
 
 TestReporter *create_xml_reporter() {
     TestReporter *reporter = create_reporter();
-	reporter->start = &xml_reporter_start;
-	reporter->finish = &xml_reporter_finish;
+	reporter->start_suite = &xml_reporter_start;
+	reporter->start_test = &xml_reporter_start;
 	reporter->show_fail = &xml_show_fail;
 	reporter->show_incomplete = &xml_show_incomplete;
+	reporter->finish_test = &xml_reporter_finish;
+	reporter->finish_suite = &xml_reporter_finish;
     return reporter;
 }
 

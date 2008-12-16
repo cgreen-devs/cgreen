@@ -26,12 +26,14 @@ TestReporter *get_test_reporter() {
 TestReporter *create_reporter() {
     TestReporter *reporter = (TestReporter *)malloc(sizeof(TestReporter));
     reporter->destroy = &destroy_reporter;
-	reporter->start = &reporter_start;
-	reporter->finish = &reporter_finish;
+	reporter->start_suite = &reporter_start;
+	reporter->start_test = &reporter_start;
 	reporter->show_pass = &show_pass;
 	reporter->show_fail = &show_fail;
 	reporter->show_incomplete = &show_incomplete;
 	reporter->assert_true = &assert_true;
+	reporter->finish_test = &reporter_finish;
+	reporter->finish_suite = &reporter_finish;
 	reporter->passes = 0;
 	reporter->failures = 0;
 	reporter->exceptions = 0;
