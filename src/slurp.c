@@ -16,27 +16,29 @@ char *slurp(const char *file_name, int gulp) {
 }
 
 static char *read_all(FILE *file, int gulp) {
-    char *content = (char *)malloc(0);
-    int sblock = (gulp + 1) * sizeof(char);
-    char *block = (char *)malloc(sblock);
-    int len, add = 0;
-    for ( ; ; ) {
-        if (fgets(block, sblock, file) == NULL) {
-            break;
-        }
-	
-        len  = strlen(block);
-	add += len;
+	char *content = (char *)malloc(1);
+	int sblock = (gulp + 1) * sizeof(char);
+	char *block = (char *)malloc(sblock);
+	int len, add = 0;
 
-        content = (char *)realloc(content, add + 1);
-	if (content == NULL) {
-		exit(1);
+	*content = '\0';
+	for ( ; ; ) {
+		if (fgets(block, sblock, file) == NULL) {
+			break;
+		}
+
+		len  = strlen(block);
+		add += len;
+
+		content = (char *)realloc(content, add + 1);
+		if (content == NULL) {
+			exit(1);
+		}
+
+		strncat(content, block, len);
 	}
-
-	strncat(content, block, len);
-    }
-    content[add + 1] = '\0';
-    free(block);
-    return content;
+	content[add + 1] = '\0';
+	free(block);
+	return content;
 }
 
