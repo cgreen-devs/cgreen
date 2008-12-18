@@ -7,19 +7,25 @@ OBJECTS=src/unit.o src/messaging.o src/breadcrumb.o src/reporter.o \
 
 all: clean libcgreen.a collector test
 
+build: libcgreen.a collector all_tests
+
 libcgreen.a: $(OBJECTS)  
 	ar -rs src/libcgreen.a $(OBJECTS)
 	cp src/libcgreen.a .
 
-collector: src/collector.l src/vector.o src/slurp.o src/collector_test_list.o  
+collector: src/collector
+
+src/collector: src/collector.l src/vector.o src/slurp.o src/collector_test_list.o  
 	lex -B -t src/collector.l > src/collector.c
 	$(CC) $(CFLAGS) src/collector.c src/vector.o src/slurp.o src/collector_test_list.o -o src/collector
 
 check: test
 
-test: libcgreen.a
-	cd tests; make all_tests
+test: libcgreen.a all_tests
 	cd tests; ./all_tests
+
+all_tests:
+	cd tests; make all_tests
 
 clean:
 	cd tests; make clean
