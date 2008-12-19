@@ -37,7 +37,6 @@ static char *read_all(FILE *file, int gulp) {
 
 		strncat(content, block, len);
 	}
-	content[add + 1] = '\0';
 	free(block);
 	return content;
 }
