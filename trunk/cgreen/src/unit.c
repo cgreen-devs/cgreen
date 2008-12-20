@@ -103,6 +103,7 @@ void die_in(unsigned int seconds) {
 }
 
 int run_test_suite(TestSuite *suite, TestReporter *reporter) {
+	setup_reporting(reporter);
 	run_every_test(suite, reporter);
 	int success = (reporter->failures == 0);
 	clean_up_test_run(suite, reporter);
@@ -110,6 +111,7 @@ int run_test_suite(TestSuite *suite, TestReporter *reporter) {
 }
 
 int run_single_test(TestSuite *suite, char *name, TestReporter *reporter) {
+	setup_reporting(reporter);
 	run_named_test(suite, name, reporter);
 	int success = (reporter->failures == 0);
 	clean_up_test_run(suite, reporter);
