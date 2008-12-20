@@ -26,6 +26,7 @@ struct TestReporter_ {
 
 TestReporter *get_test_reporter();
 TestReporter *create_reporter();
+void setup_reporting(TestReporter *reporter);
 void destroy_reporter(TestReporter *reporter);
 void reporter_start(TestReporter *reporter, const char *name);
 void reporter_finish(TestReporter *reporter, const char *name);

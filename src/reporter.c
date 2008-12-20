@@ -23,6 +23,11 @@ TestReporter *get_test_reporter() {
 	return context.reporter;
 }
 
+void setup_reporting(TestReporter *reporter) {
+	reporter->ipc = start_cgreen_messaging(45);
+	context.reporter = reporter;
+}
+
 TestReporter *create_reporter() {
     TestReporter *reporter = (TestReporter *)malloc(sizeof(TestReporter));
     reporter->destroy = &destroy_reporter;
@@ -38,8 +43,6 @@ TestReporter *create_reporter() {
 	reporter->failures = 0;
 	reporter->exceptions = 0;
 	reporter->breadcrumb = (void *)create_breadcrumb();
-	reporter->ipc = start_cgreen_messaging(45);
-	context.reporter = reporter;
     return reporter;
 }
 
