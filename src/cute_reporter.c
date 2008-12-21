@@ -6,7 +6,7 @@
 
 typedef struct {
 	Printer *printer;
-	int previous_error;
+	int error_count;
 } CuteMemo;
 
 static void cute_reporter_suite_started(TestReporter *reporter, const char *name);
@@ -25,10 +25,9 @@ void set_cute_printer(TestReporter *reporter, Printer *printer) {
 
 TestReporter *create_cute_reporter(void) {
     TestReporter *reporter = create_reporter();
-    CuteMemo *memo = malloc(sizeof(CuteMemo));
 
+    CuteMemo *memo = malloc(sizeof(CuteMemo)+100);
 	memo->printer = printf;
-	memo->previous_error = 0;
 
 	reporter->start_suite = &cute_reporter_suite_started;
 	reporter->start_test = &cute_reporter_testcase_started;
@@ -52,7 +51,8 @@ static void cute_reporter_suite_started(TestReporter *reporter, const char *name
 
 static void cute_reporter_testcase_started(TestReporter *reporter, const char *name) {
 	CuteMemo *memo = (CuteMemo *)reporter->memo;
-	memo->previous_error = 0;
+	memo->error_count = reporter->failures + reporter->exceptions;
+	printf("clearing %p->error_count = %d\n", memo, memo->error_count);
 	reporter_start(reporter, name);
 	memo->printer("#starting %s\n", name);
 }
@@ -60,7 +60,8 @@ static void cute_reporter_testcase_started(TestReporter *reporter, const char *n
 static void cute_reporter_testcase_finished(TestReporter *reporter, const char *name) {
 	CuteMemo *memo = (CuteMemo *)reporter->memo;
 	reporter_finish(reporter, name);
-	if (!memo->previous_error) {
+	printf("inspecting %p->error_count = %d\n", memo, memo->error_count);
+	if (memo->error_count == reporter->failures + reporter->exceptions) {
 		memo->printer("#success %s OK\n", name);
 	}
 }
@@ -83,13 +84,13 @@ static void cute_reporter_suite_finished(TestReporter *reporter, const char *nam
 
 static void assert_failed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
 	CuteMemo *memo = (CuteMemo *)reporter->memo;
-	if (!memo->previous_error) {
+	if (memo->error_count == reporter->failures + reporter->exceptions) {
 		char buffer[1000];
 		memo->printer("#failure %s", get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb));
 		memo->printer(" %s:%d ", file, line);
 		vsprintf(buffer, (message == NULL ? "Problem" : message), arguments);
 		memo->printer("%s\n", buffer);
-		memo->previous_error = 1;
+		printf("setting %p->error_count = %d\n", memo, memo->error_count);
 	}
 }
 
