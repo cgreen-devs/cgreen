@@ -91,11 +91,13 @@ Ensure will_report_failing_of_test_only_once() {
 	reporter->start_test(reporter, "test_name");
 
 	clear_output();
+	reporter->failures++;	// Simulating a failed assert
 	reporter->show_fail(reporter, "file", 2, "test_name", "");
 	assert_output_starts_with("#failure");
 	assert_output_contains("test_name");
 
 	clear_output();
+	reporter->failures++;	// Simulating another failed assert
 	reporter->show_fail(reporter, "file", 2, "test_name", "");
 	assert_no_output();
 
