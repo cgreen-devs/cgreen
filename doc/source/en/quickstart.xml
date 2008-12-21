@@ -41,8 +41,8 @@
   <section xml:id="install">
     <title>Installing Cgreen</title>
       <para>
-          The installing of Cgreen is simple, just run the standard sequence command
-          to compiling programs in *nix environment: 
+          The installing of Cgreen is simple, just run the standard commands
+          for compiling programs in *nix environment: 
 <screen>
 ./configure
 make

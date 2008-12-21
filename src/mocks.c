@@ -101,12 +101,15 @@ void always_return_(const char *function, intptr_t result) {
 void clear_mocks() {
     if (result_queue != NULL) {
         destroy_cgreen_vector(result_queue);
+        result_queue = NULL;
     }
     if (expectation_queue != NULL) {
         destroy_cgreen_vector(expectation_queue);
+        expectation_queue = NULL;
     }
     if (unwanted_calls != NULL) {
         destroy_cgreen_vector(unwanted_calls);
+        unwanted_calls = NULL;
     }
 }
 
