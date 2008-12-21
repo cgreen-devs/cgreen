@@ -40,7 +40,7 @@ int strpos(char *whole, char *part) {
 
 TestReporter *reporter;
 
-static void set_up_cute_reporter_tests() {
+static void setup_cute_reporter_tests() {
 	reporter = create_cute_reporter();
 
 	// We can not use setup_reporting() since we are running
@@ -115,7 +115,7 @@ Ensure will_report_finishing_of_suite() {
 
 TestSuite *cute_reporter_tests() {
 	TestSuite *suite = create_test_suite();
-    setup(suite, set_up_cute_reporter_tests);
+    setup(suite, setup_cute_reporter_tests);
 
 	add_test(suite, will_report_beginning_of_suite);
 	add_test(suite, will_report_beginning_and_successful_finishing_of_test);
