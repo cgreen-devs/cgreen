@@ -6,7 +6,8 @@
 
 typedef struct {
 	Printer *printer;
-	int error_count;
+	int error_count;	// For status within the test case process
+	int previous_error;	// For status outside the test case process
 } CuteMemo;
 
 static void cute_reporter_suite_started(TestReporter *reporter, const char *name);
@@ -52,7 +53,7 @@ static void cute_reporter_suite_started(TestReporter *reporter, const char *name
 static void cute_reporter_testcase_started(TestReporter *reporter, const char *name) {
 	CuteMemo *memo = (CuteMemo *)reporter->memo;
 	memo->error_count = reporter->failures + reporter->exceptions;
-	printf("clearing %p->error_count = %d\n", memo, memo->error_count);
+	memo->previous_error = 0;
 	reporter_start(reporter, name);
 	memo->printer("#starting %s\n", name);
 }
@@ -60,7 +61,6 @@ static void cute_reporter_testcase_started(TestReporter *reporter, const char *n
 static void cute_reporter_testcase_finished(TestReporter *reporter, const char *name) {
 	CuteMemo *memo = (CuteMemo *)reporter->memo;
 	reporter_finish(reporter, name);
-	printf("inspecting %p->error_count = %d\n", memo, memo->error_count);
 	if (memo->error_count == reporter->failures + reporter->exceptions) {
 		memo->printer("#success %s OK\n", name);
 	}
@@ -84,13 +84,13 @@ static void cute_reporter_suite_finished(TestReporter *reporter, const char *nam
 
 static void assert_failed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
 	CuteMemo *memo = (CuteMemo *)reporter->memo;
-	if (memo->error_count == reporter->failures + reporter->exceptions) {
+	if (!memo->previous_error) {
 		char buffer[1000];
 		memo->printer("#failure %s", get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb));
 		memo->printer(" %s:%d ", file, line);
 		vsprintf(buffer, (message == NULL ? "Problem" : message), arguments);
 		memo->printer("%s\n", buffer);
-		printf("setting %p->error_count = %d\n", memo, memo->error_count);
+		memo->previous_error = 1;
 	}
 }
 
