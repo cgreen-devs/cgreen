@@ -7,20 +7,34 @@ SET (VERSION_MINOR "0")
 SET (VERSION_PATCH "alpha3")
 SET (VERSION_SUFFIX "")
 SET (VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_SUFFIX})
-MESSAGE(STATUS "Cgreen ${VERSION} will be built to install into ${CMAKE_INSTALL_PREFIX}")
 
 SET(MAIN_DIR_NAME "cgreen")
 
-SET(WANT_RELEASE 1)
-IF(WANT_RELEASE)
-    SET(CMAKE_BUILD_TYPE RELEASE)
-    #SET(CMAKE_CXX_FLAGS_RELEASE "-O2 -Wall")
-    #SET(CMAKE_C_FLAGS_RELEASE "-O2 -Wall")  
-ELSE(WANT_RELEASE)
-    SET(CMAKE_BUILD_TYPE Debug)
-    SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -Wall")
-    SET(CMAKE_C_FLAGS_DEBUG "-O0 -g3 -Wall")
-ENDIF(WANT_RELEASE)
+IF(NOT CMAKE_BUILD_TYPE)
+   SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+      FORCE)
+ENDIF(NOT CMAKE_BUILD_TYPE)
+
+SET(CMAKE_C_FLAGS_RELEASE "-O2 -Wall")  
+SET(CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING
+   "Flags used by Debug."
+   FORCE)
+
+#IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+#   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+#   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -fprofile-arcs -ftest-coverage")
+#ENDIF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+
+SET(CMAKE_C_FLAGS_PROFILING "-g -O0 -Wall -fprofile-arcs -ftest-coverage" CACHE STRING "Profiling Compiler Flags" )
+SET(CMAKE_SHARED_LINKER_FLAGS_PROFILING " -fprofile-arcs -ftest-coverage" CACHE STRING "Profiling Linker Flags" )
+SET(CMAKE_MODULE_LINKER_FLAGS_PROFILING " -fprofile-arcs -ftest-coverage" CACHE STRING "Profiling Linker Flags" )
+SET(CMAKE_EXEC_LINKER_FLAGS_PROFILING " -fprofile-arcs -ftest-coverage" CACHE STRING "Profiling Linker Flags" )
+
+
+
+
+MESSAGE(STATUS "${CMAKE_BUILD_TYPE}: Cgreen ${VERSION} will be built to install into ${CMAKE_INSTALL_PREFIX}")
 
 ADD_SUBDIRECTORY(tests tests)
 ADD_SUBDIRECTORY(src src)
@@ -30,7 +44,7 @@ INCLUDE_DIRECTORIES(${Cgreen_SOURCE_DIR}/include/)
 
 SET(cgreen_sources src/unit.c src/messaging.c src/breadcrumb.c
     src/reporter.c src/assertions.c src/vector.c src/mocks.c src/constraint.c
-    src/parameters.c src/text_reporter.c src/slurp.c)
+    src/parameters.c src/text_reporter.c src/cute_reporter.c src/slurp.c)
 
 SET(collector_sources src/collector.c src/vector.c src/slurp.c
     src/collector_test_list.c)
@@ -38,7 +52,7 @@ SET(collector_sources src/collector.c src/vector.c src/slurp.c
 SET(tests_sources tests/all_tests.c tests/messaging_tests.c
     tests/assertion_tests.c tests/vector_tests.c tests/constraint_tests.c
     tests/parameters_test.c tests/mocks_tests.c tests/breadcrumb_tests.c
-    tests/slurp_test.c)
+    tests/slurp_test.c tests/cute_reporter_tests.c)
 
 # Build Cgreen
 
