@@ -1,7 +1,7 @@
 #include <cgreen/slurp.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
 
 static char *read_all(FILE *file, int gulp);
 

@@ -2,7 +2,7 @@
 #include <cgreen/cute_reporter.h>
 
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
 
 static char *output;
 static void clear_output()
