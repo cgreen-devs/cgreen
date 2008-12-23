@@ -241,6 +241,7 @@ ENDIF(ENABLE_DOCS)
 
 # Testing
 ENABLE_TESTING()
+INCLUDE(Dart)
 
 ADD_TEST(tests/all_test ${EXECUTABLE_OUTPUT_PATH}tests/all_test)
 
