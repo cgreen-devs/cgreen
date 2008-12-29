@@ -1,0 +1,31 @@
+env = Environment()
+
+# Add the cgreen headers to the include path
+env.Append(CPPPATH=['../../include', ])
+
+# Build the cgreen library
+cgreendir = '../../src/'
+cgreenfiles = """unit.c messaging.c breadcrumb.c reporter.c 
+                 assertions.c vector.c mocks.c constraint.c
+                 parameters.c text_reporter.c""".split()
+cgreensources = ['../../src/'+f for f in cgreenfiles]
+cgreenlib = env.StaticLibrary('cgreen', cgreensources)
+
+#Build our code to be tested
+env.Append(CPPPATH=['include'])
+mainlib = env.StaticLibrary('main', env.Glob('src/*.c'))
+
+for test in env.Glob('tests/*.c'):
+  testprog = env.Program(test, LIBS=[cgreenlib, mainlib])
+
+  # This is a nasty little hack here.
+  # We run the test twice, the first time is so we can see the output on the
+  # console, and get the results logged. Unfortunately it will not cause the
+  # build to stop on test failures since the result of the command is the
+  # return value of tee, not the tests. So we run it again to catch the 
+  # possibly failed return value ... those tests better be repeatable!
+  env.Command(testprog[0].path+'.results', testprog,
+              '$SOURCE 2>&1 | tee $TARGET')
+  env.Command(testprog[0].path+'.results_', testprog,
+              '$SOURCE > $TARGET 2>&1 ')
+

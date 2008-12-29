@@ -1,0 +1,10 @@
+All files under this contrib directory are UNSUPPORTED. There were
+provided by users of Cgreen and were not tested by the authors of Cgreen.
+Use at your own risk.
+
+SCons/ by Kevin Fitch <merlin42@users.sourceforge.net>
+  Add a sample demonstrating using cgreen with SCons
+  http://www.scons.org/
+
+automake/ by João H. F. Freitas <joaohf@gmail.com>
+  Add a sample demonstrating using automake 
