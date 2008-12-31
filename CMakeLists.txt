@@ -84,6 +84,9 @@ ADD_CUSTOM_COMMAND(TARGET tests/all_test POST_BUILD
 TARGET_LINK_LIBRARIES(tests/all_test cgreen m)
 
 # Build docs
+OPTION(ENABLE_DOCS "Build docs" OFF)
+OPTION(ENABLE_WEBSITE "Build website" OFF)
+
 IF(ENABLE_DOCS)
 
 FIND_FILE(XSLT_FOUND xsltproc PATHS /usr/bin)
