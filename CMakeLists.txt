@@ -52,7 +52,7 @@ SET(collector_sources src/collector.c src/vector.c src/slurp.c
 SET(tests_sources tests/all_tests.c tests/messaging_tests.c
     tests/assertion_tests.c tests/vector_tests.c tests/constraint_tests.c
     tests/parameters_test.c tests/mocks_tests.c tests/breadcrumb_tests.c
-    tests/slurp_test.c tests/cute_reporter_tests.c)
+    tests/slurp_test.c tests/cute_reporter_tests.c tests/collector_tests.c)
 
 # Build Cgreen
 
