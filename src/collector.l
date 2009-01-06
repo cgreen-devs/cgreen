@@ -21,13 +21,13 @@ add_tests\(                     { ECHO; BEGIN TEST_ADDER; }
                                 }
 
 <TEST_ADDER>\(                  { ECHO; BEGIN IN_BRACKETS; }
-<TEST_ADDER>[),][ ]*            { printf(", "); BEGIN TEST_LIST; }
+<TEST_ADDER>[),][ ]*            { fprintf(yyout, ", "); BEGIN TEST_LIST; }
 <TEST_ADDER>[^(),]+             { ECHO; }
 
 <IN_BRACKETS>\)                 {
                                     ECHO;
                                     if (! bracket_nesting) {
-                                        printf(", ");
+                                        fprintf(yyout, ", ");
                                         BEGIN TEST_LIST;
                                     } else {
                                         bracket_nesting--;
@@ -42,8 +42,8 @@ add_tests\(                     { ECHO; BEGIN TEST_ADDER; }
 <IN_STRING>[^"]+                { ECHO; }
                                 
 <TEST_LIST>[^)]*\)              {
-                                    print_test_list();
-                                    printf(")");
+                                    print_test_list(yyout);
+                                    fprintf(yyout,")");
                                     reset_test_list();
                                     BEGIN 0;
                                 }
@@ -60,10 +60,19 @@ add_tests\(                     { ECHO; BEGIN TEST_ADDER; }
             if (source == NULL) {
                 return 1;
             }
+
+            yyin = NULL;
+            yyout = fopen(argv[1], "w");
+
+            if (yyout == NULL) {
+                return 1;
+            }
+
             buffer = yy_scan_string(source);
             yylex();
             yy_delete_buffer(buffer);
             free(source);
+            
         } else {
             yylex();
         }
