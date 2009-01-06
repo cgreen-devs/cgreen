@@ -25,9 +25,9 @@ void reset_test_list() {
     tests = create_cgreen_vector(&destroy_string);
 }
 
-void print_test_list() {
+void print_test_list(FILE *file) {
     int i;
     for (i = 0; i < cgreen_vector_size(tests); i++) {
-        printf("%s&%s", (i == 0 ? "" : ", "), cgreen_vector_get(tests, i));
+        fprintf(file, "%s&%s", (i == 0 ? "" : ", "), cgreen_vector_get(tests, i));
     }
 }
