@@ -59,7 +59,7 @@ Constraint *want_double_(const char *parameter, intptr_t expected) {
 }
 
 intptr_t box_double(double d) {
-    BoxedDouble *box = malloc(sizeof(BoxedDouble));
+    BoxedDouble *box = (BoxedDouble *) malloc(sizeof(BoxedDouble));
     box->d = d;
     return (intptr_t)box;
 }

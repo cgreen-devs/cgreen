@@ -1,6 +1,7 @@
 #include <cgreen/collector_test_list.h>
 #include <cgreen/vector.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 static CgreenVector *tests;
 
@@ -28,6 +29,6 @@ void reset_test_list() {
 void print_test_list(FILE *file) {
     int i;
     for (i = 0; i < cgreen_vector_size(tests); i++) {
-        fprintf(file, "%s&%s", (i == 0 ? "" : ", "), cgreen_vector_get(tests, i));
+        fprintf(file, "%s&%s", (i == 0 ? "" : ", "), (char *) cgreen_vector_get(tests, i));
     }
 }

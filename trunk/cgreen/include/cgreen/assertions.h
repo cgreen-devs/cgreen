@@ -27,7 +27,7 @@ void assert_double_equal_(const char *file, int line, double tried, double expec
 void assert_double_not_equal_(const char *file, int line, double tried, double expected);
 void assert_string_equal_(const char *file, int line, const char *tried, const char *expected);
 void assert_string_not_equal_(const char *file, int line, const char *tried, const char *expected);
-int significant_figures_for_assert_double_are(int figures);
+void significant_figures_for_assert_double_are(int figures);
 const char *show_null_as_the_string_null(const char *string);
 int strings_are_equal(const char *tried, const char *expected);
 int doubles_are_equal(const double tried, const double expected);

@@ -58,5 +58,5 @@ int cgreen_vector_size(CgreenVector *vector) {
 
 static void increase_space(CgreenVector *vector) {
     vector->space += 100;
-    vector->items = realloc(vector->items, sizeof(void *) * vector->space);
+    vector->items = (void**)realloc(vector->items, sizeof(void *) * vector->space);
 }
