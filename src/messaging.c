@@ -1,6 +1,9 @@
 #include <cgreen/messaging.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
 #include <sys/msg.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define message_content_size(Type) (sizeof(Type) - sizeof(long))
 

@@ -13,6 +13,8 @@
 
 enum {test_function, test_suite};
 
+typedef void (*sighandler_t)(int);
+
 typedef struct {
     int type;
     union {
@@ -43,7 +45,7 @@ static void allow_ctrl_c();
 static void stop();
 static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *reporter);
 static void tally_counter(const char *file, int line, int expected, int actual, void *abstract_reporter);
-static void die(char *message, ...);
+static void die(const char *message, ...);
 static void do_nothing();
 
 TestSuite *create_named_test_suite(const char *name) {
@@ -98,7 +100,7 @@ void teardown_(TestSuite *suite, void (*teardown)()) {
 }
 
 void die_in(unsigned int seconds) {
-    signal(SIGALRM, &stop);
+    signal(SIGALRM, (sighandler_t)&stop);
     alarm(seconds);
 }
 
@@ -238,7 +240,7 @@ static void tally_counter(const char *file, int line, int expected, int actual, 
             actual);
 }
 
-static void die(char *message, ...) {
+static void die(const char *message, ...) {
 	va_list arguments;
 	va_start(arguments, message);
 	vprintf(message, arguments);

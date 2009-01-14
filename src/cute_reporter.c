@@ -27,7 +27,7 @@ void set_cute_printer(TestReporter *reporter, Printer *printer) {
 TestReporter *create_cute_reporter(void) {
     TestReporter *reporter = create_reporter();
 
-    CuteMemo *memo = malloc(sizeof(CuteMemo)+100);
+    CuteMemo *memo = (CuteMemo *) malloc(sizeof(CuteMemo)+100);
 	memo->printer = printf;
 
 	reporter->start_suite = &cute_reporter_suite_started;

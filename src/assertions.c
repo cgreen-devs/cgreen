@@ -2,6 +2,7 @@
 #include <cgreen/reporter.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) > (b) ? (b) : (a))
@@ -64,7 +65,7 @@ void assert_string_not_equal_(const char *file, int line, const char *tried, con
             "[%s] should not match [%s]", show_null_as_the_string_null(tried), show_null_as_the_string_null(expected));
 }
 
-int significant_figures_for_assert_double_are(int figures) {
+void significant_figures_for_assert_double_are(int figures) {
     significant_figures = figures;
 }
 
