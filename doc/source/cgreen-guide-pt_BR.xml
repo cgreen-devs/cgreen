@@ -4,6 +4,7 @@
 <!ENTITY cgreen_suites SYSTEM "pt_BR/suites.xml">
 <!ENTITY cgreen_mock_callbacks SYSTEM "pt_BR/mock_callbacks.xml">
 <!ENTITY cgreen_reporter SYSTEM "pt_BR/reporter.xml">
+<!ENTITY collector SYSTEM "pt_BR/collector.xml">
 <!ENTITY freedoc-license SYSTEM "include/copying-fdl.xml">
 ]>
 <book xmlns="http://docbook.org/ns/docbook" version="5.0" xml:lang="en">
@@ -31,8 +32,8 @@
     <edition xmlns="http://docbook.org/ns/docbook">Document revision: $Id$</edition>
     <pubdate xmlns="http://docbook.org/ns/docbook">$Date$</pubdate>
     <copyright xmlns="http://docbook.org/ns/docbook">
-      <year xmlns="http://docbook.org/ns/docbook">2006-2008</year>
-      <holder xmlns="http://docbook.org/ns/docbook">BIG</holder>
+      <year xmlns="http://docbook.org/ns/docbook">2006-2009</year>
+      <holder xmlns="http://docbook.org/ns/docbook">Cgreen Team</holder>
     </copyright>
     <legalnotice xmlns="http://docbook.org/ns/docbook">
       <para xmlns="http://docbook.org/ns/docbook">
@@ -79,9 +80,14 @@
     &cgreen_mock_callbacks;
   </chapter>
   <chapter>
-    <title>Mudando o mecanismo de relatório do Cgreen.</title>
+    <title>Mudando o mecanismo de relatório do Cgreen</title>
     <titleabbrev>Mudando o relatório do Cgreen</titleabbrev>
     &cgreen_reporter;
+  </chapter>
+  <chapter>
+    <title>A ferramenta collector</title>
+    <titleabbrev>Coletando testes automaticamente</titleabbrev>
+    &collector;
   </chapter>
 &freedoc-license;
 </book>
