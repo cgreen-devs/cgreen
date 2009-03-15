@@ -43,23 +43,49 @@
   <section xml:id="install">
     <title>Instalando o Cgreen</title>
       <para>
-                Instalar o Cgreen é simples, basta executar a sequencia de comandos padrão para
-                compilação de programas em ambiente *nix:
-      </para>                
-<screen>
-./configure
-make
-make install
-</screen>
-       <para>
-                Dentro do diretório <emphasis>cgreen</emphasis> descompactado. 
-                Este processo irá criar uma biblioteca unix chamada de 
-                <filename>libcgreen.so</filename> no qual pode ser utilizada em conjunto com o 
-                arquivo de cabeçalho <filename>cgreen.h</filename> para compilar o código de
-                testes. A biblioteca criada é instalada no sistema, por default em <emphasis>/usr/local/lib/</emphasis>.                
+                Há dois modos de instalar o Cgreen em seu sistema.
+      </para>
+      <para>                     
+                O primeiro modo é utilizar os pacotes RPM ou DEB providos pelo Cgreen Time
+                e disponibilizados na página do projeto
+<link xlink:href="http://cgreen.sourceforge.net">Cgreen</link>.
+                Uma vez feito o download, instale utilizando os procedimentos normais de
+                instalação para o seu sistema.
+      </para>   
+      <para>             
+                A segunda forma de instalação é indicada para desenvolvedores ou usuários avançados.
+                Basicamente consiste em pegar os fontes do projeto e compilar. Para isso é necessário
+                o sistema de build <link xlink:href="http://www.cmake.org">CMake</link> como pré-requisito.
       </para>
       <para>
-                Primeiro vamos escrever um teste para confirmar que tudo está 
+                Tendo o CMake instalado o processo é o seguinte:
+<screen>
+tar -zxpvf cgreen.tar.gz
+mkdir cgreen-build
+cd cgreen-build
+cmake ../cgreen
+make
+make test    # opcional
+make install # precisa de direitos root
+</screen> 
+                Esta técnica é conhecida como "build out of source". Ela compila e instala o Cgreen
+                fora do diretório que contendo os arquivos fontes. Isso ajuda na organização geral dos 
+                arquivos do projeto. 
+      </para>
+      <para>
+                Também é possivel utilizar o arquivo <filename>Makefile</filename> disponibilizado 
+                na raiz do diretório descompactado. Este Makefile é usado para compilar e testar 
+                sem a necessidade do CMake. No entando ele não contém as regras de instalação no
+                sistema.
+      </para>                
+      <para>
+                Ambos os métodos irão criar dentro do diretório <emphasis>cgreen</emphasis> uma biblioteca
+                unix <filename>libcgreen.so</filename> no qual pode ser utilizada em conjunto com o               
+                arquivo de cabeçalho <filename>cgreen.h</filename> para compilar os códigos de
+                teste. A biblioteca criada é instalada no sistema, por default em <emphasis>/usr/local/lib/</emphasis>.                
+      </para>
+      <para>
+                Agora vamos escrever um teste para confirmar se tudo está 
                 funcionando.
                 Vamos começar com um simples script de teste não testado, chamado
                 <filename>first_test.c</filename>
