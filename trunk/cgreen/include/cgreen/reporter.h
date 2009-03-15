@@ -8,7 +8,7 @@ typedef struct TestContext_ TestContext;
 typedef struct TestReporter_ TestReporter;
 struct TestReporter_ {
     void (*destroy)(TestReporter *);
-	void (*start_suite)(TestReporter *, const char *);
+	void (*start_suite)(TestReporter *, const char *, const int);
 	void (*start_test)(TestReporter *, const char *);
     void (*show_pass)(TestReporter *, const char *, int, const char *, va_list);
     void (*show_fail)(TestReporter *, const char *, int, const char *, va_list);

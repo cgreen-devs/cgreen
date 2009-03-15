@@ -104,6 +104,19 @@ void die_in(unsigned int seconds) {
     alarm(seconds);
 }
 
+int count_tests(TestSuite *suite) {
+	int count = 0;
+	int i;
+    for (i = 0; i < suite->size; i++) {
+        if (suite->tests[i].type == test_function) {
+            count++;
+        } else {
+            count += count_tests(suite->tests[i].suite);
+        }
+    }
+    return count;
+}
+
 int run_test_suite(TestSuite *suite, TestReporter *reporter) {
 	setup_reporting(reporter);
 	run_every_test(suite, reporter);
@@ -126,7 +139,7 @@ static void clean_up_test_run(TestSuite *suite, TestReporter *reporter) {
 }
 
 static void run_every_test(TestSuite *suite, TestReporter *reporter) {
-	(*reporter->start_suite)(reporter, suite->name);
+	(*reporter->start_suite)(reporter, suite->name, count_tests(suite));
 	int i;
     for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
@@ -142,7 +155,7 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
 }
 
 static void run_named_test(TestSuite *suite, char *name, TestReporter *reporter) {
-	(*reporter->start_suite)(reporter, suite->name);
+	(*reporter->start_suite)(reporter, suite->name, count_tests(suite));
 	int i;
     for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
