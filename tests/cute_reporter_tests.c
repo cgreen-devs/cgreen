@@ -66,7 +66,7 @@ static void assert_output_contains(char *string) {
 }
 
 Ensure will_report_beginning_of_suite() {
-	reporter->start_suite(reporter, "suite_name");
+	reporter->start_suite(reporter, "suite_name", 2);
 	assert_output_starts_with("#beginning");
 	assert_output_contains("suite_name");
 }

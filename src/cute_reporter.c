@@ -10,7 +10,7 @@ typedef struct {
 	int previous_error;	// For status outside the test case process
 } CuteMemo;
 
-static void cute_reporter_suite_started(TestReporter *reporter, const char *name);
+static void cute_reporter_suite_started(TestReporter *reporter, const char *name, const int number_of_tests);
 static void cute_reporter_testcase_started(TestReporter *reporter, const char *name);
 static void assert_failed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void assert_passed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
@@ -42,9 +42,9 @@ TestReporter *create_cute_reporter(void) {
     return reporter;
 }
 
-static void cute_reporter_suite_started(TestReporter *reporter, const char *name) {
+static void cute_reporter_suite_started(TestReporter *reporter, const char *name, const int number_of_tests) {
 	// TODO Send number of tests as a parameter
-	int number_of_tests = 4;
+	// int number_of_tests = 2;
 	CuteMemo *memo = (CuteMemo *)reporter->memo;
 	reporter_start(reporter, name);
 	memo->printer("#beginning %s %d\n", name, number_of_tests);
