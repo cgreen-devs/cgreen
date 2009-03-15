@@ -41,19 +41,44 @@
   <section xml:id="install">
     <title>Installing Cgreen</title>
       <para>
-          The installing of Cgreen is simple, just run the standard commands
-          for compiling programs in *nix environment: 
-<screen>
-./configure
-make
-make install
-</screen>          
-          In the unzipped <emphasis>cgreen</emphasis> folder.
-          This process will create a unix library called <filename>libcgreen.so</filename>
-          which can be used in conjunction with the <filename>cgreen.h</filename>
-          header file to compile test code. The created library is instaled in the system, 
-          by default in the <emphasis>/usr/local/lib/</emphasis>.
+      There are two ways to install Cgreen in your system.   
       </para>
+      <para>
+      The first is to use the RPM or DEB package provide by Cgreen Team and you cant fetch it at
+<link xlink:href="http://cgreen.sourceforge.net">Cgreen</link> website project.
+      Do the download and install in your system using the normal procedures to your system. 
+      </para>
+      <para>
+      The second way is indicated for developers and advanced users. Basically this consist in fetch
+      the sources of the project and compile them. For this is necessary the 
+      <link xlink:href="http://www.cmake.org">CMake</link> which is abuild system.
+      It is a prerequisite. 
+      </para>
+      <para>
+      When you have the CMake tool, the steps are:      
+<screen>
+tar -zxpvf cgreen.tar.gz
+mkdir cgreen-build
+cd cgreen-build
+cmake ../cgreen
+make
+make test    # opcional
+make install # precisa de direitos root
+</screen>     
+    This technical is called "build out of source". It compiling and install Cgreen outside of sources
+    directory. These help the overall files organization.    
+    </para>
+    <para>
+    Is possible too use the <filename>Makefile</filename>. This file is used to compile and test Cgreen
+    without the need of CMake tool. However it does not contain the rules to install in your system.
+    </para>
+    <para>
+    Both methods will create within the directory <emphasis>cgreen</emphasis> a unix library called 
+    <filename>libcgreen.so</filename> which can be used in conjunction with the <filename>cgreen.h</filename>
+    header file to compile test code. The created library is installed in the system, 
+    by default in the <emphasis>/usr/local/lib/</emphasis>.
+    </para>
+    
       <para>
           We'll first write a test to confirm everything is working.
           Let's start with a simple test script with no tests, called
