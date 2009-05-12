@@ -3,6 +3,7 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #define message_content_size(Type) (sizeof(Type) - sizeof(long))
@@ -24,10 +25,17 @@ static int queue_count = 0;
 static void clean_up_messaging();
 
 int start_cgreen_messaging(int tag) {
+    CgreenMessageQueue *tmp;
+
     if (queue_count == 0) {
         atexit(&clean_up_messaging);
     }
-    queues = (CgreenMessageQueue *)realloc(queues, sizeof(CgreenMessageQueue) * ++queue_count);
+    tmp = realloc(queues, sizeof(CgreenMessageQueue) * ++queue_count);
+    if (tmp == NULL) {
+      atexit(&clean_up_messaging);
+      return -1;
+    }
+    queues = tmp;
     queues[queue_count - 1].queue = msgget((long)getpid(), 0666 | IPC_CREAT);
     queues[queue_count - 1].owner = getpid();
     queues[queue_count - 1].tag = tag;
@@ -35,7 +43,11 @@ int start_cgreen_messaging(int tag) {
 }
 
 void send_cgreen_message(int messaging, int result) {
-    CgreenMessage *message = (CgreenMessage *)malloc(sizeof(CgreenMessage));
+    CgreenMessage *message = malloc(sizeof(CgreenMessage));
+    if (message == NULL) {
+      return;
+    }
+    memset(message, 0, sizeof(*message));
     message->type = queues[messaging].tag;
     message->result = result;
     msgsnd(queues[messaging].queue, message, message_content_size(CgreenMessage), 0);
@@ -43,7 +55,10 @@ void send_cgreen_message(int messaging, int result) {
 }
 
 int receive_cgreen_message(int messaging) {
-    CgreenMessage *message = (CgreenMessage *)malloc(sizeof(CgreenMessage));
+    CgreenMessage *message = malloc(sizeof(CgreenMessage));
+    if (message == NULL) {
+      return -1;
+    }
     ssize_t received = msgrcv(queues[messaging].queue,
                               message,
                               message_content_size(CgreenMessage),
