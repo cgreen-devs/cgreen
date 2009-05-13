@@ -8,7 +8,13 @@ struct CgreenBreadcrumb_ {
 };
 
 CgreenBreadcrumb *create_breadcrumb() {
-    CgreenBreadcrumb *breadcrumb = (CgreenBreadcrumb *)malloc(sizeof(CgreenBreadcrumb));
+    CgreenBreadcrumb *breadcrumb;
+
+    breadcrumb = malloc(sizeof(CgreenBreadcrumb));
+    if (breadcrumb == NULL) {
+        return NULL;
+    }
+
 	breadcrumb->trail = NULL;
 	breadcrumb->depth = 0;
 	breadcrumb->space = 0;
