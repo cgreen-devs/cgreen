@@ -12,7 +12,13 @@ static void show_incomplete(TestReporter *reporter, const char *name);
 static void show_breadcrumb(const char *name, void *memo);
 
 TestReporter *create_text_reporter() {
-    TestReporter *reporter = create_reporter();
+    TestReporter *reporter;
+
+    reporter = create_reporter();
+    if (reporter == NULL) {
+        return NULL;
+    }
+
 	reporter->start_suite = &text_reporter_start_suite;
 	reporter->start_test = &text_reporter_start_test;
 	reporter->show_fail = &show_fail;
