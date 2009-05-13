@@ -207,10 +207,11 @@ static void unwanted_check(const char *function) {
     }
 }
 
-void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestReporter *reporter) {
+void trigger_unfulfilled_expectations(CgreenVector *expect_queue,
+        TestReporter *reporter) {
     int i;
     for (i = 0; i < cgreen_vector_size(expectation_queue); i++) {
-        RecordedExpectation *expectation = (RecordedExpectation *) cgreen_vector_get(expectation_queue, i);
+        RecordedExpectation *expectation = cgreen_vector_get(expect_queue, i);
         if (! expectation->should_keep) {
             (*reporter->assert_true)(
                     reporter,
