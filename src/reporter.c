@@ -37,8 +37,8 @@ TestReporter *create_reporter() {
     }
 
     reporter->destroy = &destroy_reporter;
-	reporter->start_suite = &reporter_start;
-	reporter->start_test = &reporter_start;
+    reporter->start_suite = &reporter_start_suite;
+    reporter->start_test = &reporter_start;
 	reporter->show_pass = &show_pass;
 	reporter->show_fail = &show_fail;
 	reporter->show_incomplete = &show_incomplete;
@@ -58,8 +58,15 @@ void destroy_reporter(TestReporter *reporter) {
     context.reporter = NULL;
 }
 
-void reporter_start(TestReporter *reporter, const char *name)  {
-	push_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb, name);
+void reporter_start(TestReporter *reporter, const char *name) {
+    push_breadcrumb(reporter->breadcrumb, name);
+}
+
+void reporter_start_suite(TestReporter *reporter, const char *name,
+        const int count) {
+    (void) count; /* unused variable */
+
+    reporter_start(reporter, name);
 }
 
 void reporter_finish(TestReporter *reporter, const char *name) {
