@@ -41,3 +41,4 @@ static char *read_all(FILE *file, int gulp) {
 	return content;
 }
 
+/* vim: set ts=4 sw=4 et cindent: */

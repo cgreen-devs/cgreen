@@ -80,3 +80,5 @@ static void clean_up_messaging() {
     queues = NULL;
     queue_count = 0;
 }
+
+/* vim: set ts=4 sw=4 et cindent: */

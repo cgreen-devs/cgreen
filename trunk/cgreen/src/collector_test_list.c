@@ -32,3 +32,5 @@ void print_test_list(FILE *file) {
         fprintf(file, "%s&%s", (i == 0 ? "" : ", "), (char *) cgreen_vector_get(tests, i));
     }
 }
+
+/* vim: set ts=4 sw=4 et cindent: */

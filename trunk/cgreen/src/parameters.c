@@ -62,3 +62,5 @@ static char *strip_d_macro(char *token) {
     }
     return token;
 }
+
+/* vim: set ts=4 sw=4 et cindent: */
