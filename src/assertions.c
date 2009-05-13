@@ -85,8 +85,8 @@ int doubles_are_equal(const double tried, const double expected) {
     return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(tried, expected));
 }
 
-static double accuracy(int significant_figures, double largest) {
-    return pow(10, 1 + (int)log10(largest) - significant_figures);
+static double accuracy(int figures, double largest) {
+    return pow(10, 1 + (int)log10(largest) - figures);
 }
 
 /* vim: set ts=4 sw=4 et cindent: */
