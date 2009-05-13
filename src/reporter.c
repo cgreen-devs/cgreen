@@ -29,7 +29,13 @@ void setup_reporting(TestReporter *reporter) {
 }
 
 TestReporter *create_reporter() {
-    TestReporter *reporter = (TestReporter *)malloc(sizeof(TestReporter));
+    TestReporter *reporter;
+
+    reporter = malloc(sizeof(TestReporter));
+    if (reporter == NULL) {
+        return NULL;
+    }
+
     reporter->destroy = &destroy_reporter;
 	reporter->start_suite = &reporter_start;
 	reporter->start_test = &reporter_start;
