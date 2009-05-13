@@ -252,3 +252,5 @@ void apply_any_constraints(RecordedExpectation *expectation, const char *paramet
         }
     }
 }
+
+/* vim: set ts=4 sw=4 et cindent: */

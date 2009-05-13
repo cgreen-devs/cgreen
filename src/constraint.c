@@ -141,3 +141,5 @@ static double unbox_double(intptr_t box) {
 static double as_double(intptr_t box) {
     return ((BoxedDouble *)box)->d;
 }
+
+/* vim: set ts=4 sw=4 et cindent: */

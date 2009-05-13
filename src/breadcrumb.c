@@ -52,3 +52,5 @@ void walk_breadcrumb(CgreenBreadcrumb *breadcrumb, void (*walker)(const char *, 
         (*walker)(breadcrumb->trail[i], memo);
     }
 }
+
+/* vim: set ts=4 sw=4 et cindent: */

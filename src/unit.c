@@ -263,3 +263,5 @@ static void die(const char *message, ...) {
 
 static void do_nothing() {
 }
+
+/* vim: set ts=4 sw=4 et cindent: */

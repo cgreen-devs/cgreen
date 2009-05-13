@@ -60,3 +60,5 @@ static void increase_space(CgreenVector *vector) {
     vector->space += 100;
     vector->items = (void**)realloc(vector->items, sizeof(void *) * vector->space);
 }
+
+/* vim: set ts=4 sw=4 et cindent: */

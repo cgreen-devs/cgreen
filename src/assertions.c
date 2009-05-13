@@ -88,3 +88,5 @@ int doubles_are_equal(const double tried, const double expected) {
 static double accuracy(int significant_figures, double largest) {
     return pow(10, 1 + (int)log10(largest) - significant_figures);
 }
+
+/* vim: set ts=4 sw=4 et cindent: */

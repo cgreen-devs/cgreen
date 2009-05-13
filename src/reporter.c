@@ -113,3 +113,5 @@ static void read_reporter_results(TestReporter *reporter) {
         reporter->exceptions++;
     }
 }
+
+/* vim: set ts=4 sw=4 et cindent: */

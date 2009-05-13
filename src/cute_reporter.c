@@ -101,3 +101,5 @@ static void testcase_failed_to_complete(TestReporter *reporter, const char *name
 	CuteMemo *memo = (CuteMemo *)reporter->memo;
     memo->printer("#error %s failed to complete\n", name);
 }
+
+/* vim: set ts=4 sw=4 et cindent: */

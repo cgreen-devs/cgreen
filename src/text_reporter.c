@@ -76,3 +76,5 @@ static void show_breadcrumb(const char *name, void *memo) {
     }
     (*(int *)memo)++;
 }
+
+/* vim: set ts=4 sw=4 et cindent: */
