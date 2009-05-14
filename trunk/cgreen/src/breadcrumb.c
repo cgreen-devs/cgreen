@@ -7,7 +7,7 @@ struct CgreenBreadcrumb_ {
     int space;
 };
 
-CgreenBreadcrumb *create_breadcrumb() {
+CgreenBreadcrumb *create_breadcrumb(void) {
     CgreenBreadcrumb *breadcrumb;
 
     breadcrumb = malloc(sizeof(CgreenBreadcrumb));
