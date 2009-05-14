@@ -56,14 +56,23 @@ TestReporter *create_reporter() {
 	reporter->failures = 0;
 	reporter->exceptions = 0;
     reporter->breadcrumb = breadcrumb;
+    reporter->memo = NULL;
 
     return reporter;
 }
 
 void destroy_reporter(TestReporter *reporter) {
 	destroy_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
+	destroy_memo((TestReportMemo *)reporter->memo);
     free(reporter);
     context.reporter = NULL;
+}
+
+void destroy_memo(TestReportMemo *memo) {
+	if (!memo) {
+		free(memo);
+		memo = NULL;
+	}
 }
 
 void reporter_start(TestReporter *reporter, const char *name) {
