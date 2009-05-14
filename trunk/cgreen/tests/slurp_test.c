@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <cgreen/cgreen.h>
 #include <cgreen/slurp.h>
 #include <stdlib.h>
@@ -7,24 +9,20 @@
 static void assert_slurped(char *path, int gulp, const char *expected_contents);
 
 Ensure missing_file_gives_null() {
-    assert_equal(slurp("samples/not_there", 1024), NULL);
+    assert_equal(slurp("not_there", 1024), NULL);
 }
 
 Ensure whole_file_can_be_read() {
-    assert_slurped("samples/some_file", 1024, "Some stuff\n");
+    assert_slurped(BINARYDIR "/tests/some_file", 1024, "Some stuff");
 }
 
 Ensure whole_file_can_be_read_in_multiple_small_blocks() {
-    assert_slurped("samples/some_file", 1, "Some stuff\n");
+    assert_slurped(BINARYDIR "/tests/some_file", 1, "Some stuff");
 }
 
 static void assert_slurped(char *path, int gulp, const char *expected_contents) {
-    char *full_path = malloc(256 + strlen(path) + 2);
-    getcwd(full_path, 256);
-    strcpy(full_path + strlen(full_path), "/");
-    strcpy(full_path + strlen(full_path), path);
-    char *buffer = slurp(full_path, gulp);
-    free(full_path);
+    char *buffer;
+    buffer = slurp(path, gulp);
     assert_string_equal(buffer, expected_contents);
     free(buffer);
 }
