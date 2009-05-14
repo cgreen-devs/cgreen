@@ -3,7 +3,7 @@
 
 typedef struct CgreenBreadcrumb_ CgreenBreadcrumb;
 
-CgreenBreadcrumb *create_breadcrumb();
+CgreenBreadcrumb *create_breadcrumb(void);
 void destroy_breadcrumb(CgreenBreadcrumb *breadcrumb);
 void push_breadcrumb(CgreenBreadcrumb *breadcrumb, const char *name);
 void pop_breadcrumb(CgreenBreadcrumb *breadcrumb);
