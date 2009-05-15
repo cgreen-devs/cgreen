@@ -12,7 +12,6 @@ set(test_SRCS
   messaging_tests.c
   mocks_tests.c
   parameters_test.c
-  samples
   slurp_test.c
   unit_tests.c
   vector_tests.c
