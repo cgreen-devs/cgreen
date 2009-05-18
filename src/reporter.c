@@ -29,20 +29,15 @@ void setup_reporting(TestReporter *reporter) {
 }
 
 TestReporter *create_reporter() {
-    TestReporter *reporter;
-    CgreenBreadcrumb *breadcrumb;
-
-    reporter = malloc(sizeof(TestReporter));
+    TestReporter *reporter = malloc(sizeof(TestReporter));
     if (reporter == NULL) {
         return NULL;
     }
-
-    breadcrumb = create_breadcrumb();
+    CgreenBreadcrumb *breadcrumb = create_breadcrumb();
     if (breadcrumb == NULL) {
         destroy_reporter(reporter);
         return NULL;
     }
-
     reporter->destroy = &destroy_reporter;
     reporter->start_suite = &reporter_start_suite;
     reporter->start_test = &reporter_start;
@@ -57,7 +52,6 @@ TestReporter *create_reporter() {
 	reporter->exceptions = 0;
     reporter->breadcrumb = breadcrumb;
     reporter->memo = NULL;
-
     return reporter;
 }
 
