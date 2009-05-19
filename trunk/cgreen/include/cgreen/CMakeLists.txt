@@ -5,6 +5,7 @@ set(cgreen_HDRS
   unit.h
   text_reporter.h
   cute_reporter.h
+  cdash_reporter.h
   assertions.h
 )
 

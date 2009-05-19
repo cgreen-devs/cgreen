@@ -33,6 +33,7 @@ set(cgreen_SRCS
   breadcrumb.c
   constraint.c
   cute_reporter.c
+  cdash_reporter.c
   messaging.c
   mocks.c
   parameters.c
