@@ -3,7 +3,6 @@
 #include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <time.h>
 #include <string.h>
 
@@ -22,22 +21,17 @@ typedef struct {
 	time_t enddatetime;
 	time_t teststarted;
 	time_t testfinished;
-	FILE *fp_reporter;
 	FILE *f_reporter;
-	FILE *fd_test;
 } CdashMemo;
 
 static void cdash_destroy_reporter(TestReporter *reporter);
 static void cdash_reporter_suite_started(TestReporter *reporter, const char *name, const int number_of_tests);
 static void cdash_reporter_testcase_started(TestReporter *reporter, const char *name);
-static void assert_failed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-static void assert_passed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 
 static void show_failed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void show_passed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *name);
 
-static void testcase_failed_to_complete(TestReporter *reporter, const char *name);
 static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *name);
 static void cdash_reporter_suite_finished(TestReporter *reporter, const char *name);
 
@@ -45,8 +39,9 @@ static time_t cdash_build_stamp(char *sbuildstamp, const char *buildtype);
 static time_t cdash_current_time(char *strtime);
 static double cdash_enlapsed_time(time_t t1, time_t t2);
 
-
 TestReporter *create_cdash_reporter(CDashInfo *cdash) {
+	TestReporter *reporter;
+	CdashMemo *memo;
 	FILE *fd;
 	char sbuildstamp[50];
 	char strstart[30];
@@ -54,11 +49,11 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
 	if (!cdash)
 		return NULL;
 
-	TestReporter *reporter = create_reporter();
+	reporter = create_reporter();
 	if (!reporter)
 		return NULL;
 
-    CdashMemo *memo = (CdashMemo *) malloc(sizeof(CdashMemo));
+    memo = (CdashMemo *) malloc(sizeof(CdashMemo));
     if (!memo)
     	return NULL;
 
@@ -68,20 +63,10 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
     memo->timer = cdash_current_time;
     memo->difftimer = cdash_enlapsed_time;
 
-	if (pipe(memo->pipe_fd) < 0)
-		return NULL;
-
-    if (close(memo->pipe_fd[1]) < 0)
-    	return NULL;
-
-    fd = fdopen(memo->pipe_fd[0], "r");
-    if (fd == NULL)
-    	return NULL;
-    memo->fp_reporter = fd;
-
     fd = fopen("/tmp/Test.xml", "w+");
     if (fd == NULL)
     	return NULL;
+
     memo->f_reporter = fd;
 
     memo->begin = cdash_build_stamp(sbuildstamp, memo->cdash->type);
@@ -97,6 +82,8 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
 			"     <Test>./Source/kwsys/kwsys.testEncode</Test>\n"
 			"    </TestList>\n",
 			memo->cdash->build, sbuildstamp, memo->cdash->name, "Cgreen1.0.0", strstart);
+
+	fflush(memo->f_reporter);
 
     reporter->destroy = &cdash_destroy_reporter;
 	reporter->start_suite = &cdash_reporter_suite_started;
@@ -133,33 +120,32 @@ static void cdash_reporter_suite_started(TestReporter *reporter, const char *nam
 
 static void cdash_reporter_testcase_started(TestReporter *reporter, const char *name) {
 	CdashMemo *memo = (CdashMemo *)reporter->memo;
-	fflush(memo->f_reporter);
 	memo->teststarted = memo->timer(NULL);
 	reporter_start(reporter, name);
 }
 
 static void show_failed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+	const char *name;
 	char buffer[1000];
 	float exectime;
-	CdashMemo *memo = (CdashMemo *)reporter->memo;
+	CdashMemo *memo;
 
-	close(memo->pipe_fd[0]);
-	memo->fd_test = fdopen(memo->pipe_fd[1], "w");
+	memo = (CdashMemo *)reporter->memo;
 
 	memo->testfinished = memo->timer(NULL);
 
-	exectime = exectime = memo->difftimer(memo->teststarted, memo->testfinished);
+	exectime = memo->difftimer(memo->teststarted, memo->testfinished);
 
-	const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
+	name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 
-	memo->printer(memo->fd_test,
+	memo->printer(memo->f_reporter,
 		   "    <Test Status=\"failed\">\n");
-	memo->printer(memo->fd_test,
+	memo->printer(memo->f_reporter,
 		   "     <Name>%s</Name>\n"
 		   "      <Path>%s</Path>\n"
 		   "      <FullName>%s</FullName>\n"
 		   "      <FullCommandLine>at [%s] line [%d]</FullCommandLine>\n", name, file, file, file, line);
-	memo->printer(memo->fd_test,
+	memo->printer(memo->f_reporter,
 		   "      <Results>\n"
 		   "       <NamedMeasurement type=\"numeric/double\" name=\"Execution Time\"><Value>%f</Value></NamedMeasurement>\n"
 		   "       <NamedMeasurement type=\"text/string\" name=\"Completion Status\"><Value>Completed</Value></NamedMeasurement>\n"
@@ -167,8 +153,8 @@ static void show_failed(TestReporter *reporter, const char *file, int line, cons
 		   "       <Measurement>\n"
 		   "        <Value>", exectime, name);
 	vsprintf(buffer, (message == NULL ? "Problem" : message), arguments);
-	memo->printer(memo->fd_test, "%s", buffer);
-	memo->printer(memo->fd_test, "</Value>\n"
+	memo->printer(memo->f_reporter, "%s", buffer);
+	memo->printer(memo->f_reporter, "</Value>\n"
 		   "       </Measurement>\n"
 		   "      </Results>\n"
 	       "    </Test>\n");
@@ -179,20 +165,17 @@ static void show_passed(TestReporter *reporter, const char *file, int line, cons
 	CdashMemo *memo = (CdashMemo *)reporter->memo;
 	const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 
-	close(memo->pipe_fd[0]);
-	memo->fd_test = fdopen(memo->pipe_fd[1], "w");
-
 	memo->testfinished = memo->timer(NULL);
 	exectime = memo->difftimer(memo->teststarted, memo->testfinished);
 
-	memo->printer(memo->fd_test,
+	memo->printer(memo->f_reporter,
 		   "    <Test Status=\"passed\">\n");
-	memo->printer(memo->fd_test, ""
+	memo->printer(memo->f_reporter, ""
 		   "     <Name>%s</Name>\n"
 		   "     <Path>%s</Path>\n"
 		   "     <FullName>%s</FullName>\n"
 		   "     <FullCommandLine>at [%s] line [%d]</FullCommandLine>\n", name, file, file, file, line);
-	memo->printer(memo->fd_test,
+	memo->printer(memo->f_reporter,
 		   "     <Results>\n"
 		   "      <NamedMeasurement type=\"numeric/double\" name=\"Execution Time\"><Value>%f</Value></NamedMeasurement>\n"
 		   "      <NamedMeasurement type=\"text/string\" name=\"Completion Status\"><Value>Completed</Value></NamedMeasurement>\n"
@@ -210,14 +193,6 @@ static void show_incomplete(TestReporter *reporter, const char *name) {
 
 
 static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *name) {
-	CdashMemo *memo = (CdashMemo *)reporter->memo;
-#define MAXLINE 80
-	char line[MAXLINE];
-
-	while(fgets(line, MAXLINE, memo->fp_reporter)) {
-		fprintf(memo->f_reporter, "%s", line);
-	}
-
 	reporter_finish(reporter, name);
 }
 
