@@ -1,6 +1,9 @@
 #include <cgreen/cdash_reporter.h>
 #include <cgreen/reporter.h>
 #include <cgreen/breadcrumb.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -35,7 +38,7 @@ static void show_incomplete(TestReporter *reporter, const char *name);
 static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *name);
 static void cdash_reporter_suite_finished(TestReporter *reporter, const char *name);
 
-static time_t cdash_build_stamp(char *sbuildstamp, const char *buildtype);
+static time_t cdash_build_stamp(char *sbuildstamp, size_t sb);
 static time_t cdash_current_time(char *strtime);
 static double cdash_enlapsed_time(time_t t1, time_t t2);
 
@@ -43,8 +46,10 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
 	TestReporter *reporter;
 	CdashMemo *memo;
 	FILE *fd;
-	char sbuildstamp[50];
+	char sbuildstamp[15];
 	char strstart[30];
+	char reporter_path[255];
+	int rep_dir, strsize;
 
 	if (!cdash)
 		return NULL;
@@ -62,26 +67,48 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
     memo->printer = fprintf;
     memo->timer = cdash_current_time;
     memo->difftimer = cdash_enlapsed_time;
+    memo->begin = cdash_build_stamp(sbuildstamp, 15);
 
-    fd = fopen("/tmp/Test.xml", "w+");
+    rep_dir = mkdir("./Testing", S_IXUSR|S_IRUSR|S_IWUSR|S_IXGRP|S_IRGRP|S_IXOTH|S_IRGRP);
+    if (rep_dir)
+      if (errno != EEXIST)
+        return NULL;
+
+    fd = fopen("./Testing/TAG", "w+");
     if (fd == NULL)
-    	return NULL;
+      return NULL;
 
+    fprintf(fd,"%s\n%s\n", sbuildstamp, memo->cdash->type);
+
+    fclose(fd);
+
+    strsize = snprintf(reporter_path, 255, "./Testing/%s", sbuildstamp);
+
+    rep_dir = mkdir(reporter_path, S_IXUSR|S_IRUSR|S_IWUSR|S_IXGRP|S_IRGRP|S_IXOTH|S_IRGRP);
+    if (rep_dir)
+      if (errno != EEXIST)
+        return NULL;
+
+    strsize = snprintf( (char *) (reporter_path + strsize), (255 - strsize), "/Test.xml");
+
+    fd = fopen(reporter_path, "w+");
+    if (fd == NULL)
+      return NULL;
+
+    /* now the Test.xml is in place */
     memo->f_reporter = fd;
-
-    memo->begin = cdash_build_stamp(sbuildstamp, memo->cdash->type);
 
     memo->startdatetime = cdash_current_time(strstart);
 
 	memo->printer(memo->f_reporter,
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-			" <Site BuildName=\"%s\" BuildStamp=\"%s\" Name=\"%s\" Generator=\"%s\">\n"
+			" <Site BuildName=\"%s\" BuildStamp=\"%s-%s\" Name=\"%s\" Generator=\"%s\">\n"
 			"  <Testing>\n"
 			"   <StartDateTime>%s</StartDateTime>\n"
 			"    <TestList>\n"
 			"     <Test>./Source/kwsys/kwsys.testEncode</Test>\n"
 			"    </TestList>\n",
-			memo->cdash->build, sbuildstamp, memo->cdash->name, "Cgreen1.0.0", strstart);
+			memo->cdash->build, sbuildstamp, memo->cdash->type, memo->cdash->name, "Cgreen1.0.0", strstart);
 
 	fflush(memo->f_reporter);
 
@@ -201,7 +228,7 @@ static void cdash_reporter_suite_finished(TestReporter *reporter, const char *na
 	reporter_finish(reporter, name);
 }
 
-static time_t cdash_build_stamp(char *sbuildstamp, const char *buildtype) {
+static time_t cdash_build_stamp(char *sbuildstamp, size_t sb) {
 	time_t t1;
 	struct tm d1;
 	char s[15];
@@ -209,8 +236,8 @@ static time_t cdash_build_stamp(char *sbuildstamp, const char *buildtype) {
 	t1 = time(0);
 	localtime_r(&t1, &d1);
 
-	strftime(s, sizeof(s), "%Y%m%d-%H%M-", &d1);
-	sprintf(sbuildstamp, "%s%s", s, buildtype);
+	strftime(s, sizeof(s), "%Y%m%d-%H%M", &d1);
+	snprintf(sbuildstamp, sb, "%s", s);
 
 	return t1;
 }
