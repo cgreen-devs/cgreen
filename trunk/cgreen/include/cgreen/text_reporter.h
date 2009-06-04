@@ -3,6 +3,6 @@
 
 #include <cgreen/reporter.h>
 
-TestReporter *create_text_reporter();
+TestReporter *create_text_reporter(void);
 
 #endif

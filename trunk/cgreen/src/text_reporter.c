@@ -11,7 +11,7 @@ static void show_fail(TestReporter *reporter, const char *file, int line, const 
 static void show_incomplete(TestReporter *reporter, const char *name);
 static void show_breadcrumb(const char *name, void *memo);
 
-TestReporter *create_text_reporter() {
+TestReporter *create_text_reporter(void) {
     TestReporter *reporter = create_reporter();
     if (reporter == NULL) {
         return NULL;
