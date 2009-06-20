@@ -58,9 +58,19 @@ TestSuite *create_named_test_suite(const char *name) {
     return suite;
 }
 
-void destroy_test_suite(TestSuite *suite) {
-    free(suite->tests);
-    free(suite);
+void destroy_test_suite(TestSuite *suiteToDestroy) {
+	int i;
+	for (i = 0; i < suiteToDestroy->size; i++) {
+		UnitTest test = suiteToDestroy->tests[i];
+		TestSuite* suite = test.sPtr.suite;
+		if (suite != NULL) {
+			suiteToDestroy->tests[i].sPtr.suite = NULL;
+			free(suite->tests);
+			free(suite);
+		}
+	}
+    free(suiteToDestroy->tests);
+    free(suiteToDestroy);
 }
 
 void add_test_(TestSuite *suite, char *name, CgreenTest *test) {
