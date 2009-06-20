@@ -3,6 +3,9 @@
 
 #include <inttypes.h>
 
+#define pass() (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, true, NULL)
+#define fail() (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, false, NULL)
+
 #define assert_true(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, result, NULL)
 #define assert_false(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, ! result, NULL)
 #define assert_equal(tried, expected) assert_equal_(__FILE__, __LINE__, (intptr_t)tried, (intptr_t)expected)
