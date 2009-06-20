@@ -27,9 +27,9 @@
  * @see destroy_test_suite()
  */
 #define create_test_suite() create_named_test_suite(__func__)
-#define add_test(suite, test) add_test_(suite, #test, &test)
+#define add_test(suite, test) add_test_(suite, (char *) #test, &test)
 #define add_tests(suite, ...) add_tests_(suite, #__VA_ARGS__, (CgreenTest *)__VA_ARGS__ +0)
-#define add_suite(owner, suite) add_suite_(owner, #suite, suite)
+#define add_suite(owner, suite) add_suite_(owner, (char *) #suite, suite)
 #define setup(suite, function) setup_(suite, &function)
 #define teardown(suite, function) teardown_(suite, &function)
 
