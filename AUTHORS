@@ -16,3 +16,8 @@ These people have also contributed to the project:
   - Cute report
 * Matt Hargett
   - g++ compiling
+  - many others patches
+* Chris LeBlanc
+  - g++ linkage
+* Georg Lohrer 
+  - Solaris compiling
