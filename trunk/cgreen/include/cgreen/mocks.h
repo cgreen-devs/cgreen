@@ -1,6 +1,10 @@
 #ifndef MOCKS_HEADER
 #define MOCKS_HEADER
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 #include <inttypes.h>
 #include <stdarg.h>
 #include <cgreen/reporter.h>
@@ -23,5 +27,9 @@ void will_return_(const char *function, intptr_t result);
 void always_return_(const char *function, intptr_t result);
 void clear_mocks();
 void tally_mocks(TestReporter *reporter);
+
+#ifdef __cplusplus
+    }
+#endif
 
 #endif

@@ -1,6 +1,10 @@
 #ifndef CDASH_REPORTER_HEADER
 #define CDASH_REPORTER_HEADER
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 #include <cgreen/reporter.h>
 #include <stdio.h>
 
@@ -12,5 +16,9 @@ struct CDashInfo_ {
 };
 
 TestReporter *create_cdash_reporter(CDashInfo *cdash);
+
+#ifdef __cplusplus
+    }
+#endif
 
 #endif
