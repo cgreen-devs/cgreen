@@ -1,6 +1,10 @@
 #ifndef ASSERTIONS_HEADER
 #define ASSERTIONS_HEADER
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 #include <inttypes.h>
 
 #define pass() (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, true, NULL)
@@ -34,5 +38,9 @@ void significant_figures_for_assert_double_are(int figures);
 const char *show_null_as_the_string_null(const char *string);
 int strings_are_equal(const char *tried, const char *expected);
 int doubles_are_equal(const double tried, const double expected);
+
+#ifdef __cplusplus
+    }
+#endif
 
 #endif

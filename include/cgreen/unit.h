@@ -1,6 +1,10 @@
 #ifndef UNIT_HEADER
 #define UNIT_HEADER
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 #include <cgreen/reporter.h>
 #include <cgreen/mocks.h>
 
@@ -62,4 +66,9 @@ int run_single_test(TestSuite *suite, char *test, TestReporter *reporter);
 /**
  * @}
  */
+
+#ifdef __cplusplus
+    }
+#endif
+
 #endif

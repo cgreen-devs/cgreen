@@ -1,6 +1,11 @@
 #ifndef REPORTER_HEADER
 #define REPORTER_HEADER
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
+
 #include <stdarg.h>
 
 typedef struct TestContext_ TestContext;
@@ -37,6 +42,10 @@ void reporter_start_suite(TestReporter *reporter, const char *name,
 void reporter_finish(TestReporter *reporter, const char *name);
 void add_reporter_result(TestReporter *reporter, int result);
 void send_reporter_completion_notification(TestReporter *reporter);
+
+#ifdef __cplusplus
+    }
+#endif
 
 
 #endif

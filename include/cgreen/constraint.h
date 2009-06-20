@@ -1,6 +1,10 @@
 #ifndef CONSTRAINT_HEADER
 #define CONSTRAINT_HEADER
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 #include <inttypes.h>
 #include <cgreen/reporter.h>
 
@@ -30,5 +34,9 @@ Constraint *want_(const char *parameter, intptr_t expected);
 Constraint *want_string_(const char *parameter, char *expected);
 Constraint *want_double_(const char *parameter, intptr_t expected);
 intptr_t box_double(double d);
+
+#ifdef __cplusplus
+    }
+#endif
 
 #endif
