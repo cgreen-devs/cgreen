@@ -20,7 +20,7 @@ typedef struct {
     union {
         void (*test)();
         TestSuite *suite;
-    };
+    } sPtr;
     char *name;
 } UnitTest;
 
@@ -68,7 +68,7 @@ void add_test_(TestSuite *suite, char *name, CgreenTest *test) {
     suite->tests = (UnitTest *)realloc(suite->tests, sizeof(UnitTest) * suite->size);
     suite->tests[suite->size - 1].type = test_function;
     suite->tests[suite->size - 1].name = name;
-    suite->tests[suite->size - 1].test = test;
+    suite->tests[suite->size - 1].sPtr.test = test;
 }
 
 void add_tests_(TestSuite *suite, const char *names, ...) {
@@ -88,7 +88,7 @@ void add_suite_(TestSuite *owner, char *name, TestSuite *suite) {
     owner->tests = (UnitTest *)realloc(owner->tests, sizeof(UnitTest) * owner->size);
     owner->tests[owner->size - 1].type = test_suite;
     owner->tests[owner->size - 1].name = name;
-    owner->tests[owner->size - 1].suite = suite;
+    owner->tests[owner->size - 1].sPtr.suite = suite;
 }
 
 void setup_(TestSuite *suite, void (*setup)()) {
@@ -111,7 +111,7 @@ int count_tests(TestSuite *suite) {
         if (suite->tests[i].type == test_function) {
             count++;
         } else {
-            count += count_tests(suite->tests[i].suite);
+            count += count_tests(suite->tests[i].sPtr.suite);
         }
     }
     return count;
@@ -146,7 +146,7 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
             run_test_in_its_own_process(suite, &(suite->tests[i]), reporter);
         } else {
             (*suite->setup)();
-            run_every_test(suite->tests[i].suite, reporter);
+            run_every_test(suite->tests[i].sPtr.suite, reporter);
             (*suite->teardown)();
         }
     }
@@ -162,9 +162,9 @@ static void run_named_test(TestSuite *suite, char *name, TestReporter *reporter)
             if (strcmp(suite->tests[i].name, name) == 0) {
                 run_test_in_the_current_process(suite, &(suite->tests[i]), reporter);
             }
-        } else if (has_test(suite->tests[i].suite, name)) {
+        } else if (has_test(suite->tests[i].sPtr.suite, name)) {
             (*suite->setup)();
-            run_named_test(suite->tests[i].suite, name, reporter);
+            run_named_test(suite->tests[i].sPtr.suite, name, reporter);
             (*suite->teardown)();
         }
     }
@@ -179,7 +179,7 @@ static int has_test(TestSuite *suite, char *name) {
             if (strcmp(suite->tests[i].name, name) == 0) {
                 return 1;
             }
-        } else if (has_test(suite->tests[i].suite, name)) {
+        } else if (has_test(suite->tests[i].sPtr.suite, name)) {
             return 1;
         }
 	}
@@ -236,7 +236,7 @@ static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *re
     significant_figures_for_assert_double_are(8);
     clear_mocks();
 	(*suite->setup)();
-    (*test->test)();
+    (*test->sPtr.test)();
 	(*suite->teardown)();
 	tally_mocks(reporter);
 }
