@@ -63,13 +63,14 @@ void destroy_test_suite(TestSuite *suiteToDestroy) {
 	for (i = 0; i < suiteToDestroy->size; i++) {
 		UnitTest test = suiteToDestroy->tests[i];
 		TestSuite* suite = test.sPtr.suite;
-		if (suite != NULL) {
+		if (test_suite == test.type && suite != NULL) { 
 			suiteToDestroy->tests[i].sPtr.suite = NULL;
-			free(suite->tests);
-			free(suite);
+                        destroy_test_suite(suite); 
 		}
 	}
-    free(suiteToDestroy->tests);
+    if(suiteToDestroy->tests != NULL)
+      free(suiteToDestroy->tests);
+    
     free(suiteToDestroy);
 }
 
