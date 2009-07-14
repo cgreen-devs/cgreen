@@ -3,10 +3,13 @@ project(cgreen-headers C)
 set(cgreen_HDRS
   cgreen.h
   unit.h
+  reporter.h
   text_reporter.h
   cute_reporter.h
   cdash_reporter.h
   assertions.h
+  constraint.h
+  mocks.h
 )
 
 install(
