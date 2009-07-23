@@ -26,10 +26,16 @@ void destroy_breadcrumb(CgreenBreadcrumb *breadcrumb) {
 void push_breadcrumb(CgreenBreadcrumb *breadcrumb, const char *name) {
 	breadcrumb->depth++;
 	if (breadcrumb->depth > breadcrumb->space) {
+        const char **tmp;
 		breadcrumb->space++;
-		breadcrumb->trail = (const char **)realloc(
-				breadcrumb->trail,
-				sizeof(const char *) * breadcrumb->space);
+        tmp = realloc(breadcrumb->trail,
+                sizeof(const char *) * breadcrumb->space);
+        if (tmp == NULL) {
+            breadcrumb->space--;
+            breadcrumb->depth--;
+            return;
+        }
+        breadcrumb->trail = tmp;
 	}
 	breadcrumb->trail[breadcrumb->depth - 1] = name;
 }
