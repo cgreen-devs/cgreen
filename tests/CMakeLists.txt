@@ -20,5 +20,9 @@ set(test_SRCS
 set(TEST_TARGET_LIBRARIES ${CGREEN_SHARED_LIBRARY} m)
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/some_file "Some stuff")
+if (WIN32)
+  file(WRITE ${CMAKE_BINARY_DIR}/bin/tests/some_file "Some stuff")
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests)
+endif (WIN32)
 macro_add_unit_test(test_cgreen "${test_SRCS}" "${TEST_TARGET_LIBRARIES}")
 
