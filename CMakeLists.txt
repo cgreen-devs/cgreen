@@ -39,6 +39,11 @@ include(MacroCopyFile)
 include(ConfigureChecks.cmake)
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
+if (WIN32)
+  set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+  set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+endif (WIN32)
+
 # check subdirectories
 add_subdirectory(doc)
 add_subdirectory(include)
