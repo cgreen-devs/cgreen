@@ -18,12 +18,12 @@ set(CGREEN_SHARED_LIBRARY
   CACHE INTERNAL "cgreen shared library"
 )
 
-if (WITH_STATIC_LIB)
+if (WITH_STATIC_LIBRARY)
   set(CGREEN_STATIC_LIBRARY
     cgreen_static
     CACHE INTERNAL "cgreen static library"
   )
-endif (WITH_STATIC_LIB)
+endif (WITH_STATIC_LIBRARY)
 
 set(CGREEN_LINK_LIBRARIES
 )
