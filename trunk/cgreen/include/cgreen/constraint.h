@@ -34,6 +34,7 @@ void destroy_constraint(void *constraint);
 int is_constraint_parameter(Constraint *constraint, const char *label);
 void test_constraint(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 Constraint *want_(const char *parameter, intptr_t expected);
+Constraint *want_non_null_(const char *parameter);
 Constraint *want_string_(const char *parameter, char *expected);
 Constraint *want_double_(const char *parameter, intptr_t expected);
 intptr_t box_double(double d);
