@@ -118,6 +118,11 @@ Ensure string_expect_sequence() {
     string_in("goodbye");
 }
 
+Ensure expecting_once_with_non_null_parameter_checks_that_parameter() {
+    expect(string_in, want_non_null(s));
+    string_in("anything");
+}
+
 static void double_in(double d) {
     mock(d(d));
 }
@@ -194,6 +199,7 @@ TestSuite *mock_tests() {
     add_test(suite, string_expect_is_confirmed);
     add_test(suite, string_expect_is_confirmed_even_when_null);
     add_test(suite, string_expect_sequence);
+    add_test(suite, expecting_once_with_non_null_parameter_checks_that_parameter);
     add_test(suite, double_expect_is_confirmed);
     add_test(suite, double_expect_sequence);
     add_test(suite, confirming_multiple_parameters_multiple_times);

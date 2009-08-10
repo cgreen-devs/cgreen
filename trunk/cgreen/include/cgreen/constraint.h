@@ -11,6 +11,9 @@
 #define want(parameter, x) want_(#parameter, (intptr_t)x)
 #define want_string(parameter, x) want_string_(#parameter, x)
 #define want_double(parameter, x) want_double_(#parameter, box_double(x))
+#define want_non_null(parameter) want_non_null_(#parameter)
+
+
 #define compare_constraint(c, x) (*c->compare)(c, (intptr_t)x)
 #define d(x) box_double(x)
 
