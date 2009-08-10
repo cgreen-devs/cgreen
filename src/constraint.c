@@ -7,8 +7,13 @@
 static void destroy_empty_constraint(Constraint *constraint);
 static int compare_want(Constraint *constraint, intptr_t comparison);
 static void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
+
+static int compare_non_null(Constraint *constraint, intptr_t comparison);
+static void test_non_null(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
+
 static int compare_want_string(Constraint *constraint, intptr_t comparison);
 static void test_want_string(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
+
 static int compare_want_double(Constraint *constraint, intptr_t comparison);
 static void test_want_double(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 static Constraint *create_constraint(const char *parameter);
@@ -38,6 +43,15 @@ Constraint *want_(const char *parameter, intptr_t expected) {
     return constraint;
 }
 
+Constraint *want_non_null_(const char *parameter) {
+    Constraint *constraint = create_constraint(parameter);
+    constraint->parameter = parameter;
+    constraint->compare = &compare_non_null;
+    constraint->test = &test_non_null;
+    return constraint;
+}
+
+
 Constraint *want_string_(const char *parameter, char *expected) {
     Constraint *constraint = create_constraint(parameter);
     constraint->parameter = parameter;
@@ -45,6 +59,21 @@ Constraint *want_string_(const char *parameter, char *expected) {
     constraint->test = &test_want_string;
     constraint->expected = (intptr_t)expected;
     return constraint;
+}
+
+static int compare_non_null(Constraint *constraint, intptr_t comparison) {
+    return (NULL != comparison);
+}
+
+static void test_non_null(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
+    (*reporter->assert_true)(
+            reporter,
+            test_file,
+            test_line,
+            (*constraint->compare)(constraint, actual),
+            "Wanted non-null, but got null in function [%s] parameter [%s]",
+            function,
+            constraint->parameter);
 }
 
 Constraint *want_double_(const char *parameter, intptr_t expected) {
