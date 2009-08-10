@@ -19,7 +19,7 @@
 #define will_respond(f, r, ...) will_return_(#f, (intptr_t)r); expect_(#f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
 #define always_respond(f, r, ...) always_return_(#f, (intptr_t)r); always_expect_(#f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
 
-intptr_t _mock(const char *function, const char *parameters, ...);
+intptr_t mock_(const char *function, const char *parameters, ...);
 void expect_(const char *function, const char *test_file, int test_line, ...);
 void always_expect_(const char *function, const char *test_file, int test_line, ...);
 void expect_never_(const char *function, const char *test_file, int test_line);
