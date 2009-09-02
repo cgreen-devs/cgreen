@@ -38,6 +38,7 @@ endif (WIN32)
 add_subdirectory(doc)
 add_subdirectory(include)
 add_subdirectory(src)
+# add_subdirectory(samples)
 
 if (WITH_UNIT_TESTS)
   include(MacroAddUnitTest)

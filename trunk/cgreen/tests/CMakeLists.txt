@@ -25,4 +25,3 @@ if (WIN32)
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests)
 endif (WIN32)
 macro_add_unit_test(test_cgreen "${test_SRCS}" "${TEST_TARGET_LIBRARIES}")
-
