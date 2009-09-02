@@ -1,5 +1,4 @@
 #include "config.h"
-
 #include <cgreen/cgreen.h>
 #include <cgreen/slurp.h>
 #include <stdlib.h>

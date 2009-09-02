@@ -1,48 +1,68 @@
-HOW-TO:  Compiling the Cgreen Project
-======================================
+Building and Installing Cgreen
+==============================
 
-This file talk about the build process used in Cgreen project. The intention
-is to prove basic information for two distinct users groups: the users of
-Cgreen Unit test framework and to the developers. Cgreen is a singular project
-because it can be inserted in other project which use unit tests.
+This document is incomplete. ??? are placeholders.
 
-We have two ways to use Cgreen:
+There are several ways to use Cgreen:
 
-The first way to use is build the simple Makefile. You can see the Makefile on
-the decompressed folder (you need to run the make command to build the project).
-Within the ./contrib directory there are examples some to explain others build tool. 
-These files are there because you can use to build Cgreen with others way.
+1) You want to write some tests for a personal project, but don't need to ship
+   the test suite with the product, or you just want to try out CGreen.
+2) You want to write some tests that will be used by other developers. This
+   is the normal way to use Cgreen.
+3) You want to ship working tests with a product and want to bundle Cgreen
+   as the test runner.
+4) You are pulling Cgreen directly from subversion on Sourceforge:
+   https://cgreen.svn.sourceforge.net/svnroot/cgreen/trunk/cgreen
 
-Remember: the work to insert and get it work inside of owns project is your. We just
-provide a simple way to use Cgreen. Keep in mind to retain the things simple and 
-you can update the Cgreen sources when necessary.
+We'll walk you through these in order...
 
-The second way to use is just recommend for the Cgreen developers. If you need to do:
-distribuition packages, build the docs, run regression tests or developer some feature,
-then it is necessary to use this second way.
+1) So you want to write a test quickly.
 
-We are using the CMake (www.cmake.org) build system. Following we will
-demonstrate a typical session. It is know as out-of-source building. Because we will
-build all the project outside of the sources directory.
+As a user wanting to write some quick tests, the quickest way is to
+download the latest tarball and run "make" from inside the unpacked directory.
+You can go "make test" to confirm that Cgreen is working correctly.
 
-Decompress the sources:
-    $ tar cgreen-1.0.0.tar.gz
-Make the build directory:
+You will see a cgreen.h and both a cgreen shared object or DLL, and a static
+library for your system.
+
+Note: currently the header is stored further into the tree at
+include/cgreen/cgreen.h, but we'll add a symlink soon ???.
+
+Include the header and link the library as you normally would.
+
+2) Cgreen needs to be installed to be usable by everyone.
+
+This is the same as scenario 1, but just add a "make install" step
+once finished. The Cgreen header should just be available through...
+
+#include <cgreen.h>
+
+...and adding -Icgreen should be enough to link under gcc.
+
+3) ???
+
+4) You will have to carry out some additional steps if you work straight off
+of a Subversion checkout.
+
+We are using the CMake (www.cmake.org) build system. The following steps
+are called "out-of-source building", because we will build all the project
+files outside of the sources directory (why???).
+
+First the build directory:
     $ mkdir cgreen-build
     $ cd cgreen-build
-Within the directory, we create the Makefile
+Within this new directory, we create the Makefile
     $ cmake ../cgreen
-Following we can use some rules to do some works:
+We then get the following make targets:
     $make
     $make test
     $make packages
 To build docs, first read the file docs/README, run:
     $ cmake ../cgreen -DENABLE_DOCS=1
-    $make pdf
     $make html
 To build the html website:
     $ cmake ../cgreen -DENABLE_WEBSITE=1
     $ make bundled-html
 
-The majority of the users will choice the first option. If you choice the second way, 
-you must have the cmake tool instaled in your system.
+Note ???: Most of these steps do not currently work :(.
+
