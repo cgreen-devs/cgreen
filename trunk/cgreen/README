@@ -29,22 +29,25 @@ The other main extra feature is the support for writing mock
 callbacks. This includes generating sequences for return values
 or parameter expectations.
 
-There is only one make file of signficance, and that's in the
-root directory. Running make will build cgreen.a and cgreen.h
-on a Unix (gcc) setup. You can then include these as normal
-library files in your project. You may have to hack the makefile.
-Once I figure out how automake works, things will improve.
+If you want to install CGreen and have a play, just run "make" from
+the top level directory. CGreen uses CMake and I'm afraid I am no expert
+with this tool. There may well be teething problems. Please read the
+INSTALL file for more information and alternate ways to build.
+
+Feedback and queries should be sent to the mail list at Sourceforge:
+cgreen-users@lists.sourceforge.net
+
+If that doesn't work for some reason (bounce policies or whatever)
+then feel free to contact me directly:
+marcus@lastcraft.com
 
 This project would not have happened without the generous
 financial support of the Wordtracker keyword tool...
 http://www.wordtracker.com/
 
-This tool is basically a spin off from that project.
-
-Feedback and queries should be sent to myself until a mail list
-has been set up.
+This tool is basically a spin off from a research project at Wordtracker.
 
 yours Marcus Baker
 -- 
 marcus@lastcraft.com
-marcus@wordtracker.com
+
