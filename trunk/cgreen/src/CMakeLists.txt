@@ -97,7 +97,7 @@ install(
     libraries
 )
 
-if (WITH_STATIC_LIB)
+if (WITH_STATIC_LIBRARY)
   add_library(${CGREEN_STATIC_LIBRARY} STATIC ${cgreen_SRCS})
 
   target_link_libraries(${CGREEN_STATIC_LIBRARY} ${CGREEN_LINK_LIBRARIES})
@@ -121,5 +121,5 @@ if (WITH_STATIC_LIB)
     COMPONENT
       libraries
   )
-endif (WITH_STATIC_LIB)
+endif (WITH_STATIC_LIBRARY)
 
