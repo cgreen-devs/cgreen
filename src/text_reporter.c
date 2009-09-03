@@ -54,7 +54,7 @@ static void text_reporter_finish(TestReporter *reporter, const char *name) {
 
 static void show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     int i = 0;
-    printf("%s:%d - Failure!: ", file, line);
+    printf("%s:%d: unit test failure: ", file, line);
     walk_breadcrumb(
             (CgreenBreadcrumb *)reporter->breadcrumb,
             &show_breadcrumb,
