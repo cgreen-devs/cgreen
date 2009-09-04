@@ -9,6 +9,7 @@ set(cgreen_HDRS
   cdash_reporter.h
   assertions.h
   constraint.h
+  memory.h
   mocks.h
 )
 
@@ -20,4 +21,3 @@ install(
   COMPONENT
     headers
 )
-

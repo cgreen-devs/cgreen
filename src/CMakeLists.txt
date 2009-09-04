@@ -34,6 +34,7 @@ set(cgreen_SRCS
   constraint.c
   cute_reporter.c
   cdash_reporter.c
+  memory.c
   messaging.c
   mocks.c
   parameters.c
@@ -122,4 +123,3 @@ if (WITH_STATIC_LIBRARY)
       libraries
   )
 endif (WITH_STATIC_LIBRARY)
-

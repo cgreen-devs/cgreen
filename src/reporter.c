@@ -63,7 +63,7 @@ void destroy_reporter(TestReporter *reporter) {
 }
 
 void destroy_memo(TestReportMemo *memo) {
-	if (!memo) {
+	if (! memo) {
 		free(memo);
 		memo = NULL;
 	}
@@ -73,10 +73,8 @@ void reporter_start(TestReporter *reporter, const char *name) {
     push_breadcrumb(reporter->breadcrumb, name);
 }
 
-void reporter_start_suite(TestReporter *reporter, const char *name,
-        const int count) {
-    (void) count; /* unused variable */
-
+void reporter_start_suite(TestReporter *reporter, const char *name, const int count) {
+    (void) count;
     reporter_start(reporter, name);
 }
 

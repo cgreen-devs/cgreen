@@ -1,8 +1,7 @@
 #ifndef MESSAGING_HEADER
 #define MESSAGING_HEADER
-
 #ifdef __cplusplus
-  extern "C" {
+    extern "C" {
 #endif
 
 #include <sys/msg.h>
@@ -14,5 +13,4 @@ int receive_cgreen_message(int messaging);
 #ifdef __cplusplus
     }
 #endif
-
 #endif
