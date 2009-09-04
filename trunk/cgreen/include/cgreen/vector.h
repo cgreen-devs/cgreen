@@ -2,7 +2,7 @@
 #define VECTOR_HEADER
 
 #ifdef __cplusplus
-  extern "C" {
+    extern "C" {
 #endif
 
 typedef struct CgreenVector_ CgreenVector;
