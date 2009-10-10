@@ -102,13 +102,21 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
 
 	memo->printer(memo->f_reporter,
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-			" <Site BuildName=\"%s\" BuildStamp=\"%s-%s\" Name=\"%s\" Generator=\"%s\">\n"
+			" <Site BuildName=\"%s\" BuildStamp=\"%s-%s\" Name=\"%s\" Generator=\"%s\""
+			" OSName=\"%s\" Hostname=\"%s\" OSRelease=\"%s\""
+			" OSVersion=\"%s\" OSPlatform=\"%s\""
+			" Is64Bits=\"\" VendorString=\"\" VendorID=\"\""
+			" FamilyID=\"\" ModelID=\"\" ProcessorCacheSize=\"\" NumberOfLogicalCPU=\"\""
+			" NumberOfPhysicalCPU=\"\" TotalVirtualMemory=\"\" TotalPhysicalMemory=\"\""
+			" LogicalProcessorsPerPhysical=\"\" ProcessorClockFrequency=\"\" >\n"
 			"  <Testing>\n"
 			"   <StartDateTime>%s</StartDateTime>\n"
 			"    <TestList>\n"
-			"     <Test>./Source/kwsys/kwsys.testEncode</Test>\n"
+			"     <Test></Test>\n"
 			"    </TestList>\n",
-			memo->cdash->build, sbuildstamp, memo->cdash->type, memo->cdash->name, "Cgreen1.0.0", strstart);
+			memo->cdash->build, sbuildstamp, memo->cdash->type, memo->cdash->name, "Cgreen1.0.0",
+			memo->cdash->os_name, memo->cdash->hostname, memo->cdash->os_release,
+			memo->cdash->os_version, memo->cdash->os_platform, strstart);
 
 	fflush(memo->f_reporter);
 
@@ -234,7 +242,7 @@ static time_t cdash_build_stamp(char *sbuildstamp, size_t sb) {
 	char s[15];
 
 	t1 = time(0);
-	localtime_r(&t1, &d1);
+	gmtime_r(&t1, &d1);
 
 	strftime(s, sizeof(s), "%Y%m%d-%H%M", &d1);
 	snprintf(sbuildstamp, sb, "%s", s);
@@ -249,7 +257,7 @@ static time_t cdash_current_time(char *strtime) {
 	size_t i;
 
 	t1 = time(0);
-	localtime_r(&t1, &d1);
+	gmtime_r(&t1, &d1);
 
 	if(strtime == NULL)
 		return t1;
