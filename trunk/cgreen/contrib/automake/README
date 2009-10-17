@@ -1,0 +1,31 @@
+
+Thanks to A. Duret-Lutz for this page http://www.lrde.epita.fr/~adl/autotools.html and tutorial.
+Download the autotools tutorial for knowning everything you need to make it work. 
+It's a short reading.
+
+Obviously Autotools (Autoconf, Automake, Libtool) need to be installed.
+
+Put the Makefile.am, configure.ac and all_tests.sh in the cgreen top dir 
+(the one with src/, include/ and test/ below)
+
+This is the command sequence 
+(commands are the lines beginning with $, being $ the prompt)
+
+Run all the tools in the right order:
+$ autoreconf --install
+In case of problems add the --force option
+
+If you don't specify --prefix and the dir after it below, stuff will be installed under /usr/local/ 
+libs in /usr/local/lib and includes in /usr/local/include
+So, use just one of the following commands:
+$ ./configure --prefix ~/test    #for installing under ~/test/
+$ ./configure                    #for installing under /usr/local/
+
+Now let's go! make it
+$ make
+
+Check it with cgreen!
+$ make check
+
+Finally to install the package at the location specified above with ./configure
+$ make install
