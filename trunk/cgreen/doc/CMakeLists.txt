@@ -39,7 +39,6 @@ IF(A2X_FOUND AND WITH_PDF)
     IF("${_in}" MATCHES "pt_BR")
       SET(LANG "pt_BR")
     ELSE("${_in}" MATCHES "pt_BR")
-      message("--- ${_in}")
       SET(LANG "en_US")
     ENDIF("${_in}" MATCHES "pt_BR")
 

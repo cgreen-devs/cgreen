@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.6.0)
 
 # global needed variables
 set(APPLICATION_NAME ${PROJECT_NAME})
-set(APPLICATION_VERSION "1.0.0")
+set(APPLICATION_VERSION "1.0.0-beta2")
 set(LIBRARY_VERSION "1.0.0")
 set(LIBRARY_SOVERSION "1")
 
@@ -19,7 +19,7 @@ include(DefineCMakeDefaults)
 include(DefineCompilerFlags)
 include(DefineInstallationPaths)
 include(DefineOptions.cmake)
-include(CPackConfig.cmake)
+include(DefineCPackConfig)
 
 # add macros
 include(MacroAddPlugin)
@@ -44,3 +44,6 @@ if (WITH_UNIT_TESTS)
   include(MacroAddUnitTest)
   add_subdirectory(tests)
 endif (WITH_UNIT_TESTS)
+
+#
+
