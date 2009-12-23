@@ -1,13 +1,9 @@
 Cgreen Unit Test for C language
 ===============================
-Marcus Baker <marcus@lastcraft.com>
-João Henrique F. de Freitas <joaohf@gmail.com>
-:Author Initials: MB JHF
 
 Cgreen Quickstart Guide
 -----------------------
 
-[[X01]]
 What is Cgreen?
 ~~~~~~~~~~~~~~~
 
@@ -36,7 +32,6 @@ The feature list is:
         
 This tool is for C programming, not C++.
 
-[[X06]]
 Installing Cgreen
 ~~~~~~~~~~~~~~~~~
 
@@ -154,7 +149,6 @@ way to output the test results. It just streams the failures as text. Currently 
 the only method supported.
 
 
-[[X07]]
 Five minutes doing TDD with Cgreen
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -404,7 +398,6 @@ than debugging later when things are more complicated.
 
 That was pretty straight forward. Let's do something more interesting.
 
-[[X08]]
 What are mock functions?
 
 The next example is more realistic. Still in our +words.h+ file, we want to write
@@ -564,7 +557,6 @@ in the '(*walker)()' call, and finally third time lucky. Of course running the t
 each time made these mistakes very obvious. It's taken me far longer to write these
 paragraphs than it has to write the code.
 
-[[X02]]
 Building Cgreen test suites
 ---------------------------
 
@@ -576,7 +568,6 @@ Used in this way, the test harness delivers constant quality assurance.
 
 In other words you'll get less bugs.
 
-[[X09]]
 Writing basic tests
 ~~~~~~~~~~~~~~~~~~~
 
@@ -747,7 +738,6 @@ TestSuite *our_tests() {
 
 And so on.
 
-[[X10]]
 Set up and tear down
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -867,7 +857,6 @@ A couple of details. Currently only one 'setup()' and 'teardown()' may be added 
 'TestSuite'. Also the 'teardown()' function may not be run if the test crashes, causing
 some test interference. This brings us nicely onto the next section...
 
-[[X11]]
 Each test in it's own process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -986,7 +975,6 @@ happen, making it easier to figure out where the test suite has problems.
 Of course, if you want to set a general time limit on all your tests, then you can add
 a 'die_in()' to a 'setup()' function. Cgreen will then apply the limit to all of them.
 
-[[X12]]
 Building composite test suites
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
@@ -1190,7 +1178,6 @@ TestSuite *connection_fixture(TestSuite *suite) {
 
 This allows the reuse of common fixtures across projects.
              
-[[X03]]
 Mocking functions with Cgreen
 -----------------------------
         
@@ -1226,7 +1213,6 @@ individual test.
 Cgreen encourages this approach by making such tests
 easier to write.
          
-[[X13]]
 The problem with streams
 ~~~~~~~~~~~~~~~~~~~~~~~~
             
@@ -1316,7 +1302,6 @@ Cgreen handles this clutter for us
 by letting us write a single programmable function
 for all our tests.
              
-[[X14]] 
 Record and playback
 ~~~~~~~~~~~~~~~~~~~
             
@@ -1599,7 +1584,6 @@ Things get more interesting when we thing of
 the traffic going the other way, from code to stub.
 This gets us into the same territory as mock objects.
              
-[[X15]]
 Setting expectations on mock functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
@@ -1853,11 +1837,9 @@ Completed "main": 14 passes, 0 failures, 0 exceptions.
 
 All done.
              
-[[X04]]
 Changing Cgreen Reporting
 -------------------------
 
-[[X16]]
 Replacing the reporter
 ~~~~~~~~~~~~~~~~~~~~~~
             
@@ -1906,7 +1888,6 @@ chain to the versions in +reporter.h+.
 To change the reporting mechanism ourselves, we just have to know a little
 about the methods in the 'TestReporter' structure.
              
-[[X17]]
 The TestReporter structure
 
 The Cgreen 'TestReporter' is a pseudo class that looks
@@ -2026,7 +2007,6 @@ The last parts of the 'TestReporter' structure are...
 and test suite. You shouldn't touch this.
 'memo':: By contrast, this is a spare pointer for your own expansion.
              
-[[X18]]
 An example XML reporter
 ~~~~~~~~~~~~~~~~~~~~~~~
             
@@ -2389,11 +2369,9 @@ Possible other extensions include reporters that write to <emphasis>syslog,
 talk to IDE plug-ins, paint pretty printed documents or just return a boolean
 for monitoring purposes.
              
-[[X05]]
 Automaticaly tests collector	
 ----------------------------
 
-[[X19]]
 The collector tool
 ~~~~~~~~~~~~~~~~~~
             
@@ -2409,7 +2387,6 @@ of 'TestSuite'. Basically each test is to be declared with the macro
 Ensure in which is automatically inserted
 inside of 'TestSuite'.
                                                           
-[[X20]]
 Example
 ~~~~~~~
             
@@ -2482,10 +2459,23 @@ original file.
 So just add a new test and run the collector tool to adjust automatically the
 TestSuite.
            
-[[X21]]
+
+[appendix]
+Revision History
+----------------
+
+.Revisions
+[options="header"]
+|=======================
+|Revision|Description      |Responsible
+|1      |Initial         |JF
+|=======================
+
+[appendix]
 GNU Free Documentation License
 ------------------------------
 
+----
 
     Version 1.1, March 2000
 
@@ -2899,3 +2889,4 @@ of this license document, but changing it is not allowed.
     choice of free software license, such as the GNU General Public
     License, to permit their use in free software.
 
+----

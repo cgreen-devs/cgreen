@@ -1,13 +1,9 @@
-Cgreen Unit Test for C language
-===============================
-Marcus Baker <marcus@lastcraft.com>
-João Henrique F. de Freitas <joaohf@gmail.com>
-:Author Initials: MB JHF
+Cgreen Unit Test para a linguagem C
+===================================
 
 Cgreen Quickstart Guide
 -----------------------
 
-[[X01]]
 O que é Cgreen?
 ~~~~~~~~~~~~~~~
       
@@ -48,7 +44,7 @@ A lista dos recuros são:
 
 Esta ferramenta é para programação em C, não para C++.
       
-[[X02]]
+
 Instalando o Cgreen
 ~~~~~~~~~~~~~~~~~~~
       
@@ -188,7 +184,7 @@ imprimir o resultado dos testes.
 Ele somente envia os testes com falha.
 Atualmente ele é o único método suportado.
       
-[[X03]]
+
 Fazendo TDD em cinco minutos com Cgreen
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       
@@ -666,7 +662,7 @@ muito óbvios.
 Gastei mais tempo para escrever esses parágrafos do que para 
 escrever o código.
         
-[[30]]
+
 Construindo suite de tests
 --------------------------
       
@@ -680,7 +676,7 @@ Usado desta maneira, a finalidade é garantir a qualidade constante.
       
 Em outras palavras você terá menos bugs.
       
-[[X06]]
+
 Escrevendo testes básicos
 ~~~~~~~~~~~~~~~~~~~~~~~~~
           
@@ -877,7 +873,7 @@ TestSuite *our_tests() {
 
 E assim por diante.
           
-[[08]]		  
+
 Set up e tear down
 ~~~~~~~~~~~~~~~~~~
           
@@ -1012,7 +1008,7 @@ Também a função 'teardown()' pode não executar se algum teste
 der errado (crash), causando algumas interferências nos testes.
 Isso nós prepara para a próxima seção...
           
-[[X011]]
+
 Cada teste dentro de seu próprio processo
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
           
@@ -1153,7 +1149,7 @@ todos os seus testes, então você pode adicionar o código 'die_in()'
 na função 'setup()'.
 Cgreen irá então aplica o limite para todos.
           
-[[X12]]
+
 Construindo uma suite composta de testes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
           
@@ -1352,7 +1348,7 @@ TestSuite *connection_fixture(TestSuite *suite) {
 
 Isto permite reusar fixtures comuns entre projetos.
           
-[[X13]]
+
 Funções Mock com Cgreen
 -----------------------
         
@@ -1384,7 +1380,7 @@ teste desaparece quando o sistema eventualmente é modificado.
 O ideal é ter um mínimo de stubs escrito para cada teste individual.
 Cgreen encoraja esta abordagem fazendo tais testes faceis de escrever.
         
-[[X14]]
+
 O problema com streams
 ~~~~~~~~~~~~~~~~~~~~~~
             
@@ -1763,7 +1759,7 @@ As coisas se tornam mais interessantes quando pensamos no tráfego
 vindo de outro jeito, do código para o stub. 
 Isto nos coloca no mesmo território assim como os objetos mock.
             
-[[X15]]
+
 Configurando valores aguardados em funções mock
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
@@ -2021,11 +2017,10 @@ Completed "main": 14 passes, 0 failures, 0 exceptions.
 -----------------------------------------
 Tudo feito.
             
-[[X19]]
+
 Mudando os relatórios do Cgreen
 -------------------------------
 
-[[X20]]
 Trocando o relatório
 ~~~~~~~~~~~~~~~~~~~~
             
@@ -2075,7 +2070,7 @@ de +reporter.h+.
 Para mudarmos o mecanisco de relatório, basta conhecermos um 
 pouco sobre os métodos da estrutura 'TestReporter'.
             
-[[X21]]
+
 A estrutura do TestReporter
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
@@ -2200,7 +2195,7 @@ relatório e a suite de testes. Você não preciso mexer nisto.
 'memo':: Isto é um ponteiro livre para sua própria expansão.</listitem>
             
 			
-[[X23]]
+
 Um exemplo de relatório XML
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
@@ -2570,11 +2565,11 @@ Possivelmente outras extensões incluem relatórios que escrevem para syslog,
 integração com IDE, imprimir documentos ou somente retornar um boleano para
 propósitos de monitoramento.                
             
-[[X25]]
+
 Coleta automática de testes
 --------------------------
 
-[[X27]]
+
 A ferramenta collector
 ~~~~~~~~~~~~~~~~~~~~~~
             
@@ -2592,7 +2587,7 @@ adicionar o teste criado na 'TestSuite'. Basicamente cada teste passa
 a ser declarado usando a macro Ensure no qual é inserida automaticamente
 na 'TestSuite'. via a ferramenta collector.
                                                          
-[[X26]]
+
 Exemplo prático
 ~~~~~~~~~~~~~~~
             
@@ -2666,11 +2661,23 @@ novamente no arquivo.
 Assim apenas adicionamos um novo teste e executamos a ferramenta collector
 para ajustar o TestSuite automaticamente.                   
 
-[[X21]]
+[appendix]
+
+Histórico de revisões
+---------------------
+
+.Revisões
+[options="header"]
+|=======================
+|Revisão|Descrição      |Responsável
+|1      |Initial         |JF
+|=======================
+
+
 GNU Free Documentation License
 ------------------------------
 
-
+-------------------
     Version 1.1, March 2000
 
     
@@ -3082,3 +3089,5 @@ of this license document, but changing it is not allowed.
     code, we recommend releasing these examples in parallel under your
     choice of free software license, such as the GNU General Public
     License, to permit their use in free software.
+
+-------------------
