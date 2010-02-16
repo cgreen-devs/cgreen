@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #define message_content_size(Type) (sizeof(Type) - sizeof(long))
 
