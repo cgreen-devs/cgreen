@@ -1,5 +1,6 @@
 #include <cgreen/cgreen.h>
 #include <cgreen/cute_reporter.h>
+#include <cgreen/messaging.h>
 
 #include <stdio.h>
 #include <string.h>
