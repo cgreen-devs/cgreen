@@ -62,6 +62,7 @@ void teardown_(TestSuite *suite, void (*tear_down)());
 void die_in(unsigned int seconds);
 int run_test_suite(TestSuite *suite, TestReporter *reporter);
 int run_single_test(TestSuite *suite, char *test, TestReporter *reporter);
+int count_tests(TestSuite *suite);
 
 /**
  * @}
