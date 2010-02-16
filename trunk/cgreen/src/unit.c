@@ -8,7 +8,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <unistd.h>
-#include <sys/wait.h>
 #include <signal.h>
 
 enum {test_function, test_suite};
