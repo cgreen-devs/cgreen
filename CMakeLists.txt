@@ -32,6 +32,9 @@ configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 if (WIN32)
   set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
   set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+  if (UNIX) # == cygwin!
+    option(USE_W32API "Build using Windows API instead of *nix" OFF)
+  endif (UNIX)
 endif (WIN32)
 
 # check subdirectories

@@ -2,7 +2,11 @@
 
 include(CheckCCompilerFlag)
 
-if (UNIX AND NOT WIN32)
+if (USE_W32API)
+  add_definitions(-mno-cygwin)
+endif (USE_W32API)
+
+if (UNIX AND NOT WIN32) # All *nix except Cygwin
   if (CMAKE_COMPILER_IS_GNUCC)
     add_definitions(-Wall -Wextra -Wmissing-prototypes -Wdeclaration-after-statement -Wunused)
 
