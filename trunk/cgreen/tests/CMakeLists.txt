@@ -24,4 +24,7 @@ if (WIN32)
   file(WRITE ${CMAKE_BINARY_DIR}/bin/tests/some_file "Some stuff")
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests)
 endif (WIN32)
+
 macro_add_unit_test(test_cgreen "${test_SRCS}" "${TEST_TARGET_LIBRARIES}")
+
+add_test(test_cgreen_named test_cgreen integer_one_should_assert_true)
