@@ -5,7 +5,7 @@ SET(ASCIIDOC_CONFFILE "${CMAKE_SOURCE_DIR}/doc/cgreen_asciidoc.conf")
 SET(A2X_ICONS_DIR "${CMAKE_SOURCE_DIR}/images/icons")
 
 OPTION(WITH_HTML "with HTML output" FALSE)
-OPTION(WITH_PDF "with PDF output" TRUE)
+OPTION(WITH_PDF "with PDF output" FALSE)
 
 IF(ASCIIDOC_FOUND AND WITH_HTML)
   FILE(GLOB _docfiles *.asciidoc)
