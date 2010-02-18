@@ -62,7 +62,7 @@ Constraint *want_string_(const char *parameter, char *expected) {
 }
 
 static int compare_non_null(Constraint *constraint, intptr_t comparison) {
-    return (NULL != comparison);
+    return (NULL != (void *)comparison);
 }
 
 static void test_non_null(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
