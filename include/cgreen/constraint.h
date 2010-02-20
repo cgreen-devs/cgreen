@@ -12,6 +12,7 @@
 #define want_string(parameter, x) want_string_(#parameter, x)
 #define want_double(parameter, x) want_double_(#parameter, box_double(x))
 #define want_non_null(parameter) want_non_null_(#parameter)
+#define with(parameter, matcher_function) with_(#parameter, #matcher_function, matcher_function)
 
 
 #define compare_constraint(c, x) (*c->compare)(c, (intptr_t)x)
@@ -23,6 +24,7 @@ typedef union {
 
 typedef struct Constraint_ Constraint;
 struct Constraint_ {
+    const char* name;
     const char *parameter;
     void (*destroy)(Constraint *);
     int (*compare)(Constraint *, intptr_t);
@@ -37,6 +39,7 @@ Constraint *want_(const char *parameter, intptr_t expected);
 Constraint *want_non_null_(const char *parameter);
 Constraint *want_string_(const char *parameter, char *expected);
 Constraint *want_double_(const char *parameter, intptr_t expected);
+Constraint *with_(const char *parameter, const char* matcher_name, int (*comparison_function)(const void*));
 intptr_t box_double(double d);
 
 #ifdef __cplusplus

@@ -5,21 +5,25 @@
 #include <string.h>
 
 static void destroy_empty_constraint(Constraint *constraint);
-static int compare_want(Constraint *constraint, intptr_t comparison);
+static int compare_want(Constraint *constraint, intptr_t actual);
 static void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
-static int compare_non_null(Constraint *constraint, intptr_t comparison);
+static int compare_non_null(Constraint *constraint, intptr_t actual);
 static void test_non_null(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
-static int compare_want_string(Constraint *constraint, intptr_t comparison);
+static int compare_want_string(Constraint *constraint, intptr_t actual);
 static void test_want_string(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
-static int compare_want_double(Constraint *constraint, intptr_t comparison);
+static int compare_want_double(Constraint *constraint, intptr_t actual);
 static void test_want_double(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 static Constraint *create_constraint(const char *parameter);
 static void destroy_double_constraint(Constraint *constraint);
 static double unbox_double(intptr_t box);
 static double as_double(intptr_t box);
+
+static int compare_using_matcher(Constraint *constraint, intptr_t actual);
+static void test_with_matcher(Constraint *constraint, const char *function, const char* matcher_name, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
+
 
 void destroy_constraint(void *abstract) {
     Constraint *constraint = (Constraint *)abstract;
@@ -61,8 +65,8 @@ Constraint *want_string_(const char *parameter, char *expected) {
     return constraint;
 }
 
-static int compare_non_null(Constraint *constraint, intptr_t comparison) {
-    return (NULL != (void *)comparison);
+static int compare_non_null(Constraint *constraint, intptr_t actual) {
+    return (NULL != (void*)actual);
 }
 
 static void test_non_null(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
@@ -80,7 +84,6 @@ Constraint *want_double_(const char *parameter, intptr_t expected) {
     Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));
     constraint->parameter = parameter;
     constraint->destroy = &destroy_double_constraint;
-    constraint->parameter = parameter;
     constraint->compare = &compare_want_double;
     constraint->test = &test_want_double;
     constraint->expected = expected;
@@ -93,12 +96,23 @@ intptr_t box_double(double d) {
     return (intptr_t)box;
 }
 
+Constraint *with_(const char *parameter, const char* matcher_name, int (*matcher_function)(const void*)) {
+	Constraint *constraint = create_constraint(parameter);
+
+    constraint->parameter = parameter;
+    constraint->compare = &compare_using_matcher;
+    constraint->test = &test_with_matcher;
+    constraint->name = matcher_name;
+    constraint->expected = (intptr_t)matcher_function;
+    return constraint;
+}
+
 static void destroy_empty_constraint(Constraint *constraint) {
     free(constraint);
 }
 
-static int compare_want(Constraint *constraint, intptr_t comparison) {
-    return (constraint->expected == comparison);
+static int compare_want(Constraint *constraint, intptr_t actual) {
+    return (constraint->expected == actual);
 }
 
 static void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
@@ -114,8 +128,8 @@ static void test_want(Constraint *constraint, const char *function, intptr_t act
             constraint->parameter);
 }
 
-static int compare_want_string(Constraint *constraint, intptr_t comparison) {
-    return strings_are_equal((const char *)constraint->expected, (const char *)comparison);
+static int compare_want_string(Constraint *constraint, intptr_t actual) {
+    return strings_are_equal((const char *)constraint->expected, (const char *)actual);
 }
 
 static void test_want_string(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
@@ -131,8 +145,8 @@ static void test_want_string(Constraint *constraint, const char *function, intpt
             constraint->parameter);
 }
 
-static int compare_want_double(Constraint *constraint, intptr_t comparison) {
-    return doubles_are_equal(as_double(constraint->expected), as_double(comparison));
+static int compare_want_double(Constraint *constraint, intptr_t actual) {
+    return doubles_are_equal(as_double(constraint->expected), as_double(actual));
 }
 
 static void test_want_double(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
@@ -147,6 +161,23 @@ static void test_want_double(Constraint *constraint, const char *function, intpt
             function,
             constraint->parameter);
     unbox_double(actual);
+}
+
+static int compare_using_matcher(Constraint *constraint, intptr_t actual) {
+	int (*matches)(const void*) = constraint->expected;
+    return matches(actual);
+}
+
+static void test_with_matcher(Constraint *constraint, const char *function, const char* matcher_name, intptr_t matcher_function, const char *test_file, int test_line, TestReporter *reporter) {
+    (*reporter->assert_true)(
+            reporter,
+            test_file,
+            test_line,
+            (*constraint->compare)(constraint, matcher_function),
+            "Wanted parameter [%s] to match [%s] in function [%s]",
+            constraint->parameter,
+            matcher_name,
+            function);
 }
 
 static Constraint *create_constraint(const char *parameter) {

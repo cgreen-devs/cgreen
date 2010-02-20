@@ -73,6 +73,37 @@ Ensure constraints_on_doubles_respect_significant_figure_setting() {
     destroy_constraint(want_337);
 }
 
+typedef struct {
+	char* value;
+	unsigned int length;
+} String;
+
+static int is_non_empty_string(const void* other) {
+	String* our = (String*)other;
+	return our->length != 0;
+}
+
+Ensure unequal_structs_with_same_value_for_specific_field_compare_true() {
+    String name;
+    name.value = "bob";
+    name.length = 3;
+    
+    Constraint *string_constraint = with(name, is_non_empty_string);
+
+    assert_equal(compare_constraint(string_constraint, is_non_empty_string), 1);
+
+    destroy_constraint(string_constraint);
+
+    name.value = "tim";
+    name.length = 3;
+    
+    string_constraint = with(name, is_non_empty_string);
+    assert_equal(compare_constraint(string_constraint, is_non_empty_string), 1);
+
+    destroy_constraint(string_constraint);
+}
+
+
 TestSuite *constraint_tests() {
     TestSuite *suite = create_test_suite();
     add_test(suite, can_construct_and_destroy_an_want_constraint);
@@ -86,5 +117,6 @@ TestSuite *constraint_tests() {
     add_test(suite, equal_doubles_compare_true_with_a_want_double_constraint);
     add_test(suite, unequal_doubles_compare_false_with_a_want_double_constraint);
     add_test(suite, constraints_on_doubles_respect_significant_figure_setting);
+    add_test(suite, unequal_structs_with_same_value_for_specific_field_compare_true);
     return suite;
 }
