@@ -30,10 +30,16 @@ Ensure count_tests_return_four_for_four_nested_suite_with_one_testcase_each() {
 	assert_equal(count_tests(suite1), 4);
 }
 
+Ensure time_out_in_only_one_second() {
+    die_in(1);
+    sleep(10);
+}
+
 TestSuite *unit_tests() {
 	TestSuite *suite = create_test_suite();
 	add_test(suite, count_tests_return_zero_for_empty_suite);
 	add_test(suite, count_tests_return_one_for_suite_with_one_testcase);
 	add_test(suite, count_tests_return_four_for_four_nested_suite_with_one_testcase_each);
+    add_test(suite, time_out_in_only_one_second);
 	return suite;
 }
