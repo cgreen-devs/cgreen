@@ -53,8 +53,6 @@ TestReporter *create_cute_reporter(void) {
 }
 
 static void cute_reporter_suite_started(TestReporter *reporter, const char *name, const int number_of_tests) {
-	// TODO Send number of tests as a parameter
-	// int number_of_tests = 2;
 	CuteMemo *memo = (CuteMemo *)reporter->memo;
 	reporter_start(reporter, name);
 	memo->printer("#beginning %s %d\n", name, number_of_tests);
@@ -105,6 +103,11 @@ static void assert_failed(TestReporter *reporter, const char *file, int line, co
 }
 
 static void assert_passed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+	(void)reporter;
+	(void)file;
+	(void)line;
+	(void)message;
+	(void)arguments;
 }
 
 static void testcase_failed_to_complete(TestReporter *reporter, const char *name) {

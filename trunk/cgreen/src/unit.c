@@ -3,12 +3,14 @@
 #include <cgreen/mocks.h>
 #include <cgreen/parameters.h>
 #include <cgreen/assertions.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <unistd.h>
 #include <signal.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 enum {test_function, test_suite};
 
@@ -31,21 +33,25 @@ struct TestSuite_ {
     int size;
 };
 
+static const char* CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE = "CGREEN_PER_TEST_TIMEOUT";
+
 static void clean_up_test_run(TestSuite *suite, TestReporter *reporter);
 static void run_every_test(TestSuite *suite, TestReporter *reporter);
 static void run_named_test(TestSuite *suite, char *name, TestReporter *reporter);
 static int has_test(TestSuite *suite, char *name);
 static void run_test_in_the_current_process(TestSuite *suite, UnitTest *test, TestReporter *reporter);
 static void run_test_in_its_own_process(TestSuite *suite, UnitTest *test, TestReporter *reporter);
-static int in_child_process();
-static void wait_for_child_process();
-static void ignore_ctrl_c();
-static void allow_ctrl_c();
-static void stop();
+static int in_child_process(void);
+static void wait_for_child_process(void);
+static void ignore_ctrl_c(void);
+static void allow_ctrl_c(void);
+static void stop(void);
+static int per_test_timeout_defined(void);
+static int per_test_timeout_value(void);
+static void validate_per_test_timeout_value(void);
 static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *reporter);
-static void tally_counter(const char *file, int line, int expected, int actual, void *abstract_reporter);
 static void die(const char *message, ...);
-static void do_nothing();
+static void do_nothing(void);
 
 TestSuite *create_named_test_suite(const char *name) {
     TestSuite *suite = (TestSuite *)malloc(sizeof(TestSuite));
@@ -63,8 +69,8 @@ void destroy_test_suite(TestSuite *suiteToDestroy) {
 		UnitTest test = suiteToDestroy->tests[i];
 		TestSuite* suite = test.sPtr.suite;
 		if (test_suite == test.type && suite != NULL) {
-			suiteToDestroy->tests[i].sPtr.suite = NULL;
-            destroy_test_suite(suite);
+           suiteToDestroy->tests[i].sPtr.suite = NULL;
+           destroy_test_suite(suite);
 		}
 	}
     if (suiteToDestroy->tests != NULL)
@@ -87,7 +93,7 @@ void add_tests_(TestSuite *suite, const char *names, ...) {
     va_list tests;
     va_start(tests, names);
     for (i = 0; i < cgreen_vector_size(test_names); i++) {
-        add_test_(suite, (char *)cgreen_vector_get(test_names, i), va_arg(tests, CgreenTest *));
+        add_test_(suite, (char *)(cgreen_vector_get(test_names, i)), va_arg(tests, CgreenTest *));
     }
     va_end(tests);
     destroy_cgreen_vector(test_names);
@@ -101,16 +107,21 @@ void add_suite_(TestSuite *owner, char *name, TestSuite *suite) {
     owner->tests[owner->size - 1].sPtr.suite = suite;
 }
 
-void setup_(TestSuite *suite, void (*setup)()) {
-    suite->setup = setup;
+void setup(TestSuite *suite, void (*set_up)()) {
+    suite->setup = set_up;
 }
 
-void teardown_(TestSuite *suite, void (*teardown)()) {
-    suite->teardown = teardown;
+void teardown(TestSuite *suite, void (*tear_down)()) {
+    suite->teardown = tear_down;
 }
 
 void die_in(unsigned int seconds) {
-    signal(SIGALRM, (sighandler_t)&stop);
+    sighandler_t signal_result = signal(SIGALRM, (sighandler_t)&stop);
+    if (SIG_ERR == signal_result) {
+        fprintf(stderr, "could not set alarm signal hander\n");
+        return;
+    }
+
     alarm(seconds);
 }
 
@@ -128,6 +139,10 @@ int count_tests(TestSuite *suite) {
 }
 
 int run_test_suite(TestSuite *suite, TestReporter *reporter) {
+	if (per_test_timeout_defined()) {
+		validate_per_test_timeout_value();
+	}
+
 	setup_reporting(reporter);
 	run_every_test(suite, reporter);
 	int success = (reporter->failures == 0);
@@ -136,6 +151,10 @@ int run_test_suite(TestSuite *suite, TestReporter *reporter) {
 }
 
 int run_single_test(TestSuite *suite, char *name, TestReporter *reporter) {
+	if (per_test_timeout_defined()) {
+		validate_per_test_timeout_value();
+	}
+
 	setup_reporting(reporter);
 	run_named_test(suite, name, reporter);
 	int success = (reporter->failures == 0);
@@ -242,25 +261,42 @@ static void stop() {
     exit(EXIT_SUCCESS);
 }
 
+static int per_test_timeout_defined() {
+	return getenv(CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE) != NULL;
+}
+
+static int per_test_timeout_value() {
+	if (!per_test_timeout_defined()) {
+		die("attempt to fetch undefined value for %s\n", CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE);
+	}
+
+	char* timeout_string = getenv(CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE);
+	int timeout_value = atoi(timeout_string);
+
+	return timeout_value;
+}
+
+static void validate_per_test_timeout_value() {
+	int timeout = per_test_timeout_value();
+
+	if (timeout <= 0) {
+		die("invalid value for %s environment variable: %d\n", CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE, timeout);
+	}
+}
+
 static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *reporter) {
     significant_figures_for_assert_double_are(8);
     clear_mocks();
+
+    if (per_test_timeout_defined()) {
+    	validate_per_test_timeout_value();
+    	die_in(per_test_timeout_value());
+    }
+
 	(*suite->setup)();
     (*test->sPtr.test)();
 	(*suite->teardown)();
 	tally_mocks(reporter);
-}
-
-static void tally_counter(const char *file, int line, int expected, int actual, void *abstract_reporter) {
-    TestReporter *reporter = (TestReporter *)abstract_reporter;
-    (*reporter->assert_true)(
-            reporter,
-            file,
-            line,
-            (actual == expected),
-            "Expected a call count of [%d], but got [%d]",
-            expected,
-            actual);
 }
 
 static void die(const char *message, ...) {

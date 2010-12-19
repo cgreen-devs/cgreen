@@ -1,9 +1,9 @@
 #include <cgreen/reporter.h>
 #include <cgreen/messaging.h>
 #include <cgreen/breadcrumb.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 enum {pass = 1, fail, completion};
 
@@ -62,9 +62,8 @@ void destroy_reporter(TestReporter *reporter) {
 }
 
 void destroy_memo(TestReportMemo *memo) {
-	if (! memo) {
+	if (NULL != memo) {
 		free(memo);
-		memo = NULL;
 	}
 }
 

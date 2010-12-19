@@ -28,8 +28,9 @@ TestReporter *create_text_reporter(void) {
 static void text_reporter_start_suite(TestReporter *reporter, const char *name, const int number_of_tests) {
 	reporter_start(reporter, name);
 	if (get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb) == 1) {
-		printf("Running \"%s\"...\n",
-		       get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb));
+		printf("Running \"%s\" (%d tests)...\n",
+		       get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb),
+		       number_of_tests);
 	}
 }
 

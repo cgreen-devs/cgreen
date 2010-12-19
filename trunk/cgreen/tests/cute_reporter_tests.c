@@ -5,9 +5,14 @@
 #include <stdio.h>
 #include <string.h>
 
-static char *output;
+static char *output = NULL;
+
 static void clear_output()
 {
+    if (NULL != output) {
+        free(output);
+    }
+
     output = (char*)malloc(1);
     *output = '\0';
 }
@@ -29,30 +34,38 @@ static int mocked_printf(const char *format, ...) {
 	return strlen(output);
 }
 
-int strpos(char *whole, char *part) {
-	int pos;
-	if (strlen(whole) >= strlen(part))
-		for (pos = 0; pos < strlen(whole)-strlen(part); pos++) {
-			if (strncmp(&whole[pos], part, strlen(part)) == 0)
-				return pos;
+static int strpos(const char *whole, const char *part) {
+	int position;
+	if (strlen(whole) >= strlen(part)) {
+		int last_findable_position = (int)(strlen(whole) - strlen(part));
+
+		for(position = 0;position < last_findable_position; position++) {
+			if (strncmp(&whole[position], part, strlen(part)) == 0)
+				return position;
 		}
+	}
 	return -1;
 }
 
 TestReporter *reporter;
 
 static void setup_cute_reporter_tests() {
-	reporter = create_cute_reporter();
+    reporter = create_cute_reporter();
 
-	// We can not use setup_reporting() since we are running
-	// inside an test suite which needs the real reporting
-	// So we'll have to set up the messaging explicitly
-	reporter->ipc = start_cgreen_messaging(666);
+    // We can not use setup_reporting() since we are running
+    // inside an test suite which needs the real reporting
+    // So we'll have to set up the messaging explicitly
+    reporter->ipc = start_cgreen_messaging(666);
 
-	clear_output();
-	set_cute_printer(reporter, mocked_printf);
+    clear_output();
+    set_cute_printer(reporter, mocked_printf);
 }
 
+static void cute_reporter_tests_teardown() {
+    if (NULL != output) {
+        free(output);
+    }
+}
 
 static void assert_no_output() {
     assert_equal(strlen(output), 0);
@@ -62,17 +75,17 @@ static void assert_output_starts_with(char *string) {
 	assert_equal(strpos(output, string), 0);
 }
 
-static void assert_output_contains(char *string) {
+static void assert_output_contains(const char *string) {
 	assert_true(strpos(output, string) > 0);
 }
 
-Ensure will_report_beginning_of_suite() {
+Ensure(will_report_beginning_of_suite) {
 	reporter->start_suite(reporter, "suite_name", 2);
 	assert_output_starts_with("#beginning");
 	assert_output_contains("suite_name");
 }
 
-Ensure will_report_beginning_and_successful_finishing_of_test() {
+Ensure(will_report_beginning_and_successful_finishing_of_test) {
 	reporter->start_test(reporter, "test_name");
 	assert_output_starts_with("#starting");
 	assert_output_contains("test_name");
@@ -88,7 +101,7 @@ Ensure will_report_beginning_and_successful_finishing_of_test() {
 	assert_output_contains("test_name");
 }
 
-Ensure will_report_failing_of_test_only_once() {
+Ensure(will_report_failing_of_test_only_once) {
 	reporter->start_test(reporter, "test_name");
 
 	clear_output();
@@ -108,7 +121,7 @@ Ensure will_report_failing_of_test_only_once() {
 	assert_no_output();
 }
 
-Ensure will_report_finishing_of_suite() {
+Ensure(will_report_finishing_of_suite) {
 	// Must indicate test suite completion before calling finish_suite()
 	send_reporter_completion_notification(reporter);
 	reporter->finish_suite(reporter, "suite_name");
@@ -124,5 +137,7 @@ TestSuite *cute_reporter_tests() {
 	add_test(suite, will_report_beginning_and_successful_finishing_of_test);
 	add_test(suite, will_report_failing_of_test_only_once);
 	add_test(suite, will_report_finishing_of_suite);
+
+	teardown(suite, cute_reporter_tests_teardown);
 	return suite;
 }

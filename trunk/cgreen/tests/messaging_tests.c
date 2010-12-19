@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <sys/msg.h>
 
-Ensure highly_nested_test_suite_should_still_complete() {
+Ensure(highly_nested_test_suite_should_still_complete) {
     assert_true(1);
 }
 
@@ -20,7 +20,7 @@ TestSuite *highly_nested_test_suite() {
     return suite;
 }
 
-Ensure can_send_message() {
+Ensure(can_send_message) {
     int messaging = start_cgreen_messaging(33);
     send_cgreen_message(messaging, 99);
     assert_equal(receive_cgreen_message(messaging), 99);

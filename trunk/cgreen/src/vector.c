@@ -1,4 +1,5 @@
 #include <cgreen/vector.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 struct CgreenVector_ {
@@ -20,13 +21,18 @@ CgreenVector *create_cgreen_vector(void (*destructor)(void *)) {
 }
 
 void destroy_cgreen_vector(CgreenVector *vector) {
-    int i;
     if (vector->destructor != NULL) {
-        for (i = 0; i < vector->size; i++) {
+        for (int i = 0; i < vector->size; i++) {
             (*vector->destructor)(vector->items[i]);
         }
     }
+
     free(vector->items);
+    vector->items = NULL;
+    vector->destructor = NULL;
+    vector->size = 0;
+    vector->space = 0;
+
     free(vector);
 }
 
@@ -39,11 +45,19 @@ void cgreen_vector_add(CgreenVector *vector, void *item) {
 }
 
 void *cgreen_vector_remove(CgreenVector *vector, int position) {
+    if (position < 0) {
+        fprintf(stderr, "negative position disallowed in vector operation\n");
+        return NULL;
+    }
+
     void *item = vector->items[position];
-    int i;
-    for (i = position; i < vector->size; i++) {
+
+    for (int i = position; i < vector->size; i++) {
         vector->items[i] = vector->items[i + 1];
     }
+
+    vector->items[vector->size] = NULL;
+
     vector->size--;
     return item;
 }
