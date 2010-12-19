@@ -22,14 +22,14 @@ TestReporter *create_xml_reporter() {
 }
 
 static indent(TestReporter *reporter) {
-    int depth = get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb);
+    int depth = get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb);
     while (depth-- > 0) {
         printf("\t");
     }
 }
 
 static void xml_reporter_start(TestReporter *reporter, const char *name) {
-    if (get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb) == 0) {
+    if (get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb) == 0) {
         printf("<?xml?>\n");
     }
 	indent(reporter);

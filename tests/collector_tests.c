@@ -2,15 +2,8 @@
 #include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 
-Ensure a_test_that_passes() {
-    assert_true(1);
-}
-
-Ensure another_test_that_passes() {
-    assert_true(1);
-}
-
 TestSuite *confuse_the_collector(TestSuite *suite, const char *ignored) {
+	(void)ignored;
     return suite;
 }
 

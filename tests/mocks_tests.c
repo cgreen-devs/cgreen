@@ -1,68 +1,69 @@
+#include <cgreen/boxed_double.h>
 #include <cgreen/cgreen.h>
 #include <cgreen/mocks.h>
+#include <cgreen/unit.h>
 #include <stdlib.h>
 
 static int integer_out() {
     return (int)mock();
 }
 
-Ensure no_errors_thrown_when_no_presets() {
-    integer_out();
+Ensure(no_errors_thrown_and_default_return_value_when_no_presets) {
+    assert_equal(integer_out(), 0);
 }
 
-Ensure can_stub_an_integer_return() {
-    will_return(integer_out, 3);
+Ensure(can_stub_an_integer_return) {
+    expect(integer_out,
+        will_return(3)
+    );
+
     assert_equal(integer_out(), 3);
 }
 
-Ensure repeats_return_value_when_set_to_always() {
-    always_return(integer_out, 3);
+Ensure(repeats_return_value_when_set_to_always) {
+    always_expect(integer_out,
+        will_return(3)
+    );
+
     assert_equal(integer_out(), 3);
     assert_equal(integer_out(), 3);
 }
 
-Ensure can_stub_an_integer_return_sequence() {
-    will_return(integer_out, 1);
-    will_return(integer_out, 2);
-    will_return(integer_out, 3);
+Ensure(can_stub_an_integer_return_sequence) {
+    expect(integer_out,
+        will_return(1)
+    );
+
+    expect(integer_out,
+        will_return(2)
+    );
+
+    expect(integer_out,
+        will_return(3)
+    );
+
     assert_equal(integer_out(), 1);
     assert_equal(integer_out(), 2);
     assert_equal(integer_out(), 3);
 }
 
-Ensure set_stub_just_to_be_cleared() {
-    will_return(integer_out, 1);
-}
-
-Ensure confirm_stub_is_reset_between_tests() {
-    will_return(integer_out, 2);
-    assert_equal(integer_out(), 2);
-}
-
-Ensure stub_uses_the_always_value_once_hit() {
-    will_return(integer_out, 1);
-    will_return(integer_out, 2);
-    always_return(integer_out, 3);
-    will_return(integer_out, 4);
-    assert_equal(integer_out(), 1);
-    assert_equal(integer_out(), 2);
-    assert_equal(integer_out(), 3);
-    assert_equal(integer_out(), 3);
-    assert_equal(integer_out(), 3);
+Ensure(confirm_stub_is_reset_between_tests) {
+    assert_equal(integer_out(), 0);
 }
 
 static char *string_out() {
     return (char *)mock();
 }
 
-Ensure can_stub_a_string_return() {
-    will_return(string_out, "hello");
+Ensure(can_stub_a_string_return) {
+    expect(string_out, will_return("hello"));
     assert_string_equal(string_out(), "hello");
 }
 
-Ensure can_stub_a_string_sequence() {
-    will_return(string_out, "hello");
-    will_return(string_out, "goodbye");
+Ensure(can_stub_a_string_sequence) {
+    expect(string_out, will_return("hello"));
+    expect(string_out, will_return("goodbye"));
+
     assert_string_equal(string_out(), "hello");
     assert_string_equal(string_out(), "goodbye");
 }
@@ -71,27 +72,27 @@ static void integer_in(int i) {
     mock(i);
 }
 
-Ensure expecting_once_with_any_parameters() {
+Ensure(expecting_once_with_any_parameters) {
     expect(integer_in);
     integer_in(3);
 }
 
-Ensure expecting_once_with_parameter_checks_that_parameter() {
-    expect(integer_in, want(i, 3));
+Ensure(expecting_once_with_parameter_checks_that_parameter) {
+    expect(integer_in, when(i, is_equal_to(3)));
     integer_in(3);
 }
 
-Ensure always_expect_keeps_affirming_parameter() {
-    always_expect(integer_in, want(i, 3));
+Ensure(always_expect_keeps_affirming_parameter) {
+    always_expect(integer_in, when(i, is_equal_to(3)));
     integer_in(3);
     integer_in(3);
     integer_in(3);
 }
 
-Ensure expect_a_sequence() {
-    expect(integer_in, want(i, 1));
-    expect(integer_in, want(i, 2));
-    expect(integer_in, want(i, 3));
+Ensure(expect_a_sequence) {
+    expect(integer_in, when(i, is_equal_to(1)));
+    expect(integer_in, when(i, is_equal_to(2)));
+    expect(integer_in, when(i, is_equal_to(3)));
     integer_in(1);
     integer_in(2);
     integer_in(3);
@@ -101,25 +102,25 @@ static void string_in(char *s) {
     mock(s);
 }
 
-Ensure string_expect_is_confirmed() {
-    expect(string_in, want_string(s, "hello"));
+Ensure(string_expect_is_confirmed) {
+    expect(string_in, when(s, is_equal_to_string("hello")));
     string_in("hello");
 }
 
-Ensure string_expect_is_confirmed_even_when_null() {
-    expect(string_in, want_string(s, NULL));
+Ensure(string_expect_is_confirmed_even_when_null) {
+    expect(string_in, when(s, is_equal_to_string(NULL)));
     string_in(NULL);
 }
 
-Ensure string_expect_sequence() {
-    expect(string_in, want_string(s, "hello"));
-    expect(string_in, want_string(s, "goodbye"));
+Ensure(string_expect_sequence) {
+    expect(string_in, when(s, is_equal_to_string("hello")));
+    expect(string_in, when(s, is_equal_to_string("goodbye")));
     string_in("hello");
     string_in("goodbye");
 }
 
-Ensure expecting_once_with_non_null_parameter_checks_that_parameter() {
-    expect(string_in, want_non_null(s));
+Ensure(expecting_once_with_non_null_parameter_checks_that_parameter) {
+    expect(string_in, when(s, is_non_null));
     string_in("anything");
 }
 
@@ -127,14 +128,14 @@ static void double_in(double d) {
     mock(d(d));
 }
 
-Ensure double_expect_is_confirmed() {
-    expect(double_in, want_double(d, 3.14));
+Ensure(double_expect_is_confirmed) {
+    expect(double_in, when(d, is_equal_to_double(3.14)));
     double_in(3.14);
 }
 
-Ensure double_expect_sequence() {
-    expect(double_in, want_double(d, 1.0));
-    expect(double_in, want_double(d, 2.0));
+Ensure(double_expect_sequence) {
+    expect(double_in, when(d, is_equal_to_double(1.0)));
+    expect(double_in, when(d, is_equal_to_double(2.0)));
     double_in(1.0);
     double_in(2.0);
 }
@@ -143,9 +144,9 @@ static void mixed_parameters(int i, char *s) {
     mock(i, s);
 }
 
-Ensure confirming_multiple_parameters_multiple_times() {
-    expect(mixed_parameters, want(i, 1), want_string(s, "Hello"));
-    expect(mixed_parameters, want(i, 2), want_string(s, "Goodbye"));
+Ensure(confirming_multiple_parameters_multiple_times) {
+    expect(mixed_parameters, when(i, is_equal_to(1)), when(s, is_equal_to_string("Hello")));
+    expect(mixed_parameters, when(i, is_equal_to(2)), when(s, is_equal_to_string("Goodbye")));
     mixed_parameters(1, "Hello");
     mixed_parameters(2, "Goodbye");
 }
@@ -154,42 +155,84 @@ static int sample_mock(int i, char *s) {
     return (int)mock(i, s);
 }
 
-Ensure can_mock_full_function_call() {
-    will_respond(sample_mock, 5, want(i, 666), want_string(s, "devil"));
+Ensure(can_mock_full_function_call) {
+    expect(sample_mock,
+        will_return(5),
+        when(i, is_equal_to(666)),
+        when(s, is_equal_to_string("devil"))
+    );
+
     assert_equal(sample_mock(666, "devil"), 5);
 }
 
-Ensure when_called_with_always_should_not_tally_counts() {
-    always_respond(sample_mock, 5, want(i, 666), want_string(s, "devil"));
+Ensure(when_called_with_always_should_not_tally_counts) {
+    always_expect(string_out,
+        will_return(5),
+        when(i, is_equal_to(666)),
+        when(s, is_equal_to_string("devil"))
+    );
 }
 
-Ensure can_mock_full_sequence() {
-    will_respond(sample_mock, 5, want(i, 666), want_string(s, "devil"));
-    will_respond(sample_mock, 6, want(i, 667), want_string(s, "beastie"));
+Ensure(can_mock_full_sequence) {
+    expect(sample_mock,
+       will_return(5),
+       when(i, is_equal_to(666)),
+       when(s, is_equal_to_string("devil"))
+    );
+
+    expect(sample_mock,
+        will_return(6),
+        when(i, is_equal_to(667)),
+        when(s, is_equal_to_string("beastie"))
+    );
+
     assert_equal(sample_mock(666, "devil"), 5);
     assert_equal(sample_mock(667, "beastie"), 6);
 }
 
-Ensure can_always_mock_full_function_call() {
-    always_respond(sample_mock, 5, want(i, 666), want_string(s, "devil"));
+Ensure(can_always_mock_full_function_call) {
+    always_expect(sample_mock,
+        will_return(5),
+        when(i, is_equal_to(666)),
+        when(s, is_equal_to_string("devil"))
+    );
+
     assert_equal(sample_mock(666, "devil"), 5);
     assert_equal(sample_mock(666, "devil"), 5);
     assert_equal(sample_mock(666, "devil"), 5);
 }
 
-Ensure can_declare_function_never_called() {
+/* Expected fail tests follow. */
+/* TODO: put these in a separate suite and validate all tests in said suite fail during 'make check' */
+/*
+Ensure(can_declare_function_never_called) {
     expect_never(sample_mock);
+
+    sample_mock(0, "");
 }
+
+Ensure(failure_reported_when_expect_after_expect_never_for_same_function) {
+    expect_never(integer_out);
+
+    expect(integer_out);
+}
+
+Ensure(failure_reported_when_expect_after_always_expect_for_same_function) {
+    always_expect(integer_out,
+        will_return(666)
+    );
+
+    expect(integer_out);
+}
+*/
 
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, no_errors_thrown_when_no_presets);
+    add_test(suite, no_errors_thrown_and_default_return_value_when_no_presets);
     add_test(suite, can_stub_an_integer_return);
     add_test(suite, repeats_return_value_when_set_to_always);
     add_test(suite, can_stub_an_integer_return_sequence);
-    add_test(suite, set_stub_just_to_be_cleared);
     add_test(suite, confirm_stub_is_reset_between_tests);
-    add_test(suite, stub_uses_the_always_value_once_hit);
     add_test(suite, can_stub_a_string_return);
     add_test(suite, can_stub_a_string_sequence);
     add_test(suite, expecting_once_with_any_parameters);
@@ -207,6 +250,13 @@ TestSuite *mock_tests() {
     add_test(suite, when_called_with_always_should_not_tally_counts);
     add_test(suite, can_mock_full_sequence);
     add_test(suite, can_always_mock_full_function_call);
+
+    /* expected failures. TODO: put these in a separate suite, as per comments above. */
+    /*
+    add_test(suite, failure_reported_when_expect_after_always_expect_for_same_function);
     add_test(suite, can_declare_function_never_called);
+    add_test(suite, failure_reported_when_expect_after_expect_never_for_same_function);
+    */
+
     return suite;
 }

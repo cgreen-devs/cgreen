@@ -31,8 +31,8 @@ struct TestReporter_ {
 
 typedef void TestReportMemo;
 
-TestReporter *get_test_reporter();
-TestReporter *create_reporter();
+TestReporter *get_test_reporter(void);
+TestReporter *create_reporter(void);
 void setup_reporting(TestReporter *reporter);
 void destroy_reporter(TestReporter *reporter);
 void destroy_memo(TestReportMemo *memo);

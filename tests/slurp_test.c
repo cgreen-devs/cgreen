@@ -7,15 +7,15 @@
 
 static void assert_slurped(char *path, int gulp, const char *expected_contents);
 
-Ensure missing_file_gives_null() {
+Ensure(missing_file_gives_null) {
     assert_equal(slurp("not_there", 1024), NULL);
 }
 
-Ensure whole_file_can_be_read() {
+Ensure(whole_file_can_be_read) {
     assert_slurped(BINARYDIR "/tests/some_file", 1024, "Some stuff");
 }
 
-Ensure whole_file_can_be_read_in_multiple_small_blocks() {
+Ensure(whole_file_can_be_read_in_multiple_small_blocks) {
     assert_slurped(BINARYDIR "/tests/some_file", 1, "Some stuff");
 }
 

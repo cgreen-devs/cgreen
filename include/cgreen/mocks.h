@@ -5,27 +5,28 @@
   extern "C" {
 #endif
 
-#include <inttypes.h>
-#include <stdarg.h>
-#include <cgreen/reporter.h>
 #include <cgreen/constraint.h>
+#include <cgreen/reporter.h>
+#include <cgreen/vector.h>
+#include <inttypes.h>
 
-#define mock(...) mock_(__func__, #__VA_ARGS__, (intptr_t)__VA_ARGS__ +0)
-#define expect(f, ...) expect_(#f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
-#define always_expect(f, ...) always_expect_(#f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
-#define expect_never(f) expect_never_(#f, __FILE__, __LINE__)
-#define will_return(f, r) will_return_(#f, (intptr_t)r)
-#define always_return(f, r) always_return_(#f, (intptr_t)r)
-#define will_respond(f, r, ...) will_return_(#f, (intptr_t)r); expect_(#f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
-#define always_respond(f, r, ...) always_return_(#f, (intptr_t)r); always_expect_(#f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
+#define mock(...) mock_(get_test_reporter(), __func__, #__VA_ARGS__, (intptr_t)__VA_ARGS__ +0)
+#define expect(f, ...) expect_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
+#define always_expect(f, ...) always_expect_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
+#define expect_never(f, ...) expect_never_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
 
-intptr_t mock_(const char *function, const char *parameters, ...);
-void expect_(const char *function, const char *test_file, int test_line, ...);
-void always_expect_(const char *function, const char *test_file, int test_line, ...);
-void expect_never_(const char *function, const char *test_file, int test_line);
-void will_return_(const char *function, intptr_t result);
-void always_return_(const char *function, intptr_t result);
-void clear_mocks();
+extern const int UNLIMITED_TIME_TO_LIVE;
+
+intptr_t mock_(TestReporter *test_reporter, const char *function, const char *parameters, ...);
+
+void expect_(TestReporter *test_reporter, const char *function, const char *test_file, int test_line, ...);
+void always_expect_(TestReporter *test_reporter, const char *function, const char *test_file, int test_line, ...);
+void expect_never_(TestReporter *test_reporter, const char *function, const char *test_file, int test_line, ...);
+
+#define when(parameter, constraint) when_(#parameter, constraint)
+Constraint *when_(const char *parameter, Constraint *constraint);
+
+void clear_mocks(void);
 void tally_mocks(TestReporter *reporter);
 
 #ifdef __cplusplus

@@ -1,7 +1,5 @@
 project(cgreen-library C)
 
-find_package(FLEX)
-
 set(CGREEN_PUBLIC_INCLUDE_DIRS
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}
@@ -34,7 +32,6 @@ set(cgreen_SRCS
   constraint.c
   cute_reporter.c
   cdash_reporter.c
-  memory.c
   messaging.c
   mocks.c
   parameters.c
@@ -45,32 +42,9 @@ set(cgreen_SRCS
   vector.c
 )
 
-set(collector_SRCS
-  collector.c
-  collector_test_list.c
-  slurp.c
-  vector.c
-)
-
 include_directories(
   ${CGREEN_PUBLIC_INCLUDE_DIRS}
   ${CGREEN_PRIVATE_INCLUDE_DIRS}
-)
-
-### collector
-if (FLEX_FOUND)
-  flex_target(collector-scanner collector.l ${CMAKE_CURRENT_SOURCE_DIR}/collector.c)
-endif (FLEX_FOUND)
-
-add_executable(collector ${collector_SRCS})
-
-install(
-  TARGETS
-    collector
-  DESTINATION
-    ${BIN_INSTALL_DIR}
-  COMPONENT
-    binaries
 )
 
 ### cgreen

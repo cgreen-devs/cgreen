@@ -17,7 +17,7 @@ set(test_SRCS
   vector_tests.c
 )
 
-set(TEST_TARGET_LIBRARIES ${CGREEN_SHARED_LIBRARY} m)
+set(TEST_TARGET_LIBRARIES ${CGREEN_STATIC_LIBRARY} m)
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/some_file "Some stuff")
 if (WIN32)

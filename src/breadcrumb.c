@@ -12,10 +12,10 @@ CgreenBreadcrumb *create_breadcrumb(void) {
     if (breadcrumb == NULL) {
         return NULL;
     }
-	breadcrumb->trail = NULL;
-	breadcrumb->depth = 0;
-	breadcrumb->space = 0;
-	return breadcrumb;
+    breadcrumb->trail = NULL;
+    breadcrumb->depth = 0;
+    breadcrumb->space = 0;
+    return breadcrumb;
 }
 
 void destroy_breadcrumb(CgreenBreadcrumb *breadcrumb) {
@@ -48,7 +48,8 @@ const char *get_current_from_breadcrumb(CgreenBreadcrumb *breadcrumb) {
     if (get_breadcrumb_depth(breadcrumb) == 0) {
         return NULL;
     }
-	return breadcrumb->trail[breadcrumb->depth - 1];
+
+    return breadcrumb->trail[breadcrumb->depth - 1];
 }
 
 int get_breadcrumb_depth(CgreenBreadcrumb *breadcrumb) {
@@ -56,8 +57,7 @@ int get_breadcrumb_depth(CgreenBreadcrumb *breadcrumb) {
 }
 
 void walk_breadcrumb(CgreenBreadcrumb *breadcrumb, void (*walker)(const char *, void *), void *memo) {
-    int i;
-    for (i = 0; i < breadcrumb->depth; i++) {
+    for (int i = 0; i < breadcrumb->depth; i++) {
         (*walker)(breadcrumb->trail[i], memo);
     }
 }

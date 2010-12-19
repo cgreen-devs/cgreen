@@ -1,4 +1,5 @@
 #include <cgreen/assertions.h>
+#include <cgreen/boxed_double.h>
 #include <cgreen/reporter.h>
 #include <stdlib.h>
 #include <math.h>
@@ -10,6 +11,34 @@
 static double accuracy(int significant_figures, double largest);
 
 static int significant_figures = 8;
+
+void assert_that_(const char *file, int line, intptr_t actual, Constraint* constraint) {
+    (*get_test_reporter()->assert_true)(
+            get_test_reporter(),
+            file,
+            line,
+            (*constraint->compare)(constraint, actual),
+            "Expected actual value [%d] to [%s] [%d]",
+            actual,
+            constraint->name,
+            constraint->stored_value);
+
+    constraint->destroy(constraint);
+}
+
+void assert_that_double_(const char *file, int line, double actual, Constraint* constraint) {
+    BoxedDouble* boxed_actual = (BoxedDouble*)box_double(actual);
+
+    (*get_test_reporter()->assert_true)(get_test_reporter(), file, line, (*constraint->compare)(constraint, (intptr_t)boxed_actual),
+            "Expected actual value [%f] to [%s] [%f] within [%d] significant figures",
+            actual,
+            constraint->name,
+            as_double(constraint->stored_value),
+            significant_figures);
+
+    free(boxed_actual);
+    constraint->destroy(constraint);
+}
 
 void assert_equal_(const char *file, int line, intptr_t tried, intptr_t expected) {
     (*get_test_reporter()->assert_true)(
@@ -35,7 +64,7 @@ void assert_double_equal_(const char *file, int line, double tried, double expec
             file,
             line,
             doubles_are_equal(tried, expected),
-            "[%f] should match [%f] within %d significant figures %f", tried, expected, significant_figures);
+            "[%f] should match [%f] within %d significant figures", tried, expected, significant_figures);
 }
 
 void assert_double_not_equal_(const char *file, int line, double tried, double expected) {
@@ -73,15 +102,25 @@ const char *show_null_as_the_string_null(const char *string) {
     return (string == NULL ? "NULL" : string);
 }
 
-int strings_are_equal(const char *tried, const char *expected) {
-    if ((tried == NULL) || (expected == NULL)) {
-        return (tried == expected);
-    } else {
-        return (strcmp(tried, expected) == 0);
+int strings_are_equal(const char* actual, const char* expected) {
+	/* TODO: if expected is null, warn user to use appropriate non-string assert instead */
+    if ((actual == NULL) || (expected == NULL)) {
+        return (actual == expected);
     }
+
+    return (strcmp(actual, expected) == 0);
 }
 
-int doubles_are_equal(const double tried, const double expected) {
+int string_contains(const char* actual, const char* expected) {
+	/* TODO: if expected is null, warn user */
+    if ((actual == NULL) || (expected == NULL)) {
+        return false;
+    }
+
+    return (strstr(actual, expected) != NULL);
+}
+
+int doubles_are_equal(double tried, double expected) {
     return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(tried, expected));
 }
 

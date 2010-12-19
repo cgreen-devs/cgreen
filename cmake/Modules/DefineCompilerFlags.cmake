@@ -2,13 +2,16 @@
 
 include(CheckCCompilerFlag)
 
-if (USE_W32API)
-  add_definitions(-mno-cygwin)
-endif (USE_W32API)
+if (WIN32)
+  add_definitions(-std=c99)
+endif (WIN32)
 
 if (UNIX AND NOT WIN32) # All *nix except Cygwin
   if (CMAKE_COMPILER_IS_GNUCC)
-    add_definitions(-Wall -Wextra -Wmissing-prototypes -Wdeclaration-after-statement -Wunused)
+    add_definitions(-g -std=c99 -Wall -Wextra -Wmissing-prototypes -Wunused)
+
+    add_definitions(-D_REENTRANT)         # for gmtime_r()
+    add_definitions(-DUSE_XOPEN_EXTENDED) # for strdup(), which isn't part of C99
 
     # with -fPIC
     check_c_compiler_flag("-fPIC" WITH_FPIC)

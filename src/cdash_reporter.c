@@ -150,6 +150,8 @@ static void cdash_destroy_reporter(TestReporter *reporter) {
 
 
 static void cdash_reporter_suite_started(TestReporter *reporter, const char *name, const int number_of_tests) {
+	(void)number_of_tests;
+
 	reporter_start(reporter, name);
 }
 
@@ -196,6 +198,8 @@ static void show_failed(TestReporter *reporter, const char *file, int line, cons
 }
 
 static void show_passed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+	(void)message;
+	(void)arguments;
 	float exectime;
 	CdashMemo *memo = (CdashMemo *)reporter->memo;
 	const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
@@ -223,6 +227,8 @@ static void show_passed(TestReporter *reporter, const char *file, int line, cons
 }
 
 static void show_incomplete(TestReporter *reporter, const char *name) {
+	(void)reporter;
+	(void)name;
 
 }
 
