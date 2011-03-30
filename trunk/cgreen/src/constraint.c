@@ -4,10 +4,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int compare_want(Constraint *constraint, intptr_t actual);
-static int compare_do_not_want(Constraint *constraint, intptr_t actual);
-static void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
-static void test_do_not_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
+Constraint *create_constraint();
+void destroy_empty_constraint(Constraint *constraint);
+void destroy_static_constraint(Constraint *constraint);
+void destroy_double_constraint(Constraint *constraint);
+
+int compare_want(Constraint *constraint, intptr_t actual);
+int compare_do_not_want(Constraint *constraint, intptr_t actual);
+void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
+void test_do_not_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
 static int compare_true(Constraint *constraint, intptr_t actual);
 static void test_true(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
@@ -27,25 +32,23 @@ static void test_want_double(Constraint *constraint, const char *function, intpt
 static int compare_do_not_want_double(Constraint *constraint, intptr_t actual);
 static void test_do_not_want_double(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
-static Constraint *create_constraint();
-static void destroy_empty_constraint(Constraint *constraint);
-static void destroy_double_constraint(Constraint *constraint);
-
-static Constraint *create_constraint() {
+Constraint *create_constraint() {
     Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));
+
     constraint->destroy = &destroy_empty_constraint;
     return constraint;
 }
 
 Constraint *create_parameter_constraint_for(const char *parameter_name) {
     Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));
+
     constraint->type = PARAMETER;
     constraint->parameter_name = parameter_name;
     constraint->destroy = &destroy_empty_constraint;
     return constraint;
 }
 
-static void destroy_empty_constraint(Constraint *constraint) {
+void destroy_empty_constraint(Constraint *constraint) {
     constraint->name = NULL;
     constraint->parameter_name = NULL;
     constraint->stored_value = 0;
@@ -57,8 +60,12 @@ static void destroy_empty_constraint(Constraint *constraint) {
     free(constraint);
 }
 
-void destroy_constraint(void *abstract) {
-    Constraint *constraint = (Constraint *)abstract;
+void destroy_static_constraint(Constraint *constraint) {
+    /* static constraints helpers (e.g. is_null) act as singletons are never destroyed */
+    (void)constraint;
+}
+
+void destroy_constraint(Constraint *constraint) {
     (*constraint->destroy)(constraint);
 }
 
@@ -101,7 +108,7 @@ Constraint* create_not_equal_to_intptr_constraint(intptr_t value_to_match) {
     return constraint;
 }
 
-Constraint* create_equal_to_string_constraint(char* value_to_match) {
+Constraint* create_equal_to_string_constraint(const char* value_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
@@ -112,7 +119,7 @@ Constraint* create_equal_to_string_constraint(char* value_to_match) {
     return constraint;
 }
 
-Constraint* create_not_equal_to_string_constraint(char* value_to_match) {
+Constraint* create_not_equal_to_string_constraint(const char* value_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
@@ -123,7 +130,7 @@ Constraint* create_not_equal_to_string_constraint(char* value_to_match) {
     return constraint;
 }
 
-Constraint* create_contains_string_constraint(char* value_to_match) {
+Constraint* create_contains_string_constraint(const char* value_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
@@ -134,7 +141,7 @@ Constraint* create_contains_string_constraint(char* value_to_match) {
     return constraint;
 }
 
-Constraint* create_does_not_contain_string_constraint(char* value_to_match) {
+Constraint* create_does_not_contain_string_constraint(const char* value_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
@@ -190,15 +197,15 @@ intptr_t box_double(double value) {
     return (intptr_t)box;
 }
 
-static int compare_want(Constraint *constraint, intptr_t actual) {
+int compare_want(Constraint *constraint, intptr_t actual) {
     return (constraint->stored_value == actual);
 }
 
-static int compare_do_not_want(Constraint *constraint, intptr_t actual) {
+int compare_do_not_want(Constraint *constraint, intptr_t actual) {
     return (constraint->stored_value != actual);
 }
 
-static void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
+void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
             reporter,
             test_file,
@@ -211,7 +218,7 @@ static void test_want(Constraint *constraint, const char *function, intptr_t act
             constraint->parameter_name);
 }
 
-static void test_do_not_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
+void test_do_not_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
             reporter,
             test_file,
@@ -330,7 +337,7 @@ static void test_do_not_want_double(Constraint *constraint, const char *function
     (void)unbox_double(actual);
 }
 
-static void destroy_double_constraint(Constraint *constraint) {
+void destroy_double_constraint(Constraint *constraint) {
     (void)unbox_double(constraint->stored_value);
     destroy_empty_constraint(constraint);
 }
@@ -360,6 +367,5 @@ static void test_true(Constraint *constraint, const char *function, intptr_t act
     (void)test_line;
     (void)reporter;
 }
-
 
 /* vim: set ts=4 sw=4 et cindent: */

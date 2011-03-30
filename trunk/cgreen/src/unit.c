@@ -37,8 +37,8 @@ static const char* CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE = "CGREEN_PER_TE
 
 static void clean_up_test_run(TestSuite *suite, TestReporter *reporter);
 static void run_every_test(TestSuite *suite, TestReporter *reporter);
-static void run_named_test(TestSuite *suite, char *name, TestReporter *reporter);
-static int has_test(TestSuite *suite, char *name);
+static void run_named_test(TestSuite *suite, const char *name, TestReporter *reporter);
+static int has_test(TestSuite *suite, const char *name);
 static void run_test_in_the_current_process(TestSuite *suite, UnitTest *test, TestReporter *reporter);
 static void run_test_in_its_own_process(TestSuite *suite, UnitTest *test, TestReporter *reporter);
 static int in_child_process(void);
@@ -79,7 +79,7 @@ void destroy_test_suite(TestSuite *suiteToDestroy) {
     free(suiteToDestroy);
 }
 
-void add_test_(TestSuite *suite, char *name, CgreenTest *test) {
+void add_test_(TestSuite *suite, const char *name, CgreenTest *test) {
     suite->size++;
     suite->tests = (UnitTest *)realloc(suite->tests, sizeof(UnitTest) * suite->size);
     suite->tests[suite->size - 1].type = test_function;
@@ -99,7 +99,7 @@ void add_tests_(TestSuite *suite, const char *names, ...) {
     destroy_cgreen_vector(test_names);
 }
 
-void add_suite_(TestSuite *owner, char *name, TestSuite *suite) {
+void add_suite_(TestSuite *owner, const char *name, TestSuite *suite) {
     owner->size++;
     owner->tests = (UnitTest *)realloc(owner->tests, sizeof(UnitTest) * owner->size);
     owner->tests[owner->size - 1].type = test_suite;
@@ -150,7 +150,7 @@ int run_test_suite(TestSuite *suite, TestReporter *reporter) {
 	return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-int run_single_test(TestSuite *suite, char *name, TestReporter *reporter) {
+int run_single_test(TestSuite *suite, const char *name, TestReporter *reporter) {
 	if (per_test_timeout_defined()) {
 		validate_per_test_timeout_value();
 	}
@@ -183,7 +183,7 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
 	(*reporter->finish_suite)(reporter, suite->name);
 }
 
-static void run_named_test(TestSuite *suite, char *name, TestReporter *reporter) {
+static void run_named_test(TestSuite *suite, const char *name, TestReporter *reporter) {
 	(*reporter->start_suite)(reporter, suite->name, count_tests(suite));
 	int i;
     for (i = 0; i < suite->size; i++) {
@@ -201,7 +201,7 @@ static void run_named_test(TestSuite *suite, char *name, TestReporter *reporter)
 	(*reporter->finish_suite)(reporter, suite->name);
 }
 
-static int has_test(TestSuite *suite, char *name) {
+static int has_test(TestSuite *suite, const char *name) {
 	int i;
 	for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
