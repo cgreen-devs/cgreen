@@ -30,6 +30,7 @@ set(cgreen_SRCS
   assertions.c
   breadcrumb.c
   constraint.c
+  constraint_syntax_helpers.c
   cute_reporter.c
   cdash_reporter.c
   messaging.c
