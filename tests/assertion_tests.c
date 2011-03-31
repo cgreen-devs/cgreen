@@ -115,6 +115,24 @@ Ensure(zero_should_assert_unsigned_char_not_equal_to_one) {
     assert_not_equal(x, y);
 }
 
+Ensure(different_pointers_with_different_contents_should_not_assert_equal) {
+    int data[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+    int other_data[] = { 0, 1, 2, 3, 4, 5, 6, 7, 666 };
+
+    assert_that(data,
+        is_not_equal_to_contents_of(other_data, sizeof(other_data))
+    );
+}
+
+Ensure(different_pointers_with_same_contents_should_assert_equal) {
+    int data[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+    int same_data[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+
+    assert_that(data,
+        is_equal_to_contents_of(same_data, sizeof(same_data))
+    );
+}
+
 Ensure(one_should_assert_float_equal_to_one) {
     float x = 1;
     float y = 1;
@@ -234,6 +252,8 @@ TestSuite *assertion_tests() {
     add_test(suite, case_different_strings_should_not_match);
     add_test(suite, null_string_should_only_match_another_null_string);
     add_test(suite, null_string_should_only_match_another_null_string_even_with_messages);
+    add_test(suite, different_pointers_with_different_contents_should_not_assert_equal);
+    add_test(suite, different_pointers_with_same_contents_should_assert_equal);
 /* TODO: an expected fail, see TODO on test definition */
 /*    add_test(suite, fail_reports_message); */
     return suite;

@@ -4,32 +4,32 @@
 Constraint static_is_non_null_constraint = { 
     .destroy = &destroy_static_constraint,
     .type = PARAMETER,
-    .compare = &compare_do_not_want,
-    .test = &test_do_not_want,
+    .compare = &compare_do_not_want_value,
+    .test = &test_do_not_want_value,
     .stored_value = 0
 };
 
 Constraint static_is_null_constraint = { 
     .destroy = &destroy_static_constraint,
     .type = PARAMETER,
-    .compare = &compare_want,
-    .test = &test_want,
+    .compare = &compare_want_value,
+    .test = &test_want_value,
     .stored_value = 0
 };
 
 Constraint static_is_false_constraint = { 
     .destroy = &destroy_static_constraint,
     .type = PARAMETER,
-    .compare = &compare_want,
-    .test = &test_want,
+    .compare = &compare_want_value,
+    .test = &test_want_value,
     .stored_value = 0
 };
 
 Constraint static_is_true_constraint = { 
     .destroy = &destroy_static_constraint,
     .type = PARAMETER,
-    .compare = &compare_do_not_want,
-    .test = &test_do_not_want,
+    .compare = &compare_do_not_want_value,
+    .test = &test_do_not_want_value,
     .stored_value = 0
 };
 

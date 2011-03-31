@@ -28,8 +28,64 @@ Ensure(parameter_name_matches_correctly) {
     destroy_constraint(constraint);
 }
 
+/*
+Ensure(cannot_create_contents_constraint_with_zero_size) {
+    const size_t NON_ZERO = !0;
+    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(NULL, NON_ZERO);
+}
+
+Ensure(cannot_create_contents_constraint_with_null) {
+    int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(&content, 0));
+}
+*/
+
+Ensure(compare_equal_to_contents_is_false_on_null) {
+    int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(&content, sizeof(content));
+
+    assert_false(compare_constraint(is_equal_to_contents, NULL));
+
+    destroy_constraint(is_equal_to_contents);
+}
+
+Ensure(compare_not_equal_to_contents_is_false_on_null) {
+    int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    Constraint *is_not_equal_to_contents = create_not_equal_to_contents_constraint(&content, sizeof(content));
+
+    assert_false(compare_constraint(is_not_equal_to_contents, NULL));
+
+    destroy_constraint(is_not_equal_to_contents);
+}
+
+/* expected to fail, to manually spot-check assertion message */
+Ensure(test_contents_assertion_fails_with_null) {
+/*
+    int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(&content, sizeof(content));
+
+    intptr_t null_actual = (intptr_t)NULL;
+    int line_number = 666;
+    is_equal_to_contents->test(is_equal_to_contents, "function", null_actual, "file", line_number, get_test_reporter());
+
+    destroy_constraint(is_equal_to_contents);
+*/
+}
+
+Ensure(compare_contents_is_correct_on_larger_than_intptr_array) {
+    int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10, 11, 12, 13, 14, 15 };
+    int also_content[] = { 0, 1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10, 11, 12, 13, 14, 15 };
+    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(&content, sizeof(content));
+
+    int not_content[] = { 0, 1, 2, 3, 4, 5, 6, 7, 108, 109, 110, 111, 112, 113, 114, 115 };
+    assert_true(compare_constraint(is_equal_to_contents, &also_content));
+    assert_false(compare_constraint(is_equal_to_contents, &not_content));
+
+    destroy_constraint(is_equal_to_contents);
+}
+
 Ensure(compare_is_correct_when_using_integers) {
-    Constraint *is_equal_to_37 = create_equal_to_intptr_constraint(37);
+    Constraint *is_equal_to_37 = create_equal_to_value_constraint(37);
 
     assert_true(compare_constraint(is_equal_to_37, 37));
     assert_false(compare_constraint(is_equal_to_37, 36));
@@ -149,6 +205,10 @@ TestSuite *constraint_tests() {
     add_test(suite, matching_against_null_string);
     add_test(suite, matching_doubles_as_equal_with_default_significance);
     add_test(suite, matching_doubles_respects_significant_figure_setting);
+    add_test(suite, compare_contents_is_correct_on_larger_than_intptr_array);
+    add_test(suite, compare_equal_to_contents_is_false_on_null);
+    add_test(suite, compare_not_equal_to_contents_is_false_on_null);
+    add_test(suite, test_contents_assertion_fails_with_null);
 //    add_test(suite, unequal_structs_with_same_value_for_specific_field_compare_true);
     return suite;
 }
