@@ -28,6 +28,7 @@ set(CGREEN_LINK_LIBRARIES
 
 set(cgreen_SRCS
   assertions.c
+  boxed_double.c
   breadcrumb.c
   constraint.c
   constraint_syntax_helpers.c

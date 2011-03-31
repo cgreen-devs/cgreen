@@ -9,10 +9,17 @@ void destroy_empty_constraint(Constraint *constraint);
 void destroy_static_constraint(Constraint *constraint);
 void destroy_double_constraint(Constraint *constraint);
 
-int compare_want(Constraint *constraint, intptr_t actual);
-int compare_do_not_want(Constraint *constraint, intptr_t actual);
-void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
-void test_do_not_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
+int compare_want_value(Constraint *constraint, intptr_t actual);
+void test_want_value(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
+
+int compare_do_not_want_value(Constraint *constraint, intptr_t actual);
+void test_do_not_want_value(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
+
+static int compare_want_contents(Constraint *constraint, intptr_t actual);
+static void test_want_contents(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
+
+static int compare_do_not_want_contents(Constraint *constraint, intptr_t actual);
+static void test_do_not_want_contents(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
 static int compare_true(Constraint *constraint, intptr_t actual);
 static void test_true(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
@@ -51,17 +58,15 @@ Constraint *create_parameter_constraint_for(const char *parameter_name) {
 void destroy_empty_constraint(Constraint *constraint) {
     constraint->name = NULL;
     constraint->parameter_name = NULL;
-    constraint->stored_value = 0;
     constraint->compare = NULL;
     constraint->test = NULL;
     constraint->destroy = NULL;
-    constraint->stored_value = 0;
 
     free(constraint);
 }
 
 void destroy_static_constraint(Constraint *constraint) {
-    /* static constraints helpers (e.g. is_null) act as singletons are never destroyed */
+    /* static constraints helpers (e.g. is_null) act as singletons, and are never destroyed */
     (void)constraint;
 }
 
@@ -86,47 +91,73 @@ Constraint *when_(const char *parameter, Constraint* constraint) {
     return constraint;
 }
 
-Constraint* create_equal_to_intptr_constraint(intptr_t value_to_match) {
+Constraint* create_equal_to_value_constraint(intptr_t value_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
-    constraint->compare = &compare_want;
-    constraint->test = &test_want;
-    constraint->name = "equal";
+    constraint->compare = &compare_want_value;
+    constraint->test = &test_want_value;
+    constraint->name = "equal value";
     constraint->stored_value = value_to_match;
+    constraint->size_to_compare = sizeof(intptr_t);
     return constraint;
 }
 
-Constraint* create_not_equal_to_intptr_constraint(intptr_t value_to_match) {
+Constraint* create_not_equal_to_value_constraint(intptr_t value_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
-    constraint->compare = &compare_do_not_want;
-    constraint->test = &test_do_not_want;
+    constraint->compare = &compare_do_not_want_value;
+    constraint->test = &test_do_not_want_value;
     constraint->name = "not equal";
     constraint->stored_value = value_to_match;
+    constraint->size_to_compare = sizeof(intptr_t);
     return constraint;
 }
 
-Constraint* create_equal_to_string_constraint(const char* value_to_match) {
+Constraint *create_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare) {
+    Constraint *constraint = create_constraint();
+    constraint->type = PARAMETER;
+
+    constraint->compare = &compare_want_contents;
+    constraint->test = &test_want_contents;
+    constraint->name = "equal contents of";
+    constraint->stored_value = (intptr_t)pointer_to_compare;
+    constraint->size_to_compare = size_to_compare;
+    return constraint;
+}
+
+Constraint *create_not_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare) {
+    Constraint *constraint = create_constraint();
+    constraint->type = PARAMETER;
+
+    constraint->compare = &compare_do_not_want_contents;
+    constraint->test = &test_do_not_want_contents;
+    constraint->name = "not equal contents of";
+    constraint->stored_value = (intptr_t)pointer_to_compare;
+    constraint->size_to_compare = size_to_compare;
+    return constraint;
+}
+
+Constraint* create_equal_to_string_constraint(const char* string_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
     constraint->compare = &compare_want_string;
     constraint->test = &test_want_string;
     constraint->name = "equal string";
-    constraint->stored_value = (intptr_t)value_to_match;
+    constraint->stored_value = (intptr_t)string_to_match;
     return constraint;
 }
 
-Constraint* create_not_equal_to_string_constraint(const char* value_to_match) {
+Constraint* create_not_equal_to_string_constraint(const char* string_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
     constraint->compare = &compare_do_not_want_string;
     constraint->test = &test_do_not_want_string;
     constraint->name = "not equal string";
-    constraint->stored_value = (intptr_t)value_to_match;
+    constraint->stored_value = (intptr_t)string_to_match;
     return constraint;
 }
 
@@ -190,22 +221,33 @@ Constraint* create_return_value_constraint(intptr_t value_to_return) {
     return constraint;
 }
 
-/* NOTE: while returning BoxedDouble* here seems logical, it makes usage messier */
-intptr_t box_double(double value) {
-    BoxedDouble *box = (BoxedDouble *) malloc(sizeof(BoxedDouble));
-    box->value = value;
-    return (intptr_t)box;
+int compare_want_value(Constraint *constraint, intptr_t actual) {
+    return constraint->stored_value == actual;
 }
 
-int compare_want(Constraint *constraint, intptr_t actual) {
-    return (constraint->stored_value == actual);
+int compare_do_not_want_value(Constraint *constraint, intptr_t actual) {
+    return !compare_want_value(constraint, actual);
 }
 
-int compare_do_not_want(Constraint *constraint, intptr_t actual) {
-    return (constraint->stored_value != actual);
+int compare_want_contents(Constraint *constraint, intptr_t actual) {
+    /* we can't inspect the contents of a NULL pointer, so comparison always fails */
+    if ((void *)actual == NULL) {
+        return 0;
+    }
+
+    return 0 == memcmp((void *)constraint->stored_value, (void *)actual, constraint->size_to_compare);
 }
 
-void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
+int compare_do_not_want_contents(Constraint *constraint, intptr_t actual) {
+    /* we can't inspect the contents of a NULL pointer, so comparison always fails */
+    if ((void *)actual == NULL) {
+        return 0;
+    }
+
+    return !compare_want_contents(constraint, actual);
+}
+
+void test_want_value(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
             reporter,
             test_file,
@@ -218,7 +260,7 @@ void test_want(Constraint *constraint, const char *function, intptr_t actual, co
             constraint->parameter_name);
 }
 
-void test_do_not_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
+void test_do_not_want_value(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
             reporter,
             test_file,
@@ -229,6 +271,70 @@ void test_do_not_want(Constraint *constraint, const char *function, intptr_t act
             actual,
             function,
             constraint->parameter_name);
+}
+
+static int find_index_of_difference(char *expected, char *actual, size_t size_to_compare) {
+    char *expectedp = expected;
+    char *actualp = actual;
+
+    while (size_to_compare--) {
+        if (*expectedp++ != *actualp++) {
+            return actualp - actual;
+        }
+    }
+
+    return -1;
+}
+
+void test_want_contents(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
+    if ((void *)actual == NULL) {
+        (*reporter->assert_true)(
+                reporter,
+                test_file,
+                test_line,
+                false,
+                "Wanted contents of pointer parameter [%s] in function [%s] to be the same, but NULL was supplied",
+                constraint->parameter_name,
+                function);
+
+        return;
+    }
+
+    int difference_index = find_index_of_difference((char *)constraint->stored_value, (char *)actual, constraint->size_to_compare);
+
+    (*reporter->assert_true)(
+            reporter,
+            test_file,
+            test_line,
+            (*constraint->compare)(constraint, actual),
+            "Wanted contents of parameter [%s] in function [%s] to be the same, but they start to differ at offset [%d]",
+            constraint->parameter_name,
+            function,
+            difference_index);
+}
+
+void test_do_not_want_contents(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
+    if ((void *)actual == NULL) {
+        (*reporter->assert_true)(
+                reporter,
+                test_file,
+                test_line,
+                false,
+                "Wanted contents of pointer parameter [%s] in function [%s] to be the different, but NULL was supplied",
+                constraint->parameter_name,
+                function);
+
+        return;
+    }
+
+    (*reporter->assert_true)(
+            reporter,
+            test_file,
+            test_line,
+            (*constraint->compare)(constraint, actual),
+            "Wanted contents of parameter [%s] in function [%s] to be different, but they are the same",
+            constraint->parameter_name,
+            function);
 }
 
 static int compare_want_string(Constraint *constraint, intptr_t actual) {
@@ -249,7 +355,7 @@ static void test_want_string(Constraint *constraint, const char *function, intpt
 }
 
 static int compare_do_not_want_string(Constraint *constraint, intptr_t actual) {
-    return !strings_are_equal((const char *)constraint->stored_value, (const char *)actual);
+    return !compare_want_string(constraint, actual);
 }
 
 static void test_do_not_want_string(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
@@ -266,7 +372,7 @@ static void test_do_not_want_string(Constraint *constraint, const char *function
 }
 
 static int compare_do_not_want_substring(Constraint *constraint, intptr_t actual) {
-    return !string_contains((const char *)actual, (const char *)constraint->stored_value);
+    return !compare_want_substring(constraint, actual);
 }
 
 static void test_do_not_want_substring(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
@@ -319,7 +425,7 @@ static void test_want_double(Constraint *constraint, const char *function, intpt
 }
 
 static int compare_do_not_want_double(Constraint *constraint, intptr_t actual) {
-    return !doubles_are_equal(as_double(constraint->stored_value), as_double(actual));
+    return !compare_want_double(constraint, actual);
 }
 
 static void test_do_not_want_double(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
@@ -340,16 +446,6 @@ static void test_do_not_want_double(Constraint *constraint, const char *function
 void destroy_double_constraint(Constraint *constraint) {
     (void)unbox_double(constraint->stored_value);
     destroy_empty_constraint(constraint);
-}
-
-double unbox_double(intptr_t box) {
-    double value = as_double(box);
-    free((BoxedDouble *)box);
-    return value;
-}
-
-double as_double(intptr_t box) {
-    return ((BoxedDouble *)box)->value;
 }
 
 static int compare_true(Constraint *constraint, intptr_t actual) {
