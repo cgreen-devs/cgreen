@@ -13,9 +13,12 @@ extern "C" {
  */
 #define is_equal_to(value) create_equal_to_value_constraint((intptr_t)value)
 #define is_not_equal_to(value) create_not_equal_to_value_constraint((intptr_t)value)
+
 #define is_equal_to_contents_of(pointer, size_of_contents) create_equal_to_contents_constraint((void *)pointer, size_of_contents)
 #define is_not_equal_to_contents_of(pointer, size_of_contents) create_not_equal_to_contents_constraint((void *)pointer, size_of_contents)
+
 #define will_return(value) create_return_value_constraint((intptr_t)value)
+#define will_set_parameter(parameter_name, value) create_set_parameter_value_constraint(#parameter_name, (intptr_t)value)
 
 Constraint *is_equal_to_string(const char *string_to_match);
 Constraint *is_not_equal_to_string(const char *string_to_match);

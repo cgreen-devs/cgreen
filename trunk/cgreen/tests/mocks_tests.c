@@ -202,6 +202,20 @@ Ensure(can_always_mock_full_function_call) {
     assert_equal(sample_mock(666, "devil"), 5);
 }
 
+static void out_param_mock(bool* result) {
+    mock(result);
+}
+
+Ensure(can_stub_an_out_parameter) {
+    expect(out_param_mock,
+        will_set_parameter(result, true)
+    );
+
+    bool result = false;
+    out_param_mock(&result);
+    assert_that(result, is_true);
+}
+
 /* Expected fail tests follow. */
 /* TODO: put these in a separate suite and validate all tests in said suite fail during 'make check' */
 /*
@@ -250,6 +264,7 @@ TestSuite *mock_tests() {
     add_test(suite, when_called_with_always_should_not_tally_counts);
     add_test(suite, can_mock_full_sequence);
     add_test(suite, can_always_mock_full_function_call);
+    add_test(suite, can_stub_an_out_parameter);
 
     /* expected failures. TODO: put these in a separate suite, as per comments above. */
     /*

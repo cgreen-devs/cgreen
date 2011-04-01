@@ -10,11 +10,10 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 
-#define compare_constraint(c, x) (*c->compare)(c, (intptr_t)x)
-
 typedef enum {
     PARAMETER,
     RETURN_VALUE,
+    SET_PARAMETER,
     CALL
 } ConstraintType;
 
@@ -60,6 +59,7 @@ Constraint *create_does_not_contain_string_constraint(const char* value_to_match
 Constraint *create_equal_to_double_constraint(double value_to_match);
 Constraint *create_not_equal_to_double_constraint(double value_to_match);
 Constraint *create_return_value_constraint(intptr_t value_to_return);
+Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set);
 
 
 #ifdef __cplusplus

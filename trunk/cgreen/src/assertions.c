@@ -13,6 +13,20 @@ static double accuracy(int significant_figures, double largest);
 static int significant_figures = 8;
 
 void assert_that_(const char *file, int line, intptr_t actual, Constraint* constraint) {
+    if (NULL != constraint && constraint->type != PARAMETER) {
+        (*get_test_reporter()->assert_true)(
+                get_test_reporter(),
+                file,
+                line,
+                false,
+                "Got constraint of type [%s], but only parameter constraints are allowed for assertions.",
+                constraint->name);
+
+        constraint->destroy(constraint);
+
+        return;
+    }
+
     (*get_test_reporter()->assert_true)(
             get_test_reporter(),
             file,
@@ -27,6 +41,20 @@ void assert_that_(const char *file, int line, intptr_t actual, Constraint* const
 }
 
 void assert_that_double_(const char *file, int line, double actual, Constraint* constraint) {
+    if (NULL != constraint && constraint->type != PARAMETER) {
+        (*get_test_reporter()->assert_true)(
+                get_test_reporter(),
+                file,
+                line,
+                false,
+                "Got constraint of type [%s], but only parameter constraints are allowed for assertions.",
+                constraint->name);
+
+        constraint->destroy(constraint);
+
+        return;
+    }
+
     BoxedDouble* boxed_actual = (BoxedDouble*)box_double(actual);
 
     (*get_test_reporter()->assert_true)(get_test_reporter(), file, line, (*constraint->compare)(constraint, (intptr_t)boxed_actual),
