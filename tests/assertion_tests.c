@@ -211,11 +211,15 @@ Ensure(null_string_should_only_match_another_null_string_even_with_messages) {
 /*
  * TODO: make TestContext more easily injectable so we can trap the failure
  *       and compare the message. for now, manually uncomment and verify.
+ */
 
-Ensure(fail_reports_message() {
-    fail("correctly");
+Ensure(fail_reports_message) {
+//    fail("correctly");
 }
-*/
+
+Ensure(return_value_constraints_are_not_allowed) {
+//    assert_that(0, will_return(1));
+}
 
 TestSuite *assertion_tests() {
     TestSuite *suite = create_test_suite();
@@ -254,7 +258,7 @@ TestSuite *assertion_tests() {
     add_test(suite, null_string_should_only_match_another_null_string_even_with_messages);
     add_test(suite, different_pointers_with_different_contents_should_not_assert_equal);
     add_test(suite, different_pointers_with_same_contents_should_assert_equal);
-/* TODO: an expected fail, see TODO on test definition */
-/*    add_test(suite, fail_reports_message); */
+    add_test(suite, fail_reports_message);
+    add_test(suite, return_value_constraints_are_not_allowed);
     return suite;
 }

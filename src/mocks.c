@@ -296,15 +296,23 @@ void apply_any_parameter_constraints(RecordedExpectation *expectation, const cha
     for (int i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
-        if (constraint_is_for_parameter(constraint, parameter)) {
-            constraint->test(
-                    constraint,
-                    expectation->function,
-                    actual,
-                    expectation->test_file,
-                    expectation->test_line,
-                    test_reporter);
+        if (!constraint_is_for_parameter(constraint, parameter)) {
+            continue;
         }
+
+        // TODO: push this into the constraint->test, once the "test" is renamed to something like "execute", and delete here.
+        //       this potentially also means that the SET_PARAMETER type could be removed
+        if (constraint->type == SET_PARAMETER) {
+            *((intptr_t *)actual) = constraint->stored_value;
+        }
+
+        constraint->test(
+            constraint,
+            expectation->function,
+            actual,
+            expectation->test_file,
+            expectation->test_line,
+            test_reporter);
     }
 }
 

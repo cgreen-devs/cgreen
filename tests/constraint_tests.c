@@ -3,6 +3,8 @@
 #include <cgreen/constraint.h>
 #include <stdlib.h>
 
+#define compare_constraint(c, x) (*c->compare)(c, (intptr_t)x)
+
 Ensure(default_destroy_clears_state) {
     Constraint *constraint = create_parameter_constraint_for("parameter name");
     destroy_constraint(constraint);
@@ -28,15 +30,20 @@ Ensure(parameter_name_matches_correctly) {
     destroy_constraint(constraint);
 }
 
+/* TODO: fail test immediately if user misuses syntax as described in these tests */
 /*
 Ensure(cannot_create_contents_constraint_with_zero_size) {
     const size_t NON_ZERO = !0;
     Constraint *is_equal_to_contents = create_equal_to_contents_constraint(NULL, NON_ZERO);
+
+    assert_that(is_equal_to_contents, is_null);
 }
 
 Ensure(cannot_create_contents_constraint_with_null) {
     int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(&content, 0));
+    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(&content, 0);
+
+    assert_that(is_equal_to_contents, is_null);
 }
 */
 

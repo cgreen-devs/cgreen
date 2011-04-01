@@ -75,9 +75,9 @@ void destroy_constraint(Constraint *constraint) {
 }
 
 bool constraint_is_for_parameter(const Constraint *constraint, const char *parameter) {
-	if (constraint->type != PARAMETER) {
-		return false;
-	}
+    if (constraint->type != PARAMETER && constraint->type != SET_PARAMETER) {
+        return false;
+    }
 
     return strcmp(constraint->parameter_name, parameter) == 0;
 }
@@ -91,7 +91,7 @@ Constraint *when_(const char *parameter, Constraint* constraint) {
     return constraint;
 }
 
-Constraint* create_equal_to_value_constraint(intptr_t value_to_match) {
+Constraint *create_equal_to_value_constraint(intptr_t value_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
@@ -103,7 +103,7 @@ Constraint* create_equal_to_value_constraint(intptr_t value_to_match) {
     return constraint;
 }
 
-Constraint* create_not_equal_to_value_constraint(intptr_t value_to_match) {
+Constraint *create_not_equal_to_value_constraint(intptr_t value_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
@@ -139,7 +139,7 @@ Constraint *create_not_equal_to_contents_constraint(void *pointer_to_compare, si
     return constraint;
 }
 
-Constraint* create_equal_to_string_constraint(const char* string_to_match) {
+Constraint *create_equal_to_string_constraint(const char* string_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
@@ -150,7 +150,7 @@ Constraint* create_equal_to_string_constraint(const char* string_to_match) {
     return constraint;
 }
 
-Constraint* create_not_equal_to_string_constraint(const char* string_to_match) {
+Constraint *create_not_equal_to_string_constraint(const char* string_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
@@ -161,7 +161,7 @@ Constraint* create_not_equal_to_string_constraint(const char* string_to_match) {
     return constraint;
 }
 
-Constraint* create_contains_string_constraint(const char* value_to_match) {
+Constraint *create_contains_string_constraint(const char* value_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
@@ -172,7 +172,7 @@ Constraint* create_contains_string_constraint(const char* value_to_match) {
     return constraint;
 }
 
-Constraint* create_does_not_contain_string_constraint(const char* value_to_match) {
+Constraint *create_does_not_contain_string_constraint(const char* value_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
@@ -183,7 +183,7 @@ Constraint* create_does_not_contain_string_constraint(const char* value_to_match
     return constraint;
 }
 
-Constraint* create_equal_to_double_constraint(double value_to_match) {
+Constraint *create_equal_to_double_constraint(double value_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
@@ -196,7 +196,7 @@ Constraint* create_equal_to_double_constraint(double value_to_match) {
     return constraint;
 }
 
-Constraint* create_not_equal_to_double_constraint(double value_to_match) {
+Constraint *create_not_equal_to_double_constraint(double value_to_match) {
     Constraint *constraint = create_constraint();
     constraint->type = PARAMETER;
 
@@ -209,7 +209,7 @@ Constraint* create_not_equal_to_double_constraint(double value_to_match) {
     return constraint;
 }
 
-Constraint* create_return_value_constraint(intptr_t value_to_return) {
+Constraint *create_return_value_constraint(intptr_t value_to_return) {
     Constraint* constraint = create_constraint();
     constraint->type = RETURN_VALUE;
 
@@ -217,6 +217,19 @@ Constraint* create_return_value_constraint(intptr_t value_to_return) {
     constraint->test = &test_true;
     constraint->name = "return value";
     constraint->stored_value = value_to_return;
+
+    return constraint;
+}
+
+Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set) {
+    Constraint* constraint = create_constraint();
+    constraint->type = SET_PARAMETER;
+
+    constraint->compare = &compare_true;
+    constraint->test = &test_true;
+    constraint->name = "set parameter value";
+    constraint->stored_value = value_to_set;
+    constraint->parameter_name = parameter_name;
 
     return constraint;
 }
