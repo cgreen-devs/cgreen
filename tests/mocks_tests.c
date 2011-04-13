@@ -202,18 +202,30 @@ Ensure(can_always_mock_full_function_call) {
     assert_equal(sample_mock(666, "devil"), 5);
 }
 
-static void out_param_mock(bool* result) {
+typedef struct {
+    double a;
+    double b;
+    const char *name;
+} LargerThanIntptr;
+
+static void out_param_mock(LargerThanIntptr* result) {
     mock(result);
 }
 
+
 Ensure(can_stub_an_out_parameter) {
+    LargerThanIntptr actual = { .a = 3.14, .b = 6.66, .name = "bob" };
+    LargerThanIntptr local = { .a = 4.13, .b = 7.89, .name = "alice" };
+
     expect(out_param_mock,
-        will_set_parameter(result, true)
+        will_set_contents_of_parameter(result, &actual, sizeof(LargerThanIntptr))
     );
 
-    bool result = false;
-    out_param_mock(&result);
-    assert_that(result, is_true);
+    out_param_mock(&local);
+    assert_that_double(actual.a, is_equal_to_double(local.a));
+    assert_that_double(actual.b, is_equal_to_double(local.b));
+    assert_that(actual.name, is_equal_to_string(local.name));
+    assert_that(&local, is_equal_to_contents_of(&actual, sizeof(LargerThanIntptr)));
 }
 
 /* Expected fail tests follow. */
