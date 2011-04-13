@@ -303,7 +303,7 @@ void apply_any_parameter_constraints(RecordedExpectation *expectation, const cha
         // TODO: push this into the constraint->test, once the "test" is renamed to something like "execute", and delete here.
         //       this potentially also means that the SET_PARAMETER type could be removed
         if (constraint->type == SET_PARAMETER) {
-            *((intptr_t *)actual) = constraint->stored_value;
+            memmove((void *)actual, (void *)constraint->stored_value, constraint->size_of_stored_value);
         }
 
         constraint->test(

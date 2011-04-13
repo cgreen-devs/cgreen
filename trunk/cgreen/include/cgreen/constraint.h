@@ -28,7 +28,7 @@ struct Constraint_ {
 
     /* for PARAMETER constraints */
     const char *parameter_name;
-    size_t size_to_compare;
+    size_t size_of_stored_value;
 
 };
 
@@ -59,7 +59,7 @@ Constraint *create_does_not_contain_string_constraint(const char* value_to_match
 Constraint *create_equal_to_double_constraint(double value_to_match);
 Constraint *create_not_equal_to_double_constraint(double value_to_match);
 Constraint *create_return_value_constraint(intptr_t value_to_return);
-Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set);
+Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set, size_t size_to_set);
 
 
 #ifdef __cplusplus
