@@ -250,6 +250,15 @@ Ensure(failure_reported_when_expect_after_always_expect_for_same_function) {
 
     expect(integer_out);
 }
+
+Ensure(single_uncalled_expectation_fails_tally) {
+    expect(string_out,
+        will_return(5),
+        when(i, is_equal_to(666)),
+        when(s, is_equal_to_string("devil"))
+    );
+}
+
 */
 
 TestSuite *mock_tests() {
@@ -281,6 +290,7 @@ TestSuite *mock_tests() {
     /* expected failures. TODO: put these in a separate suite, as per comments above. */
     /*
     add_test(suite, failure_reported_when_expect_after_always_expect_for_same_function);
+    add_test(suite, single_uncalled_expectation_fails_tally);
     add_test(suite, can_declare_function_never_called);
     add_test(suite, failure_reported_when_expect_after_expect_never_for_same_function);
     */
