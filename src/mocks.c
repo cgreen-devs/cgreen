@@ -270,7 +270,11 @@ void trigger_unfulfilled_expectations(CgreenVector *expectation_queue,
             continue;
         }
 
-        if (expectation->time_to_live == 0) {
+	if (is_always_call(expectation) || is_never_call(expectation)) {
+            continue;
+        }
+
+        if (expectation->time_to_live != 0) {
             (*reporter->assert_true)(
                     reporter,
                     expectation->test_file,
