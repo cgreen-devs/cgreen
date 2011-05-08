@@ -5,6 +5,10 @@
 #include <math.h>
 #include <string.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) > (b) ? (b) : (a))
 
@@ -155,5 +159,9 @@ int doubles_are_equal(double tried, double expected) {
 static double accuracy(int figures, double largest) {
     return pow(10, 1 + (int)log10(largest) - figures);
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

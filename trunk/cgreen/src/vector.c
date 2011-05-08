@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 struct CgreenVector_ {
     int size;
     void (*destructor)(void *);
@@ -74,5 +78,9 @@ static void increase_space(CgreenVector *vector) {
     vector->space += 100;
     vector->items = (void**)realloc(vector->items, sizeof(void *) * vector->space);
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

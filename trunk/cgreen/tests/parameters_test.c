@@ -3,6 +3,10 @@
 #include <cgreen/parameters.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 static CgreenVector *names = NULL;
 
 Ensure(destroy_names) {

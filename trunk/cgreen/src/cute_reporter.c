@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 typedef struct {
 	Printer *printer;
 	int error_count;	// For status within the test case process
@@ -114,5 +118,9 @@ static void testcase_failed_to_complete(TestReporter *reporter, const char *name
 	CuteMemo *memo = (CuteMemo *)reporter->memo;
     memo->printer("#error %s failed to complete\n", name);
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

@@ -1,6 +1,10 @@
 #include <cgreen/constraint_syntax_helpers.h>
 #include <cgreen/constraint.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 Constraint static_is_non_null_constraint = {
     /* .type */ PARAMETER,
     /* .name */ "is_non_null",
@@ -80,5 +84,9 @@ Constraint *is_not_equal_to_double(double value_to_match)
 {
     return create_not_equal_to_double_constraint(value_to_match);
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

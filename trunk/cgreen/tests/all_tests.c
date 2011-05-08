@@ -1,5 +1,9 @@
 #include <cgreen/cgreen.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 TestSuite *messaging_tests();
 TestSuite *assertion_tests();
 TestSuite *vector_tests();

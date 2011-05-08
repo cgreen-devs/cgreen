@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 enum {pass = 1, fail, completion};
 
 struct TestContext_ {
@@ -140,5 +144,9 @@ static void read_reporter_results(TestReporter *reporter) {
         reporter->exceptions++;
     }
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

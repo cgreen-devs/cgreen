@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 static int compare_want_contents(Constraint *constraint, intptr_t actual);
 static void test_want_contents(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
@@ -467,5 +471,9 @@ static void test_true(Constraint *constraint, const char *function, intptr_t act
     (void)test_line;
     (void)reporter;
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

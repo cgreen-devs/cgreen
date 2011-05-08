@@ -3,6 +3,10 @@
 #include <cgreen/mocks.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 static CgreenBreadcrumb* breadcrumb;
 
 static void breadcrumb_tests_setup() {

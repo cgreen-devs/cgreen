@@ -1,15 +1,16 @@
 #ifndef MOCKS_HEADER
 #define MOCKS_HEADER
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <cgreen/mock_table.h>
 #include <cgreen/constraint.h>
 #include <cgreen/reporter.h>
 #include <cgreen/vector.h>
 #include <stdint.h>
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
 
 #define expect(f, ...) expect_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
 #define always_expect(f, ...) always_expect_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
@@ -31,6 +32,7 @@ void clear_mocks(void);
 void tally_mocks(TestReporter *reporter);
 
 #ifdef __cplusplus
+    }
 }
 #endif
 

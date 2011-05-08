@@ -4,6 +4,10 @@
 #include <string.h>
 #include <ctype.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 static char *tokenise_by_commas_and_whitespace(char *list);
 static char *skip_nulls_until(char *pointer, char *pointer_end);
 static char *end_of_token(char *token);
@@ -75,5 +79,9 @@ static char *strip_d_macro(char *token) {
 
     return token;
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

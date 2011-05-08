@@ -2,6 +2,10 @@
 #include <cgreen/vector.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 static CgreenVector *vector;
 static char a = 'a', b = 'b', c = 'c';
 

@@ -1,11 +1,12 @@
 #ifndef REPORTER_HEADER
 #define REPORTER_HEADER
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdarg.h>
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
 
 typedef struct TestContext_ TestContext;
 
@@ -43,6 +44,7 @@ void add_reporter_result(TestReporter *reporter, int result);
 void send_reporter_completion_notification(TestReporter *reporter);
 
 #ifdef __cplusplus
+    }
 }
 #endif
 

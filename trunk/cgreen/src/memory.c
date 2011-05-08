@@ -2,6 +2,10 @@
 #include <string.h>
 #include <cgreen/memory.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 #define MEMORY_INCREMENT 1024
 
 struct MemoryPool_ {
@@ -75,3 +79,7 @@ static void move_up_one(void **blocks, long amount) {
     }
     memmove(blocks[0], blocks[1], blocks[amount] - blocks[1]);
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif

@@ -2,6 +2,10 @@
 #include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 TestSuite *confuse_the_collector(TestSuite *suite, const char *ignored) {
 	(void)ignored;
     return suite;

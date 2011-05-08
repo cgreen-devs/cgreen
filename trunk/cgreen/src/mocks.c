@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 typedef struct RecordedExpectation_ {
        const char *function;
        const char *test_file;
@@ -366,5 +370,9 @@ bool have_never_call_expectation_for(const char* function) {
 
     return false;
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

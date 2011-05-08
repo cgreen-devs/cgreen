@@ -1,14 +1,15 @@
 #ifndef CONSTRAINT_HEADER
 #define CONSTRAINT_HEADER
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <cgreen/reporter.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
 
 typedef enum {
     PARAMETER,
@@ -63,6 +64,7 @@ Constraint *create_set_parameter_value_constraint(const char *parameter_name, in
 
 
 #ifdef __cplusplus
+    }
 }
 #endif
 

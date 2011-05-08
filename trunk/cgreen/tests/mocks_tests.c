@@ -4,6 +4,10 @@
 #include <cgreen/unit.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 static int integer_out() {
     return (int)mock();
 }

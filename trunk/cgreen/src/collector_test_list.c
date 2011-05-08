@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 static CgreenVector *tests;
 
 void destroy_string(void *string) {
@@ -32,5 +36,9 @@ void print_test_list(FILE *file) {
         fprintf(file, "%s&%s", (i == 0 ? "" : ", "), (char *) cgreen_vector_get(tests, i));
     }
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

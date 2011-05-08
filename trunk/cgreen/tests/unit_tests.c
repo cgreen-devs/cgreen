@@ -5,6 +5,10 @@
 #include <strings.h>
 #include <unistd.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 static TestSuite* suite;
 
 static void unit_tests_setup() {

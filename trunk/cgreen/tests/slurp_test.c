@@ -5,6 +5,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 static void assert_slurped(const char *path, int gulp, const char *expected_contents);
 
 Ensure(missing_file_gives_null) {

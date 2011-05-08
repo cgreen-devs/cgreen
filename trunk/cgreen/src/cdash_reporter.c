@@ -9,6 +9,10 @@
 #include <time.h>
 #include <string.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 typedef int Printer(FILE *, const char *format, ...);
 typedef time_t Timer(char *strtime);
 typedef double DiffTimer(time_t t1, time_t t2);
@@ -281,3 +285,7 @@ static double cdash_enlapsed_time(time_t t1, time_t t2) {
 	diff = difftime(t2, t1);
 	return (diff == 0 ? 0 : (diff / 60));
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif

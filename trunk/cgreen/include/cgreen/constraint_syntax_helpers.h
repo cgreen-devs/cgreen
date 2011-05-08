@@ -1,12 +1,13 @@
 #ifndef CONSTRAINT_SYNTAX_HELPERS_HEADER
 #define CONSTRAINT_SYNTAX_HELPERS_HEADER
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <cgreen/constraint.h>
 #include <stdint.h>
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
 
 /* we want to favor delegating functions (for namespacing, and to avoid confusing symbol/preprocessor conflicts), 
  * but for the intptr_t catch-all type, we need an explicit cast lest we get warnings-as-errors in newer compilers 
@@ -45,6 +46,7 @@ extern Constraint static_true_constraint;
 extern Constraint *is_true;
 
 #ifdef __cplusplus
+    }
 }
 #endif
 
