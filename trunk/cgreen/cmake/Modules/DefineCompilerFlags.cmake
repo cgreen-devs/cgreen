@@ -8,7 +8,11 @@ endif (WIN32)
 
 if (UNIX AND NOT WIN32) # All *nix except Cygwin
   if (CMAKE_COMPILER_IS_GNUCC)
-    add_definitions(-g -std=c99 -Wall -Wextra -Wmissing-prototypes -Wunused)
+    if (WITH_CXX)
+       add_definitions(-g -std=c++0x -Weffc++ -Wall -Wextra -Wunused)
+    else()
+       add_definitions(-g -std=c99 -Wall -Wextra -Wmissing-prototypes -Wunused)
+    endif (WITH_CXX)
 
     add_definitions(-D_REENTRANT)         # for gmtime_r()
     add_definitions(-DUSE_XOPEN_EXTENDED) # for strdup(), which isn't part of C99
