@@ -1,11 +1,12 @@
 #ifndef UNIT_HEADER
 #define UNIT_HEADER
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <cgreen/reporter.h>
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
 
 /**
  * @defgroup unit_tests Unit Test Functions
@@ -66,6 +67,7 @@ int count_tests(TestSuite *suite);
  */
 
 #ifdef __cplusplus
+    }
 }
 #endif
 

@@ -2,7 +2,8 @@
 #define MEMORY_HEADER
 
 #ifdef __cplusplus
-extern "C" {
+namespace cgreen {
+    extern "C" {
 #endif
 
 typedef struct MemoryPool_ MemoryPool;
@@ -13,6 +14,7 @@ void *memory_pool_allocate(MemoryPool *pool, size_t bytes);
 void *memory_pool_reallocate(MemoryPool *pool, void *pointer, size_t bytes);
 
 #ifdef __cplusplus
+    }
 }
 #endif
 

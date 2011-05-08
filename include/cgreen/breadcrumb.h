@@ -2,7 +2,8 @@
 #define BREADCRUMB_HEADER
 
 #ifdef __cplusplus
-extern "C" {
+namespace cgreen {
+    extern "C" {
 #endif
 
 typedef struct CgreenBreadcrumb_ CgreenBreadcrumb;
@@ -16,6 +17,7 @@ int get_breadcrumb_depth(CgreenBreadcrumb *breadcrumb);
 void walk_breadcrumb(CgreenBreadcrumb *breadcrumb, void (*walker)(const char *, void *), void *memo);
 
 #ifdef __cplusplus
+    }
 }
 #endif
 

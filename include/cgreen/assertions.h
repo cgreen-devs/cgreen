@@ -1,13 +1,14 @@
 #ifndef ASSERTIONS_HEADER
 #define ASSERTIONS_HEADER
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <cgreen/constraint.h>
 #include <stdint.h>
 #include <stdbool.h>
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
 
 #define assert_true(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, result, NULL)
 #define assert_false(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, ! result, NULL)
@@ -50,6 +51,7 @@ int string_contains(const char *actual, const char *expected);
 int doubles_are_equal(double tried, double expected);
 
 #ifdef __cplusplus
+    }
 }
 #endif
 

@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 static char *read_all(FILE *file, int gulp);
 
 char *slurp(const char *file_name, int gulp) {
@@ -40,5 +44,9 @@ static char *read_all(FILE *file, int gulp) {
 	free(block);
 	return content;
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

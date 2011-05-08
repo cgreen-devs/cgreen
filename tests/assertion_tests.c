@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 Ensure(integer_one_should_assert_true) {
     assert_that(true, is_true);
 }

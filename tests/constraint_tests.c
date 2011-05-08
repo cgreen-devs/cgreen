@@ -3,6 +3,10 @@
 #include <cgreen/constraint.h>
 #include <stdlib.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 #define compare_constraint(c, x) (*c->compare)(c, (intptr_t)x)
 
 Ensure(default_destroy_clears_state) {

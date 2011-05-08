@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 static char *output = NULL;
 
 static void clear_output()

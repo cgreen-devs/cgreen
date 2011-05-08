@@ -1,11 +1,12 @@
 #ifndef BOXED_DOUBLE_HEADER
 #define BOXED_DOUBLE_HEADER
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdint.h>
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
 
 intptr_t box_double(double d);
 double as_double(intptr_t boxed_double);
@@ -17,6 +18,7 @@ typedef union {
 } BoxedDouble;
 
 #ifdef __cplusplus
+    }
 }
 #endif
 

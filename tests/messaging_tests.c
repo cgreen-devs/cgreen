@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <sys/msg.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 Ensure(highly_nested_test_suite_should_still_complete) {
     assert_true(1);
 }

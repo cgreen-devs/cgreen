@@ -12,6 +12,10 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 enum {test_function, test_suite};
 
 typedef void (*sighandler_t)(int);
@@ -309,5 +313,9 @@ static void die(const char *message, ...) {
 
 static void do_nothing() {
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

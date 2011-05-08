@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef __cplusplus
+namespace cgreen {
+#endif
+
 static void text_reporter_start_suite(TestReporter *reporter, const char *name, const int number_of_tests);
 static void text_reporter_start_test(TestReporter *reporter, const char *name);
 static void text_reporter_finish(TestReporter *reporter, const char *name);
@@ -80,5 +84,9 @@ static void show_breadcrumb(const char *name, void *memo) {
     }
     (*(int *)memo)++;
 }
+
+#ifdef __cplusplus
+} // namespace cgreen
+#endif
 
 /* vim: set ts=4 sw=4 et cindent: */
