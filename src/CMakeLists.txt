@@ -1,4 +1,9 @@
-project(cgreen-library C)
+
+if (WITH_CXX)
+  project(cgreen-library CXX)
+else()
+  project(cgreen-library C)
+endif (WITH_CXX)
 
 set(CGREEN_PUBLIC_INCLUDE_DIRS
   ${CMAKE_SOURCE_DIR}/include
@@ -44,6 +49,13 @@ set(cgreen_SRCS
   vector.c
 )
 
+set(CGREEN_LIBRARY_NAME cgreen)
+
+if (WITH_CXX)
+  set(CGREEN_LIBRARY_NAME cgreen++)
+  SET_SOURCE_FILES_PROPERTIES( ${cgreen_SRCS} PROPERTIES LANGUAGE CXX )
+endif (WITH_CXX)
+ 
 include_directories(
   ${CGREEN_PUBLIC_INCLUDE_DIRS}
   ${CGREEN_PRIVATE_INCLUDE_DIRS}
@@ -62,7 +74,7 @@ set_target_properties(
       SOVERSION
         ${LIBRARY_SOVERSION}
       OUTPUT_NAME
-        cgreen
+        ${CGREEN_LIBRARY_NAME}
 )
 
 install(
@@ -87,7 +99,7 @@ if (WITH_STATIC_LIBRARY)
         SOVERSION
           ${LIBRARY_SOVERSION}
         OUTPUT_NAME
-          cgreen
+          ${CGREEN_LIBRARY_NAME}
   )
 
   install(

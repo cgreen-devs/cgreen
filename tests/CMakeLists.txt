@@ -1,4 +1,9 @@
-project(tests C)
+
+if (WITH_CXX)
+  project(tests CXX)
+else()
+  project(tests C)
+endif (WITH_CXX)
 
 include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${CMAKE_BINARY_DIR})
 
@@ -16,6 +21,10 @@ set(test_SRCS
   unit_tests.c
   vector_tests.c
 )
+
+if (WITH_CXX)
+  SET_SOURCE_FILES_PROPERTIES( ${test_SRCS} PROPERTIES LANGUAGE CXX )
+endif (WITH_CXX)
 
 set(TEST_TARGET_LIBRARIES ${CGREEN_STATIC_LIBRARY} m)
 
