@@ -1,0 +1,64 @@
+#!/usr/bin/make -f
+# Based on the multi2 sample debian/rules file:
+# ---
+# Sample debian/rules that uses debhelper.
+# This file is public domain software, originally written by Joey Hess.
+
+#export DH_VERBOSE=1
+
+DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+SRC	:= $(CURDIR)
+BUILD	:= $(SRC)/build
+TARGET	:= $(SRC)/debian/tmp
+
+configure: configure-stamp
+configure-stamp:
+	[ -d $(BUILD) ] || mkdir $(BUILD)
+	cd $(BUILD) && cmake $(CURDIR) -DCMAKE_INSTALL_PREFIX="/usr" \
+		-DCMAKE_SKIP_RPATH=ON \
+		-DCMAKE_VERBOSE_MAKEFILE=ON
+	touch configure-stamp
+
+build: configure build-stamp
+build-stamp: 
+	$(MAKE) -C $(BUILD)
+ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
+	-(cd $(BUILD) && ctest -DExperimental --force-new-ctest-process -V)
+	rm -rf /tmp/testbed.*
+endif
+	touch build-stamp
+
+clean:
+	rm -f configure-stamp build-stamp
+	rm -rf $(BUILD)
+	dh_clean
+
+install: 
+install: build
+	dh_prep
+	dh_installdirs
+
+	$(MAKE) -C $(BUILD) install DESTDIR=$(TARGET)
+	dh_install --sourcedir=$(TARGET) --fail-missing
+
+binary-arch: build install
+	dh_installchangelogs
+	dh_installdocs
+	dh_installexamples
+	dh_installmenu
+	dh_strip 
+	dh_link
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary-indep: build install
+
+binary: binary-indep binary-arch
+.PHONY: configure build clean binary-indep binary-arch binary-common binary
