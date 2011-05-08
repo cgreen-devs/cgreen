@@ -28,7 +28,7 @@ void setup_reporting(TestReporter *reporter) {
 }
 
 TestReporter *create_reporter() {
-    TestReporter *reporter = malloc(sizeof(TestReporter));
+    TestReporter *reporter = (TestReporter *) malloc(sizeof(TestReporter));
     if (reporter == NULL) {
         return NULL;
     }
@@ -68,7 +68,7 @@ void destroy_memo(TestReportMemo *memo) {
 }
 
 void reporter_start(TestReporter *reporter, const char *name) {
-    push_breadcrumb(reporter->breadcrumb, name);
+    push_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, name);
 }
 
 void reporter_start_suite(TestReporter *reporter, const char *name, const int count) {
@@ -77,6 +77,7 @@ void reporter_start_suite(TestReporter *reporter, const char *name, const int co
 }
 
 void reporter_finish(TestReporter *reporter, const char *name) {
+    (void)name;
     read_reporter_results(reporter);
     pop_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 }
@@ -90,12 +91,24 @@ void send_reporter_completion_notification(TestReporter *reporter) {
 }
 
 static void show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+    (void)reporter;
+    (void)file;
+    (void)line;
+    (void)message;
+    (void)arguments;
 }
 
 static void show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+    (void)reporter;
+    (void)file;
+    (void)line;
+    (void)message;
+    (void)arguments;
 }
 
 static void show_incomplete(TestReporter *reporter, const char *name) {
+    (void)reporter;
+    (void)name;
 }
 
 static void assert_true(TestReporter *reporter, const char *file, int line, int result, const char *message, ...) {

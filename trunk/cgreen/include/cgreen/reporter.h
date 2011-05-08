@@ -2,9 +2,8 @@
 #define REPORTER_HEADER
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
-
 
 #include <stdarg.h>
 
@@ -44,8 +43,7 @@ void add_reporter_result(TestReporter *reporter, int result);
 void send_reporter_completion_notification(TestReporter *reporter);
 
 #ifdef __cplusplus
-    }
+}
 #endif
-
 
 #endif

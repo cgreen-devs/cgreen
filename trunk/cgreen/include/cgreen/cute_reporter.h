@@ -2,7 +2,7 @@
 #define CUTE_REPORTER_HEADER
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 #include <cgreen/reporter.h>
@@ -13,7 +13,7 @@ TestReporter *create_cute_reporter(void);
 void set_cute_printer(TestReporter *reporter, Printer *printer);
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 #endif

@@ -2,7 +2,7 @@
 #define MOCKS_HEADER
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 #include <cgreen/mock_table.h>
@@ -31,7 +31,7 @@ void clear_mocks(void);
 void tally_mocks(TestReporter *reporter);
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 #endif

@@ -8,7 +8,7 @@ struct CgreenBreadcrumb_ {
 };
 
 CgreenBreadcrumb *create_breadcrumb(void) {
-    CgreenBreadcrumb *breadcrumb = malloc(sizeof(CgreenBreadcrumb));
+    CgreenBreadcrumb *breadcrumb = (CgreenBreadcrumb *) malloc(sizeof(CgreenBreadcrumb));
     if (breadcrumb == NULL) {
         return NULL;
     }
@@ -24,11 +24,11 @@ void destroy_breadcrumb(CgreenBreadcrumb *breadcrumb) {
 }
 
 void push_breadcrumb(CgreenBreadcrumb *breadcrumb, const char *name) {
-	breadcrumb->depth++;
-	if (breadcrumb->depth > breadcrumb->space) {
+    breadcrumb->depth++;
+    if (breadcrumb->depth > breadcrumb->space) {
         const char **tmp;
-		breadcrumb->space++;
-        tmp = realloc(breadcrumb->trail,
+        breadcrumb->space++;
+        tmp = (const char **) realloc(breadcrumb->trail,
                 sizeof(const char *) * breadcrumb->space);
         if (tmp == NULL) {
             breadcrumb->space--;
@@ -36,8 +36,8 @@ void push_breadcrumb(CgreenBreadcrumb *breadcrumb, const char *name) {
             return;
         }
         breadcrumb->trail = tmp;
-	}
-	breadcrumb->trail[breadcrumb->depth - 1] = name;
+    }
+    breadcrumb->trail[breadcrumb->depth - 1] = name;
 }
 
 void pop_breadcrumb(CgreenBreadcrumb *breadcrumb) {

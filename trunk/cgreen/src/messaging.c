@@ -38,7 +38,7 @@ int start_cgreen_messaging(int tag) {
         }
     }
 
-    tmp = realloc(queues, sizeof(CgreenMessageQueue) * ++queue_count);
+    tmp = (CgreenMessageQueue *) realloc(queues, sizeof(CgreenMessageQueue) * ++queue_count);
     if (tmp == NULL) {
     	/* ignoring return value here, as the world is ending anyways */
         (void)atexit(&clean_up_messaging);
@@ -59,7 +59,7 @@ int start_cgreen_messaging(int tag) {
 }
 
 void send_cgreen_message(int messaging, int result) {
-    CgreenMessage *message = malloc(sizeof(CgreenMessage));
+    CgreenMessage *message = (CgreenMessage *) malloc(sizeof(CgreenMessage));
     if (message == NULL) {
       return;
     }
@@ -71,7 +71,7 @@ void send_cgreen_message(int messaging, int result) {
 }
 
 int receive_cgreen_message(int messaging) {
-    CgreenMessage *message = malloc(sizeof(CgreenMessage));
+    CgreenMessage *message = (CgreenMessage *) malloc(sizeof(CgreenMessage));
     if (message == NULL) {
       return -1;
     }

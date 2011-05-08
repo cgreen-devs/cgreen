@@ -1,19 +1,9 @@
 #include <cgreen/assertions.h>
 #include <cgreen/boxed_double.h>
 #include <cgreen/constraint.h>
+#include <cgreen/mocks.h>
 #include <stdlib.h>
 #include <string.h>
-
-Constraint *create_constraint();
-void destroy_empty_constraint(Constraint *constraint);
-void destroy_static_constraint(Constraint *constraint);
-void destroy_double_constraint(Constraint *constraint);
-
-int compare_want_value(Constraint *constraint, intptr_t actual);
-void test_want_value(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
-
-int compare_do_not_want_value(Constraint *constraint, intptr_t actual);
-void test_do_not_want_value(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
 static int compare_want_contents(Constraint *constraint, intptr_t actual);
 static void test_want_contents(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);

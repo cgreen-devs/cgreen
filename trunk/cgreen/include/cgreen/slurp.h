@@ -2,14 +2,13 @@
 #define SLURP_HEADER
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 char *slurp(const char *file_name, int gulp);
 
 #ifdef __cplusplus
-    }
+}
 #endif
-
 
 #endif
