@@ -98,7 +98,7 @@ Ensure(expect_a_sequence) {
     integer_in(3);
 }
 
-static void string_in(char *s) {
+static void string_in(const char *s) {
     mock(s);
 }
 
@@ -140,7 +140,7 @@ Ensure(double_expect_sequence) {
     double_in(2.0);
 }
 
-static void mixed_parameters(int i, char *s) {
+static void mixed_parameters(int i, const char *s) {
     mock(i, s);
 }
 
@@ -151,7 +151,7 @@ Ensure(confirming_multiple_parameters_multiple_times) {
     mixed_parameters(2, "Goodbye");
 }
 
-static int sample_mock(int i, char *s) {
+static int sample_mock(int i, const char *s) {
     return (int)mock(i, s);
 }
 
@@ -214,8 +214,8 @@ static void out_param_mock(LargerThanIntptr* result) {
 
 
 Ensure(can_stub_an_out_parameter) {
-    LargerThanIntptr actual = { .a = 3.14, .b = 6.66, .name = "bob" };
-    LargerThanIntptr local = { .a = 4.13, .b = 7.89, .name = "alice" };
+    LargerThanIntptr actual = { 3.14, 6.66, "bob" };
+    LargerThanIntptr local = { 4.13, 7.89, "alice" };
 
     expect(out_param_mock,
         will_set_contents_of_parameter(result, &actual, sizeof(LargerThanIntptr))

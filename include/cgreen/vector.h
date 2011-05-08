@@ -2,8 +2,9 @@
 #define VECTOR_HEADER
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
+
 typedef void (*GenericDestructor)(void *);
 typedef struct CgreenVector_ CgreenVector;
 
@@ -15,7 +16,7 @@ void *cgreen_vector_get(CgreenVector *vector, int position);
 int cgreen_vector_size(CgreenVector *vector);
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 #endif

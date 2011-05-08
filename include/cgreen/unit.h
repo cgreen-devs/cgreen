@@ -2,7 +2,7 @@
 #define UNIT_HEADER
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 #include <cgreen/reporter.h>
@@ -66,7 +66,7 @@ int count_tests(TestSuite *suite);
  */
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 #endif

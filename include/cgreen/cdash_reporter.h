@@ -2,7 +2,7 @@
 #define CDASH_REPORTER_HEADER
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
 
 #include <cgreen/reporter.h>
@@ -23,7 +23,7 @@ struct CDashInfo_ {
 TestReporter *create_cdash_reporter(CDashInfo *cdash);
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 #endif

@@ -1,36 +1,48 @@
 #include <cgreen/constraint_syntax_helpers.h>
 #include <cgreen/constraint.h>
 
-Constraint static_is_non_null_constraint = { 
-    .destroy = &destroy_static_constraint,
-    .type = PARAMETER,
-    .compare = &compare_do_not_want_value,
-    .test = &test_do_not_want_value,
-    .stored_value = 0
+Constraint static_is_non_null_constraint = {
+    /* .type */ PARAMETER,
+    /* .name */ "is_non_null",
+    /* .destroy */ &destroy_static_constraint,
+    /* .compare */ &compare_do_not_want_value,
+    /* .test */ &test_do_not_want_value,
+    /* .stored_value */ 0,
+    /* .parameter_name */ NULL,
+    /* .size_of_stored_value */ 0
 };
 
-Constraint static_is_null_constraint = { 
-    .destroy = &destroy_static_constraint,
-    .type = PARAMETER,
-    .compare = &compare_want_value,
-    .test = &test_want_value,
-    .stored_value = 0
+Constraint static_is_null_constraint = {
+    /* .type */ PARAMETER,
+    /* .name */ "is_null",
+    /* .destroy */ &destroy_static_constraint,
+    /* .compare */ &compare_want_value,
+    /* .test */ &test_want_value,
+    /* .stored_value */ 0,
+    /* .parameter_name */ NULL,
+    /* .size_of_stored_value */ 0
 };
 
 Constraint static_is_false_constraint = { 
-    .destroy = &destroy_static_constraint,
-    .type = PARAMETER,
-    .compare = &compare_want_value,
-    .test = &test_want_value,
-    .stored_value = 0
+    /* .type */ PARAMETER,
+    /* .name */ "is_false",
+    /* .destroy */ &destroy_static_constraint,
+    /* .compare */ &compare_want_value,
+    /* .test */ &test_want_value,
+    /* .stored_value */ 0,
+    /* .parameter_name */ NULL,
+    /* .size_of_stored_value */ 0
 };
 
 Constraint static_is_true_constraint = { 
-    .destroy = &destroy_static_constraint,
-    .type = PARAMETER,
-    .compare = &compare_do_not_want_value,
-    .test = &test_do_not_want_value,
-    .stored_value = 0
+    /* .type */ PARAMETER,
+    /* .name */ "is_true",
+    /* .destroy */ &destroy_static_constraint,
+    /* .compare */ &compare_do_not_want_value,
+    /* .test */ &test_do_not_want_value,
+    /* .stored_value */ 0,
+    /* .parameter_name */ NULL,
+    /* .size_of_stored_value */ 0
 };
 
 Constraint *is_non_null = &static_is_non_null_constraint;

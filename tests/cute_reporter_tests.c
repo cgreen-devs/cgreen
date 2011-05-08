@@ -18,7 +18,7 @@ static void clear_output()
 }
 
 static char *concat(char *output, char *buffer) {
-	output = realloc(output, strlen(output)+strlen(buffer)+1);
+	output = (char *) realloc(output, strlen(output)+strlen(buffer)+1);
 	strcat(output, buffer);
 	return output;
 }
@@ -71,7 +71,7 @@ static void assert_no_output() {
     assert_equal(strlen(output), 0);
 }
 
-static void assert_output_starts_with(char *string) {
+static void assert_output_starts_with(const char *string) {
 	assert_equal(strpos(output, string), 0);
 }
 
@@ -91,7 +91,10 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 	assert_output_contains("test_name");
 
 	clear_output();
-	reporter->show_pass(reporter, "file", 2, "test_name", "");
+
+	va_list arguments;
+
+	reporter->show_pass(reporter, "file", 2, "test_name", arguments);
 	assert_no_output();
 
 	// Must indicate test case completion before calling finish_test()
@@ -104,15 +107,17 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 Ensure(will_report_failing_of_test_only_once) {
 	reporter->start_test(reporter, "test_name");
 
+	va_list arguments;
+
 	clear_output();
 	reporter->failures++;	// Simulating a failed assert
-	reporter->show_fail(reporter, "file", 2, "test_name", "");
+	reporter->show_fail(reporter, "file", 2, "test_name", arguments);
 	assert_output_starts_with("#failure");
 	assert_output_contains("test_name");
 
 	clear_output();
 	reporter->failures++;	// Simulating another failed assert
-	reporter->show_fail(reporter, "file", 2, "test_name", "");
+	reporter->show_fail(reporter, "file", 2, "test_name", arguments);
 	assert_no_output();
 
 	// Must indicate test case completion before calling finish_test()

@@ -1,6 +1,10 @@
 #ifndef BOXED_DOUBLE_HEADER
 #define BOXED_DOUBLE_HEADER
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 intptr_t box_double(double d);
@@ -11,5 +15,9 @@ double unbox_double(intptr_t boxed_double);
 typedef union {
     double value;
 } BoxedDouble;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* BOXED_DOUBLE_HEADER */

@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-static void assert_slurped(char *path, int gulp, const char *expected_contents);
+static void assert_slurped(const char *path, int gulp, const char *expected_contents);
 
 Ensure(missing_file_gives_null) {
     assert_equal(slurp("not_there", 1024), NULL);
@@ -19,7 +19,7 @@ Ensure(whole_file_can_be_read_in_multiple_small_blocks) {
     assert_slurped(BINARYDIR "/tests/some_file", 1, "Some stuff");
 }
 
-static void assert_slurped(char *path, int gulp, const char *expected_contents) {
+static void assert_slurped(const char *path, int gulp, const char *expected_contents) {
     char *buffer;
     buffer = slurp(path, gulp);
     assert_string_equal(buffer, expected_contents);
