@@ -3,7 +3,11 @@
 include(CheckCCompilerFlag)
 
 if (WIN32)
-  add_definitions(-std=c99)
+    if (WITH_CXX)
+       add_definitions(-g -std=gnu++0x -Weffc++ -Wall -Wextra -Wunused)
+    else()
+       add_definitions(-g -std=c99 -Wall -Wextra -Wmissing-prototypes -Wunused)
+    endif (WITH_CXX)
 endif (WIN32)
 
 if (UNIX AND NOT WIN32) # All *nix except Cygwin
