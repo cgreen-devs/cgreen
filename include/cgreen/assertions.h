@@ -28,8 +28,8 @@ namespace cgreen {
 #define assert_string_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, strings_are_equal(tried, expected), __VA_ARGS__)
 #define assert_string_not_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, ! strings_are_equal(tried, expected), __VA_ARGS__)
 
-#define assert_that(actual, constraint) assert_that_(__FILE__, __LINE__, (intptr_t)actual, constraint);
-#define assert_that_double(actual, constraint) assert_that_double_(__FILE__, __LINE__, (double)actual, constraint);
+#define assert_that(actual, constraint) assert_that_(__FILE__, __LINE__, #actual, (intptr_t)actual, constraint)
+#define assert_that_double(actual, constraint) assert_that_double_(__FILE__, __LINE__, #actual, (double)actual, constraint)
 
 
 #define pass() assert_true(true)
@@ -41,8 +41,8 @@ void assert_double_equal_(const char *file, int line, double tried, double expec
 void assert_double_not_equal_(const char *file, int line, double tried, double expected);
 void assert_string_equal_(const char *file, int line, const char *tried, const char *expected);
 void assert_string_not_equal_(const char *file, int line, const char *tried, const char *expected);
-void assert_that_(const char *file, int line, intptr_t actual, Constraint *constraint);
-void assert_that_double_(const char *file, int line, double actual, Constraint *constraint);
+void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint *constraint);
+void assert_that_double_(const char *file, int line, const char *actual_string, double actual, Constraint *constraint);
 
 void significant_figures_for_assert_double_are(int figures);
 const char *show_null_as_the_string_null(const char *string);

@@ -16,7 +16,7 @@ static double accuracy(int significant_figures, double largest);
 
 static int significant_figures = 8;
 
-void assert_that_(const char *file, int line, intptr_t actual, Constraint* constraint) {
+void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint* constraint) {
     if (NULL != constraint && constraint->type != PARAMETER) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
@@ -36,7 +36,8 @@ void assert_that_(const char *file, int line, intptr_t actual, Constraint* const
             file,
             line,
             (*constraint->compare)(constraint, actual),
-            "Expected actual value [%d] to [%s] [%d]",
+            "Expected [%s] with actual value [%d] to [%s] [%d]",
+            actual_string,
             actual,
             constraint->name,
             constraint->stored_value);
@@ -44,7 +45,7 @@ void assert_that_(const char *file, int line, intptr_t actual, Constraint* const
     constraint->destroy(constraint);
 }
 
-void assert_that_double_(const char *file, int line, double actual, Constraint* constraint) {
+void assert_that_double_(const char *file, int line, const char *actual_string, double actual, Constraint* constraint) {
     if (NULL != constraint && constraint->type != PARAMETER) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
@@ -62,7 +63,8 @@ void assert_that_double_(const char *file, int line, double actual, Constraint* 
     BoxedDouble* boxed_actual = (BoxedDouble*)box_double(actual);
 
     (*get_test_reporter()->assert_true)(get_test_reporter(), file, line, (*constraint->compare)(constraint, (intptr_t)boxed_actual),
-            "Expected actual value [%f] to [%s] [%f] within [%d] significant figures",
+            "Expected [%s] with actual value [%f] to [%s] [%f] within [%d] significant figures",
+            actual_string,
             actual,
             constraint->name,
             as_double(constraint->stored_value),
@@ -135,7 +137,7 @@ const char *show_null_as_the_string_null(const char *string) {
 }
 
 int strings_are_equal(const char* actual, const char* expected) {
-	/* TODO: if expected is null, warn user to use appropriate non-string assert instead */
+    /* TODO: if expected is null, warn user to use appropriate non-string assert instead */
     if ((actual == NULL) || (expected == NULL)) {
         return (actual == expected);
     }
@@ -144,7 +146,7 @@ int strings_are_equal(const char* actual, const char* expected) {
 }
 
 int string_contains(const char* actual, const char* expected) {
-	/* TODO: if expected is null, warn user */
+    /* TODO: if expected is null, warn user */
     if ((actual == NULL) || (expected == NULL)) {
         return false;
     }
