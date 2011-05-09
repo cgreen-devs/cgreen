@@ -1,1 +1,41 @@
-link ../COPYING
+This work was packaged for Debian by:
+
+    Colm Dougan <colm.dougan@gmail.com> on Sun, 08 May 2011 22:52:32 +0100
+
+It was downloaded from:
+
+    http://sourceforge.net/projects/cgreen/
+
+Upstream Author(s):
+
+    Marcus Baker <xxx@yyy>
+    João Henrique F. Freitas <xxx@yyy>
+    Daniel Ferreira de Lima <xxx@yyy>
+    Tiago Octaviano Primini <xxx@yyy>
+    Thomas Nilsson <xxx@yyy>
+    Matt Hargett <xxx@yyy>
+    Chris LeBlanc <xxx@yyy>
+    Georg Lohrer <xxx@yyy>
+    John Bito <xxx@yyy>
+
+Copyright:
+
+    cgreen authors (see above) and others
+
+License:
+
+    This package is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This package is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+On Debian systems, the complete text of the GNU Lesser General
+Public License can be found in "/usr/share/common-licenses/LGPL-2.1".
