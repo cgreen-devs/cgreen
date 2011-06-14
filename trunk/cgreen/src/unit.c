@@ -23,14 +23,14 @@ typedef void (*sighandler_t)(int);
 typedef struct {
     int type;
     union {
-        void (*test)();
+        CgreenTest *test;
         TestSuite *suite;
     } sPtr;
     const char *name;
 } UnitTest;
 
 struct TestSuite_ {
-	const char *name;
+    const char *name;
     UnitTest *tests;
     void (*setup)();
     void (*teardown)();
@@ -57,9 +57,16 @@ static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *re
 static void die(const char *message, ...);
 static void do_nothing(void);
 
+extern CgreenContext defaultContext = {
+    /* name     */ "",
+    /* filename */ __FILE__,
+    /* setup    */ &do_nothing,
+    /* teardown */ &do_nothing
+};
+
 TestSuite *create_named_test_suite(const char *name) {
     TestSuite *suite = (TestSuite *)malloc(sizeof(TestSuite));
-	suite->name = name;
+    suite->name = name;
     suite->tests = NULL;
     suite->setup = &do_nothing;
     suite->teardown = &do_nothing;
@@ -68,17 +75,18 @@ TestSuite *create_named_test_suite(const char *name) {
 }
 
 void destroy_test_suite(TestSuite *suiteToDestroy) {
-	int i;
-	for (i = 0; i < suiteToDestroy->size; i++) {
-		UnitTest test = suiteToDestroy->tests[i];
-		TestSuite* suite = test.sPtr.suite;
-		if (test_suite == test.type && suite != NULL) {
+    int i;
+    for (i = 0; i < suiteToDestroy->size; i++) {
+        UnitTest test = suiteToDestroy->tests[i];
+        TestSuite* suite = test.sPtr.suite;
+        if (test_suite == test.type && suite != NULL) {
            suiteToDestroy->tests[i].sPtr.suite = NULL;
            destroy_test_suite(suite);
-		}
-	}
+        }
+    }
+
     if (suiteToDestroy->tests != NULL)
-		free(suiteToDestroy->tests);
+        free(suiteToDestroy->tests);
 
     free(suiteToDestroy);
 }
@@ -297,10 +305,23 @@ static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *re
     	die_in(per_test_timeout_value());
     }
 
-	(*suite->setup)();
-    (*test->sPtr.test)();
-	(*suite->teardown)();
-	tally_mocks(reporter);
+    CgreenTest *spec = test->sPtr.test;
+
+    // for historical reasons the suite can have a setup
+    if (suite->setup != &do_nothing)
+        (*suite->setup)();
+    else
+        spec->context->setup();
+
+    spec->run();
+
+    // for historical reasons the suite can have a teardown
+    if (suite->teardown != &do_nothing)
+        (*suite->teardown)();
+    else
+        spec->context->teardown();
+
+    tally_mocks(reporter);
 }
 
 static void die(const char *message, ...) {

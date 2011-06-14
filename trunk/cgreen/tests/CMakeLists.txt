@@ -17,10 +17,19 @@ set(test_SRCS
   messaging_tests.c
   mocks_tests.c
   parameters_test.c
+  reflective_tests.c
   slurp_test.c
   unit_tests.c
   vector_tests.c
 )
+
+set(CGREEN_TEST_LIBRARY
+  cgreen_tests
+  CACHE INTERNAL "cgreen tests shared library"
+)
+
+add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_SRCS})
+target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_STATIC_LIBRARY} m)
 
 if (WITH_CXX)
   SET_SOURCE_FILES_PROPERTIES( ${test_SRCS} PROPERTIES LANGUAGE CXX )

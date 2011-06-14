@@ -9,7 +9,7 @@ using namespace cgreen;
 
 static CgreenVector *names = NULL;
 
-Ensure(destroy_names) {
+void destroy_names() {
     destroy_cgreen_vector(names);
     names = NULL;
 }
