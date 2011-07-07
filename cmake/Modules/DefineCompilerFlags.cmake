@@ -52,11 +52,6 @@ if (UNIX AND NOT WIN32) # All *nix except Cygwin
       add_definitions(${_lfs_CFLAGS})
     endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
 
-    check_c_compiler_flag("-fstack-protector" WITH_STACK_PROTECTOR)
-    if (WITH_STACK_PROTECTOR)
-      add_definitions(-fstack-protector)
-    endif (WITH_STACK_PROTECTOR)
-
     check_c_compiler_flag("-D_FORTIFY_SOURCE=2" WITH_FORTIFY_SOURCE)
     if (WITH_FORTIFY_SOURCE)
       add_definitions(-D_FORTIFY_SOURCE=2)
