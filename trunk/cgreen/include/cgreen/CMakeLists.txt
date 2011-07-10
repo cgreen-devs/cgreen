@@ -11,6 +11,7 @@ set(cgreen_HDRS
   constraint.h
   memory.h
   mocks.h
+  constraint_syntax_helpers.h
 )
 
 install(
