@@ -15,6 +15,9 @@ namespace cgreen {
 #define is_equal_to(value) create_equal_to_value_constraint((intptr_t)value)
 #define is_not_equal_to(value) create_not_equal_to_value_constraint((intptr_t)value)
 
+#define is_greater_than(value) create_greater_than_value_constraint((intptr_t)value)
+#define is_less_than(value) create_less_than_value_constraint((intptr_t)value)
+
 #define is_equal_to_contents_of(pointer, size_of_contents) create_equal_to_contents_constraint((void *)pointer, size_of_contents)
 #define is_not_equal_to_contents_of(pointer, size_of_contents) create_not_equal_to_contents_constraint((void *)pointer, size_of_contents)
 

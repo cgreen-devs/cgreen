@@ -13,7 +13,7 @@ static int integer_out() {
 }
 
 Ensure(no_errors_thrown_and_default_return_value_when_no_presets) {
-    assert_equal(integer_out(), 0);
+    assert_that(integer_out(), is_equal_to(0));
 }
 
 Ensure(can_stub_an_integer_return) {
@@ -21,7 +21,7 @@ Ensure(can_stub_an_integer_return) {
         will_return(3)
     );
 
-    assert_equal(integer_out(), 3);
+    assert_that(integer_out(), is_equal_to(3));
 }
 
 Ensure(repeats_return_value_when_set_to_always) {
@@ -29,8 +29,8 @@ Ensure(repeats_return_value_when_set_to_always) {
         will_return(3)
     );
 
-    assert_equal(integer_out(), 3);
-    assert_equal(integer_out(), 3);
+    assert_that(integer_out(), is_equal_to(3));
+    assert_that(integer_out(), is_equal_to(3));
 }
 
 Ensure(can_stub_an_integer_return_sequence) {
@@ -46,13 +46,13 @@ Ensure(can_stub_an_integer_return_sequence) {
         will_return(3)
     );
 
-    assert_equal(integer_out(), 1);
-    assert_equal(integer_out(), 2);
-    assert_equal(integer_out(), 3);
+    assert_that(integer_out(), is_equal_to(1));
+    assert_that(integer_out(), is_equal_to(2));
+    assert_that(integer_out(), is_equal_to(3));
 }
 
 Ensure(confirm_stub_is_reset_between_tests) {
-    assert_equal(integer_out(), 0);
+    assert_that(integer_out(), is_equal_to(0));
 }
 
 static char *string_out() {
@@ -166,7 +166,7 @@ Ensure(can_mock_full_function_call) {
         when(s, is_equal_to_string("devil"))
     );
 
-    assert_equal(sample_mock(666, "devil"), 5);
+    assert_that(sample_mock(666, "devil"), is_equal_to(5));
 }
 
 Ensure(when_called_with_always_should_not_tally_counts) {
@@ -190,8 +190,8 @@ Ensure(can_mock_full_sequence) {
         when(s, is_equal_to_string("beastie"))
     );
 
-    assert_equal(sample_mock(666, "devil"), 5);
-    assert_equal(sample_mock(667, "beastie"), 6);
+    assert_that(sample_mock(666, "devil"), is_equal_to(5));
+    assert_that(sample_mock(667, "beastie"), is_equal_to(6));
 }
 
 Ensure(can_always_mock_full_function_call) {
@@ -201,9 +201,9 @@ Ensure(can_always_mock_full_function_call) {
         when(s, is_equal_to_string("devil"))
     );
 
-    assert_equal(sample_mock(666, "devil"), 5);
-    assert_equal(sample_mock(666, "devil"), 5);
-    assert_equal(sample_mock(666, "devil"), 5);
+    assert_that(sample_mock(666, "devil"), is_equal_to(5));
+    assert_that(sample_mock(666, "devil"), is_equal_to(5));
+    assert_that(sample_mock(666, "devil"), is_equal_to(5));
 }
 
 typedef struct {

@@ -30,7 +30,6 @@ struct Constraint_ {
     /* for PARAMETER constraints */
     const char *parameter_name;
     size_t size_of_stored_value;
-
 };
 
 Constraint *create_constraint();
@@ -51,6 +50,8 @@ void test_constraint(Constraint *constraint, const char *function, intptr_t actu
 
 Constraint *create_equal_to_value_constraint(intptr_t value_to_match);
 Constraint *create_not_equal_to_value_constraint(intptr_t value_to_match);
+Constraint *create_greater_than_value_constraint(intptr_t value_to_match);
+Constraint *create_less_than_value_constraint(intptr_t value_to_match);
 Constraint *create_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare);
 Constraint *create_not_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare);
 Constraint *create_equal_to_string_constraint(const char* value_to_match);

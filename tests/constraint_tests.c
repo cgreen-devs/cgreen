@@ -13,23 +13,23 @@ Ensure(default_destroy_clears_state) {
     Constraint *constraint = create_parameter_constraint_for("parameter name");
     destroy_constraint(constraint);
 
-/* these checks correctly trip valgrind's use-after-free check, so
+/* these tests correctly trip valgrind's use-after-free check, so
  * uncomment and check manually
 
-    assert_equal(constraint->name, NULL);
-    assert_equal(constraint->parameter, NULL);
-    assert_equal(constraint->storedValue, NULL);
-    assert_equal(constraint->test, NULL);
-    assert_equal(constraint->compare, NULL);
-    assert_equal(constraint->destroy, NULL);
+    assert_that(constraint->name, NULL);
+    assert_that(constraint->parameter, NULL);
+    assert_that(constraint->storedValue, NULL);
+    assert_that(constraint->test, NULL);
+    assert_that(constraint->compare, NULL);
+    assert_that(constraint->destroy, NULL);
  */
 }
 
 Ensure(parameter_name_matches_correctly) {
     Constraint *constraint = create_parameter_constraint_for("label");
 
-    assert_false(constraint_is_for_parameter(constraint, "wrong_label"));
-    assert_true(constraint_is_for_parameter(constraint, "label"));
+    assert_that(constraint_is_for_parameter(constraint, "wrong_label"), is_false);
+    assert_that(constraint_is_for_parameter(constraint, "label"), is_true);
 
     destroy_constraint(constraint);
 }
@@ -111,12 +111,12 @@ Ensure(string_constraint_destroy_clears_state) {
 /* these checks correctly trip valgrind's use-after-free check, so
  * uncomment and check manually
 
-    assert_equal(string_constraint->name, NULL);
-    assert_equal(string_constraint->parameter, NULL);
-    assert_equal(string_constraint->storedValue, NULL);
-    assert_equal(string_constraint->test, NULL);
-    assert_equal(string_constraint->compare, NULL);
-    assert_equal(string_constraint->destroy, NULL);
+    assert_that(string_constraint->name, is_null);
+    assert_that(string_constraint->parameter, is_null);
+    assert_that(string_constraint->storedValue, is_null);
+    assert_that(string_constraint->test, is_null);
+    assert_that(string_constraint->compare, is_null);
+    assert_that(string_constraint->destroy, is_null);
  */
 }
 
@@ -191,7 +191,7 @@ Ensure(matching_doubles_respects_significant_figure_setting) {
 //
 //    Constraint *string_constraint = with(name, is_non_empty_string);
 //
-//    assert_equal(compare_constraint(string_constraint, is_non_empty_string), 1);
+//    assert_that(compare_constraint(string_constraint, is_non_empty_string), is_equal_to(1));
 //
 //    destroy_constraint(string_constraint);
 //
@@ -199,7 +199,7 @@ Ensure(matching_doubles_respects_significant_figure_setting) {
 //    name.length = 3;
 //
 //    string_constraint = with(name, is_non_empty_string);
-//    assert_equal(compare_constraint(string_constraint, is_non_empty_string), 1);
+//    assert_that(compare_constraint(string_constraint, is_non_empty_string), is_equal_to(1));
 //
 //    destroy_constraint(string_constraint);
 //}
