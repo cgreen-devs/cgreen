@@ -18,63 +18,63 @@ static void tear_down_vector() {
 }
 
 Ensure(new_vector_is_empty) {
-    assert_equal(cgreen_vector_size(vector), 0);
+    assert_that(cgreen_vector_size(vector), is_equal_to(0));
 }
 
 Ensure(single_item_gives_count_of_one) {
     cgreen_vector_add(vector, &a);
-    assert_equal(cgreen_vector_size(vector), 1);
+    assert_that(cgreen_vector_size(vector), is_equal_to(1));
 }
 
 Ensure(single_item_is_readable) {
     cgreen_vector_add(vector, &a);
-    assert_equal(*(char *)cgreen_vector_get(vector, 0), 'a');
+    assert_that(*(char *)cgreen_vector_get(vector, 0), is_equal_to('a'));
 }
 
 Ensure(double_item_gives_count_of_two) {
     cgreen_vector_add(vector, &a);
     cgreen_vector_add(vector, &b);
-    assert_equal(cgreen_vector_size(vector), 2);
+    assert_that(cgreen_vector_size(vector), is_equal_to(2));
 }
 
 Ensure(two_items_are_readable) {
     cgreen_vector_add(vector, &a);
     cgreen_vector_add(vector, &b);
-    assert_equal(*(char *)cgreen_vector_get(vector, 0), 'a');
-    assert_equal(*(char *)cgreen_vector_get(vector, 1), 'b');
+    assert_that(*(char *)cgreen_vector_get(vector, 0), is_equal_to('a'));
+    assert_that(*(char *)cgreen_vector_get(vector, 1), is_equal_to('b'));
 }
 
 Ensure(can_extract_only_item) {
     cgreen_vector_add(vector, &a);
-    assert_equal(*(char *)cgreen_vector_remove(vector, 0), 'a');
-    assert_equal(cgreen_vector_size(vector), 0);
+    assert_that(*(char *)cgreen_vector_remove(vector, 0), is_equal_to('a'));
+    assert_that(cgreen_vector_size(vector), is_equal_to(0));
 }
 
 Ensure(can_extract_head_item) {
     cgreen_vector_add(vector, &a);
     cgreen_vector_add(vector, &b);
     cgreen_vector_add(vector, &c);
-    assert_equal(*(char *)cgreen_vector_remove(vector, 0), 'a');
-    assert_equal(*(char *)cgreen_vector_get(vector, 0), 'b');
-    assert_equal(*(char *)cgreen_vector_get(vector, 1), 'c');
+    assert_that(*(char *)cgreen_vector_remove(vector, 0), is_equal_to('a'));
+    assert_that(*(char *)cgreen_vector_get(vector, 0), is_equal_to('b'));
+    assert_that(*(char *)cgreen_vector_get(vector, 1), is_equal_to('c'));
 }
 
 Ensure(can_extract_tail_item) {
     cgreen_vector_add(vector, &a);
     cgreen_vector_add(vector, &b);
     cgreen_vector_add(vector, &c);
-    assert_equal(*(char *)cgreen_vector_remove(vector, 2), 'c');
-    assert_equal(*(char *)cgreen_vector_get(vector, 0), 'a');
-    assert_equal(*(char *)cgreen_vector_get(vector, 1), 'b');
+    assert_that(*(char *)cgreen_vector_remove(vector, 2), is_equal_to('c'));
+    assert_that(*(char *)cgreen_vector_get(vector, 0), is_equal_to('a'));
+    assert_that(*(char *)cgreen_vector_get(vector, 1), is_equal_to('b'));
 }
 
 Ensure(can_extract_middle_item) {
     cgreen_vector_add(vector, &a);
     cgreen_vector_add(vector, &b);
     cgreen_vector_add(vector, &c);
-    assert_equal(*(char *)cgreen_vector_remove(vector, 1), 'b');
-    assert_equal(*(char *)cgreen_vector_get(vector, 0), 'a');
-    assert_equal(*(char *)cgreen_vector_get(vector, 1), 'c');
+    assert_that(*(char *)cgreen_vector_remove(vector, 1), is_equal_to('b'));
+    assert_that(*(char *)cgreen_vector_get(vector, 0), is_equal_to('a'));
+    assert_that(*(char *)cgreen_vector_get(vector, 1), is_equal_to('c'));
 }
 
 static int times_called = 0;
@@ -87,13 +87,13 @@ Ensure(destructor_is_called_on_single_item) {
     CgreenVector *vector = create_cgreen_vector(&sample_destructor);
     cgreen_vector_add(vector, &a);
     destroy_cgreen_vector(vector);
-    assert_equal(times_called, 1);
+    assert_that(times_called, is_equal_to(1));
 }
 
 Ensure(destructor_is_not_called_on_empty_vector) {
     CgreenVector *vector = create_cgreen_vector(&sample_destructor);
     destroy_cgreen_vector(vector);
-    assert_equal(times_called, 0);
+    assert_that(times_called, is_equal_to(0));
 }
 
 Ensure(destructor_is_called_three_times_on_three_item_vector) {
@@ -102,11 +102,11 @@ Ensure(destructor_is_called_three_times_on_three_item_vector) {
     cgreen_vector_add(vector, &b);
     cgreen_vector_add(vector, &c);
     destroy_cgreen_vector(vector);
-    assert_equal(times_called, 3);
+    assert_that(times_called, is_equal_to(3));
 }
 
 Ensure(vector_size_of_null_pointer_is_zero) {
-    assert_equal(cgreen_vector_size(NULL), 0);
+    assert_that(cgreen_vector_size(NULL), is_equal_to(0));
 }
 
 TestSuite *vector_tests() {

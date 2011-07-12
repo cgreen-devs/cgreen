@@ -9,6 +9,10 @@
 namespace cgreen {
 #endif
 
+static int compare_want_greater_value(Constraint *constraint, intptr_t actual);
+
+static int compare_want_lesser_value(Constraint *constraint, intptr_t actual);
+
 static int compare_want_contents(Constraint *constraint, intptr_t actual);
 static void test_want_contents(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
@@ -104,6 +108,30 @@ Constraint *create_not_equal_to_value_constraint(intptr_t value_to_match) {
     constraint->compare = &compare_do_not_want_value;
     constraint->test = &test_do_not_want_value;
     constraint->name = "not equal";
+    constraint->stored_value = value_to_match;
+    constraint->size_of_stored_value = sizeof(intptr_t);
+    return constraint;
+}
+
+Constraint *create_less_than_value_constraint(intptr_t value_to_match) {
+    Constraint *constraint = create_constraint();
+    constraint->type = PARAMETER;
+
+    constraint->compare = &compare_want_lesser_value;
+    constraint->test = &test_true;
+    constraint->name = "be less than";
+    constraint->stored_value = value_to_match;
+    constraint->size_of_stored_value = sizeof(intptr_t);
+    return constraint;
+}
+
+Constraint *create_greater_than_value_constraint(intptr_t value_to_match) {
+    Constraint *constraint = create_constraint();
+    constraint->type = PARAMETER;
+
+    constraint->compare = &compare_want_greater_value;
+    constraint->test = &test_true;
+    constraint->name = "be greater than";
     constraint->stored_value = value_to_match;
     constraint->size_of_stored_value = sizeof(intptr_t);
     return constraint;
@@ -236,6 +264,15 @@ int compare_want_value(Constraint *constraint, intptr_t actual) {
 int compare_do_not_want_value(Constraint *constraint, intptr_t actual) {
     return !compare_want_value(constraint, actual);
 }
+
+int compare_want_greater_value(Constraint *constraint, intptr_t actual) {
+    return actual > constraint->stored_value ;
+}
+
+int compare_want_lesser_value(Constraint *constraint, intptr_t actual) {
+    return actual < constraint->stored_value;
+}
+
 
 int compare_want_contents(Constraint *constraint, intptr_t actual) {
     /* we can't inspect the contents of a NULL pointer, so comparison always fails */

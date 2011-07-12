@@ -20,12 +20,12 @@ static void unit_tests_teardown() {
 }
 
 Ensure(count_tests_return_zero_for_empty_suite) {
-	assert_equal(count_tests(suite), 0);
+	assert_that(count_tests(suite), is_equal_to(0));
 }
 
 Ensure(count_tests_return_one_for_suite_with_one_testcase) {
 	add_test(suite, count_tests_return_one_for_suite_with_one_testcase);
-	assert_equal(count_tests(suite), 1);
+	assert_that(count_tests(suite), is_equal_to(1));
 }
 
 Ensure(count_tests_return_four_for_four_nested_suite_with_one_testcase_each) {
@@ -39,14 +39,17 @@ Ensure(count_tests_return_four_for_four_nested_suite_with_one_testcase_each) {
 	add_test(suite3, count_tests_return_one_for_suite_with_one_testcase);
 	add_suite(suite3, suite4);
 	add_test(suite4, count_tests_return_one_for_suite_with_one_testcase);
-	assert_equal(count_tests(suite), 4);
+	assert_that(count_tests(suite), is_equal_to(4));
 }
 
+/* this is an expected failure test, TODO: put expected failures into their own suite 
+
 Ensure(time_out_in_only_one_second) {
-    /* this will sometimes fail when using valgrind or running on a CPU-distressed machine */
     die_in(1);
     sleep(10);
 }
+
+*/
 
 TestSuite *unit_tests() {
 	TestSuite *suite = create_test_suite();
@@ -55,8 +58,9 @@ TestSuite *unit_tests() {
 	add_test(suite, count_tests_return_zero_for_empty_suite);
 	add_test(suite, count_tests_return_one_for_suite_with_one_testcase);
 	add_test(suite, count_tests_return_four_for_four_nested_suite_with_one_testcase_each);
-    add_test(suite, time_out_in_only_one_second);
-
-    teardown(suite, unit_tests_teardown);
+/*
+	add_test(suite, time_out_in_only_one_second);
+*/
+	teardown(suite, unit_tests_teardown);
 	return suite;
 }

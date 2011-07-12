@@ -72,27 +72,23 @@ static void cute_reporter_tests_teardown() {
 }
 
 static void assert_no_output() {
-    assert_equal(strlen(output), 0);
+	assert_that(strlen(output), is_equal_to(0));
 }
 
 static void assert_output_starts_with(const char *string) {
-	assert_equal(strpos(output, string), 0);
-}
-
-static void assert_output_contains(const char *string) {
-	assert_true(strpos(output, string) > 0);
+	assert_that(strpos(output, string), is_equal_to(0));
 }
 
 Ensure(will_report_beginning_of_suite) {
 	reporter->start_suite(reporter, "suite_name", 2);
 	assert_output_starts_with("#beginning");
-	assert_output_contains("suite_name");
+	assert_that(output, contains_string("suite_name"));
 }
 
 Ensure(will_report_beginning_and_successful_finishing_of_test) {
 	reporter->start_test(reporter, "test_name");
 	assert_output_starts_with("#starting");
-	assert_output_contains("test_name");
+	assert_that(output, contains_string("test_name"));
 
 	clear_output();
 
@@ -105,7 +101,7 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 	send_reporter_completion_notification(reporter);
 	reporter->finish_test(reporter, "test_name");
 	assert_output_starts_with("#success");
-	assert_output_contains("test_name");
+	assert_that(output, contains_string("test_name"));
 }
 
 Ensure(will_report_failing_of_test_only_once) {
@@ -117,7 +113,7 @@ Ensure(will_report_failing_of_test_only_once) {
 	reporter->failures++;	// Simulating a failed assert
 	reporter->show_fail(reporter, "file", 2, "test_name", arguments);
 	assert_output_starts_with("#failure");
-	assert_output_contains("test_name");
+	assert_that(output, contains_string("test_name"));
 
 	clear_output();
 	reporter->failures++;	// Simulating another failed assert
@@ -135,7 +131,7 @@ Ensure(will_report_finishing_of_suite) {
 	send_reporter_completion_notification(reporter);
 	reporter->finish_suite(reporter, "suite_name");
 	assert_output_starts_with("#ending");
-	assert_output_contains("suite_name");
+	assert_that(output, contains_string("suite_name"));
 }
 
 TestSuite *cute_reporter_tests() {

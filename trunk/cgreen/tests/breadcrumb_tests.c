@@ -23,30 +23,30 @@ Ensure(can_destroy_empty_breadcrumb) {
 
 Ensure(last_name_pushed_is_current) {
     push_breadcrumb(breadcrumb, "Hello");
-    assert_string_equal(get_current_from_breadcrumb(breadcrumb), "Hello");
+    assert_that(get_current_from_breadcrumb(breadcrumb), is_equal_to_string("Hello"));
 }
 
 Ensure(can_push_more_than_one_item) {
     push_breadcrumb(breadcrumb, "Hello");
     push_breadcrumb(breadcrumb, "Goodbye");
-    assert_string_equal(get_current_from_breadcrumb(breadcrumb), "Goodbye");
+    assert_that(get_current_from_breadcrumb(breadcrumb), is_equal_to_string("Goodbye"));
 }
 
 Ensure(popping_item_takes_us_back_to_the_previous_item) {
     push_breadcrumb(breadcrumb, "Hello");
     push_breadcrumb(breadcrumb, "Goodbye");
     pop_breadcrumb(breadcrumb);
-    assert_string_equal(get_current_from_breadcrumb(breadcrumb), "Hello");
+    assert_that(get_current_from_breadcrumb(breadcrumb), is_equal_to_string("Hello"));
 }
 
 Ensure(empty_breadcrumb_has_null_as_current) {
-    assert_equal(get_current_from_breadcrumb(breadcrumb), NULL);
+    assert_that(get_current_from_breadcrumb(breadcrumb), is_null);
 }
 
 Ensure(popping_last_name_leaves_breadcrumb_empty) {
     push_breadcrumb(breadcrumb, "Hello");
     pop_breadcrumb(breadcrumb);
-    assert_equal(get_current_from_breadcrumb(breadcrumb), NULL);
+    assert_that(get_current_from_breadcrumb(breadcrumb), is_null);
 }
 
 void mock_walker(const char *name, void *memo) {
