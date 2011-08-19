@@ -8,26 +8,6 @@ namespace cgreen {
     extern "C" {
 #endif
 
-/**
- * @defgroup unit_tests Unit Test Functions
- *
- * @brief Functions to create a Test Suite and adding tests.
- */
-
-/**
- * @addtogroup unit_tests
- * @{
- */
-
-/**
- * @brief Creates a new test suite.
- *
- * @return A newly allocated test suite, NULL on error.
- *
- * @see destroy_test_suite()
- */
-
-
 #define spec_name(contextName, spec) CgreenSpec_##contextName##_##spec
 
 #define create_test_suite() create_named_test_suite(__func__)
@@ -51,14 +31,15 @@ typedef struct {
 
 extern CgreenContext defaultContext;
 
+#define Describe(subject) \
+static CgreenContext contextFor##subject = { #subject, __FILE__, &Before, &After };
+
+#pragma GCC diagnostic ignored "-Wunused-function"
 #define Before() static void Before(void)
-#define After() static void After(void)
-
 Before();
-After();
 
-#define Describe(x)\
-static CgreenContext contextFor##x = { #x, __FILE__, &Before, &After };
+#define After() static void After(void)
+After();
 
 #define Ensure_NARG(...) \
          Ensure_NARG_(__VA_ARGS__,Ensure_RSEQ_N())
