@@ -76,7 +76,7 @@ Ensure(can_strip_d_macro_to_leave_original_name) {
 
 TestSuite *parameter_tests() {
     TestSuite *suite = create_test_suite();
-    teardown(suite, destroy_names);
+    add_teardown(suite, destroy_names);
     add_test(suite, can_create_vector_of_no_parameters_and_destroy_it);
     add_test(suite, can_read_single_parameter);
     add_test(suite, can_read_two_parameters);
