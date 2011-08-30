@@ -111,8 +111,8 @@ Ensure(vector_size_of_null_pointer_is_zero) {
 
 TestSuite *vector_tests() {
     TestSuite *suite = create_test_suite();
-    setup(suite, set_up_vector);
-    teardown(suite, tear_down_vector);
+    add_setup(suite, set_up_vector);
+    add_teardown(suite, tear_down_vector);
     add_test(suite, new_vector_is_empty);
     add_test(suite, single_item_gives_count_of_one);
     add_test(suite, single_item_is_readable);

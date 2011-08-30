@@ -53,7 +53,7 @@ Ensure(time_out_in_only_one_second) {
 
 TestSuite *unit_tests() {
 	TestSuite *suite = create_test_suite();
-	setup(suite, unit_tests_setup);
+	add_setup(suite, unit_tests_setup);
 
 	add_test(suite, count_tests_return_zero_for_empty_suite);
 	add_test(suite, count_tests_return_one_for_suite_with_one_testcase);
@@ -61,6 +61,6 @@ TestSuite *unit_tests() {
 /*
 	add_test(suite, time_out_in_only_one_second);
 */
-	teardown(suite, unit_tests_teardown);
+	add_teardown(suite, unit_tests_teardown);
 	return suite;
 }
