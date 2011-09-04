@@ -119,11 +119,11 @@ void add_suite_(TestSuite *owner, const char *name, TestSuite *suite) {
     owner->tests[owner->size - 1].sPtr.suite = suite;
 }
 
-void add_setup(TestSuite *suite, void (*set_up)()) {
+void set_setup(TestSuite *suite, void (*set_up)()) {
     suite->setup = set_up;
 }
 
-void add_teardown(TestSuite *suite, void (*tear_down)()) {
+void set_teardown(TestSuite *suite, void (*tear_down)()) {
     suite->teardown = tear_down;
 }
 

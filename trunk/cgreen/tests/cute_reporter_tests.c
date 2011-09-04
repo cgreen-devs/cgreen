@@ -136,13 +136,13 @@ Ensure(will_report_finishing_of_suite) {
 
 TestSuite *cute_reporter_tests() {
 	TestSuite *suite = create_test_suite();
-	add_setup(suite, setup_cute_reporter_tests);
+	set_setup(suite, setup_cute_reporter_tests);
 
 	add_test(suite, will_report_beginning_of_suite);
 	add_test(suite, will_report_beginning_and_successful_finishing_of_test);
 	add_test(suite, will_report_failing_of_test_only_once);
 	add_test(suite, will_report_finishing_of_suite);
 
-	add_teardown(suite, cute_reporter_tests_teardown);
+	set_teardown(suite, cute_reporter_tests_teardown);
 	return suite;
 }
