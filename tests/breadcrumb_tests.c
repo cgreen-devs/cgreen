@@ -74,7 +74,7 @@ Ensure(double_item_breadcrumb_does_calls_walker_only_once) {
 
 TestSuite *breadcrumb_tests() {
     TestSuite *suite = create_test_suite();
-    add_setup(suite, breadcrumb_tests_setup);
+    set_setup(suite, breadcrumb_tests_setup);
 
     add_test(suite, can_destroy_empty_breadcrumb);
     add_test(suite, last_name_pushed_is_current);
@@ -86,7 +86,7 @@ TestSuite *breadcrumb_tests() {
     add_test(suite, single_item_breadcrumb_does_calls_walker_only_once);
     add_test(suite, double_item_breadcrumb_does_calls_walker_only_once);
 
-    add_teardown(suite, breadcrumb_tests_teardown);
+    set_teardown(suite, breadcrumb_tests_teardown);
 
     return suite;
 }
