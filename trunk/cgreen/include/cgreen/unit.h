@@ -31,15 +31,31 @@ typedef struct {
 
 extern CgreenContext defaultContext;
 
-#define Describe(subject) \
-static CgreenContext contextFor##subject = { #subject, __FILE__, &Before, &After };
+#define Describe_NARG(...) \
+         Describe_NARG_(__VA_ARGS__,Describe_RSEQ_N())
 
-#pragma GCC diagnostic ignored "-Wunused-function"
-#define Before() static void Before(void)
-Before();
+#define Describe_NARG_(...) \
+         Describe_ARG_N(__VA_ARGS__)
 
-#define After() static void After(void)
-After();
+#define Describe_ARG_N( \
+          _1,_2,_3,N,...) N
+
+#define Describe_RSEQ_N() \
+        DescribeSubjectWithSetupAndTeardown, DescribeSubjectWithSetup, DescribeSubject, DESCRIBE_REQUIRES_SUBJECT
+
+#define DescribeSubject(subject) \
+static CgreenContext contextFor##subject = { #subject, __FILE__, NULL, NULL };
+
+#define DescribeSubjectWithSetup(subject, ...) \
+static void setup(void); \
+static CgreenContext contextFor##subject = { #subject, __FILE__, &setup, NULL };
+
+#define DescribeSubjectWithSetupAndTeardown(subject, ...) \
+static void setup(void); \
+static void teardown(void); \
+static CgreenContext contextFor##subject = { #subject, __FILE__, &setup, &teardown };
+
+#define Describe(...) Describe_NARG(__VA_ARGS__)(__VA_ARGS__)
 
 #define Ensure_NARG(...) \
          Ensure_NARG_(__VA_ARGS__,Ensure_RSEQ_N())
