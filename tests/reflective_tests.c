@@ -6,13 +6,13 @@ using namespace cgreen;
 
 static int counter = 0;
 
-Describe(ReflectiveTests);
+Describe(ReflectiveTests, with_setup, with_teardown);
 
-Before() {
+void setup() {
     counter += 5;
 }
 
-After() {
+void teardown() {
     counter += 1;
 }
 
