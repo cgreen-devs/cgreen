@@ -10,6 +10,7 @@ include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${CMAKE_BINARY_DIR})
 set(test_SRCS
   all_tests.c
   assertion_tests.c
+  cpp_assertion_tests.cpp
   breadcrumb_tests.c
   collector_tests.c
   constraint_tests.c

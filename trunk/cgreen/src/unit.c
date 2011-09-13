@@ -57,7 +57,7 @@ static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *re
 static void die(const char *message, ...);
 static void do_nothing(void);
 
-extern CgreenContext defaultContext = {
+CgreenContext defaultContext = {
     /* name     */ "",
     /* filename */ __FILE__,
     /* setup    */ &do_nothing,

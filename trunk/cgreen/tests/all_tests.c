@@ -6,6 +6,7 @@ using namespace cgreen;
 
 TestSuite *messaging_tests();
 TestSuite *assertion_tests();
+TestSuite *cpp_assertion_tests();
 TestSuite *vector_tests();
 TestSuite *constraint_tests();
 TestSuite *parameter_tests();
@@ -20,6 +21,7 @@ int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
     add_suite(suite, messaging_tests());
     add_suite(suite, assertion_tests());
+    add_suite(suite, cpp_assertion_tests());
     add_suite(suite, vector_tests());
     add_suite(suite, constraint_tests());
     add_suite(suite, parameter_tests());

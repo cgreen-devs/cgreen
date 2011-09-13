@@ -2,18 +2,10 @@
 
 include(CheckCCompilerFlag)
 
-if (WIN32)
-    if (WITH_CXX)
-       add_definitions(-g -std=gnu++0x -Weffc++ -Wall -Wextra -Wunused)
-    else()
-       add_definitions(-g -std=c99 -Wall -Wextra -Wmissing-prototypes -Wunused)
-    endif (WITH_CXX)
-endif (WIN32)
-
-if (UNIX AND NOT WIN32) # All *nix except Cygwin
+if (UNIX) 
   if (CMAKE_COMPILER_IS_GNUCC)
     if (WITH_CXX)
-       add_definitions(-g -std=c++0x -Weffc++ -Wall -Wextra -Wunused)
+       add_definitions(-g -Weffc++ -Wall -Wextra -Wunused)
     else()
        add_definitions(-g -std=c99 -Wall -Wextra -Wmissing-prototypes -Wunused)
     endif (WITH_CXX)
@@ -57,4 +49,4 @@ if (UNIX AND NOT WIN32) # All *nix except Cygwin
       add_definitions(-D_FORTIFY_SOURCE=2)
     endif (WITH_FORTIFY_SOURCE)
   endif (CMAKE_COMPILER_IS_GNUCC)
-endif (UNIX AND NOT WIN32)
+endif (UNIX)
