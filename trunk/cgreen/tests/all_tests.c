@@ -21,7 +21,9 @@ int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
     add_suite(suite, messaging_tests());
     add_suite(suite, assertion_tests());
+#ifdef __cplusplus
     add_suite(suite, cpp_assertion_tests());
+#endif
     add_suite(suite, vector_tests());
     add_suite(suite, constraint_tests());
     add_suite(suite, parameter_tests());
