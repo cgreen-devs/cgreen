@@ -20,6 +20,11 @@ static double accuracy(int significant_figures, double largest);
 
 static int significant_figures = 8;
 
+#ifdef __cplusplus
+void assert_that_(const char *file, int line, const char *actual_string, std::string& actual, Constraint* constraint) {
+	assert_that_(file, line, actual_string, (intptr_t)(actual.c_str()), constraint);
+}
+#endif
 
 void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint* constraint) {
     if (NULL != constraint && constraint->type != PARAMETER) {

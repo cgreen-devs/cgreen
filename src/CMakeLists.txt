@@ -44,6 +44,7 @@ set(cgreen_SRCS
   parameters.c
   reporter.c
   slurp.c
+  suite.c
   text_reporter.c
   unit.c
   vector.c

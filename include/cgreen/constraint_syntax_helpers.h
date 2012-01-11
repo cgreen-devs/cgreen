@@ -5,8 +5,18 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
+#include <string>
+
 namespace cgreen {
-    extern "C" {
+#ifdef __cplusplus
+Constraint *is_equal_to_string(const std::string& string_to_match);
+Constraint *is_not_equal_to_string(const std::string& string_to_match);
+Constraint *contains_string(const std::string& string_to_match);
+Constraint *does_not_contain_string(const std::string& string_to_match);
+#endif
+
+
+extern "C" {
 #endif
 
 /* we want to favor delegating functions (for namespacing, and to avoid confusing symbol/preprocessor conflicts), 

@@ -74,13 +74,18 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
     memo->begin = cdash_build_stamp(sbuildstamp, 15);
 
     rep_dir = mkdir("./Testing", S_IXUSR|S_IRUSR|S_IWUSR|S_IXGRP|S_IRGRP|S_IXOTH|S_IRGRP);
-    if (rep_dir)
-      if (errno != EEXIST)
-        return NULL;
+    if (rep_dir) {
+      if (errno != EEXIST) {
+    	  free(memo);
+    	  return NULL;
+      }
+    }
 
     fd = fopen("./Testing/TAG", "w+");
-    if (fd == NULL)
-      return NULL;
+    if (fd == NULL) {
+    	free(memo);
+    	return NULL;
+    }
 
     fprintf(fd,"%s\n%s\n", sbuildstamp, memo->cdash->type);
 
@@ -89,15 +94,20 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
     strsize = snprintf(reporter_path, 255, "./Testing/%s", sbuildstamp);
 
     rep_dir = mkdir(reporter_path, S_IXUSR|S_IRUSR|S_IWUSR|S_IXGRP|S_IRGRP|S_IXOTH|S_IRGRP);
-    if (rep_dir)
-      if (errno != EEXIST)
-        return NULL;
+    if (rep_dir) {
+      if (errno != EEXIST) {
+    	  free(memo);
+    	  return NULL;
+      }
+    }
 
-    strsize = snprintf( (char *) (reporter_path + strsize), (255 - strsize), "/Test.xml");
+    snprintf( (char *) (reporter_path + strsize), (255 - strsize), "/Test.xml");
 
     fd = fopen(reporter_path, "w+");
-    if (fd == NULL)
-      return NULL;
+    if (fd == NULL) {
+  	  free(memo);
+  	  return NULL;
+    }
 
     /* now the Test.xml is in place */
     memo->f_reporter = fd;

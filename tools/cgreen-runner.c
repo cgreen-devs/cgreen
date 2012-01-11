@@ -23,7 +23,6 @@ int file_exists (const char *filename);
 TestReporter* my_create_text_reporter(void *handle);
 TestSuite *my_create_test_suite(void *handle);
 
-int my_run_all_tests(void *handle);
 int my_run_test_suite(void* handle, TestSuite *suite, TestReporter *reporter);
 int my_run_single_test(void* handle, TestSuite *suite, const char* name, TestReporter *reporter);
 void my_cleanup();
