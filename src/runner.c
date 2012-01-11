@@ -1,9 +1,5 @@
-#include <cgreen/assertions.h>
-#include <cgreen/mocks.h>
-#include <cgreen/parameters.h>
-#include <cgreen/reporter.h>
+#include <cgreen/runner.h>
 #include <cgreen/suite.h>
-#include <cgreen/unit.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -39,16 +35,8 @@ static int per_test_timeout_value(void);
 static void validate_per_test_timeout_value(void);
 static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *reporter);
 static void die(const char *message, ...);
+static void die_in(unsigned int seconds);
 
-void die_in(unsigned int seconds) {
-    sighandler_t signal_result = signal(SIGALRM, (sighandler_t)&stop);
-    if (SIG_ERR == signal_result) {
-        fprintf(stderr, "could not set alarm signal hander\n");
-        return;
-    }
-
-    alarm(seconds);
-}
 
 int run_test_suite(TestSuite *suite, TestReporter *reporter) {
 	if (per_test_timeout_defined()) {
@@ -219,6 +207,17 @@ static void die(const char *message, ...) {
 	va_end(arguments);
 	exit(EXIT_FAILURE);
 }
+
+static void die_in(unsigned int seconds) {
+    sighandler_t signal_result = signal(SIGALRM, (sighandler_t)&stop);
+    if (SIG_ERR == signal_result) {
+        fprintf(stderr, "could not set alarm signal hander\n");
+        return;
+    }
+
+    alarm(seconds);
+}
+
 
 #ifdef __cplusplus
 } // namespace cgreen

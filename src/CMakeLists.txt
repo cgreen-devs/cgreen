@@ -43,10 +43,10 @@ set(cgreen_SRCS
   mocks.c
   parameters.c
   reporter.c
+  runner.c
   slurp.c
   suite.c
   text_reporter.c
-  unit.c
   vector.c
 )
 
