@@ -6,7 +6,9 @@ using namespace cgreen;
 
 TestSuite *messaging_tests();
 TestSuite *assertion_tests();
+#ifdef __cplusplus
 TestSuite *cpp_assertion_tests();
+#endif
 TestSuite *vector_tests();
 TestSuite *constraint_tests();
 TestSuite *parameter_tests();

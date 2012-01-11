@@ -36,11 +36,13 @@ TestReporter *create_reporter() {
     if (reporter == NULL) {
         return NULL;
     }
+
     CgreenBreadcrumb *breadcrumb = create_breadcrumb();
     if (breadcrumb == NULL) {
-        destroy_reporter(reporter);
+        free(reporter);
         return NULL;
     }
+
     reporter->destroy = &destroy_reporter;
     reporter->start_suite = &reporter_start_suite;
     reporter->start_test = &reporter_start;

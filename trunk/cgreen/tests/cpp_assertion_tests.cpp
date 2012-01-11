@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #include <typeinfo>
 
 using namespace cgreen;
@@ -23,7 +24,7 @@ public:
 };
 
 #define assert_that_type(actual, expected) \
-  assert_true_with_message(actual expected, "Expected instance of [%s] named [%s] to equal other instance named [%s]", typeid(actual).name(), #actual, #expected)
+  assert_true_with_message(actual expected, "Expected [%s] to be [%s]", #actual, #expected)
 
 #define is_equal_to_type(type) ==type
 #define is_not_equal_to_type(type) !=type

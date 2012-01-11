@@ -1,7 +1,6 @@
 #include <cgreen/assertions.h>
 #include <cgreen/boxed_double.h>
 #include <cgreen/constraint.h>
-#include <cgreen/mocks.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -82,11 +81,6 @@ bool constraint_is_for_parameter(const Constraint *constraint, const char *param
 
 void test_constraint(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
     (*constraint->test)(constraint, function, actual, test_file, test_line, reporter);
-}
-
-Constraint *when_(const char *parameter, Constraint* constraint) {
-    constraint->parameter_name = parameter;
-    return constraint;
 }
 
 Constraint *create_equal_to_value_constraint(intptr_t value_to_match) {

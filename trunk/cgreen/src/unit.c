@@ -1,8 +1,9 @@
-#include <cgreen/unit.h>
-#include <cgreen/reporter.h>
+#include <cgreen/assertions.h>
 #include <cgreen/mocks.h>
 #include <cgreen/parameters.h>
-#include <cgreen/assertions.h>
+#include <cgreen/reporter.h>
+#include <cgreen/suite.h>
+#include <cgreen/unit.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -16,35 +17,18 @@
 namespace cgreen {
 #endif
 
-enum {test_function, test_suite};
+static const char* CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE = "CGREEN_PER_TEST_TIMEOUT";
 
 typedef void (*sighandler_t)(int);
-
-typedef struct {
-    int type;
-    union {
-        CgreenTest *test;
-        TestSuite *suite;
-    } sPtr;
-    const char *name;
-} UnitTest;
-
-struct TestSuite_ {
-    const char *name;
-    UnitTest *tests;
-    void (*setup)();
-    void (*teardown)();
-    int size;
-};
-
-static const char* CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE = "CGREEN_PER_TEST_TIMEOUT";
 
 static void clean_up_test_run(TestSuite *suite, TestReporter *reporter);
 static void run_every_test(TestSuite *suite, TestReporter *reporter);
 static void run_named_test(TestSuite *suite, const char *name, TestReporter *reporter);
-static int has_test(TestSuite *suite, const char *name);
+
 static void run_test_in_the_current_process(TestSuite *suite, UnitTest *test, TestReporter *reporter);
 static void run_test_in_its_own_process(TestSuite *suite, UnitTest *test, TestReporter *reporter);
+
+
 static int in_child_process(void);
 static void wait_for_child_process(void);
 static void ignore_ctrl_c(void);
@@ -55,77 +39,6 @@ static int per_test_timeout_value(void);
 static void validate_per_test_timeout_value(void);
 static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *reporter);
 static void die(const char *message, ...);
-static void do_nothing(void);
-
-CgreenContext defaultContext = {
-    /* name     */ "",
-    /* filename */ __FILE__,
-    /* setup    */ &do_nothing,
-    /* teardown */ &do_nothing
-};
-
-TestSuite *create_named_test_suite(const char *name) {
-    TestSuite *suite = (TestSuite *)malloc(sizeof(TestSuite));
-    suite->name = name;
-    suite->tests = NULL;
-    suite->setup = &do_nothing;
-    suite->teardown = &do_nothing;
-    suite->size = 0;
-    return suite;
-}
-
-void destroy_test_suite(TestSuite *suiteToDestroy) {
-    int i;
-    for (i = 0; i < suiteToDestroy->size; i++) {
-        UnitTest test = suiteToDestroy->tests[i];
-        TestSuite* suite = test.sPtr.suite;
-        if (test_suite == test.type && suite != NULL) {
-           suiteToDestroy->tests[i].sPtr.suite = NULL;
-           destroy_test_suite(suite);
-        }
-    }
-
-    if (suiteToDestroy->tests != NULL)
-        free(suiteToDestroy->tests);
-
-    free(suiteToDestroy);
-}
-
-void add_test_(TestSuite *suite, const char *name, CgreenTest *test) {
-    suite->size++;
-    suite->tests = (UnitTest *)realloc(suite->tests, sizeof(UnitTest) * suite->size);
-    suite->tests[suite->size - 1].type = test_function;
-    suite->tests[suite->size - 1].name = name;
-    suite->tests[suite->size - 1].sPtr.test = test;
-}
-
-void add_tests_(TestSuite *suite, const char *names, ...) {
-    CgreenVector *test_names = create_vector_of_names(names);
-    int i;
-    va_list tests;
-    va_start(tests, names);
-    for (i = 0; i < cgreen_vector_size(test_names); i++) {
-        add_test_(suite, (char *)(cgreen_vector_get(test_names, i)), va_arg(tests, CgreenTest *));
-    }
-    va_end(tests);
-    destroy_cgreen_vector(test_names);
-}
-
-void add_suite_(TestSuite *owner, const char *name, TestSuite *suite) {
-    owner->size++;
-    owner->tests = (UnitTest *)realloc(owner->tests, sizeof(UnitTest) * owner->size);
-    owner->tests[owner->size - 1].type = test_suite;
-    owner->tests[owner->size - 1].name = name;
-    owner->tests[owner->size - 1].sPtr.suite = suite;
-}
-
-void set_setup(TestSuite *suite, void (*set_up)()) {
-    suite->setup = set_up;
-}
-
-void set_teardown(TestSuite *suite, void (*tear_down)()) {
-    suite->teardown = tear_down;
-}
 
 void die_in(unsigned int seconds) {
     sighandler_t signal_result = signal(SIGALRM, (sighandler_t)&stop);
@@ -135,19 +48,6 @@ void die_in(unsigned int seconds) {
     }
 
     alarm(seconds);
-}
-
-int count_tests(TestSuite *suite) {
-	int count = 0;
-	int i;
-    for (i = 0; i < suite->size; i++) {
-        if (suite->tests[i].type == test_function) {
-            count++;
-        } else {
-            count += count_tests(suite->tests[i].sPtr.suite);
-        }
-    }
-    return count;
 }
 
 int run_test_suite(TestSuite *suite, TestReporter *reporter) {
@@ -213,19 +113,6 @@ static void run_named_test(TestSuite *suite, const char *name, TestReporter *rep
 	(*reporter->finish_suite)(reporter, suite->name);
 }
 
-static int has_test(TestSuite *suite, const char *name) {
-	int i;
-	for (i = 0; i < suite->size; i++) {
-        if (suite->tests[i].type == test_function) {
-            if (strcmp(suite->tests[i].name, name) == 0) {
-                return 1;
-            }
-        } else if (has_test(suite->tests[i].sPtr.suite, name)) {
-            return 1;
-        }
-	}
-	return 0;
-}
 
 static void run_test_in_the_current_process(TestSuite *suite, UnitTest *test, TestReporter *reporter) {
 	(*reporter->start_test)(reporter, test->name);
@@ -308,10 +195,11 @@ static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *re
     CgreenTest *spec = test->sPtr.test;
 
     // for historical reasons the suite can have a setup
-    if (suite->setup != &do_nothing)
+    if(has_setup(suite)) {
         (*suite->setup)();
-    else
+    } else {
         spec->context->setup();
+    }
 
     spec->run();
 
@@ -330,9 +218,6 @@ static void die(const char *message, ...) {
 	vprintf(message, arguments);
 	va_end(arguments);
 	exit(EXIT_FAILURE);
-}
-
-static void do_nothing() {
 }
 
 #ifdef __cplusplus
