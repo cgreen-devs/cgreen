@@ -19,6 +19,7 @@ set(test_SRCS
   mocks_tests.c
   parameters_test.c
   reflective_tests.c
+  reflective_runner_no_teardown_tests.c
   slurp_test.c
   unit_tests.c
   vector_tests.c

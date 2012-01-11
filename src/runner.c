@@ -186,16 +186,21 @@ static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *re
     if(has_setup(suite)) {
         (*suite->setup)();
     } else {
-        spec->context->setup();
+        if (spec->context->setup != NULL) {
+        	spec->context->setup();
+        }
     }
 
     spec->run();
 
     // for historical reasons the suite can have a teardown
-    if (suite->teardown != &do_nothing)
+    if (suite->teardown != &do_nothing) {
         (*suite->teardown)();
-    else
-        spec->context->teardown();
+    } else {
+        if (spec->context->teardown != NULL) {
+        	spec->context->teardown();
+        }
+    }
 
     tally_mocks(reporter);
 }
