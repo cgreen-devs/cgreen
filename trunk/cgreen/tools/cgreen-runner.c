@@ -1,12 +1,12 @@
+#include <cgreen/reporter.h>
+#include <cgreen/suite.h>
 
+#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dlfcn.h>
 #include <unistd.h>
 
-#include <cgreen/cgreen.h>
-#include <cgreen/reporter.h>
 
 #define MY_TEST_SUITE_NAME __func__
 

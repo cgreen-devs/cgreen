@@ -1,9 +1,6 @@
 #ifndef UNIT_HEADER
 #define UNIT_HEADER
 
-#include <cgreen/reporter.h>
-#include <cgreen/suite.h>
-
 #ifdef __cplusplus
 namespace cgreen {
     extern "C" {
@@ -61,10 +58,6 @@ static CgreenContext contextFor##subject = { #subject, __FILE__, &setup, &teardo
 	static void spec (void);\
 	CgreenTest spec_name(default, spec) = { &defaultContext, #spec, &spec };\
 	static void spec ()
-
-////////////////////////////////////////////////////////////////////////////////
-
-void die_in(unsigned int seconds);
 
 #ifdef __cplusplus
     }
