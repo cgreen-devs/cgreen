@@ -1,103 +1,98 @@
 #include <cgreen/reporter.h>
+#include <cgreen/runner.h>
 #include <cgreen/suite.h>
+#include <cgreen/text_reporter.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 
 
-#define MY_TEST_SUITE_NAME __func__
-
-struct testlist_item {
-    char name[128];
+struct test_item {
+    char name[512];
 };
 
-struct testlist_item testlist[1024];
-int testlist_offset = 0;
 
-void discover_tests();
-int file_exists (const char *filename);
-
-TestReporter* my_create_text_reporter(void *handle);
-TestSuite *my_create_test_suite(void *handle);
-
-int my_run_test_suite(void* handle, TestSuite *suite, TestReporter *reporter);
-int my_run_single_test(void* handle, TestSuite *suite, const char* name, TestReporter *reporter);
-void my_cleanup();
-
-void add_discovered_tests_to_suite(void *handle, TestSuite* suite);
+static uint32_t discover_tests_in(const char *, struct test_item *, uint32_t);
+static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, uint32_t number_of_tests, TestSuite* suite);
+static int file_exists (const char *filename);
+static void reflective_runner_cleanup(void*);
 
 int main(int argc, char **argv) {
     int status;
-    void *handle;
+    void *test_library_handle;
 
     if (argc < 2) {
         printf("Usage: cgreen-runner <test library filename>\n");
         exit(1);
     }
 
-    const char* lib_filename = argv[1];
+    const char* test_library = argv[argc - 1];
 
-    if (!file_exists(lib_filename)) {
-        printf("Couldn't find library: %s\n", lib_filename);
+    if (!file_exists(test_library)) {
+        printf("Couldn't find library: %s\n", test_library);
         exit(1);
     }
 
-    discover_tests();
+    const uint32_t MAXIMUM_NUMBER_OF_TESTS = 2048;
+    struct test_item discovered_tests[MAXIMUM_NUMBER_OF_TESTS];
+    memset(discovered_tests, 0, sizeof(discovered_tests));
+    uint32_t number_of_tests = discover_tests_in(test_library, discovered_tests, MAXIMUM_NUMBER_OF_TESTS);
 
-    printf("Discovered: %d tests\n", testlist_offset);
+    printf("Discovered: %d tests\n", number_of_tests);
 
-    handle = dlopen (lib_filename, RTLD_LAZY);
-    if (!handle) {
-        fprintf (stderr, "%s\n", dlerror());
+    printf("Opening [%s]\n", test_library);
+    test_library_handle = dlopen (test_library, RTLD_LAZY);
+    if (test_library_handle == NULL) {
+        fprintf (stderr, "dlopen failure (error: %s)\n", dlerror());
         exit(1);
     }
 
-    TestSuite *suite = my_create_test_suite(handle);
-    TestReporter *reporter = my_create_text_reporter(handle);
+    TestSuite *suite = create_test_suite();
+    TestReporter *reporter = create_text_reporter();
 
-    add_discovered_tests_to_suite(handle, suite);
+    add_discovered_tests_to_suite(test_library_handle, discovered_tests, number_of_tests, suite);
 
-    status = my_run_test_suite(handle, suite, reporter);
+    status = run_test_suite(suite, reporter);
 
-    my_cleanup(handle);
+    reflective_runner_cleanup(test_library_handle);
 
     return status;
 }
 
-int file_exists(const char *filename)
+static int file_exists(const char *filename)
 {
     return (access(filename, F_OK) == 0);
 }
   
-void my_cleanup(void *handle)
+static void reflective_runner_cleanup(void *handle)
 {
     dlclose(handle);
 }
 
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
-void discover_tests(const char* lib_filename)
+static uint32_t discover_tests_in(const char* test_library, struct test_item* test_items, uint32_t maximum_number_of_test_items)
 {
-    FILE *fp;
-    char line[1024];
-    char cmd[128];
+    char cmd[2048];
 
     memset(cmd, 0, sizeof(cmd));
     strcat(cmd, "/usr/bin/nm ");
-    strcat(cmd, lib_filename);
+    strcat(cmd, test_library);
 
     /* Open the command for reading. */
-    fp = popen(cmd, "r");
-    if (fp == NULL) {
+    FILE *nm_output_pipe = popen(cmd, "r");
+    if (nm_output_pipe == NULL) {
         printf("Failed to run command\n" );
-        return;
+        return 0;
     }
 
-    memset(testlist, 0, sizeof(testlist));
 
-    while (fgets(line, sizeof(line)-1, fp) != NULL) {
+    uint32_t number_of_tests = 0;
+    char line[1024];
+    while (fgets(line, sizeof(line)-1, nm_output_pipe) != NULL) {
        char *match = strstr(line, "CgreenSpec");
 
        if (match != NULL) {
@@ -105,91 +100,37 @@ void discover_tests(const char* lib_filename)
 
            if (0 != strncmp(match, "CgreenSpec_default", strlen("CgreenSpec_default")))
            {
-               strncpy(testlist[testlist_offset].name, match, len - 1);
-               testlist_offset++;
+               strncpy(test_items[number_of_tests].name, match, len - 1);
+               number_of_tests++;
            }
+       }
+
+       if (number_of_tests > maximum_number_of_test_items) {
+    	   printf("Found too many tests (%d)! Giving up. Consider splitting tests between libraries on logical suite boundaries.\n");
+    	   exit(1);
        }
     }
 
-    pclose(fp);
+    pclose(nm_output_pipe);
+
+    return number_of_tests;
 }
 
-void add_discovered_tests_to_suite(void *handle, TestSuite* suite)
+static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, uint32_t number_of_tests, TestSuite* suite)
 {
-    int i = 0;
     char *error;
     void (*cgreen_test)();
-    void (*add_test_callback)(TestSuite *suite, const char *name, CgreenTest *test);
 
-    add_test_callback = dlsym(handle, "add_test_");
-    if ((error = dlerror()) != NULL)  {
-        fprintf (stderr, "%s\n", error);
-        exit(1);
-    }
-
-    for (i = 0; i < testlist_offset; i++) {
+    for (uint32_t i = 0; i < number_of_tests; i++) {
         //printf("Discovered test %s ...\n", testlist[i].name);
 
-        cgreen_test = dlsym(handle, testlist[i].name);
+        cgreen_test = dlsym(handle, tests[i].name);
 
         if ((error = dlerror()) != NULL)  {
             fprintf (stderr, "%s\n", error);
             exit(1);
         }
- 
-        add_test_callback(suite, testlist[i].name, cgreen_test);
+
+        add_test_(suite, tests[i].name, cgreen_test);
     }
 }
-
-TestSuite *my_create_test_suite(void *handle)
-{
-    TestSuite* (*callback)(const char *name);
-    char *error;
-
-    callback = dlsym(handle, "create_named_test_suite");
-    if ((error = dlerror()) != NULL)  {
-        fprintf (stderr, "%s\n", error);
-        exit(1);
-    }
-    return (*callback)(MY_TEST_SUITE_NAME);
-}
-
-TestReporter *my_create_text_reporter(void *handle)
-{
-    TestReporter* (*callback)();
-    char *error;
-
-    callback = dlsym(handle, "create_text_reporter");
-    if ((error = dlerror()) != NULL)  {
-        fprintf (stderr, "%s\n", error);
-        exit(1);
-    }
-    return (*callback)();
-}
-
-int my_run_test_suite(void* handle, TestSuite *suite, TestReporter *reporter)
-{
-    int (*callback)(TestSuite *suite, TestReporter *reporter);
-    char *error;
-
-    callback = dlsym(handle, "run_test_suite");
-    if ((error = dlerror()) != NULL)  {
-        fprintf (stderr, "%s\n", error);
-        exit(1);
-    }
-    return (*callback)(suite, reporter);
-}
-
-int my_run_single_test(void* handle, TestSuite *suite, const char* name, TestReporter *reporter)
-{
-    int (*callback)(TestSuite *suite, const char *name, TestReporter *reporter);
-    char *error;
-
-    callback = dlsym(handle, "run_single_test");
-    if ((error = dlerror()) != NULL)  {
-        fprintf (stderr, "%s\n", error);
-        exit(1);
-    }
-    return (*callback)(suite, name, reporter);
-}
-
