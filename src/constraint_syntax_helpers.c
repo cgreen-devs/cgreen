@@ -54,48 +54,6 @@ Constraint *is_null = &static_is_null_constraint;
 Constraint *is_false = &static_is_false_constraint;
 Constraint *is_true = &static_is_true_constraint;
 
-#ifdef __cplusplus
-Constraint *is_equal_to_string(const std::string& value_to_match)
-{
-    return create_equal_to_string_constraint(value_to_match.c_str());
-}
-
-Constraint *is_not_equal_to_string(const std::string& value_to_match)
-{
-    return create_not_equal_to_string_constraint(value_to_match.c_str());
-}
-
-Constraint *contains_string(const std::string& value_to_match)
-{
-    return create_contains_string_constraint(value_to_match.c_str());
-}
-
-Constraint *does_not_contain_string(const std::string& value_to_match)
-{
-    return create_does_not_contain_string_constraint(value_to_match.c_str());
-}
-
-Constraint *is_equal_to_string(const std::string* value_to_match)
-{
-    return create_equal_to_string_constraint(value_to_match->c_str());
-}
-
-Constraint *is_not_equal_to_string(const std::string* value_to_match)
-{
-    return create_not_equal_to_string_constraint(value_to_match->c_str());
-}
-
-Constraint *contains_string(const std::string* value_to_match)
-{
-    return create_contains_string_constraint(value_to_match->c_str());
-}
-
-Constraint *does_not_contain_string(const std::string* value_to_match)
-{
-    return create_does_not_contain_string_constraint(value_to_match->c_str());
-}
-#endif
-
 Constraint *is_equal_to_string(const char *value_to_match)
 {
     return create_equal_to_string_constraint(value_to_match);
