@@ -8,9 +8,9 @@ namespace cgreen {
 Constraint static_is_non_null_constraint = {
     /* .type */ PARAMETER,
     /* .name */ "be non null",
-    /* .destroy */ &destroy_static_constraint,
-    /* .compare */ &compare_do_not_want_value,
-    /* .test */ &test_do_not_want_value,
+    /* .destroy */ destroy_static_constraint,
+    /* .compare */ compare_do_not_want_value,
+    /* .test */ test_do_not_want_value,
     /* .stored_value */ 0,
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
@@ -19,9 +19,9 @@ Constraint static_is_non_null_constraint = {
 Constraint static_is_null_constraint = {
     /* .type */ PARAMETER,
     /* .name */ "be null",
-    /* .destroy */ &destroy_static_constraint,
-    /* .compare */ &compare_want_value,
-    /* .test */ &test_want_value,
+    /* .destroy */ destroy_static_constraint,
+    /* .compare */ compare_want_value,
+    /* .test */ test_want_value,
     /* .stored_value */ 0,
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
@@ -30,9 +30,9 @@ Constraint static_is_null_constraint = {
 Constraint static_is_false_constraint = { 
     /* .type */ PARAMETER,
     /* .name */ "be false",
-    /* .destroy */ &destroy_static_constraint,
-    /* .compare */ &compare_want_value,
-    /* .test */ &test_want_value,
+    /* .destroy */ destroy_static_constraint,
+    /* .compare */ compare_want_value,
+    /* .test */ test_want_value,
     /* .stored_value */ 0,
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
@@ -41,9 +41,9 @@ Constraint static_is_false_constraint = {
 Constraint static_is_true_constraint = { 
     /* .type */ PARAMETER,
     /* .name */ "be true",
-    /* .destroy */ &destroy_static_constraint,
-    /* .compare */ &compare_do_not_want_value,
-    /* .test */ &test_do_not_want_value,
+    /* .destroy */ destroy_static_constraint,
+    /* .compare */ compare_do_not_want_value,
+    /* .test */ test_do_not_want_value,
     /* .stored_value */ 0,
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
@@ -73,6 +73,26 @@ Constraint *contains_string(const std::string& value_to_match)
 Constraint *does_not_contain_string(const std::string& value_to_match)
 {
     return create_does_not_contain_string_constraint(value_to_match.c_str());
+}
+
+Constraint *is_equal_to_string(const std::string* value_to_match)
+{
+    return create_equal_to_string_constraint(value_to_match->c_str());
+}
+
+Constraint *is_not_equal_to_string(const std::string* value_to_match)
+{
+    return create_not_equal_to_string_constraint(value_to_match->c_str());
+}
+
+Constraint *contains_string(const std::string* value_to_match)
+{
+    return create_contains_string_constraint(value_to_match->c_str());
+}
+
+Constraint *does_not_contain_string(const std::string* value_to_match)
+{
+    return create_does_not_contain_string_constraint(value_to_match->c_str());
 }
 #endif
 

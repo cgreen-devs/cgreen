@@ -6,6 +6,19 @@ namespace cgreen {
     extern "C" {
 #endif
 
+typedef struct {
+	const char* name;
+	const char* filename;
+	void (*setup)(void);
+	void (*teardown)(void);
+   } CgreenContext;
+
+typedef struct {
+	CgreenContext* context;
+	const char* name;
+	void(*run)(void);
+} CgreenTest;
+
 #define spec_name(contextName, spec) CgreenSpec_##contextName##_##spec
 
 
@@ -53,6 +66,8 @@ static CgreenContext contextFor##subject = { #subject, __FILE__, &setup, &teardo
 	static void contextName##_##spec (void);\
 	CgreenTest spec_name(contextName, spec) = { &contextFor##contextName, #spec, &contextName##_##spec };\
 	static void contextName##_##spec ()
+
+extern CgreenContext defaultContext;
 
 #define EnsureWithSpecificationName(spec, ...) \
 	static void spec (void);\

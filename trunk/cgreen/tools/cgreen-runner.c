@@ -106,7 +106,7 @@ static uint32_t discover_tests_in(const char* test_library, struct test_item* te
        }
 
        if (number_of_tests > maximum_number_of_test_items) {
-    	   printf("Found too many tests (%d)! Giving up. Consider splitting tests between libraries on logical suite boundaries.\n");
+    	   printf("Found too many tests (%d)! Giving up. Consider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
     	   exit(1);
        }
     }
@@ -118,13 +118,11 @@ static uint32_t discover_tests_in(const char* test_library, struct test_item* te
 
 static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, uint32_t number_of_tests, TestSuite* suite)
 {
-    char *error;
-    void (*cgreen_test)();
-
     for (uint32_t i = 0; i < number_of_tests; i++) {
         //printf("Discovered test %s ...\n", testlist[i].name);
 
-        cgreen_test = dlsym(handle, tests[i].name);
+        char *error;
+        CgreenTest *cgreen_test = (CgreenTest *)(dlsym(handle, tests[i].name));
 
         if ((error = dlerror()) != NULL)  {
             fprintf (stderr, "%s\n", error);

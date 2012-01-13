@@ -53,6 +53,7 @@ set(cgreen_SRCS
 set(CGREEN_LIBRARY_NAME cgreen)
 
 if (WITH_CXX)
+  set(cgreen_SRCS ${cgreen_SRCS} cpp_assertions.cpp)
   set(CGREEN_LIBRARY_NAME cgreen++)
   SET_SOURCE_FILES_PROPERTIES( ${cgreen_SRCS} PROPERTIES LANGUAGE CXX )
 endif (WITH_CXX)
@@ -65,7 +66,7 @@ include_directories(
 ### cgreen
 add_library(${CGREEN_SHARED_LIBRARY} SHARED ${cgreen_SRCS})
 
-target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES})
+target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES} stdc++)
 
 set_target_properties(
   ${CGREEN_SHARED_LIBRARY}
@@ -90,7 +91,7 @@ install(
 if (WITH_STATIC_LIBRARY)
   add_library(${CGREEN_STATIC_LIBRARY} STATIC ${cgreen_SRCS})
 
-  target_link_libraries(${CGREEN_STATIC_LIBRARY} ${CGREEN_LINK_LIBRARIES})
+  target_link_libraries(${CGREEN_STATIC_LIBRARY} ${CGREEN_LINK_LIBRARIES} stdc++)
 
   set_target_properties(
     ${CGREEN_STATIC_LIBRARY}

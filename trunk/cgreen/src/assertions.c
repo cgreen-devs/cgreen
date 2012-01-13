@@ -2,9 +2,10 @@
 #include <cgreen/boxed_double.h>
 #include <cgreen/constraint_syntax_helpers.h>
 #include <cgreen/reporter.h>
+#include <inttypes.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
 
 #ifdef __cplusplus
@@ -19,12 +20,6 @@ static void format_message_for(char *message, size_t message_size, Constraint *c
 static double accuracy(int significant_figures, double largest);
 
 static int significant_figures = 8;
-
-#ifdef __cplusplus
-void assert_that_(const char *file, int line, const char *actual_string, std::string& actual, Constraint* constraint) {
-	assert_that_(file, line, actual_string, (intptr_t)(actual.c_str()), constraint);
-}
-#endif
 
 void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint* constraint) {
     if (NULL != constraint && constraint->type != PARAMETER) {
@@ -175,7 +170,7 @@ static double accuracy(int figures, double largest) {
 
 static void format_message_for(char *message, size_t message_size, Constraint *constraint, const char *actual_string, intptr_t actual) {
     char actual_value_string[32];
-    snprintf(actual_value_string, sizeof(actual_value_string) - 1, "%d", actual);
+    snprintf(actual_value_string, sizeof(actual_value_string) - 1, "%" PRIdPTR, actual);
 
     if (constraint == is_null ||
             constraint == is_non_null ||
@@ -197,7 +192,7 @@ static void format_message_for(char *message, size_t message_size, Constraint *c
         /* when the actual string and the value are the same, don't print both of them */
         /* also, don't print "0" for false and "1" for true */
         snprintf(message, message_size - 1,
-                "Expected [%s] to [%s] [%d]",
+                "Expected [%s] to [%s] [%" PRIdPTR "]",
                 actual_string,
                 constraint->name,
                 constraint->stored_value);
@@ -206,7 +201,7 @@ static void format_message_for(char *message, size_t message_size, Constraint *c
     } 
 
     snprintf(message, message_size - 1,
-                "Expected [%s] with actual value [%d] to [%s] [%d]",
+                "Expected [%s] with actual value [%" PRIdPTR "] to [%s] [%" PRIdPTR "]",
                 actual_string,
                 actual,
                 constraint->name,

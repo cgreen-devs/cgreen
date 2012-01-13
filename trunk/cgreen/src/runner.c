@@ -1,3 +1,5 @@
+#include <cgreen/assertions.h>
+#include <cgreen/mocks.h>
 #include <cgreen/runner.h>
 #include <cgreen/suite.h>
 #include <signal.h>
@@ -80,7 +82,7 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
         }
     }
     send_reporter_completion_notification(reporter);
-	(*reporter->finish_suite)(reporter, suite->name);
+    (*reporter->finish_suite)(reporter, suite->name);
 }
 
 static void run_named_test(TestSuite *suite, const char *name, TestReporter *reporter) {

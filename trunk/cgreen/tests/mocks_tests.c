@@ -112,7 +112,7 @@ Ensure(string_expect_is_confirmed) {
 }
 
 Ensure(string_expect_is_confirmed_even_when_null) {
-    expect(string_in, when(s, is_equal_to_string(NULL)));
+    expect(string_in, when(s, is_equal_to_string((char *)NULL)));
     string_in(NULL);
 }
 

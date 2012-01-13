@@ -13,6 +13,10 @@ Constraint *is_equal_to_string(const std::string& string_to_match);
 Constraint *is_not_equal_to_string(const std::string& string_to_match);
 Constraint *contains_string(const std::string& string_to_match);
 Constraint *does_not_contain_string(const std::string& string_to_match);
+Constraint *is_equal_to_string(const std::string* string_to_match);
+Constraint *is_not_equal_to_string(const std::string* string_to_match);
+Constraint *contains_string(const std::string* string_to_match);
+Constraint *does_not_contain_string(const std::string* string_to_match);
 #endif
 
 
