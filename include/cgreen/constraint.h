@@ -12,9 +12,9 @@ namespace cgreen {
 #endif
 
 typedef enum {
-    PARAMETER,
+    PARAMETER_COMPARER,
     RETURN_VALUE,
-    SET_PARAMETER,
+    PARAMETER_SETTER,
     CALL
 } ConstraintType;
 
