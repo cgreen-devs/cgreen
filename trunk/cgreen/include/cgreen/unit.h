@@ -11,7 +11,7 @@ typedef struct {
 	const char* filename;
 	void (*setup)(void);
 	void (*teardown)(void);
-   } CgreenContext;
+} CgreenContext;
 
 typedef struct {
 	CgreenContext* context;

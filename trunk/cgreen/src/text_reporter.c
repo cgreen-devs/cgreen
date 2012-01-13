@@ -59,13 +59,14 @@ static void text_reporter_finish(TestReporter *reporter, const char *name) {
 
 static void show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     int i = 0;
-    printf("%s:%d: unit test failure: ", file, line);
+    printf("%s:%d: ", file, line);
+    printf("Test Failure: ");
     walk_breadcrumb(
             (CgreenBreadcrumb *)reporter->breadcrumb,
             &show_breadcrumb,
             (void *)&i);
+    printf("\n");
     vprintf((message == NULL ? "Problem" : message), arguments);
-    printf(" at [%s] line [%d]\n", file, line);
 }
 
 static void show_incomplete(TestReporter *reporter, const char *name) {
@@ -80,7 +81,7 @@ static void show_incomplete(TestReporter *reporter, const char *name) {
 
 static void show_breadcrumb(const char *name, void *memo) {
     if (*(int *)memo > 0) {
-        printf("%s -> ", name);
+        printf("-> %s ", name);
     }
     (*(int *)memo)++;
 }

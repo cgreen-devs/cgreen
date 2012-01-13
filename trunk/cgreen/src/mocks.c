@@ -316,7 +316,7 @@ void apply_any_parameter_constraints(RecordedExpectation *expectation, const cha
         // TODO: push this into the constraint->test, once the "test" is renamed to something like "execute", and delete here.
         //       this potentially also means that the SET_PARAMETER type could be removed
         if (constraint->type == SET_PARAMETER) {
-            memmove((void *)actual, (void *)constraint->stored_value, constraint->size_of_stored_value);
+            memmove((void *)actual, (void *)constraint->expected_value, constraint->size_of_stored_value);
         }
 
         constraint->test(
@@ -333,7 +333,7 @@ intptr_t stored_result_or_default_for(CgreenVector* constraints) {
     for (int i = 0; i < cgreen_vector_size(constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(constraints, i);
         if (constraint->type == RETURN_VALUE) {
-            return constraint->stored_value;
+            return constraint->expected_value;
         }
     }
 

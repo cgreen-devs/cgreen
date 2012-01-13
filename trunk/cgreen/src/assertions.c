@@ -69,12 +69,15 @@ void assert_that_double_(const char *file, int line, const char *actual_string, 
     BoxedDouble* boxed_actual = (BoxedDouble*)box_double(actual);
 
     (*get_test_reporter()->assert_true)(get_test_reporter(), file, line, (*constraint->compare)(constraint, (intptr_t)boxed_actual),
-            "Expected [%s] with actual value [%f] to [%s] [%f] within [%d] significant figures",
+            "\tExpected [%s] to [%s] [%s] within [%d] significant figures\n"
+    		"\t\tactual value:\t%08f\n"
+    		"\t\texpected value:\t%08f\n\n",
             actual_string,
-            actual,
             constraint->name,
-            as_double(constraint->stored_value),
-            significant_figures);
+            constraint->expected_value_name,
+            significant_figures,
+            actual,
+            as_double(constraint->expected_value));
 
     free(boxed_actual);
     constraint->destroy(constraint);
@@ -176,36 +179,56 @@ static void format_message_for(char *message, size_t message_size, Constraint *c
             constraint == is_non_null ||
             constraint == is_true ||
             constraint == is_false) { 
-        /* for these highly descriptive, parameterless constraints, 
+        /* for these highly descriptive, parameterless, binary constraints,
            we don't print the stored value */
         snprintf(message, message_size - 1, 
-                "Expected [%s] to [%s]",
+                "\tExpected [%s] to [%s] [%s]\n\n",
                 actual_string,
-                constraint->name);
+                constraint->name,
+                constraint->expected_value_name);
         return;
     }
 
 
     if (strings_are_equal(actual_string, actual_value_string) ||
             strings_are_equal(actual_string, "true") ||
-            strings_are_equal(actual_string, "false")) {
-        /* when the actual string and the value are the same, don't print both of them */
+            strings_are_equal(actual_string, "false") ||
+            strstr(constraint->name, "contents") != NULL) {
+        /* when the actual string and the actual value are the same, don't print both of them */
         /* also, don't print "0" for false and "1" for true */
+    	/* also, don't print expected/actual for contents constraints since that is useless */
         snprintf(message, message_size - 1,
-                "Expected [%s] to [%s] [%" PRIdPTR "]",
+                "\tExpected [%s] to [%s] [%s]\n\n",
                 actual_string,
                 constraint->name,
-                constraint->stored_value);
+                constraint->expected_value_name);
 
         return;
     } 
 
+    if (strstr(constraint->name, "string") != NULL) {
+		snprintf(message, message_size - 1,
+					"\tExpected [%s] to [%s] [%s]\n"
+					"\t\tactual value:\t[\"%s\"]\n"
+					"\t\texpected value:\t[\"%s\"]\n\n",
+					actual_string,
+					constraint->name,
+					constraint->expected_value_name,
+					(const char *)actual,
+					(const char *)constraint->expected_value);
+
+		return;
+    }
+
     snprintf(message, message_size - 1,
-                "Expected [%s] with actual value [%" PRIdPTR "] to [%s] [%" PRIdPTR "]",
+                "\tExpected [%s] to [%s] [%s]\n"
+    			"\t\tactual value:\t[%" PRIdPTR "]\n"
+    			"\t\texpected value:\t[%" PRIdPTR "]\n\n",
                 actual_string,
-                actual,
                 constraint->name,
-                constraint->stored_value);
+                constraint->expected_value_name,
+                actual,
+                constraint->expected_value);
 
     return;
 }
