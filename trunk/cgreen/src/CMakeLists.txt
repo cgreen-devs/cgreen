@@ -53,7 +53,10 @@ set(cgreen_SRCS
 set(CGREEN_LIBRARY_NAME cgreen)
 
 if (WITH_CXX)
-  set(cgreen_SRCS ${cgreen_SRCS} cpp_assertions.cpp)
+  set(cgreen_SRCS ${cgreen_SRCS} 
+    cpp_assertions.cpp
+    cpp_constraint_syntax_helpers.cpp
+  )
   set(CGREEN_LIBRARY_NAME cgreen++)
   SET_SOURCE_FILES_PROPERTIES( ${cgreen_SRCS} PROPERTIES LANGUAGE CXX )
 endif (WITH_CXX)
