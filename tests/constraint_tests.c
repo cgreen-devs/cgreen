@@ -10,7 +10,8 @@ using namespace cgreen;
 #define compare_constraint(c, x) (*c->compare)(c, (intptr_t)x)
 
 Ensure(default_destroy_clears_state) {
-    Constraint *constraint = create_parameter_constraint_for("parameter name");
+    Constraint *constraint =
+    		create_parameter_constraint_for("parameter name");
     destroy_constraint(constraint);
 
 /* these tests correctly trip valgrind's use-after-free check, so
@@ -26,7 +27,8 @@ Ensure(default_destroy_clears_state) {
 }
 
 Ensure(parameter_name_matches_correctly) {
-    Constraint *constraint = create_parameter_constraint_for("label");
+    Constraint *constraint =
+    		create_parameter_constraint_for("label");
 
     assert_that(constraint_is_for_parameter(constraint, "wrong_label"), is_false);
     assert_that(constraint_is_for_parameter(constraint, "label"), is_true);
@@ -53,7 +55,8 @@ Ensure(cannot_create_contents_constraint_with_null) {
 
 Ensure(compare_equal_to_contents_is_false_on_null) {
     int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(&content, sizeof(content));
+    Constraint *is_equal_to_contents =
+    		create_equal_to_contents_constraint(&content, sizeof(content), "content");
 
     assert_false(compare_constraint(is_equal_to_contents, NULL));
 
@@ -62,7 +65,8 @@ Ensure(compare_equal_to_contents_is_false_on_null) {
 
 Ensure(compare_not_equal_to_contents_is_false_on_null) {
     int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    Constraint *is_not_equal_to_contents = create_not_equal_to_contents_constraint(&content, sizeof(content));
+    Constraint *is_not_equal_to_contents =
+    		create_not_equal_to_contents_constraint(&content, sizeof(content), "content");
 
     assert_false(compare_constraint(is_not_equal_to_contents, NULL));
 
@@ -86,7 +90,8 @@ Ensure(test_contents_assertion_fails_with_null) {
 Ensure(compare_contents_is_correct_on_larger_than_intptr_array) {
     int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10, 11, 12, 13, 14, 15 };
     int also_content[] = { 0, 1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10, 11, 12, 13, 14, 15 };
-    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(&content, sizeof(content));
+    Constraint *is_equal_to_contents =
+    		create_equal_to_contents_constraint(&content, sizeof(content), "content");
 
     int not_content[] = { 0, 1, 2, 3, 4, 5, 6, 7, 108, 109, 110, 111, 112, 113, 114, 115 };
     assert_true(compare_constraint(is_equal_to_contents, &also_content));
@@ -96,7 +101,7 @@ Ensure(compare_contents_is_correct_on_larger_than_intptr_array) {
 }
 
 Ensure(compare_is_correct_when_using_integers) {
-    Constraint *is_equal_to_37 = create_equal_to_value_constraint(37);
+    Constraint *is_equal_to_37 = create_equal_to_value_constraint(37, "37");
 
     assert_true(compare_constraint(is_equal_to_37, 37));
     assert_false(compare_constraint(is_equal_to_37, 36));
@@ -105,7 +110,8 @@ Ensure(compare_is_correct_when_using_integers) {
 }
 
 Ensure(string_constraint_destroy_clears_state) {
-    Constraint *string_constraint = create_equal_to_string_constraint("Hello");
+    Constraint *string_constraint =
+    		create_equal_to_string_constraint("Hello", "user_greeting");
     destroy_constraint(string_constraint);
 
 /* these checks correctly trip valgrind's use-after-free check, so
@@ -121,7 +127,8 @@ Ensure(string_constraint_destroy_clears_state) {
 }
 
 Ensure(matching_strings_as_equal) {
-    Constraint *equals_string_hello_constraint = create_equal_to_string_constraint("Hello");
+    Constraint *equals_string_hello_constraint =
+    		create_equal_to_string_constraint("Hello", "user_greeting");
 
     assert_true(compare_constraint(equals_string_hello_constraint, "Hello"));
     assert_false(compare_constraint(equals_string_hello_constraint, "Goodbye"));
@@ -130,7 +137,8 @@ Ensure(matching_strings_as_equal) {
 }
 
 Ensure(matching_null_string_against_non_null_string) {
-    Constraint *equals_string_hello_constraint = create_equal_to_string_constraint("Hello");
+    Constraint *equals_string_hello_constraint =
+    		create_equal_to_string_constraint("Hello", "user_greeting");
 
     assert_false(compare_constraint(equals_string_hello_constraint, NULL));
 
@@ -138,7 +146,8 @@ Ensure(matching_null_string_against_non_null_string) {
 }
 
 Ensure(matching_against_null_string) {
-    Constraint *equals_null_string_constraint = create_equal_to_string_constraint(NULL);
+    Constraint *equals_null_string_constraint =
+    		create_equal_to_string_constraint((const char *)NULL, "user_greeting");
 
     assert_true(compare_constraint(equals_null_string_constraint, NULL));
     assert_false(compare_constraint(equals_null_string_constraint, "Hello"));
@@ -147,7 +156,7 @@ Ensure(matching_against_null_string) {
 }
 
 Ensure(matching_doubles_as_equal_with_default_significance) {
-    Constraint *equal_to_double_37 = create_equal_to_double_constraint(37.0);
+    Constraint *equal_to_double_37 = create_equal_to_double_constraint(37.0, "height");
 
     intptr_t boxed_37 = box_double(37.0);
     intptr_t boxed_36 = box_double(36.0);
@@ -160,7 +169,7 @@ Ensure(matching_doubles_as_equal_with_default_significance) {
 }
 
 Ensure(matching_doubles_respects_significant_figure_setting) {
-    Constraint *want_337 = create_equal_to_double_constraint(337.0);
+    Constraint *want_337 = create_equal_to_double_constraint(337.0, "height");
     intptr_t boxed_339 = box_double(339.0);
 
     significant_figures_for_assert_double_are(2);

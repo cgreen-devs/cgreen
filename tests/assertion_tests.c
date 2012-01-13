@@ -8,11 +8,11 @@ using namespace cgreen;
 #endif
 
 Ensure(integer_one_should_assert_true) {
-    assert_that(true, is_true);
+    assert_that(1, is_true);
 }
 
 Ensure(integer_zero_should_assert_false) {
-    assert_that(false, is_false);
+    assert_that(0, is_false);
 }
 
 Ensure(one_should_assert_equal_to_one) {
@@ -198,6 +198,10 @@ Ensure(case_different_strings_should_not_match) {
     assert_that("Hello", is_not_equal_to_string("hello"));
 }
 
+Ensure(identical_strings_contain_eachother) {
+    assert_that("Hello", contains_string("Hello"));
+}
+
 Ensure(null_string_should_only_match_another_null_string) {
     assert_string_equal(NULL, NULL);
     assert_string_not_equal(NULL, "");
@@ -269,5 +273,6 @@ TestSuite *assertion_tests() {
     add_test(suite, different_pointers_with_same_contents_should_assert_equal);
     add_test(suite, fail_reports_message);
     add_test(suite, return_value_constraints_are_not_allowed);
+    add_test(suite, identical_strings_contain_eachother);
     return suite;
 }

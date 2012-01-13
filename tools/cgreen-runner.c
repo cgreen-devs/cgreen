@@ -96,11 +96,11 @@ static uint32_t discover_tests_in(const char* test_library, struct test_item* te
        char *match = strstr(line, "CgreenSpec");
 
        if (match != NULL) {
-           size_t len = strlen(match);
+           size_t match_string_length = strlen(match);
 
            if (0 != strncmp(match, "CgreenSpec_default", strlen("CgreenSpec_default")))
            {
-               strncpy(test_items[number_of_tests].name, match, len - 1);
+               strncpy(test_items[number_of_tests].name, match, match_string_length - 1);
                number_of_tests++;
            }
        }

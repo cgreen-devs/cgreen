@@ -1,8 +1,10 @@
 #include <cgreen/cgreen.h>
+#include <memory>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <string.h>
 #include <typeinfo>
 
 using namespace cgreen;
@@ -48,39 +50,50 @@ Ensure(stl_string_references_are_not_equal) {
 }
 
 Ensure(stl_string_pointers_are_not_equal) {
-    auto bob = new std::string("bob");
-    auto alice = new std::string("alice");
-    assert_that(bob, is_not_equal_to_string(alice));
+    auto bob = std::make_shared<std::string>("bob");
+    auto alice = std::make_shared<std::string>("alice");
+    assert_that(*bob, is_not_equal_to_string(*alice));
 }
 
 Ensure(stl_string_pointer_and_reference_are_not_equal) {
-    auto bob = new std::string("bob");
+    auto bob = std::make_shared<std::string>("bob");
     std::string alice("alice");
-    assert_that(bob, is_not_equal_to_string(alice));
+    assert_that(*bob, is_not_equal_to_string(alice));
 }
 
 Ensure(stl_string_reference_and_pointer_are_not_equal) {
-    auto bob = new std::string("bob");
+    auto bob = std::make_shared<std::string>("bob");
     std::string alice("alice");
-    assert_that(alice, is_not_equal_to_string(bob));
+    assert_that(alice, is_not_equal_to_string(*bob));
 }
 
 Ensure(stl_string_pointer_and_reference_are_equal) {
-    auto alice_pointer = new std::string("alice");
+    auto alice_pointer = std::make_shared<std::string>("alice");
     std::string alice_reference("alice");
-    assert_that(alice_pointer, is_equal_to_string(alice_reference));
+    assert_that(*alice_pointer, is_equal_to_string(alice_reference));
 }
 
 Ensure(stl_string_reference_and_pointer_are_equal) {
-    auto alice_pointer = new std::string("alice");
+    auto alice_pointer = std::make_shared<std::string>("alice");
     std::string alice_reference("alice");
-    assert_that(alice_reference, is_equal_to_string(alice_pointer));
+    assert_that(alice_reference, is_equal_to_string(*alice_pointer));
 }
 
 Ensure(stl_string_pointer_is_not_null) {
-    auto bob = new std::string("bob");
-    assert_that(bob, is_non_null);
+    auto bob = std::make_shared<std::string>("bob");
+    assert_that(*bob, is_non_null);
 }
+
+Ensure(stl_string_pointer_is_null) {
+    std::string *null_string = (std::string *)NULL;
+    assert_that(null_string, is_null);
+}
+
+// for quickly iterating on failure message formatting improvements
+//Ensure(stl_string_length_assertion_failure_is_readable) {
+//    auto bob = std::make_shared<std::string>("bob");
+//    assert_that(bob->length(), is_not_equal_to(strlen("bob")));
+//}
 
 TestSuite *cpp_assertion_tests() {
     TestSuite *suite = create_test_suite();
@@ -93,5 +106,7 @@ TestSuite *cpp_assertion_tests() {
     add_test(suite, stl_string_pointer_and_reference_are_equal);
     add_test(suite, stl_string_pointers_are_not_equal);
     add_test(suite, stl_string_pointer_is_not_null);
+    add_test(suite, stl_string_pointer_is_null);
+//    add_test(suite, stl_string_length_assertion_failure_is_readable);
     return suite;
 }
