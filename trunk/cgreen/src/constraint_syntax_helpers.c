@@ -8,7 +8,7 @@ namespace cgreen {
 #endif
 
 Constraint static_is_non_null_constraint = {
-    /* .type */ PARAMETER,
+    /* .type */ PARAMETER_COMPARER,
     /* .name */ "not equal",
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_do_not_want_value,
@@ -20,7 +20,7 @@ Constraint static_is_non_null_constraint = {
 };
 
 Constraint static_is_null_constraint = {
-    /* .type */ PARAMETER,
+    /* .type */ PARAMETER_COMPARER,
     /* .name */ "equal",
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_want_value,
@@ -32,7 +32,7 @@ Constraint static_is_null_constraint = {
 };
 
 Constraint static_is_false_constraint = { 
-    /* .type */ PARAMETER,
+    /* .type */ PARAMETER_COMPARER,
     /* .name */ "equal",
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_want_value,
@@ -44,7 +44,7 @@ Constraint static_is_false_constraint = {
 };
 
 Constraint static_is_true_constraint = { 
-    /* .type */ PARAMETER,
+    /* .type */ PARAMETER_COMPARER,
     /* .name */ "equal",
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_want_value,

@@ -22,7 +22,7 @@ static double accuracy(int significant_figures, double largest);
 static int significant_figures = 8;
 
 void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint* constraint) {
-    if (NULL != constraint && constraint->type != PARAMETER) {
+    if (NULL != constraint && constraint->type != PARAMETER_COMPARER) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
                 file,
@@ -52,7 +52,7 @@ void assert_that_(const char *file, int line, const char *actual_string, intptr_
 }
 
 void assert_that_double_(const char *file, int line, const char *actual_string, double actual, Constraint* constraint) {
-    if (NULL != constraint && constraint->type != PARAMETER) {
+    if (NULL != constraint && constraint->type != PARAMETER_COMPARER) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
                 file,

@@ -43,15 +43,6 @@ Constraint *create_constraint() {
     return constraint;
 }
 
-Constraint *create_parameter_constraint_for(const char *parameter_name) {
-    Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));
-
-    constraint->type = PARAMETER;
-    constraint->parameter_name = parameter_name;
-    constraint->destroy = &destroy_empty_constraint;
-    return constraint;
-}
-
 void destroy_empty_constraint(Constraint *constraint) {
     constraint->name = NULL;
     constraint->parameter_name = NULL;
@@ -72,7 +63,7 @@ void destroy_constraint(Constraint *constraint) {
 }
 
 bool constraint_is_for_parameter(const Constraint *constraint, const char *parameter) {
-    if (constraint->type != PARAMETER && constraint->type != SET_PARAMETER) {
+    if (constraint->type != PARAMETER_COMPARER && constraint->type != PARAMETER_SETTER) {
         return false;
     }
 
@@ -85,7 +76,7 @@ void test_constraint(Constraint *constraint, const char *function, intptr_t actu
 
 Constraint *create_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name) {
     Constraint *constraint = create_constraint();
-    constraint->type = PARAMETER;
+    constraint->type = PARAMETER_COMPARER;
 
     constraint->compare = &compare_want_value;
     constraint->test = &test_want_value;
@@ -98,7 +89,7 @@ Constraint *create_equal_to_value_constraint(intptr_t expected_value, const char
 
 Constraint *create_not_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name) {
     Constraint *constraint = create_constraint();
-    constraint->type = PARAMETER;
+    constraint->type = PARAMETER_COMPARER;
 
     constraint->compare = &compare_do_not_want_value;
     constraint->test = &test_do_not_want_value;
@@ -111,7 +102,7 @@ Constraint *create_not_equal_to_value_constraint(intptr_t expected_value, const 
 
 Constraint *create_less_than_value_constraint(intptr_t expected_value, const char *expected_value_name) {
     Constraint *constraint = create_constraint();
-    constraint->type = PARAMETER;
+    constraint->type = PARAMETER_COMPARER;
 
     constraint->compare = &compare_want_lesser_value;
     constraint->test = &test_true;
@@ -124,7 +115,7 @@ Constraint *create_less_than_value_constraint(intptr_t expected_value, const cha
 
 Constraint *create_greater_than_value_constraint(intptr_t expected_value, const char *expected_value_name) {
     Constraint *constraint = create_constraint();
-    constraint->type = PARAMETER;
+    constraint->type = PARAMETER_COMPARER;
 
     constraint->compare = &compare_want_greater_value;
     constraint->test = &test_true;
@@ -137,7 +128,7 @@ Constraint *create_greater_than_value_constraint(intptr_t expected_value, const 
 
 Constraint *create_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare, const char *compared_pointer_name) {
     Constraint *constraint = create_constraint();
-    constraint->type = PARAMETER;
+    constraint->type = PARAMETER_COMPARER;
 
     constraint->compare = &compare_want_contents;
     constraint->test = &test_want_contents;
@@ -150,7 +141,7 @@ Constraint *create_equal_to_contents_constraint(void *pointer_to_compare, size_t
 
 Constraint *create_not_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare, const char *compared_pointer_name) {
     Constraint *constraint = create_constraint();
-    constraint->type = PARAMETER;
+    constraint->type = PARAMETER_COMPARER;
 
     constraint->compare = &compare_do_not_want_contents;
     constraint->test = &test_do_not_want_contents;
@@ -163,7 +154,7 @@ Constraint *create_not_equal_to_contents_constraint(void *pointer_to_compare, si
 
 Constraint *create_equal_to_string_constraint(const char* expected_value, const char *expected_value_name) {
     Constraint *constraint = create_constraint();
-    constraint->type = PARAMETER;
+    constraint->type = PARAMETER_COMPARER;
 
     constraint->compare = &compare_want_string;
     constraint->test = &test_want_string;
@@ -175,7 +166,7 @@ Constraint *create_equal_to_string_constraint(const char* expected_value, const 
 
 Constraint *create_not_equal_to_string_constraint(const char* expected_value, const char *expected_value_name) {
     Constraint *constraint = create_constraint();
-    constraint->type = PARAMETER;
+    constraint->type = PARAMETER_COMPARER;
 
     constraint->compare = &compare_do_not_want_string;
     constraint->test = &test_do_not_want_string;
@@ -187,7 +178,7 @@ Constraint *create_not_equal_to_string_constraint(const char* expected_value, co
 
 Constraint *create_contains_string_constraint(const char* expected_value, const char *expected_value_name) {
     Constraint *constraint = create_constraint();
-    constraint->type = PARAMETER;
+    constraint->type = PARAMETER_COMPARER;
 
     constraint->compare = &compare_want_substring;
     constraint->test = &test_want_substring;
@@ -199,7 +190,7 @@ Constraint *create_contains_string_constraint(const char* expected_value, const 
 
 Constraint *create_does_not_contain_string_constraint(const char* expected_value, const char *expected_value_name) {
     Constraint *constraint = create_constraint();
-    constraint->type = PARAMETER;
+    constraint->type = PARAMETER_COMPARER;
 
     constraint->compare = &compare_do_not_want_substring;
     constraint->test = &test_do_not_want_substring;
@@ -211,7 +202,7 @@ Constraint *create_does_not_contain_string_constraint(const char* expected_value
 
 Constraint *create_equal_to_double_constraint(double expected_value, const char *expected_value_name) {
     Constraint *constraint = create_constraint();
-    constraint->type = PARAMETER;
+    constraint->type = PARAMETER_COMPARER;
 
     constraint->compare = &compare_want_double;
     constraint->test = &test_want_double;
@@ -225,7 +216,7 @@ Constraint *create_equal_to_double_constraint(double expected_value, const char 
 
 Constraint *create_not_equal_to_double_constraint(double expected_value, const char *expected_value_name) {
     Constraint *constraint = create_constraint();
-    constraint->type = PARAMETER;
+    constraint->type = PARAMETER_COMPARER;
 
     constraint->compare = &compare_do_not_want_double;
     constraint->test = &test_do_not_want_double;
@@ -251,7 +242,7 @@ Constraint *create_return_value_constraint(intptr_t value_to_return) {
 
 Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set, size_t size_to_set) {
     Constraint* constraint = create_constraint();
-    constraint->type = SET_PARAMETER;
+    constraint->type = PARAMETER_SETTER;
 
     constraint->compare = &compare_true;
     constraint->test = &test_true;
@@ -344,7 +335,8 @@ void test_want_contents(Constraint *constraint, const char *function, intptr_t a
                 test_file,
                 test_line,
                 false,
-                "Wanted contents of pointer parameter [%s] in function [%s] to be the same, but NULL was supplied",
+                "Wanted contents of pointer parameter [%s] in function [%s] to be the same, but NULL was supplied. "
+                "If you want to explicitly check for null, use the is_null constraint instead.",
                 constraint->parameter_name,
                 function);
 
@@ -371,7 +363,8 @@ void test_do_not_want_contents(Constraint *constraint, const char *function, int
                 test_file,
                 test_line,
                 false,
-                "Wanted contents of pointer parameter [%s] in function [%s] to be the different, but NULL was supplied",
+                "Wanted contents of pointer parameter [%s] in function [%s] to be different, but NULL was supplied. "
+                "If you want to explicitly check for null, use the is_null constraint instead.",
                 constraint->parameter_name,
                 function);
 

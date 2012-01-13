@@ -11,7 +11,7 @@ using namespace cgreen;
 
 Ensure(default_destroy_clears_state) {
     Constraint *constraint =
-    		create_parameter_constraint_for("parameter name");
+    		create_constraint();
     destroy_constraint(constraint);
 
 /* these tests correctly trip valgrind's use-after-free check, so
@@ -28,7 +28,8 @@ Ensure(default_destroy_clears_state) {
 
 Ensure(parameter_name_matches_correctly) {
     Constraint *constraint =
-    		create_parameter_constraint_for("label");
+    		create_constraint();
+    constraint->parameter_name = "label";
 
     assert_that(constraint_is_for_parameter(constraint, "wrong_label"), is_false);
     assert_that(constraint_is_for_parameter(constraint, "label"), is_true);
