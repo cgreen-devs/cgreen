@@ -199,10 +199,15 @@ Ensure(case_different_strings_should_not_match) {
 }
 
 Ensure(null_string_should_only_match_another_null_string) {
-    assert_that(NULL, is_equal_to_string(NULL));
-    assert_that("", is_equal_to_string(""));
-    assert_that(NULL, is_not_equal_to_string(""));
-    assert_that("", is_not_equal_to_string(NULL));
+    assert_string_equal(NULL, NULL);
+    assert_string_not_equal(NULL, "");
+    assert_string_not_equal("", NULL);
+
+    // fluent syntax technically doesn't allow NULL on left-hand side
+    // we force the issue to make sure we are testing both syntaxes
+    assert_that((intptr_t)NULL, is_equal_to_string((char *)NULL));
+    assert_that((intptr_t)NULL, is_not_equal_to_string(""));
+    assert_that("", is_not_equal_to_string((char *)NULL));
 }
 
 Ensure(null_string_should_only_match_another_null_string_even_with_messages) {

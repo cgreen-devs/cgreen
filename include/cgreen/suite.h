@@ -10,21 +10,6 @@ namespace cgreen {
     extern "C" {
 #endif
 
-typedef struct {
-	const char* name;
-	const char* filename;
-	void (*setup)(void);
-	void (*teardown)(void);
-} CgreenContext;
-
-
-extern CgreenContext defaultContext;
-typedef struct {
-	CgreenContext* context;
-	const char* name;
-	void(*run)(void);
-} CgreenTest;
-
 enum {test_function, test_suite};
 
 typedef struct TestSuite_ TestSuite;
@@ -46,7 +31,6 @@ struct TestSuite_ {
 	int size;
 };
 
-
 void do_nothing(void);
 
 #define create_test_suite() create_named_test_suite(__func__)
@@ -55,10 +39,7 @@ void do_nothing(void);
 #define add_tests(suite, ...) add_tests_(suite, #__VA_ARGS__, (CgreenTest *)__VA_ARGS__ +0)
 #define add_suite(owner, suite) add_suite_(owner, #suite, suite)
 
-typedef struct TestSuite_ TestSuite;
-
 TestSuite *create_named_test_suite(const char *name);
-
 void destroy_test_suite(TestSuite *suite);
 void add_test_(TestSuite *suite, const char *name, CgreenTest *test);
 void add_tests_(TestSuite *suite, const char *names, ...);

@@ -5,13 +5,15 @@ include(CheckCCompilerFlag)
 if (UNIX) 
   if (CMAKE_COMPILER_IS_GNUCC)
     if (WITH_CXX)
-       add_definitions(-g -Weffc++ -Wall -Wextra -Wunused)
+       add_definitions(-g -std=c++0x -Weffc++ -Wall -Wextra -Wunused)
     else()
        add_definitions(-g -std=c99 -Wall -Wextra -Wmissing-prototypes -Wunused)
     endif (WITH_CXX)
 
-    add_definitions(-D_REENTRANT)         # for gmtime_r()
-    add_definitions(-DUSE_XOPEN_EXTENDED) # for strdup(), which isn't part of C99
+    add_definitions(-D_REENTRANT)           # for gmtime_r()
+    add_definitions(-D_XOPEN_SOURCE) 	    # for popen() and pclose()
+    add_definitions(-DUSE_XOPEN_EXTENDED)   # for strdup(), which isn't part of C99
+    add_definitions(-D__STDC_FORMAT_MACROS) # for PRI*PTR format macros, required by C99
 
     # with -fPIC
     check_c_compiler_flag("-fPIC" WITH_FPIC)
