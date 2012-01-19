@@ -120,11 +120,11 @@ Ensure(zero_should_assert_unsigned_char_not_equal_to_one) {
 }
 
 Ensure(different_pointers_with_different_contents_should_not_assert_equal) {
-    int data[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+    int data[] = { 0, 1, 2, 3, 4, 5, 6, 7, 666 };
     int other_data[] = { 0, 1, 2, 3, 4, 5, 6, 7, 666 };
 
     assert_that(data,
-        is_not_equal_to_contents_of(other_data, sizeof(other_data))
+        is_equal_to_contents_of(other_data, sizeof(other_data))
     );
 }
 
@@ -226,8 +226,26 @@ Ensure(null_string_should_only_match_another_null_string_even_with_messages) {
  *       and compare the message. for now, manually uncomment and verify.
  */
 
+Ensure(inspecting_contents_of_expected_value_of_null_produces_nice_error_message) {
+//	char buffer[0];
+//	const int NON_ZERO = !0;
+//	assert_that(buffer, is_equal_to_contents_of(NULL, NON_ZERO));
+}
+
+Ensure(inspecting_contents_of_actual_value_of_null_produces_nice_error_message) {
+//	char buffer[0];
+//	const int NON_ZERO = !0;
+//	assert_that(NULL, is_equal_to_contents_of(buffer, NON_ZERO));
+}
+
+Ensure(inspecting_contents_of_with_zero_size_produces_nice_error_message) {
+//	char buffer[0];
+//	const int ZERO = 0;
+//	assert_that(buffer, is_equal_to_contents_of(buffer, ZERO));
+}
+
 Ensure(fail_reports_message) {
-//    fail("correctly");
+//    fail("\n*** correctly failing ***\n");
 }
 
 Ensure(return_value_constraints_are_not_allowed) {
@@ -274,5 +292,8 @@ TestSuite *assertion_tests() {
     add_test(suite, fail_reports_message);
     add_test(suite, return_value_constraints_are_not_allowed);
     add_test(suite, identical_strings_contain_eachother);
+    add_test(suite, inspecting_contents_of_actual_value_of_null_produces_nice_error_message);
+    add_test(suite, inspecting_contents_of_expected_value_of_null_produces_nice_error_message);
+    add_test(suite, inspecting_contents_of_with_zero_size_produces_nice_error_message);
     return suite;
 }

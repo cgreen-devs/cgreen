@@ -29,75 +29,24 @@ Ensure(default_destroy_clears_state) {
 Ensure(parameter_name_matches_correctly) {
     Constraint *constraint =
     		create_constraint();
-    constraint->type = PARAMETER_COMPARER;
+    constraint->type = VALUE_COMPARER;
     constraint->parameter_name = "label";
 
-    assert_that(constraint_is_for_parameter(constraint, "wrong_label"), is_false);
-    assert_that(constraint_is_for_parameter(constraint, "label"), is_true);
+    assert_that(constraint_is_not_for_parameter(constraint, "wrong_label"), is_true);
+    assert_that(constraint_is_not_for_parameter(constraint, "label"), is_false);
 
     destroy_constraint(constraint);
-}
-
-/* TODO: fail test immediately if user misuses syntax as described in these tests */
-/*
-Ensure(cannot_create_contents_constraint_with_zero_size) {
-    const size_t NON_ZERO = !0;
-    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(NULL, NON_ZERO);
-
-    assert_that(is_equal_to_contents, is_null);
-}
-
-Ensure(cannot_create_contents_constraint_with_null) {
-    int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(&content, 0);
-
-    assert_that(is_equal_to_contents, is_null);
-}
-*/
-
-Ensure(compare_equal_to_contents_is_false_on_null) {
-    int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    Constraint *is_equal_to_contents =
-    		create_equal_to_contents_constraint(&content, sizeof(content), "content");
-
-    assert_false(compare_constraint(is_equal_to_contents, NULL));
-
-    destroy_constraint(is_equal_to_contents);
-}
-
-Ensure(compare_not_equal_to_contents_is_false_on_null) {
-    int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    Constraint *is_not_equal_to_contents =
-    		create_not_equal_to_contents_constraint(&content, sizeof(content), "content");
-
-    assert_false(compare_constraint(is_not_equal_to_contents, NULL));
-
-    destroy_constraint(is_not_equal_to_contents);
-}
-
-/* expected to fail, to manually spot-check assertion message */
-Ensure(test_contents_assertion_fails_with_null) {
-/*
-    int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(&content, sizeof(content));
-
-    intptr_t null_actual = (intptr_t)NULL;
-    int line_number = 666;
-    is_equal_to_contents->test(is_equal_to_contents, "function", null_actual, "file", line_number, get_test_reporter());
-
-    destroy_constraint(is_equal_to_contents);
-*/
 }
 
 Ensure(compare_contents_is_correct_on_larger_than_intptr_array) {
     int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10, 11, 12, 13, 14, 15 };
     int also_content[] = { 0, 1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10, 11, 12, 13, 14, 15 };
     Constraint *is_equal_to_contents =
-    		create_equal_to_contents_constraint(&content, sizeof(content), "content");
+    		create_equal_to_contents_constraint(content, sizeof(content), "content");
 
     int not_content[] = { 0, 1, 2, 3, 4, 5, 6, 7, 108, 109, 110, 111, 112, 113, 114, 115 };
-    assert_true(compare_constraint(is_equal_to_contents, &also_content));
-    assert_false(compare_constraint(is_equal_to_contents, &not_content));
+    assert_true(compare_constraint(is_equal_to_contents, also_content));
+    assert_false(compare_constraint(is_equal_to_contents, not_content));
 
     destroy_constraint(is_equal_to_contents);
 }
@@ -216,6 +165,42 @@ Ensure(matching_doubles_respects_significant_figure_setting) {
 //}
 
 
+/* these misuse scenarios should be prevented by checks in higher-level constructs */
+Ensure(cannot_create_contents_constraint_with_zero_size) {
+    const size_t NON_ZERO = !0;
+    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(NULL, NON_ZERO, "NULL");
+
+    assert_that(is_equal_to_contents, is_null);
+}
+
+Ensure(cannot_create_contents_constraint_with_null) {
+    int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(content, 0, "content");
+
+    assert_that(is_equal_to_contents, is_null);
+}
+
+
+Ensure(compare_equal_to_contents_is_false_on_null) {
+    int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    Constraint *is_equal_to_contents =
+    		create_equal_to_contents_constraint(content, sizeof(content), "content");
+
+    assert_false(compare_constraint(is_equal_to_contents, NULL));
+
+    destroy_constraint(is_equal_to_contents);
+}
+
+Ensure(compare_not_equal_to_contents_is_false_on_null) {
+    int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    Constraint *is_not_equal_to_contents =
+    		create_not_equal_to_contents_constraint(content, sizeof(content), "content");
+
+    assert_false(compare_constraint(is_not_equal_to_contents, NULL));
+
+    destroy_constraint(is_not_equal_to_contents);
+}
+
 TestSuite *constraint_tests() {
     TestSuite *suite = create_test_suite();
     add_test(suite, default_destroy_clears_state);
@@ -230,7 +215,7 @@ TestSuite *constraint_tests() {
     add_test(suite, compare_contents_is_correct_on_larger_than_intptr_array);
     add_test(suite, compare_equal_to_contents_is_false_on_null);
     add_test(suite, compare_not_equal_to_contents_is_false_on_null);
-    add_test(suite, test_contents_assertion_fails_with_null);
 //    add_test(suite, unequal_structs_with_same_value_for_specific_field_compare_true);
+
     return suite;
 }

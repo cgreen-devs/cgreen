@@ -111,6 +111,11 @@ Ensure(string_expect_is_confirmed) {
     string_in("hello");
 }
 
+Ensure(string_contains_expectation_is_confirmed) {
+    expect(string_in, when(s, contains_string("hello")));
+    string_in("alice, hello");
+}
+
 Ensure(string_expect_is_confirmed_even_when_null) {
     expect(string_in, when(s, is_equal_to_string((char *)NULL)));
     string_in(NULL);
@@ -129,7 +134,7 @@ Ensure(expecting_once_with_non_null_parameter_checks_that_parameter) {
 }
 
 static void double_in(double d) {
-    mock(d(d));
+    mock(box_double(d));
 }
 
 Ensure(double_expect_is_confirmed) {
@@ -290,6 +295,7 @@ TestSuite *mock_tests() {
     add_test(suite, can_mock_full_sequence);
     add_test(suite, can_always_mock_full_function_call);
     add_test(suite, can_stub_an_out_parameter);
+    add_test(suite, string_contains_expectation_is_confirmed);
 
     /* expected failures. TODO: put these in a separate suite, as per comments above. */
     /*

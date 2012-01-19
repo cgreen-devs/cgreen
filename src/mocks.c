@@ -107,7 +107,7 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
                 test_line,
                 false,
                 "Function [%s] already has an expectation it will always be called a certain way; "
-                "any expectations declared after an always expectation are discarded", function);
+                "any expectations declared after an always expectation are invalid", function);
 
         return;
     }
@@ -119,7 +119,7 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
                 test_line,
                 false,
                 "Function [%s] already has an expectation that it will never be called; "
-                "any expectations declared after a never call expectation are discarded", function);
+                "any expectations declared after a never call expectation are invalid", function);
 
         return;
     }
@@ -309,17 +309,11 @@ void apply_any_parameter_constraints(RecordedExpectation *expectation, const cha
     for (int i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
-        if (!constraint_is_for_parameter(constraint, parameter)) {
+        if (constraint_is_not_for_parameter(constraint, parameter)) {
             continue;
         }
 
-        // TODO: push this into the constraint->test, once the "test" is renamed to something like "execute", and delete here.
-        //       this potentially also means that the SET_PARAMETER type could be removed
-        if (constraint->type == PARAMETER_SETTER) {
-            memmove((void *)actual, (void *)constraint->expected_value, constraint->size_of_stored_value);
-        }
-
-        constraint->test(
+        constraint->execute(
             constraint,
             expectation->function,
             actual,
