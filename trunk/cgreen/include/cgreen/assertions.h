@@ -2,6 +2,7 @@
 #define ASSERTIONS_HEADER
 
 #include <cgreen/constraint.h>
+#include <cgreen/string_comparison.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -32,7 +33,7 @@ namespace cgreen {
 #define assert_double_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, doubles_are_equal(tried, expected), __VA_ARGS__)
 #define assert_double_not_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, doubles_are_equal(tried, expected), __VA_ARGS__)
 #define assert_string_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, strings_are_equal(tried, expected), __VA_ARGS__)
-#define assert_string_not_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, ! strings_are_equal(tried, expected), __VA_ARGS__)
+#define assert_string_not_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, !strings_are_equal(tried, expected), __VA_ARGS__)
 
 #define assert_that_double(actual, constraint) assert_that_double_(__FILE__, __LINE__, #actual, (double)actual, constraint)
 
@@ -49,8 +50,6 @@ void assert_that_double_(const char *file, int line, const char *actual_string, 
 
 void significant_figures_for_assert_double_are(int figures);
 const char *show_null_as_the_string_null(const char *string);
-int strings_are_equal(const char *tried, const char *expected);
-int string_contains(const char *actual, const char *expected);
 int doubles_are_equal(double tried, double expected);
 
 #ifdef __cplusplus

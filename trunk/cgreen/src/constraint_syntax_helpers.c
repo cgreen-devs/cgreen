@@ -8,11 +8,11 @@ namespace cgreen {
 #endif
 
 Constraint static_is_non_null_constraint = {
-    /* .type */ PARAMETER_COMPARER,
+    /* .type */ VALUE_COMPARER,
     /* .name */ "not equal",
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_do_not_want_value,
-    /* .test */ test_do_not_want_value,
+    /* .test */ test_want,
     /* .stored_value */ (intptr_t)NULL,
     /* .stored_value_name */ "null",
     /* .parameter_name */ NULL,
@@ -20,11 +20,11 @@ Constraint static_is_non_null_constraint = {
 };
 
 Constraint static_is_null_constraint = {
-    /* .type */ PARAMETER_COMPARER,
+    /* .type */ VALUE_COMPARER,
     /* .name */ "equal",
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_want_value,
-    /* .test */ test_want_value,
+    /* .test */ test_want,
     /* .stored_value */ (intptr_t)NULL,
     /* .stored_value_name */ "null",
     /* .parameter_name */ NULL,
@@ -32,11 +32,11 @@ Constraint static_is_null_constraint = {
 };
 
 Constraint static_is_false_constraint = { 
-    /* .type */ PARAMETER_COMPARER,
-    /* .name */ "equal",
+    /* .type */ VALUE_COMPARER,
+    /* .name */ "be false",
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_want_value,
-    /* .test */ test_want_value,
+    /* .test */ test_want,
     /* .stored_value */ false,
     /* .stored_value_name */ "false",
     /* .parameter_name */ NULL,
@@ -44,11 +44,11 @@ Constraint static_is_false_constraint = {
 };
 
 Constraint static_is_true_constraint = { 
-    /* .type */ PARAMETER_COMPARER,
-    /* .name */ "equal",
+    /* .type */ VALUE_COMPARER,
+    /* .name */ "be true",
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_want_value,
-    /* .test */ test_want_value,
+    /* .test */ test_want,
     /* .stored_value */ true,
     /* .stored_value_name */ "true",
     /* .parameter_name */ NULL,

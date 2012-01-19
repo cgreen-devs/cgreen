@@ -1,7 +1,9 @@
 #include <cgreen/assertions.h>
 #include <cgreen/boxed_double.h>
 #include <cgreen/constraint_syntax_helpers.h>
+#include <cgreen/message_formatting.h>
 #include <cgreen/reporter.h>
+#include <cgreen/string_comparison.h>
 #include <inttypes.h>
 #include <math.h>
 #include <stdio.h>
@@ -15,20 +17,18 @@ namespace cgreen {
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) > (b) ? (b) : (a))
 
-static void format_message_for(char *message, size_t message_size, Constraint *constraint, const char *actual_string, intptr_t actual);
-
 static double accuracy(int significant_figures, double largest);
 
 static int significant_figures = 8;
 
 void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint* constraint) {
-    if (NULL != constraint && constraint->type != PARAMETER_COMPARER) {
+    if (NULL != constraint && is_not_comparing(constraint)) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
                 file,
                 line,
                 false,
-                "Got constraint of type [%s], but only parameter constraints are allowed for assertions.",
+                "\tGot constraint of type [%s], but they are not allowed for assertions, only in mock expectations.",
                 constraint->name);
 
         constraint->destroy(constraint);
@@ -36,8 +36,21 @@ void assert_that_(const char *file, int line, const char *actual_string, intptr_
         return;
     }
 
-    char assertion_failure_message[255];
-    format_message_for(assertion_failure_message, sizeof(assertion_failure_message) - 1,
+	char message[512] = {'\0'};
+
+	if (parameters_are_not_valid_for(constraint, actual)) {
+		format_validation_failure_message_for(message, sizeof(message), "", constraint, actual);
+
+	    (*get_test_reporter()->assert_true)(
+	    		get_test_reporter(),
+	            file,
+	            line,
+	            false,
+	            message);
+		return;
+	}
+
+	format_expectation_failure_message_for(message, sizeof(message) - 1,
             constraint, actual_string, actual);
 
     (*get_test_reporter()->assert_true)(
@@ -45,20 +58,20 @@ void assert_that_(const char *file, int line, const char *actual_string, intptr_
         file,
         line,
         (*constraint->compare)(constraint, actual),
-        assertion_failure_message
+        message
     );
   
     constraint->destroy(constraint);
 }
 
 void assert_that_double_(const char *file, int line, const char *actual_string, double actual, Constraint* constraint) {
-    if (NULL != constraint && constraint->type != PARAMETER_COMPARER) {
+    if (NULL != constraint && is_not_comparing(constraint)) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
                 file,
                 line,
                 false,
-                "Got constraint of type [%s], but only parameter constraints are allowed for assertions.",
+                "\tGot constraint of type [%s], but they are not allowed for assertions, only in mock expectations.",
                 constraint->name);
 
         constraint->destroy(constraint);
@@ -145,24 +158,6 @@ const char *show_null_as_the_string_null(const char *string) {
     return (string == NULL ? "NULL" : string);
 }
 
-int strings_are_equal(const char* actual, const char* expected) {
-    /* TODO: if expected is null, warn user to use appropriate non-string assert instead */
-    if ((actual == NULL) || (expected == NULL)) {
-        return (actual == expected);
-    }
-
-    return (strcmp(actual, expected) == 0);
-}
-
-int string_contains(const char* actual, const char* expected) {
-    /* TODO: if expected is null, warn user */
-    if ((actual == NULL) || (expected == NULL)) {
-        return false;
-    }
-
-    return (strstr(actual, expected) != NULL);
-}
-
 int doubles_are_equal(double tried, double expected) {
     return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(tried, expected));
 }
@@ -171,67 +166,6 @@ static double accuracy(int figures, double largest) {
     return pow(10, 1 + (int)log10(largest) - figures);
 }
 
-static void format_message_for(char *message, size_t message_size, Constraint *constraint, const char *actual_string, intptr_t actual) {
-    char actual_value_string[32];
-    snprintf(actual_value_string, sizeof(actual_value_string) - 1, "%" PRIdPTR, actual);
-
-    if (constraint == is_null ||
-            constraint == is_non_null ||
-            constraint == is_true ||
-            constraint == is_false) { 
-        /* for these highly descriptive, parameterless, binary constraints,
-           we don't print the stored value */
-        snprintf(message, message_size - 1, 
-                "\tExpected [%s] to [%s] [%s]\n\n",
-                actual_string,
-                constraint->name,
-                constraint->expected_value_name);
-        return;
-    }
-
-
-    if (strings_are_equal(actual_string, actual_value_string) ||
-            strings_are_equal(actual_string, "true") ||
-            strings_are_equal(actual_string, "false") ||
-            strstr(constraint->name, "contents") != NULL) {
-        /* when the actual string and the actual value are the same, don't print both of them */
-        /* also, don't print "0" for false and "1" for true */
-    	/* also, don't print expected/actual for contents constraints since that is useless */
-        snprintf(message, message_size - 1,
-                "\tExpected [%s] to [%s] [%s]\n\n",
-                actual_string,
-                constraint->name,
-                constraint->expected_value_name);
-
-        return;
-    } 
-
-    if (strstr(constraint->name, "string") != NULL) {
-		snprintf(message, message_size - 1,
-					"\tExpected [%s] to [%s] [%s]\n"
-					"\t\tactual value:\t[\"%s\"]\n"
-					"\t\texpected value:\t[\"%s\"]\n\n",
-					actual_string,
-					constraint->name,
-					constraint->expected_value_name,
-					(const char *)actual,
-					(const char *)constraint->expected_value);
-
-		return;
-    }
-
-    snprintf(message, message_size - 1,
-                "\tExpected [%s] to [%s] [%s]\n"
-    			"\t\tactual value:\t[%" PRIdPTR "]\n"
-    			"\t\texpected value:\t[%" PRIdPTR "]\n\n",
-                actual_string,
-                constraint->name,
-                constraint->expected_value_name,
-                actual,
-                constraint->expected_value);
-
-    return;
-}
 #ifdef __cplusplus
 } // namespace cgreen
 #endif

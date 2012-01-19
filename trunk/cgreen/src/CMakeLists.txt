@@ -40,11 +40,13 @@ set(cgreen_SRCS
   cute_reporter.c
   cdash_reporter.c
   messaging.c
+  message_formatting.c
   mocks.c
   parameters.c
   reporter.c
   runner.c
   slurp.c
+  string_comparison.c
   suite.c
   text_reporter.c
   vector.c

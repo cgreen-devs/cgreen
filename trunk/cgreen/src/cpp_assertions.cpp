@@ -1,4 +1,5 @@
 #include <cgreen/cpp_assertions.h>
+#include <cgreen/constraint.h>
 #include <inttypes.h>
 #include <string.h>
 #include <string>
@@ -9,7 +10,7 @@ void assert_that_(const char *file, int line, const char *actual_string,
 		const std::string& actual, Constraint* constraint) {
 
 	// if they are using a string constraint, they are almost certainly meaning to do a deep comparison
-	if (strstr(constraint->name, "string") != NULL) {
+	if (is_string_comparing(constraint)) {
 		assert_that_(file, line, actual_string, (intptr_t) (actual.c_str()),
 				constraint);
 		return;
@@ -23,7 +24,7 @@ void assert_that_(const char *file, int line, const char *actual_string,
 		const std::string *actual, Constraint* constraint) {
 
 	// if they are using a string constraint, they are almost certainly meaning to do a deep comparison
-	if (strstr(constraint->name, "string") != NULL) {
+	if (is_string_comparing(constraint)) {
 		assert_that_(file, line, actual_string, (intptr_t) (actual->c_str()),
 				constraint);
 		return;

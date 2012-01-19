@@ -99,10 +99,10 @@ Ensure(stl_string_pointer_is_null) {
 }
 
 // for quickly iterating on failure message formatting improvements
-//Ensure(stl_string_length_assertion_failure_is_readable) {
+Ensure(stl_string_length_assertion_failure_is_readable) {
 //    auto bob = new std::string("bob");
 //    assert_that(bob->length(), is_not_equal_to(strlen("bob")));
-//}
+}
 
 void teardown(void) {
 	if (NULL != bob_pointer) {
@@ -127,6 +127,6 @@ TestSuite *cpp_assertion_tests() {
     add_test(suite, stl_string_pointers_are_not_equal);
     add_test(suite, stl_string_pointer_is_not_null);
     add_test(suite, stl_string_pointer_is_null);
-//    add_test(suite, stl_string_length_assertion_failure_is_readable);
+    add_test(suite, stl_string_length_assertion_failure_is_readable);
     return suite;
 }
