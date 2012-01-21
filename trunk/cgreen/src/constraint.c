@@ -29,6 +29,9 @@ static bool compare_do_not_want_string(Constraint *constraint, intptr_t actual);
 static bool compare_want_substring(Constraint *constraint, intptr_t actual);
 static bool compare_do_not_want_substring(Constraint *constraint, intptr_t actual);
 
+static bool compare_want_beginning_of_string(Constraint *constraint, intptr_t actual);
+
+
 static bool compare_want_double(Constraint *constraint, intptr_t actual);
 static void test_want_double(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 static bool compare_do_not_want_double(Constraint *constraint, intptr_t actual);
@@ -179,6 +182,18 @@ Constraint *create_contains_string_constraint(const char* expected_value, const 
     constraint->compare = &compare_want_substring;
     constraint->execute = &test_want;
     constraint->name = "contain string";
+    constraint->expected_value = (intptr_t)expected_value;
+    constraint->expected_value_name = expected_value_name;
+    return constraint;
+}
+
+Constraint *create_begins_with_string_constraint(const char* expected_value, const char *expected_value_name) {
+    Constraint *constraint = create_constraint();
+    constraint->type = STRING_COMPARER;
+
+    constraint->compare = &compare_want_beginning_of_string;
+    constraint->execute = &test_want;
+    constraint->name = "begin with string";
     constraint->expected_value = (intptr_t)expected_value;
     constraint->expected_value_name = expected_value_name;
     return constraint;
@@ -346,6 +361,22 @@ static bool compare_do_not_want_substring(Constraint *constraint, intptr_t actua
 
 static bool compare_want_substring(Constraint *constraint, intptr_t actual) {
     return string_contains((const char *)actual, (const char *)constraint->expected_value);
+}
+
+const int NOT_FOUND = -1;
+
+static int strpos(const char *haystack, const char *needle)
+{
+	const char *offset = strstr(haystack, needle);
+	if (offset != NULL) {
+	  return offset - haystack;
+	}
+
+	return NOT_FOUND;
+}
+
+static bool compare_want_beginning_of_string(Constraint *constraint, intptr_t actual) {
+	return strpos((const char *)actual, (const char *)constraint->expected_value) == 0;
 }
 
 static bool compare_want_double(Constraint *constraint, intptr_t actual) {

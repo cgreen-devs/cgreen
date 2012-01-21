@@ -1,3 +1,4 @@
+#include <cgreen/breadcrumb.h>
 #include <cgreen/cgreen.h>
 #include <cgreen/cute_reporter.h>
 #include <cgreen/messaging.h>
@@ -38,19 +39,6 @@ static int mocked_printf(const char *format, ...) {
 	return strlen(output);
 }
 
-static int strpos(const char *whole, const char *part) {
-	int position;
-	if (strlen(whole) >= strlen(part)) {
-		int last_findable_position = (int)(strlen(whole) - strlen(part));
-
-		for(position = 0;position < last_findable_position; position++) {
-			if (strncmp(&whole[position], part, strlen(part)) == 0)
-				return position;
-		}
-	}
-	return -1;
-}
-
 TestReporter *reporter;
 
 static void setup_cute_reporter_tests() {
@@ -66,6 +54,7 @@ static void setup_cute_reporter_tests() {
 }
 
 static void cute_reporter_tests_teardown() {
+	destroy_reporter(reporter);
     if (NULL != output) {
         free(output);
     }
@@ -75,19 +64,15 @@ static void assert_no_output() {
 	assert_that(strlen(output), is_equal_to(0));
 }
 
-static void assert_output_starts_with(const char *string) {
-	assert_that(strpos(output, string), is_equal_to(0));
-}
-
 Ensure(will_report_beginning_of_suite) {
 	reporter->start_suite(reporter, "suite_name", 2);
-	assert_output_starts_with("#beginning");
+	assert_that(output, begins_with_string("#beginning"));
 	assert_that(output, contains_string("suite_name"));
 }
 
 Ensure(will_report_beginning_and_successful_finishing_of_test) {
 	reporter->start_test(reporter, "test_name");
-	assert_output_starts_with("#starting");
+	assert_that(output, begins_with_string("#starting"));
 	assert_that(output, contains_string("test_name"));
 
 	clear_output();
@@ -99,8 +84,9 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 
 	// Must indicate test case completion before calling finish_test()
 	send_reporter_completion_notification(reporter);
-	reporter->finish_test(reporter, "test_name");
-	assert_output_starts_with("#success");
+	const int line = 666;
+	reporter->finish_test(reporter, "filename", line);
+	assert_that(output, begins_with_string("#success"));
 	assert_that(output, contains_string("test_name"));
 }
 
@@ -112,7 +98,7 @@ Ensure(will_report_failing_of_test_only_once) {
 	clear_output();
 	reporter->failures++;	// Simulating a failed assert
 	reporter->show_fail(reporter, "file", 2, "test_name", arguments);
-	assert_output_starts_with("#failure");
+	assert_that(output, begins_with_string("#failure"));
 	assert_that(output, contains_string("test_name"));
 
 	clear_output();
@@ -122,15 +108,19 @@ Ensure(will_report_failing_of_test_only_once) {
 
 	// Must indicate test case completion before calling finish_test()
 	send_reporter_completion_notification(reporter);
-	reporter->finish_test(reporter, "test_name");
+	const int line = 666;
+	reporter->finish_test(reporter, "filename", line);
 	assert_no_output();
 }
 
 Ensure(will_report_finishing_of_suite) {
 	// Must indicate test suite completion before calling finish_suite()
+	const int line = 666;
+	reporter_start(reporter, "suite_name");
+//	reporter->start_suite(reporter, "filename", line);
 	send_reporter_completion_notification(reporter);
-	reporter->finish_suite(reporter, "suite_name");
-	assert_output_starts_with("#ending");
+	reporter->finish_suite(reporter, "filename", line);
+	assert_that(output, begins_with_string("#ending"));
 	assert_that(output, contains_string("suite_name"));
 }
 

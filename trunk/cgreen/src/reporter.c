@@ -2,6 +2,7 @@
 #include <cgreen/messaging.h>
 #include <cgreen/breadcrumb.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,9 +19,9 @@ static TestContext context;
 
 static void show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-static void show_incomplete(TestReporter *reporter, const char *name);
+static void show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void assert_true(TestReporter *reporter, const char *file, int line, int result, const char *message, ...);
-static void read_reporter_results(TestReporter *reporter);
+static void read_reporter_results(TestReporter *reporter, const char *filename, int line);
 
 TestReporter *get_test_reporter() {
 	return context.reporter;
@@ -82,9 +83,8 @@ void reporter_start_suite(TestReporter *reporter, const char *name, const int co
     reporter_start(reporter, name);
 }
 
-void reporter_finish(TestReporter *reporter, const char *name) {
-    (void)name;
-    read_reporter_results(reporter);
+void reporter_finish(TestReporter *reporter, const char *filename, int line) {
+    read_reporter_results(reporter, filename, line);
     pop_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 }
 
@@ -112,25 +112,30 @@ static void show_fail(TestReporter *reporter, const char *file, int line, const 
     (void)arguments;
 }
 
-static void show_incomplete(TestReporter *reporter, const char *name) {
+static void show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     (void)reporter;
-    (void)name;
+    (void)file;
+    (void)line;
+    (void)message;
+    (void)arguments;
 }
 
 static void assert_true(TestReporter *reporter, const char *file, int line, int result, const char *message, ...) {
     va_list arguments;
     va_start(arguments, message);
+
 	if (result) {
             (*reporter->show_pass)(reporter, file, line, message, arguments);
 	} else {
             (*reporter->show_fail)(reporter, file, line, message, arguments);
 	}
+
 	add_reporter_result(reporter, result);
 	va_end(arguments);
 }
 
-static void read_reporter_results(TestReporter *reporter) {
-    int completed = 0;
+static void read_reporter_results(TestReporter *reporter, const char *filename, int line) {
+    bool completed = false;
     int result;
     while ((result = receive_cgreen_message(reporter->ipc)) > 0) {
         if (result == pass) {
@@ -138,11 +143,13 @@ static void read_reporter_results(TestReporter *reporter) {
         } else if (result == fail) {
             reporter->failures++;
         } else if (result == completion) {
-            completed = 1;
+        	/* TODO: this should always be the last message; if it's not, there's a bad race */
+            completed = true;
         }
     }
     if (! completed) {
-        (*reporter->show_incomplete)(reporter, get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb));
+    	va_list no_arguments;
+    	(*reporter->show_incomplete)(reporter, filename, line, NULL, no_arguments);
         reporter->exceptions++;
     }
 }

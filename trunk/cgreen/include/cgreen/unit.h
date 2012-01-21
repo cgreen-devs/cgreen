@@ -17,9 +17,11 @@ typedef struct {
 	CgreenContext* context;
 	const char* name;
 	void(*run)(void);
+	const char* filename;
+	int line;
 } CgreenTest;
 
-#define spec_name(contextName, spec) CgreenSpec_##contextName##_##spec
+#define spec_name(contextName, specName) CgreenSpec_##contextName##_##specName
 
 
 #define Describe_NARG(...) \
@@ -64,14 +66,14 @@ static CgreenContext contextFor##subject = { #subject, __FILE__, &setup, &teardo
 
 #define EnsureWithContextAndSpecificationName(contextName, spec, ...) \
 	static void contextName##_##spec (void);\
-	CgreenTest spec_name(contextName, spec) = { &contextFor##contextName, #spec, &contextName##_##spec };\
+	CgreenTest spec_name(contextName, spec) = { &contextFor##contextName, #spec, &contextName##_##spec, __FILE__, __LINE__ };\
 	static void contextName##_##spec ()
 
 extern CgreenContext defaultContext;
 
 #define EnsureWithSpecificationName(spec, ...) \
 	static void spec (void);\
-	CgreenTest spec_name(default, spec) = { &defaultContext, #spec, &spec };\
+	CgreenTest spec_name(default, spec) = { &defaultContext, #spec, &spec, __FILE__, __LINE__ };\
 	static void spec ()
 
 #ifdef __cplusplus

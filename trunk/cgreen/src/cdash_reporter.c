@@ -1,13 +1,13 @@
+#include <cgreen/breadcrumb.h>
 #include <cgreen/cdash_reporter.h>
 #include <cgreen/reporter.h>
-#include <cgreen/breadcrumb.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
 #include <string.h>
+#include <time.h>
 
 #ifdef __cplusplus
 namespace cgreen {
@@ -37,10 +37,10 @@ static void cdash_reporter_testcase_started(TestReporter *reporter, const char *
 
 static void show_failed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void show_passed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-static void show_incomplete(TestReporter *reporter, const char *name);
+static void show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 
-static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *name);
-static void cdash_reporter_suite_finished(TestReporter *reporter, const char *name);
+static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *filename, int line);
+static void cdash_reporter_suite_finished(TestReporter *reporter, const char *filename, int line);
 
 static time_t cdash_build_stamp(char *sbuildstamp, size_t sb);
 static time_t cdash_current_time(char *strtime);
@@ -240,20 +240,22 @@ static void show_passed(TestReporter *reporter, const char *file, int line, cons
 	       "    </Test>\n", exectime, name);
 }
 
-static void show_incomplete(TestReporter *reporter, const char *name) {
+static void show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
 	(void)reporter;
-	(void)name;
-
+	(void)file;
+	(void)line;
+	(void)message;
+	(void)arguments;
 }
 
 
-static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *name) {
-	reporter_finish(reporter, name);
+static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *filename, int line) {
+	reporter_finish(reporter, filename, line);
 }
 
 
-static void cdash_reporter_suite_finished(TestReporter *reporter, const char *name) {
-	reporter_finish(reporter, name);
+static void cdash_reporter_suite_finished(TestReporter *reporter, const char *filename, int line) {
+	reporter_finish(reporter, filename, line);
 }
 
 static time_t cdash_build_stamp(char *sbuildstamp, size_t sb) {

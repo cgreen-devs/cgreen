@@ -1,4 +1,5 @@
 #include <cgreen/cgreen.h>
+#include <stdexcept>
 #include <memory>
 #include <stdbool.h>
 #include <stdio.h>
@@ -33,6 +34,11 @@ public:
 
 static std::string* bob_pointer = NULL;
 static std::string* alice_pointer = NULL;
+
+void setup(void) {
+//  for testing output of exceptions during setup
+//	throw std::logic_error("this is why we fail");
+}
 
 Ensure(custom_large_classes_are_equal) {
     MyType my_class = { 3.1337f, 3.14159f, 90210 };
@@ -104,6 +110,10 @@ Ensure(stl_string_length_assertion_failure_is_readable) {
 //    assert_that(bob->length(), is_not_equal_to(strlen("bob")));
 }
 
+Ensure(std_exception_what_is_output) {
+//	throw std::logic_error("this is why we fail");
+}
+
 void teardown(void) {
 	if (NULL != bob_pointer) {
 		delete bob_pointer;
@@ -116,6 +126,7 @@ void teardown(void) {
 
 TestSuite *cpp_assertion_tests() {
     TestSuite *suite = create_test_suite();
+    set_setup(suite, setup);
     set_teardown(suite, teardown);
     add_test(suite, custom_large_classes_are_not_equal);
     add_test(suite, custom_large_classes_are_equal);
@@ -128,5 +139,6 @@ TestSuite *cpp_assertion_tests() {
     add_test(suite, stl_string_pointer_is_not_null);
     add_test(suite, stl_string_pointer_is_null);
     add_test(suite, stl_string_length_assertion_failure_is_readable);
+    add_test(suite, std_exception_what_is_output);
     return suite;
 }

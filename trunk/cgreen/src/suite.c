@@ -27,7 +27,7 @@ bool has_test(TestSuite *suite, const char *name) {
             if (strcmp(suite->tests[i].name, name) == 0) {
                 return true;
             }
-        } else if (has_test(suite->tests[i].sPtr.suite, name)) {
+        } else if (has_test(suite->tests[i].Runnable.suite, name)) {
             return true;
         }
 	}
@@ -46,9 +46,11 @@ bool has_teardown(TestSuite *suite) {
 void do_nothing() {
 }
 
-TestSuite *create_named_test_suite(const char *name) {
+TestSuite *create_named_test_suite(const char *name, const char *filename, int line) {
     TestSuite *suite = (TestSuite *)malloc(sizeof(TestSuite));
     suite->name = name;
+    suite->filename = filename;
+    suite->line = line;
     suite->tests = NULL;
     suite->setup = &do_nothing;
     suite->teardown = &do_nothing;
@@ -60,9 +62,9 @@ void destroy_test_suite(TestSuite *suiteToDestroy) {
     int i;
     for (i = 0; i < suiteToDestroy->size; i++) {
         UnitTest test = suiteToDestroy->tests[i];
-        TestSuite* suite = test.sPtr.suite;
+        TestSuite* suite = test.Runnable.suite;
         if (test_suite == test.type && suite != NULL) {
-           suiteToDestroy->tests[i].sPtr.suite = NULL;
+           suiteToDestroy->tests[i].Runnable.suite = NULL;
            destroy_test_suite(suite);
         }
     }
@@ -78,7 +80,7 @@ void add_test_(TestSuite *suite, const char *name, CgreenTest *test) {
     suite->tests = (UnitTest *)realloc(suite->tests, sizeof(UnitTest) * suite->size);
     suite->tests[suite->size - 1].type = test_function;
     suite->tests[suite->size - 1].name = name;
-    suite->tests[suite->size - 1].sPtr.test = test;
+    suite->tests[suite->size - 1].Runnable.test = test;
 }
 
 void add_tests_(TestSuite *suite, const char *names, ...) {
@@ -98,7 +100,7 @@ void add_suite_(TestSuite *owner, const char *name, TestSuite *suite) {
     owner->tests = (UnitTest *)realloc(owner->tests, sizeof(UnitTest) * owner->size);
     owner->tests[owner->size - 1].type = test_suite;
     owner->tests[owner->size - 1].name = name;
-    owner->tests[owner->size - 1].sPtr.suite = suite;
+    owner->tests[owner->size - 1].Runnable.suite = suite;
 }
 
 void set_setup(TestSuite *suite, void (*set_up)()) {
@@ -116,7 +118,7 @@ int count_tests(TestSuite *suite) {
         if (suite->tests[i].type == test_function) {
             count++;
         } else {
-            count += count_tests(suite->tests[i].sPtr.suite);
+            count += count_tests(suite->tests[i].Runnable.suite);
         }
     }
     return count;
