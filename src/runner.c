@@ -12,6 +12,8 @@
 #include <unistd.h>
 
 #ifdef __cplusplus
+#include <stdexcept>
+
 namespace cgreen {
 #endif
 
@@ -23,8 +25,8 @@ static void clean_up_test_run(TestSuite *suite, TestReporter *reporter);
 static void run_every_test(TestSuite *suite, TestReporter *reporter);
 static void run_named_test(TestSuite *suite, const char *name, TestReporter *reporter);
 
-static void run_test_in_the_current_process(TestSuite *suite, UnitTest *test, TestReporter *reporter);
-static void run_test_in_its_own_process(TestSuite *suite, UnitTest *test, TestReporter *reporter);
+static void run_test_in_the_current_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter);
+static void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter);
 
 
 static int in_child_process(void);
@@ -35,7 +37,7 @@ static void stop(void);
 static int per_test_timeout_defined(void);
 static int per_test_timeout_value(void);
 static void validate_per_test_timeout_value(void);
-static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *reporter);
+static void run_the_test_code(TestSuite *suite, CgreenTest *test, TestReporter *reporter);
 static void die(const char *message, ...);
 static void die_in(unsigned int seconds);
 
@@ -74,15 +76,15 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
 	int i;
     for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
-            run_test_in_its_own_process(suite, &(suite->tests[i]), reporter);
+            run_test_in_its_own_process(suite, suite->tests[i].Runnable.test, reporter);
         } else {
             (*suite->setup)();
-            run_every_test(suite->tests[i].sPtr.suite, reporter);
+            run_every_test(suite->tests[i].Runnable.suite, reporter);
             (*suite->teardown)();
         }
     }
     send_reporter_completion_notification(reporter);
-    (*reporter->finish_suite)(reporter, suite->name);
+    (*reporter->finish_suite)(reporter, suite->filename, suite->line);
 }
 
 static void run_named_test(TestSuite *suite, const char *name, TestReporter *reporter) {
@@ -91,27 +93,27 @@ static void run_named_test(TestSuite *suite, const char *name, TestReporter *rep
     for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
             if (strcmp(suite->tests[i].name, name) == 0) {
-                run_test_in_the_current_process(suite, &(suite->tests[i]), reporter);
+                run_test_in_the_current_process(suite, suite->tests[i].Runnable.test, reporter);
             }
-        } else if (has_test(suite->tests[i].sPtr.suite, name)) {
+        } else if (has_test(suite->tests[i].Runnable.suite, name)) {
             (*suite->setup)();
-            run_named_test(suite->tests[i].sPtr.suite, name, reporter);
+            run_named_test(suite->tests[i].Runnable.suite, name, reporter);
             (*suite->teardown)();
         }
     }
     send_reporter_completion_notification(reporter);
-	(*reporter->finish_suite)(reporter, suite->name);
+	(*reporter->finish_suite)(reporter, suite->filename, suite->line);
 }
 
 
-static void run_test_in_the_current_process(TestSuite *suite, UnitTest *test, TestReporter *reporter) {
+static void run_test_in_the_current_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter) {
 	(*reporter->start_test)(reporter, test->name);
 	run_the_test_code(suite, test, reporter);
     send_reporter_completion_notification(reporter);
-	(*reporter->finish_test)(reporter, test->name);
+	(*reporter->finish_test)(reporter, test->filename, test->line);
 }
 
-static void run_test_in_its_own_process(TestSuite *suite, UnitTest *test, TestReporter *reporter) {
+static void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter) {
 	(*reporter->start_test)(reporter, test->name);
     if (in_child_process()) {
         run_the_test_code(suite, test, reporter);
@@ -119,7 +121,7 @@ static void run_test_in_its_own_process(TestSuite *suite, UnitTest *test, TestRe
         stop();
     } else {
         wait_for_child_process();
-        (*reporter->finish_test)(reporter, test->name);
+        (*reporter->finish_test)(reporter, test->filename, test->line);
     }
 }
 
@@ -173,7 +175,7 @@ static void validate_per_test_timeout_value() {
 	}
 }
 
-static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *reporter) {
+static void run_the_test_code(TestSuite *suite, CgreenTest *spec, TestReporter *reporter) {
     significant_figures_for_assert_double_are(8);
     clear_mocks();
 
@@ -182,8 +184,12 @@ static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *re
     	die_in(per_test_timeout_value());
     }
 
-    CgreenTest *spec = test->sPtr.test;
+#ifdef __cplusplus
+    va_list no_arguments;
+	char message[255];
 
+    try {
+#endif
     // for historical reasons the suite can have a setup
     if(has_setup(suite)) {
         (*suite->setup)();
@@ -192,9 +198,32 @@ static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *re
         	spec->context->setup();
         }
     }
+#ifdef __cplusplus
+    } catch(std::exception& exception) {
+    	char message[255];
+    	snprintf(message, sizeof(message) - 1, "an exception was thrown during setup: [%s]", exception.what());
+    	reporter->show_incomplete(reporter, spec->filename, spec->line, message, no_arguments);
+    	die("");
+    }
+#endif
 
+#ifdef __cplusplus
+    try {
+#endif
     spec->run();
+#ifdef __cplusplus
+    } catch(std::exception& exception) {
+    	char message[255];
+    	snprintf(message, sizeof(message) - 1, "an exception was thrown during test: [%s]", exception.what());
 
+    	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    	die("");
+    }
+#endif
+
+    #ifdef __cplusplus
+    try {
+#endif
     // for historical reasons the suite can have a teardown
     if (suite->teardown != &do_nothing) {
         (*suite->teardown)();
@@ -203,6 +232,13 @@ static void run_the_test_code(TestSuite *suite, UnitTest *test, TestReporter *re
         	spec->context->teardown();
         }
     }
+#ifdef __cplusplus
+    } catch(std::exception& exception) {
+    	snprintf(message, sizeof(message) - 1, "an exception was thrown during teardown: [%s]", exception.what());
+    	reporter->show_incomplete(reporter, spec->filename, spec->line, message, no_arguments);
+    	die("");
+    }
+#endif
 
     tally_mocks(reporter);
 }

@@ -16,15 +16,17 @@ typedef struct TestSuite_ TestSuite;
 
 typedef struct {
     int type;
+    const char *name;
     union {
         CgreenTest *test;
         TestSuite *suite;
-    } sPtr;
-    const char *name;
+    } Runnable;
 } UnitTest;
 
 struct TestSuite_ {
 	const char *name;
+	const char* filename;
+	int line;
 	UnitTest *tests;
 	void (*setup)();
 	void (*teardown)();
@@ -33,13 +35,13 @@ struct TestSuite_ {
 
 void do_nothing(void);
 
-#define create_test_suite() create_named_test_suite(__func__)
+#define create_test_suite() create_named_test_suite(__func__, __FILE__, __LINE__)
 #define add_test(suite, test) add_test_(suite, #test, &spec_name(default, test))
 #define add_test_with_context(suite, context, test) add_test_(suite, #test, &spec_name(context, test))
 #define add_tests(suite, ...) add_tests_(suite, #__VA_ARGS__, (CgreenTest *)__VA_ARGS__ +0)
 #define add_suite(owner, suite) add_suite_(owner, #suite, suite)
 
-TestSuite *create_named_test_suite(const char *name);
+TestSuite *create_named_test_suite(const char *name, const char *filename, int line);
 void destroy_test_suite(TestSuite *suite);
 void add_test_(TestSuite *suite, const char *name, CgreenTest *test);
 void add_tests_(TestSuite *suite, const char *names, ...);

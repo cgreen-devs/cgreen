@@ -23,11 +23,11 @@ static void assert_failed(TestReporter *reporter, const char *file, int line,
 static void assert_passed(TestReporter *reporter, const char *file, int line,
 		const char *message, va_list arguments);
 static void testcase_failed_to_complete(TestReporter *reporter,
-		const char *name);
+		const char *file, int line, const char *message, va_list arguments);
 static void cute_reporter_testcase_finished(TestReporter *reporter,
-		const char *name);
+		const char *filename, int line);
 static void cute_reporter_suite_finished(TestReporter *reporter,
-		const char *name);
+		const char *filename, int line);
 
 void set_cute_printer(TestReporter *reporter, Printer *printer) {
 	CuteMemo *memo = (CuteMemo *) reporter->memo;
@@ -80,18 +80,22 @@ static void cute_reporter_testcase_started(TestReporter *reporter,
 }
 
 static void cute_reporter_testcase_finished(TestReporter *reporter,
-		const char *name) {
+		const char *filename, int line) {
 	CuteMemo *memo = (CuteMemo *) reporter->memo;
-	reporter_finish(reporter, name);
+	const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
+
+	reporter_finish(reporter, filename, line);
 	if (memo->error_count == reporter->failures + reporter->exceptions) {
 		memo->printer("#success %s OK\n", name);
 	}
 }
 
 static void cute_reporter_suite_finished(TestReporter *reporter,
-		const char *name) {
+		const char *filename, int line) {
 	CuteMemo *memo = (CuteMemo *) reporter->memo;
-	reporter_finish(reporter, name);
+	const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
+	reporter_finish(reporter, filename, line);
+
 	memo->printer("#ending %s", name);
 	if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0) {
 		memo->printer(": %d pass%s, %d failure%s, %d exception%s.\n",
@@ -127,9 +131,16 @@ static void assert_passed(TestReporter *reporter, const char *file, int line,
 }
 
 static void testcase_failed_to_complete(TestReporter *reporter,
-		const char *name) {
+		const char *file, int line, const char *message, va_list arguments) {
+	/* TODO: add additional message to output */
+	(void)file;
+	(void)line;
+	(void)message;
+	(void)arguments;
+
 	CuteMemo *memo = (CuteMemo *) reporter->memo;
-	memo->printer("#error %s failed to complete\n", name);
+	memo->printer("#error %s failed to complete\n",
+			get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb));
 }
 
 #ifdef __cplusplus

@@ -30,6 +30,7 @@ extern "C" {
 #define is_not_equal_to_string(value) create_not_equal_to_string_constraint(value, #value)
 #define contains_string(value) create_contains_string_constraint(value, #value)
 #define does_not_contain_string(value) create_does_not_contain_string_constraint(value, #value)
+#define begins_with_string(value) create_begins_with_string_constraint(value, #value)
 
 #define is_equal_to_double(value) create_equal_to_double_constraint(value, #value)
 #define is_not_equal_to_double(value) create_not_equal_to_double_constraint(value, #value)
