@@ -85,7 +85,7 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line,
 
 	printf("\n");
 	printf("\t");
-	vprintf((message == NULL ? "Test exited in a hurry, likely from SIGSEGV or other signal" : message), arguments);
+	vprintf((message == NULL ? "Test exited in a hurry, likely from a non-standard exception, SIGSEGV, or other signal" : message), arguments);
 	printf("\n");
 }
 
