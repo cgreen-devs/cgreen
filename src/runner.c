@@ -1,5 +1,6 @@
 #include <cgreen/assertions.h>
 #include <cgreen/mocks.h>
+#include <cgreen/reporter.h>
 #include <cgreen/runner.h>
 #include <cgreen/suite.h>
 #include <signal.h>
@@ -175,6 +176,106 @@ static void validate_per_test_timeout_value() {
 	}
 }
 
+static void run_setup_for(CgreenTest *spec) {
+#ifdef __cplusplus
+    va_list no_arguments;
+	char message[255];
+	TestReporter *reporter = get_test_reporter();
+
+    try {
+#endif
+    	spec->context->setup();
+#ifdef __cplusplus
+    } catch(std::exception& exception) {
+    	snprintf(message, sizeof(message) - 1, "an exception was thrown during setup: [%s]", exception.what());
+    	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    } catch(std::exception* exception) {
+    	snprintf(message, sizeof(message) - 1, "an exception was thrown during setup: [%s]", exception->what());
+    	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    } catch(std::string& exception_message) {
+        	snprintf(message, sizeof(message) - 1, "an exception was thrown during setup: [%s]", exception_message.c_str());
+
+        	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    } catch(std::string *exception_message) {
+        	snprintf(message, sizeof(message) - 1, "an exception was thrown during setup: [%s]", exception_message->c_str());
+
+        	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    } catch(const char *exception_message) {
+        	snprintf(message, sizeof(message) - 1, "an exception was thrown during setup: [%s]", exception_message);
+
+        	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    }
+#endif
+
+}
+
+static void run_teardown_for(CgreenTest *spec) {
+#ifdef __cplusplus
+    va_list no_arguments;
+	char message[255];
+	TestReporter *reporter = get_test_reporter();
+
+    try {
+#endif
+    	spec->context->teardown();
+#ifdef __cplusplus
+    } catch(std::exception& exception) {
+    	snprintf(message, sizeof(message) - 1, "an exception was thrown during teardown: [%s]", exception.what());
+    	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    } catch(std::exception* exception) {
+    	snprintf(message, sizeof(message) - 1, "an exception was thrown during teardown: [%s]", exception->what());
+    	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    } catch(std::string& exception_message) {
+        	snprintf(message, sizeof(message) - 1, "an exception was thrown during teardown: [%s]", exception_message.c_str());
+
+        	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    } catch(std::string *exception_message) {
+        	snprintf(message, sizeof(message) - 1, "an exception was thrown during teardown: [%s]", exception_message->c_str());
+
+        	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    } catch(const char *exception_message) {
+        	snprintf(message, sizeof(message) - 1, "an exception was thrown during teardown: [%s]", exception_message);
+
+        	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    }
+#endif
+
+}
+
+
+static void run(CgreenTest *spec) {
+#ifdef __cplusplus
+    va_list no_arguments;
+	char message[255];
+	TestReporter *reporter = get_test_reporter();
+
+    try {
+#endif
+    	spec->run();
+#ifdef __cplusplus
+    } catch(std::exception& exception) {
+    	snprintf(message, sizeof(message) - 1, "an exception was thrown during test: [%s]", exception.what());
+    	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    } catch(std::exception* exception) {
+    	snprintf(message, sizeof(message) - 1, "an exception was thrown during test: [%s]", exception->what());
+    	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    } catch(std::string& exception_message) {
+        	snprintf(message, sizeof(message) - 1, "an exception was thrown during test: [%s]", exception_message.c_str());
+
+        	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    } catch(std::string *exception_message) {
+        	snprintf(message, sizeof(message) - 1, "an exception was thrown during test: [%s]", exception_message->c_str());
+
+        	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    } catch(const char *exception_message) {
+        	snprintf(message, sizeof(message) - 1, "an exception was thrown during test: [%s]", exception_message);
+
+        	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+    }
+#endif
+
+}
+
 static void run_the_test_code(TestSuite *suite, CgreenTest *spec, TestReporter *reporter) {
     significant_figures_for_assert_double_are(8);
     clear_mocks();
@@ -184,61 +285,25 @@ static void run_the_test_code(TestSuite *suite, CgreenTest *spec, TestReporter *
     	die_in(per_test_timeout_value());
     }
 
-#ifdef __cplusplus
-    va_list no_arguments;
-	char message[255];
-
-    try {
-#endif
     // for historical reasons the suite can have a setup
     if(has_setup(suite)) {
         (*suite->setup)();
     } else {
         if (spec->context->setup != NULL) {
-        	spec->context->setup();
+        	run_setup_for(spec);
         }
     }
-#ifdef __cplusplus
-    } catch(std::exception& exception) {
-    	char message[255];
-    	snprintf(message, sizeof(message) - 1, "an exception was thrown during setup: [%s]", exception.what());
-    	reporter->show_incomplete(reporter, spec->filename, spec->line, message, no_arguments);
-    	die("");
-    }
-#endif
 
-#ifdef __cplusplus
-    try {
-#endif
-    spec->run();
-#ifdef __cplusplus
-    } catch(std::exception& exception) {
-    	char message[255];
-    	snprintf(message, sizeof(message) - 1, "an exception was thrown during test: [%s]", exception.what());
+    run(spec);
 
-    	reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
-    	die("");
-    }
-#endif
-
-    #ifdef __cplusplus
-    try {
-#endif
     // for historical reasons the suite can have a teardown
     if (suite->teardown != &do_nothing) {
         (*suite->teardown)();
     } else {
         if (spec->context->teardown != NULL) {
-        	spec->context->teardown();
+        	run_teardown_for(spec);
         }
     }
-#ifdef __cplusplus
-    } catch(std::exception& exception) {
-    	snprintf(message, sizeof(message) - 1, "an exception was thrown during teardown: [%s]", exception.what());
-    	reporter->show_incomplete(reporter, spec->filename, spec->line, message, no_arguments);
-    	die("");
-    }
-#endif
 
     tally_mocks(reporter);
 }
