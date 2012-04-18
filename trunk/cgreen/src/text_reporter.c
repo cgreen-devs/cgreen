@@ -70,8 +70,7 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
 	walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb,
 			(void *) &i);
 	printf("\n");
-	printf("\t");
-	vprintf((message == NULL ? "Internal cgreen error, got NULL for failure message" : message), arguments);
+	vprintf((message == NULL ? "\tInternal cgreen error, got NULL for failure message" : message), arguments);
 	printf("\n");
 }
 
@@ -84,8 +83,7 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line,
 			(void *) &i);
 
 	printf("\n");
-	printf("\t");
-	vprintf((message == NULL ? "Test exited in a hurry, likely from a non-standard exception, SIGSEGV, or other signal" : message), arguments);
+	vprintf((message == NULL ? "\tTest exited in a hurry, likely from a non-standard exception, SIGSEGV, or other signal" : message), arguments);
 	printf("\n");
 }
 
