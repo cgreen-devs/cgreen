@@ -135,17 +135,19 @@ void format_expectation_failure_message_for(char *message, size_t message_size, 
 		return;
     }
 
-	snprintf(message + strlen(message), message_size - strlen(message) - 1,
-    			"\t\tactual value:\t[%" PRIdPTR "]\n"
-    			"\t\texpected value:\t[%" PRIdPTR "]\n",
-                actual,
-                constraint->expected_value);
-	add_blank_line_to(message, message_size);
+    snprintf(message + strlen(message), message_size - strlen(message) - 1,
+	     "\t\tactual value:\t[%" PRIdPTR "]\n",
+	     actual);
 
-    return;
+    if(strstr(constraint->name, "not ") == NULL) {
+	snprintf(message + strlen(message), message_size - strlen(message) - 1,
+		 "\t\texpected value:\t[%" PRIdPTR "]\n",
+		 constraint->expected_value);
+    }
+
+    add_blank_line_to(message, message_size);
 }
 
 #ifdef __cplusplus
 }
 #endif
-
