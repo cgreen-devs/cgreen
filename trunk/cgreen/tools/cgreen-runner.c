@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     printf("Discovered: %d tests\n", number_of_tests);
 
     printf("Opening [%s]\n", test_library);
-    test_library_handle = dlopen (test_library, RTLD_LAZY);
+    test_library_handle = dlopen (test_library, RTLD_NOW);
     if (test_library_handle == NULL) {
         fprintf (stderr, "dlopen failure (error: %s)\n", dlerror());
         exit(1);

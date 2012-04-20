@@ -29,22 +29,22 @@ set(CGREEN_TEST_LIBRARY
   CACHE INTERNAL "cgreen tests shared library"
 )
 
-add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_SRCS})
-if (WITH_CXX)
-  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_STATIC_LIBRARY} m stdc++)
-else()
-  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_STATIC_LIBRARY} m)
-endif (WITH_CXX)
-
 if (WITH_CXX)
   set(test_SRCS ${test_SRCS} cpp_assertion_tests.cpp)
   SET_SOURCE_FILES_PROPERTIES( ${test_SRCS} PROPERTIES LANGUAGE CXX )
 endif (WITH_CXX)
 
+add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_SRCS})
 if (WITH_CXX)
-  set(TEST_TARGET_LIBRARIES ${CGREEN_STATIC_LIBRARY} m stdc++)
+  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_SHARED_LIBRARY} m stdc++)
 else()
-  set(TEST_TARGET_LIBRARIES ${CGREEN_STATIC_LIBRARY} m)
+  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_SHARED_LIBRARY} m)
+endif (WITH_CXX)
+
+if (WITH_CXX)
+  set(TEST_TARGET_LIBRARIES ${CGREEN_SHARED_LIBRARY} m stdc++)
+else()
+  set(TEST_TARGET_LIBRARIES ${CGREEN_SHARED_LIBRARY} m)
 endif(WITH_CXX)
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/some_file "Some stuff")
