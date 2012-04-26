@@ -2,10 +2,10 @@
 
 include(CheckCCompilerFlag)
 
-if (UNIX) 
+if (UNIX)
   if (CMAKE_COMPILER_IS_GNUCC)
     if (WITH_CXX)
-       add_definitions(-g -std=c++0x -Weffc++ -Wall -Wextra -Wunused)
+       add_definitions(-g -Weffc++ -Wall -Wextra -Wunused)
     else()
        add_definitions(-g -std=c99 -Wall -Wextra -Wunused)
     endif (WITH_CXX)
