@@ -10,14 +10,14 @@
 #include <string.h>
 #include <unistd.h>
 
-
 struct test_item {
-    char name[512];
+    char *name;
 };
 
+#define cgreen_spec_prefix "CgreenSpec_"
 
-static uint32_t discover_tests_in(const char *, struct test_item *, uint32_t);
-static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, uint32_t number_of_tests, TestSuite* suite);
+static uint32_t discover_tests_in(const char *, struct test_item *, const uint32_t);
+static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, const uint32_t number_of_tests, TestSuite* suite);
 static int file_exists (const char *filename);
 static void reflective_runner_cleanup(void*);
 
@@ -25,12 +25,20 @@ int main(int argc, char **argv) {
     int status;
     void *test_library_handle;
 
+    /* TODO: use getopt() for better command line parsing. */
+    /* TODO: use command line option -v (verbose) to reduce printf output for regular program execution. */
+    /* TODO: show usage help for argc<2 and option -h (help) */
+    /* TODO: in addition to running only a single named test, match tests with a substring and run only those */
     if (argc < 2) {
-        printf("Usage: cgreen-runner <test library filename>\n");
+        printf("Usage: cgreen-runner <test library filename> [test name]\n");
         exit(1);
     }
 
-    const char* test_library = argv[argc - 1];
+    const char* test_library = argv[1];
+    const char* test_name = NULL;
+    if (argc == 3) {
+	test_name = argv[2];
+    }
 
     if (!file_exists(test_library)) {
         printf("Couldn't find library: %s\n", test_library);
@@ -40,7 +48,7 @@ int main(int argc, char **argv) {
     const uint32_t MAXIMUM_NUMBER_OF_TESTS = 2048;
     struct test_item discovered_tests[MAXIMUM_NUMBER_OF_TESTS];
     memset(discovered_tests, 0, sizeof(discovered_tests));
-    uint32_t number_of_tests = discover_tests_in(test_library, discovered_tests, MAXIMUM_NUMBER_OF_TESTS);
+    const uint32_t number_of_tests = discover_tests_in(test_library, discovered_tests, MAXIMUM_NUMBER_OF_TESTS);
 
     printf("Discovered: %d tests\n", number_of_tests);
 
@@ -56,9 +64,21 @@ int main(int argc, char **argv) {
 
     add_discovered_tests_to_suite(test_library_handle, discovered_tests, number_of_tests, suite);
 
-    status = run_test_suite(suite, reporter);
+    if (test_name) {
+	char *test_name_with_prefix = malloc(strlen(cgreen_spec_prefix) + strlen(test_name) + 1);
+	strcpy(test_name_with_prefix, cgreen_spec_prefix);
+	strcat(test_name_with_prefix, test_name);
+	printf("Only running test %s ...\n", test_name);
+	status = run_single_test(suite, test_name_with_prefix, reporter);
+	free(test_name_with_prefix);
+    } else {
+	status = run_test_suite(suite, reporter);
+    }
 
     reflective_runner_cleanup(test_library_handle);
+
+    for(uint32_t i = 0; i != number_of_tests; ++i)
+	free(discovered_tests[i].name);
 
     return status;
 }
@@ -67,19 +87,17 @@ static int file_exists(const char *filename)
 {
     return (access(filename, F_OK) == 0);
 }
-  
+
 static void reflective_runner_cleanup(void *handle)
 {
     dlclose(handle);
 }
 
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
-static uint32_t discover_tests_in(const char* test_library, struct test_item* test_items, uint32_t maximum_number_of_test_items)
+static uint32_t discover_tests_in(const char* test_library, struct test_item* test_items, const uint32_t maximum_number_of_test_items)
 {
     char cmd[2048];
-
-    memset(cmd, 0, sizeof(cmd));
-    strcat(cmd, "/usr/bin/nm ");
+    strcpy(cmd, "/usr/bin/nm ");
     strcat(cmd, test_library);
 
     /* Open the command for reading. */
@@ -89,25 +107,24 @@ static uint32_t discover_tests_in(const char* test_library, struct test_item* te
         return 0;
     }
 
-
+    const size_t cgreen_spec_prefix_length = strlen(cgreen_spec_prefix);;
     uint32_t number_of_tests = 0;
     char line[1024];
     while (fgets(line, sizeof(line)-1, nm_output_pipe) != NULL) {
-       char *match = strstr(line, "CgreenSpec");
-
+       char *match = strstr(line, cgreen_spec_prefix);
        if (match != NULL) {
-           size_t match_string_length = strlen(match);
 
-           if (0 != strncmp(match, "CgreenSpec_default", strlen("CgreenSpec_default")))
+	   const char* const cgreen_spec_default = cgreen_spec_prefix "default";
+           if (0 != strncmp(match, cgreen_spec_default, strlen(cgreen_spec_default)))
            {
-               strncpy(test_items[number_of_tests].name, match, match_string_length - 1);
-               number_of_tests++;
+	       match[strlen(match) - 1] = 0; /* remove newline */
+	       //printf("Discovered test %s ...\n", match + cgreen_spec_prefix_length);
+	       test_items[number_of_tests].name = strdup(match);
+	       if (++number_of_tests > maximum_number_of_test_items) {
+		   printf("Found too many tests (%d)! Giving up. Consider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
+		   exit(1);
+	       }
            }
-       }
-
-       if (number_of_tests > maximum_number_of_test_items) {
-    	   printf("Found too many tests (%d)! Giving up. Consider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
-    	   exit(1);
        }
     }
 
@@ -116,7 +133,7 @@ static uint32_t discover_tests_in(const char* test_library, struct test_item* te
     return number_of_tests;
 }
 
-static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, uint32_t number_of_tests, TestSuite* suite)
+static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, const uint32_t number_of_tests, TestSuite* suite)
 {
     for (uint32_t i = 0; i < number_of_tests; i++) {
         //printf("Discovered test %s ...\n", testlist[i].name);
