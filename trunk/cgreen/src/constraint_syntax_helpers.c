@@ -9,7 +9,7 @@ namespace cgreen {
 
 Constraint static_is_non_null_constraint = {
     /* .type */ VALUE_COMPARER,
-    /* .name */ "not equal",
+    /* .name */ "be non null",
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_do_not_want_value,
     /* .test */ test_want,
@@ -21,7 +21,7 @@ Constraint static_is_non_null_constraint = {
 
 Constraint static_is_null_constraint = {
     /* .type */ VALUE_COMPARER,
-    /* .name */ "equal",
+    /* .name */ "be null",
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_want_value,
     /* .test */ test_want,
