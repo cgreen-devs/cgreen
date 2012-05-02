@@ -29,7 +29,8 @@ static void ensure_expectation_queue_exists(void);
 void remove_expectation_for(const char *function);
 void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestReporter *reporter);
 RecordedExpectation *find_expectation(const char *function);
-void apply_any_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter);
+void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter);
+void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter);
 intptr_t stored_result_or_default_for(CgreenVector* constraints);
 
 bool is_always_call(RecordedExpectation* expectation);
@@ -66,11 +67,29 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *pa
     CgreenVector *parameter_names = create_vector_of_names(parameters);
     va_list actuals;
     va_start(actuals, parameters);
+
+    // if read-only constraints aren't matching, content-setting ones might corrupt memory
+    // apply read-only ones first, and if they don't fail, then do the deeper constraints
+    int failures_before_read_only_constraints_executed = test_reporter->failures;
+
     for (int i = 0; i < cgreen_vector_size(parameter_names); i++) {
         const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
         uintptr_t actual = va_arg(actuals, uintptr_t);
-        apply_any_parameter_constraints(expectation, parameter_name, actual, test_reporter);
+        apply_any_read_only_parameter_constraints(expectation, parameter_name, actual, test_reporter);
     }
+
+    int failures_after_read_only_constraints_executed = test_reporter->failures;
+
+    // FIXME: this comparison doesn't work because only parent processes' pass/fail counts are updated,
+    //        and even then only once they read from the pipe
+    if (failures_before_read_only_constraints_executed == failures_after_read_only_constraints_executed) {
+	for (int i = 0; i < cgreen_vector_size(parameter_names); i++) {
+	    const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
+	    uintptr_t actual = va_arg(actuals, uintptr_t);
+	    apply_any_content_setting_parameter_constraints(expectation, parameter_name, actual, test_reporter);
+	}
+    }
+
     va_end(actuals);
     destroy_cgreen_vector(parameter_names);
 
@@ -305,11 +324,37 @@ RecordedExpectation *find_expectation(const char *function) {
     return NULL;
 }
 
-void apply_any_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter) {
+void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter) {
     for (int i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
         if (constraint_is_not_for_parameter(constraint, parameter)) {
+            continue;
+        }
+
+        if (constraint->type == CONTENT_SETTER) {
+            continue;
+        }
+
+        constraint->execute(
+            constraint,
+            expectation->function,
+            actual,
+            expectation->test_file,
+            expectation->test_line,
+            test_reporter);
+    }
+}
+
+void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter) {
+    for (int i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
+        Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
+
+        if (constraint_is_not_for_parameter(constraint, parameter)) {
+            continue;
+        }
+
+        if (constraint->type != CONTENT_SETTER) {
             continue;
         }
 
