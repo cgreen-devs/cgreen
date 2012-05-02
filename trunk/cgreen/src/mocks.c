@@ -65,8 +65,15 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *pa
     }
 
     CgreenVector *parameter_names = create_vector_of_names(parameters);
+    CgreenVector *actual_values = create_cgreen_vector(NULL);
+
     va_list actuals;
     va_start(actuals, parameters);
+    for (int i = 0; i < cgreen_vector_size(parameter_names); i++) {
+        uintptr_t actual = va_arg(actuals, uintptr_t);
+        cgreen_vector_add(actual_values, (void*)actual);
+    }
+    va_end(actuals);
 
     // if read-only constraints aren't matching, content-setting ones might corrupt memory
     // apply read-only ones first, and if they don't fail, then do the deeper constraints
@@ -74,7 +81,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *pa
 
     for (int i = 0; i < cgreen_vector_size(parameter_names); i++) {
         const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
-        uintptr_t actual = va_arg(actuals, uintptr_t);
+        uintptr_t actual = (uintptr_t)cgreen_vector_get(actual_values, i);
         apply_any_read_only_parameter_constraints(expectation, parameter_name, actual, test_reporter);
     }
 
@@ -85,12 +92,11 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *pa
     if (failures_before_read_only_constraints_executed == failures_after_read_only_constraints_executed) {
 	for (int i = 0; i < cgreen_vector_size(parameter_names); i++) {
 	    const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
-	    uintptr_t actual = va_arg(actuals, uintptr_t);
+	        uintptr_t actual = (uintptr_t)cgreen_vector_get(actual_values, i);
 	    apply_any_content_setting_parameter_constraints(expectation, parameter_name, actual, test_reporter);
 	}
     }
 
-    va_end(actuals);
     destroy_cgreen_vector(parameter_names);
 
     destroy_expectation_if_time_to_die(expectation);
