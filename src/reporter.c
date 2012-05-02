@@ -47,31 +47,31 @@ TestReporter *create_reporter() {
     reporter->destroy = &destroy_reporter;
     reporter->start_suite = &reporter_start_suite;
     reporter->start_test = &reporter_start;
-	reporter->show_pass = &show_pass;
-	reporter->show_fail = &show_fail;
-	reporter->show_incomplete = &show_incomplete;
-	reporter->assert_true = &assert_true;
-	reporter->finish_test = &reporter_finish;
-	reporter->finish_suite = &reporter_finish;
-	reporter->passes = 0;
-	reporter->failures = 0;
-	reporter->exceptions = 0;
+    reporter->show_pass = &show_pass;
+    reporter->show_fail = &show_fail;
+    reporter->show_incomplete = &show_incomplete;
+    reporter->assert_true = &assert_true;
+    reporter->finish_test = &reporter_finish;
+    reporter->finish_suite = &reporter_finish;
+    reporter->passes = 0;
+    reporter->failures = 0;
+    reporter->exceptions = 0;
     reporter->breadcrumb = breadcrumb;
     reporter->memo = NULL;
     return reporter;
 }
 
 void destroy_reporter(TestReporter *reporter) {
-	destroy_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
-	destroy_memo((TestReportMemo *)reporter->memo);
+    destroy_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
+    destroy_memo((TestReportMemo *)reporter->memo);
     free(reporter);
     context.reporter = NULL;
 }
 
 void destroy_memo(TestReportMemo *memo) {
-	if (NULL != memo) {
-		free(memo);
-	}
+    if (NULL != memo) {
+	free(memo);
+    }
 }
 
 void reporter_start(TestReporter *reporter, const char *name) {
