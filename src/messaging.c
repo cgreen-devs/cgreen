@@ -1,10 +1,11 @@
 #include <cgreen/messaging.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include <unistd.h>
+#include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #ifdef __cplusplus
 namespace cgreen {
@@ -71,6 +72,10 @@ void send_cgreen_message(int messaging, int result) {
     message->type = queues[messaging].tag;
     message->result = result;
     write(queues[messaging].writepipe, message, sizeof(CgreenMessage));
+    // give the parent a chance to read so that failures are more likely to be output
+    // before the child crashes
+    sched_yield();
+
     free(message);
 }
 
