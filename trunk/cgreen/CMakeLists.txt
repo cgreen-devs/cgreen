@@ -2,6 +2,8 @@ project(cgreen C)
 
 # Required cmake version
 cmake_minimum_required(VERSION 2.6.0)
+set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove when CMake >= 2.8.4 is required
+
 
 # global needed variables
 set(APPLICATION_NAME ${PROJECT_NAME})
@@ -29,13 +31,9 @@ include(MacroCopyFile)
 include(ConfigureChecks.cmake)
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-if (WIN32)
-  set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-  set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-  if (UNIX) # == cygwin!
-    option(USE_W32API "Build using Windows API instead of *nix" OFF)
-  endif (UNIX)
-endif (WIN32)
+if (CYGWIN)
+  option(USE_W32API "Build using Windows API instead of *nix (experimental)" OFF)
+endif (CYGWIN)
 
 # check subdirectories
 add_subdirectory(doc)
@@ -48,6 +46,3 @@ if (WITH_UNIT_TESTS)
   include(MacroAddUnitTest)
   add_subdirectory(tests)
 endif (WITH_UNIT_TESTS)
-
-#
-

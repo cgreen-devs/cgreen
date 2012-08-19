@@ -44,25 +44,30 @@ once finished. The Cgreen header should just be available through...
 4) You will have to carry out some additional steps if you work straight off
 of a Subversion checkout.
 
-We are using the CMake (www.cmake.org) build system. The following steps
-are called "out-of-source building", because we will build all the project
-files outside of the sources directory (why???).
+We are using the CMake (www.cmake.org) build system. The following
+steps are called "out-of-source building", because we will build all
+the project files outside of the sources directory to completely
+retain the original source tree.
+
+Assuming you have the checked out cgreen sources into a subdirectory
+"cgreen" in the current directory we want to create a build directory
+parallel to the source directory. (Actually you can create the build
+directory almost anywhere, just use the path to the top source
+directory instead of "../cmake" in the following.)
 
 First the build directory:
     $ mkdir cgreen-build
     $ cd cgreen-build
-Within this new directory, we create the Makefile
+Within this new directory, we let cmake configure the Makefiles
     $ cmake ../cgreen
 We then get the following make targets:
-    $make
-    $make test
-    $make packages
-To build docs, first read the file docs/README, run:
-    $ cmake ../cgreen -DENABLE_DOCS=1
-    $make html
-To build the html website:
-    $ cmake ../cgreen -DENABLE_WEBSITE=1
-    $ make bundled-html
+    $ make
+    $ make install
+    $ make test
 
-Note ???: Most of these steps do not currently work :(.
+You also have some options
+- build with static libraries
+- build HTML or PDF documentation
 
+To enable any of these use the cmake graphical user interface (CMakeSetup
+on Windows or ccmake on UNIX) to turn these options on or off.
