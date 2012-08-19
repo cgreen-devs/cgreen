@@ -20,10 +20,5 @@ configure_file(tests/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake COP
 macro (MACRO_ADD_UNIT_TEST _testName _testSource)
   add_executable(${_testName} ${_testSource})
   target_link_libraries(${_testName} ${ARGN})
-if (WIN32)
-  add_test(${_testName} ${EXECUTABLE_OUTPUT_PATH}/${_testName})
-else()
   add_test(${_testName} ${CMAKE_CURRENT_BINARY_DIR}/${_testName})
-endif (WIN32)
-
 endmacro (MACRO_ADD_UNIT_TEST)

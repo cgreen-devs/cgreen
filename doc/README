@@ -6,3 +6,5 @@ The Cgreen Guide Book is written using Asciidoc tool.
 Please visit http://www.methods.co.nz/asciidoc/.
 
 Asciidoc is a wonderful way to write textual docs using Docbook as backend.
+
+You also need source-highlight (http://www.gnu.org/software/src-highlite/source-highlight.html).
