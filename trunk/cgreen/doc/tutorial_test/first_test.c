@@ -1,10 +1,10 @@
 #include <cgreen/cgreen.h>
 
-void this_test_should_pass() {
+Ensure(this_test_should_pass) {
     assert_true(1);
 }
 
-void this_test_should_fail() {
+Ensure(this_test_should_fail) {
     assert_true(0);
 }
 

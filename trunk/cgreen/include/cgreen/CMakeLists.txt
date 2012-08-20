@@ -12,6 +12,11 @@ set(cgreen_HDRS
   memory.h
   mocks.h
   constraint_syntax_helpers.h
+  string_comparison.h
+  assertions.h
+  runner.h
+  suite.h
+  c_assertions.h
 )
 
 install(

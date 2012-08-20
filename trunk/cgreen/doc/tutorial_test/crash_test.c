@@ -1,12 +1,12 @@
 #include <cgreen/cgreen.h>
 #include <stdlib.h>
 
-static void will_seg_fault() {
+Ensure(will_seg_fault) {
     int *p = NULL;
     (*p)++;
 }
 
-static void will_stall() {
+Ensure(will_stall) {
     die_in(1);
     while(1) { }
 }
