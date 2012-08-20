@@ -90,7 +90,7 @@ void format_expectation_failure_message_for(char *message, size_t message_size, 
     snprintf(actual_value_string, sizeof(actual_value_string) - 1, "%" PRIdPTR, actual);
 
     snprintf(message, message_size - 1,
-            "\tExpected [%s] to [%s] ",
+            "Expected [%s] to [%s] ",
             actual_string,
             constraint->name);
 
@@ -118,7 +118,7 @@ void format_expectation_failure_message_for(char *message, size_t message_size, 
 
 		snprintf(message + strlen(message), message_size - strlen(message) - 1,
 					"\t\tactual value:\t[\"%s\"]\n"
-					"\t\texpected value:\t[\"%s\"]\n",
+					"\t\texpected value:\t[\"%s\"]",
 					(const char *)actual,
 					(const char *)constraint->expected_value);
 		add_blank_line_to(message, message_size);
@@ -141,7 +141,7 @@ void format_expectation_failure_message_for(char *message, size_t message_size, 
 
     if(strstr(constraint->name, "not ") == NULL) {
 	snprintf(message + strlen(message), message_size - strlen(message) - 1,
-		 "\t\texpected value:\t[%" PRIdPTR "]\n",
+		 "\t\texpected value:\t[%" PRIdPTR "]",
 		 constraint->expected_value);
     }
 

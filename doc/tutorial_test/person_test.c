@@ -13,7 +13,7 @@ static void drop_schema() {
     mysql_query(connection, "drop table people");
 }
 
-static void can_add_person_to_database() {
+Ensure(can_add_person_to_database) {
     Person *person = create_person();
     set_person_name(person, "Fred");
     save_person(person);
@@ -21,7 +21,7 @@ static void can_add_person_to_database() {
     assert_string_equal(get_person_name(person), "Fred", NULL);
 }
 
-static void cannot_add_duplicate_person() {
+Ensure(cannot_add_duplicate_person) {
     Person *person = create_person();
     set_person_name(person, "Fred");
     assert_true(save_person(person), NULL);
@@ -41,15 +41,15 @@ void close_connection() {
 
 TestSuite *person_tests() {
     TestSuite *suite = create_test_suite();
-    setup(suite, create_schema);
-    teardown(suite, drop_schema);
+    set_setup(suite, create_schema);
+    set_teardown(suite, drop_schema);
     add_test(suite, can_add_person_to_database);
     add_test(suite, cannot_add_duplicate_person);
 
     TestSuite *fixture = create_named_test_suite("Mysql");
     add_suite(fixture, suite);
-    setup(fixture, open_connection);
-    teardown(fixture, close_connection);
+    set_setup(fixture, open_connection);
+    set_teardown(fixture, close_connection);
     return fixture;
 }
 

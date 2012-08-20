@@ -1,15 +1,17 @@
 #include <cgreen/cgreen.h>
+#include <cgreen/mocks.h>
+
 #include "words.h"
 #include <string.h>
 
-void word_count_returned_from_split() {
+Ensure(word_count_returned_from_split) {
     char *sentence = strdup("Birds of a feather");
     int word_count = split_words(sentence);
     assert_equal(word_count, 4);
     free(sentence);
 }
 
-void spaces_should_be_converted_to_zeroes() {
+Ensure(spaces_should_be_converted_to_zeroes) {
     char *sentence = strdup("Birds of a feather");
     split_words(sentence);
     int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
@@ -21,16 +23,16 @@ void mocked_callback(const char *word, void *memo) {
     mock(word, memo);
 }
 
-void single_word_sentence_invokes_callback_once() {
-    expect(mocked_callback, want_string(word, "Word"), want(memo, NULL));
-    words("Word", &mocked_callback, NULL);
+Ensure(single_word_sentence_invokes_callback_once) {
+  expect(mocked_callback, when(word, is_equal_to_string("Word")), when(memo, is_equal_to(NULL)));
+  words("Word", &mocked_callback, NULL);
 }
 
-void phrase_invokes_callback_for_each_word() {
-    expect(mocked_callback, want_string(word, "Birds"));
-    expect(mocked_callback, want_string(word, "of"));
-    expect(mocked_callback, want_string(word, "a"));
-    expect(mocked_callback, want_string(word, "feather"));
+Ensure(phrase_invokes_callback_for_each_word) {
+    expect(mocked_callback, when(word, is_equal_to_string("Birds")));
+    expect(mocked_callback, when(word, is_equal_to_string("of")));
+    expect(mocked_callback, when(word, is_equal_to_string("a")));
+    expect(mocked_callback, when(word, is_equal_to_string("feather")));
     words("Birds of a feather", &mocked_callback, NULL);
 }
 

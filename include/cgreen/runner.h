@@ -12,6 +12,7 @@ namespace cgreen {
 
 int run_test_suite(TestSuite *suite, TestReporter *reporter);
 int run_single_test(TestSuite *suite, const char *test, TestReporter *reporter);
+void die_in(unsigned int seconds);
 
 #ifdef __cplusplus
     }

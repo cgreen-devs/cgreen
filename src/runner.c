@@ -40,7 +40,6 @@ static int per_test_timeout_value(void);
 static void validate_per_test_timeout_value(void);
 static void run_the_test_code(TestSuite *suite, CgreenTest *test, TestReporter *reporter);
 static void die(const char *message, ...);
-static void die_in(unsigned int seconds);
 
 
 int run_test_suite(TestSuite *suite, TestReporter *reporter) {
@@ -316,7 +315,7 @@ static void die(const char *message, ...) {
 	exit(EXIT_FAILURE);
 }
 
-static void die_in(unsigned int seconds) {
+void die_in(unsigned int seconds) {
     sighandler_t signal_result = signal(SIGALRM, (sighandler_t)&stop);
     if (SIG_ERR == signal_result) {
         fprintf(stderr, "could not set alarm signal hander\n");

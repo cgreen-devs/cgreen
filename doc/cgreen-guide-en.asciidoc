@@ -37,13 +37,15 @@ Installing Cgreen
 
 There are two ways to install Cgreen in your system.   
       
-The first is to use the RPM or DEB package provide by Cgreen Team and you cant fetch it at
-http://cgreen.sourceforge.net[Cgreen website project]. Do the download and install in your
-system using the normal procedures to your system. 
+The first is to use the RPM or DEB package provided by the Cgreen
+Team. You can fetch it from http://cgreen.sourceforge.net[Cgreen
+website project]. Download and install in your system using the normal
+procedures for your system.
 
-The second way is indicated for developers and advanced users. Basically this consist in fetch
-the sources of the project and compile them. For this is necessary the http://www.cmake.org[CMake]
-which is abuild system. It is a prerequisite. 
+The second way is indicated for developers and advanced
+users. Basically this consists of fetching the sources of the project
+and compiling them. To do this you need the http://www.cmake.org[CMake]
+build system.
 
 When you have the CMake tool, the steps are:
 
@@ -57,36 +59,40 @@ make test
 make install
 -----------------------------------------
 
-This technical is called 'build	 out of source'. It compiling and install Cgreen
-outside of sources directory. These help the overall files organization.    
+(On cygwin you need to install before the tests can be run.)
 
-Is possible too use the +Makefile+. This file is used to compile
+This is called an 'out of source build'. It compiles Cgreen from
+outside the sources directory. This helps the overall file
+organization and enables multi-target builds from the same sources by
+leaving the complete source tree untouched.
+
+Is possible to use the +Makefile+. This file is used to compile
 and test Cgreen without the need of CMake tool. However it does not contain the rules
 to install in your system.
 
-Both methods will create within the directory +cgreen+ a unix library called 
-+libcgreen.so+ which can be used in conjunction with the
-+cgreen.h+ header file to compile test code. The created library
-is installed in the system, by default in the +/usr/local/lib/+.
+Both methods will create a library called (on unix called +libcgreen.so+) which can be
+used in conjunction with the +cgreen.h+ header file to compile test
+code. The created library is installed in the system, by default in
+the +/usr/local/lib/+.
 
 We'll first write a test to confirm everything is working. Let's start with a simple
-test script with no tests, called +first_test.c+...
+test module with no tests, called +first_test.c+...
 
 [source,c]
 ---------------------------------------
 #include "cgreen/cgreen.h"
 
 int main(int argc, char **argv) {
-TestSuite *suite = create_test_suite();
-return run_test_suite(suite, create_text_reporter());
+  TestSuite *suite = create_test_suite();
+  return run_test_suite(suite, create_text_reporter());
 }
 ---------------------------------------
 
-This is a very unexciting test. It just creates an empty test suite and runs it.
-It's usually easier to proceed in small steps, though, and this is the smallest
-one I could think of. The only complication is the +cgreen.h+ header file.
-Here I am assuming we have symlinked the Cgreen folder into the same location as
-our test script, or placed the Cgreen folder in the path.
+This is a very unexciting test. It just creates an empty test suite
+and runs it.  It's usually easier to proceed in small steps, though,
+and this is the smallest one I could think of. The only complication
+is the +cgreen.h+ header file.  Here I am assuming we have the Cgreen
+folder in the path to ensure compilation works.
 
 Building this test is, of course, trivial...
 
@@ -99,7 +105,7 @@ gcc first_test.o -lcgreen -o first_test
 Invoking the executable should give...
 
 -----------------------------
-Running "main"...
+Running "main" (0 tests)...
 Completed "main": 0 passes, 0 failures, 0 exceptions.
 -----------------------------
 
@@ -107,7 +113,7 @@ All of the above rather assumes you are working in a Unix like environment,
 probably with 'gcc'. The code is pretty much standard C99, so any C compiler
 should work.
 Cgreen should compile on all systems that support the +sys/msg.h+ messaging library.
-This has been tested on Linux and Mac OSX so far, but not Windows, although that
+This has been tested on Linux, Mac OSX and Cygwin so far, but not Windows, although that
 might work too.
 
 So far we have tested compilation, and that the test suite actually runs.
@@ -117,30 +123,32 @@ Let's add a meaningless test or two so that you can see how it runs...
 -----------------------------
 #include "cgreen/cgreen.h"
 
-void this_test_should_pass() {
-assert_true(1);
+Ensure(this_test_should_pass) {
+    assert_true(1);
 }
 
-void this_test_should_fail() {
-assert_true(0);
+Ensure(this_test_should_fail) {
+    assert_true(0);
 }
 
 int main(int argc, char **argv) {
-TestSuite *suite = create_test_suite();
-add_test(suite, this_test_should_pass);
-add_test(suite, this_test_should_fail);
-return run_test_suite(suite, create_text_reporter());
+    TestSuite *suite = create_test_suite();
+    add_test(suite, this_test_should_pass);
+    add_test(suite, this_test_should_fail);
+    return run_test_suite(suite, create_text_reporter());
 }
 -----------------------------
 
-A test can be any function with a 'void (void)' signature. 'add_test()'
-is a macro, hence there is no '&' with the function pointer.
+A test is denoted by the *Ensure*. You can consider it having a 'void
+(void)' signature. You add the test to your suite using
+'add_test()'.
 
 On compiling and running, we now get the output...
 
 -----------------------------
-Running "main"...
-Failure!: this_test_should_fail -> Problem at [first_test.c] line [8]
+Running "main" (2 tests)...
+first_test.c:8: Test Failure: -> this_test_should_fail
+    [0] should be true
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 -----------------------------
 
@@ -179,7 +187,7 @@ Here is the, so far empty, test case in 'words_test.c'...
 
 TestSuite *words_tests() {
 TestSuite *suite = create_test_suite();
-return suite;
+  return suite;
 }
 -------------------------------
 
@@ -192,20 +200,21 @@ Here is the 'all_tests.c' test runner...
 TestSuite *words_tests();
 
 int main(int argc, char **argv) {
-TestSuite *suite = create_test_suite();
-add_suite(suite, words_tests());
-if (argc > 1) {
-  return run_single_test(suite, argv[1], create_text_reporter());
-}
-return run_test_suite(suite, create_text_reporter());
+  TestSuite *suite = create_test_suite();
+  add_suite(suite, words_tests());
+  if (argc > 1) {
+    return run_single_test(suite, argv[1], create_text_reporter());
+  }
+  return run_test_suite(suite, create_text_reporter());
 }
 -------------------------------
 
-Cgreen has two ways of running tests. The default is with each test run in it's
-own process. This is what happens if you invoke 'run_test_suite()'. While this makes
-all the tests independent, the constant 'fork()ing' can make the tests difficult to debug.
-To make debugging simpler, Cgreen does not fork() when only a single test is run 
-by name with 'run_single_test()'.
+Cgreen has two ways of running tests. The default is to run all tests
+in their own processes. This is what happens if you invoke
+'run_test_suite()'. This makes all the tests independent, but the
+constant 'fork()ing' can make the tests difficult to debug.  To make
+debugging simpler, Cgreen does not fork() when only a single test is
+run by name with 'run_single_test()'.
 
 Building this scaffolding...
 
@@ -218,7 +227,7 @@ gcc words_test.o all_tests.o -lcgreen -o all_tests
 ...and executing the result gives the familiar...
 
 -------------------------------
-Running "main"...
+Running "main" (0 tests)...
 Completed "main": 0 passes, 0 failures, 0 exceptions.
 -------------------------------
 
@@ -232,17 +241,17 @@ Here is a first test of 'split_words()'...
 #include "words.h";
 #include <string.h>;
 
-void word_count_returned_from_split() {
-char *sentence = strdup("Birds of a feather");
-int word_count = split_words(sentence);
-assert_equal(word_count, 4);
-free(sentence);
+Ensure(word_count_returned_from_split) {
+  char *sentence = strdup("Birds of a feather");
+  int word_count = split_words(sentence);
+  assert_equal(word_count, 4);
+  free(sentence);
 }
 
 TestSuite *words_tests() {
-TestSuite *suite = create_test_suite();
-add_test(suite, word_count_returned_from_split);
-return suite;
+  TestSuite *suite = create_test_suite();
+  add_test(suite, word_count_returned_from_split);
+  return suite;
 }
 -------------------------------
 
@@ -261,7 +270,7 @@ int split_words(char *sentence);
 [source,c]
 -------------------------------
 int split_words(char *sentence) {
-return 0;
+  return 0;
 }
 -------------------------------
 
@@ -278,9 +287,9 @@ gcc all_tests.o words_test.o words.o -lcgreen -o all_tests
 ...and we get the more useful response...
 
 -------------------------------
-Running "main"...
-Failure!: words_tests -> word_count_returned_from_split ->
-  [0] should match [4] at [words_test.c] line [8]
+Running "main" (1 tests)...
+words_test.c:7: Test Failure: -> words_tests -> word_count_returned_from_split
+    [0] should match [4]
 Completed "main": 0 passes, 1 failure, 0 exceptions.
 -------------------------------
 
@@ -291,24 +300,24 @@ an exception is accumulated when a test fails to complete for any reason.
       
 We could get this to pass just by returning the value 4. Doing TDD in really small
 steps, you would actually do this, but frankly this example is too simple. Instead 
-we'll go straight to the refactoring...
+we'll go straight to the core of the implementation...
 
 [source,c]
 --------------------------------
 #include <string.h>;
 
 int split_words(char *sentence) {
-int i, count = 1;
-for (i = 0; i < strlen(sentence); i++) {
-  if (sentence[i] == ' ') {
+  int i, count = 1;
+  for (i = 0; i < strlen(sentence); i++) {
+    if (sentence[i] == ' ') {
       count++;
+    }
   }
-}
-return count;
+  return count;
 }
 ---------------------------------
 
-There is a hidden problem here, but our tests still pass so we'll pretend we didn't notice.
+There is a hidden problem here, but our tests still passed so we'll pretend we didn't notice.
 
 Time to add another test. We want to confirm that the string is broken into separate words...
 
@@ -318,30 +327,30 @@ Time to add another test. We want to confirm that the string is broken into sepa
 #include "words.h"
 #include <string.h>;
 
-void word_count_returned_from_split() { ... }
+Ensure(word_count_returned_from_split) { ... }
 
-void spaces_should_be_converted_to_zeroes() {
-char *sentence = strdup("Birds of a feather");
-split_words(sentence);
-int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
-assert_equal(comparison, 0);
-free(sentence); 
+Ensure(spaces_should_be_converted_to_zeroes) {
+  char *sentence = strdup("Birds of a feather");
+  split_words(sentence);
+  int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
+  assert_equal(comparison, 0);
+  free(sentence); 
 }
 
 TestSuite *words_tests() {
-TestSuite *suite = create_test_suite();
-add_test(suite, word_count_returned_from_split);
-add_test(suite, spaces_should_be_converted_to_zeroes);
-return suite;
+  TestSuite *suite = create_test_suite();
+  add_test(suite, word_count_returned_from_split);
+  add_test(suite, spaces_should_be_converted_to_zeroes);
+  return suite;
 }
 ----------------------------------
 
 Sure enough, we get a failure...
 
 ----------------------------------
-Running "main"...
-Failure!: words_tests -> spaces_should_be_converted_to_zeroes ->
-  [-32] should match [0] at [words_test.c] line [16]
+Running "main" (2 tests)...
+words_test.c:15: Test Failure: -> words_tests -> spaces_should_be_converted_to_zeroes
+    [-32] should match [0]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ----------------------------------
 
@@ -352,23 +361,23 @@ The fix...
 [source,c]
 ----------------------------------
 int split_words(char *sentence) {
-int i, count = 1;
-for (i = 0; i < strlen(sentence); i++) {
-  if (sentence[i] == ' ') {
+  int i, count = 1;
+  for (i = 0; i < strlen(sentence); i++) {
+    if (sentence[i] == ' ') {
       sentence[i] = '\0';
       count++;
+    }
   }
-}
-return count;
+  return count;
 }
 ----------------------------------
 
 ...reveals our previous hack...
 
 ----------------------------------
-Running "main"...
-Failure!: words_tests -> word_count_returned_from_split ->
-  [2] should match [4] at [words_test.c] line [8]
+Running "main" (2 tests)...
+words_test.c:7: Test Failure: -> words_tests -> word_count_returned_from_split
+    [2] should match [4]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ----------------------------------
 
@@ -378,18 +387,18 @@ Moving the length calculation out of the loop...
 [source,c]
 ----------------------------------
 int split_words(char *sentence) {
-int i, count = 1, length = strlen(sentence);
-for (i = 0; i < length; i++) {
-  ...
-}
-return count;
+  int i, count = 1, length = strlen(sentence);
+  for (i = 0; i < length; i++) {
+    ...
+  }
+  return count;
 }
 ----------------------------------
 
 ...restores order...
 		  
 ----------------------------------
-Running "main"...
+Running "main" (2 tests)...
 Completed "main": 2 passes, 0 failures, 0 exceptions.
 ----------------------------------
 
@@ -399,6 +408,7 @@ than debugging later when things are more complicated.
 That was pretty straight forward. Let's do something more interesting.
 
 What are mock functions?
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 The next example is more realistic. Still in our +words.h+ file, we want to write
 a function that invokes a callback on each word in a sentence. Something like...
@@ -423,22 +433,23 @@ be invoked once with the only word, right? Here is the test for that...
 [source,c]
 ---------------------------------
 ...
+#include <cgreen/mocks.h>
 #include <stdlib.h>
 ...
 void mocked_callback(const char *word, void *memo) {
-mock(word, memo);
+  mock(word, memo);
 }
 
-void single_word_sentence_invokes_callback_once() {
-expect(mocked_callback, want_string(word, "Word"), want(memo, NULL));
-words("Word", &mocked_callback, NULL);
+Ensure(single_word_sentence_invokes_callback_once) {
+  expect(mocked_callback, when(word, is_equal_to_string("Word")), when(memo, is_equal_to(NULL)));
+  words("Word", &mocked_callback, NULL);
 }
 
 TestSuite *words_tests() {
-TestSuite *suite = create_test_suite();
-...
-add_test(suite, single_word_sentence_invokes_callback_once);
-return suite;
+  TestSuite *suite = create_test_suite();
+  ...
+  add_test(suite, single_word_sentence_invokes_callback_once);
+  return suite;
 }
 ---------------------------------
 
@@ -475,8 +486,8 @@ This gives us the expected failing tests...
 
 ----------------------------
 Running "main"...
-Failure!: words_tests -> single_word_sentence_invokes_callback_once ->
-  Call was not made to function [mocked_callback] at [words_test.c] line [25]
+words_test.c:27: Test Failure: -> words_tests -> single_word_sentence_invokes_callback_once 
+	Expected call was not made to function [mocked_callback]words_testFailure!: words_tests -> single_word_sentence_invokes_callback_once ->
 Completed "main": 2 passes, 1 failure, 0 exceptions.
 ----------------------------
 
@@ -486,7 +497,7 @@ pass by filling out the implementation with...
 [source,c]
 ----------------------------
 void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
-(*walker)(sentence, memo);
+  (*walker)(sentence, memo);
 }
 ----------------------------
 
@@ -498,12 +509,12 @@ splitting the sentence. Here is the test function we will add to +words_test.c+.
 
 [source,c]
 ----------------------------
-void phrase_invokes_callback_for_each_word() {
-expect(mocked_callback, want_string(word, "Birds"));
-expect(mocked_callback, want_string(word, "of"));
-expect(mocked_callback, want_string(word, "a"));
-expect(mocked_callback, want_string(word, "feather"));
-words("Birds of a feather", &mocked_callback, NULL);
+Ensure(phrase_invokes_callback_for_each_word) {
+  expect(mocked_callback, when(word, is_equal_to_string("Birds")));
+  expect(mocked_callback, when(word, is_equal_to_string("of")));
+  expect(mocked_callback, when(word, is_equal_to_string("a")));
+  expect(mocked_callback, when(word, is_equal_to_string("feather")));
+  words("Birds of a feather", &mocked_callback, NULL);
 }
 ----------------------------
 
@@ -511,15 +522,18 @@ Each call is expected in sequence. Any failures, or left over calls, or extra ca
 and we get failures. We can see all this when we run the tests...
 
 ----------------------------
-Running "main"...
-Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
-  Wanted [Birds], but got [Birds of a feather] in function [mocked_callback] parameter [word] at [words_test.c] line [30]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
-  Call was not made to function [mocked_callback] at [words_test.c] line [31]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
-  Call was not made to function [mocked_callback] at [words_test.c] line [32]
-Failure!: words_tests -> phrase_invokes_callback_for_each_word ->
-  Call was not made to function [mocked_callback] at [words_test.c] line [33]
+Running "main" (4 tests)...
+words_test.c:32: Test Failure: -> words_tests -> phrase_invokes_callback_for_each_word
+        Expected [[word] parameter in [mocked_callback]] to [equal string] ["Birds"]
+                actual value:   ["Birds of a feather"]
+                expected value: ["Birds"]
+
+words_test.c:33: Test Failure: -> words_tests -> phrase_invokes_callback_for_each_word
+        Expected call was not made to function [mocked_callback]
+words_test.c:34: Test Failure: -> words_tests -> phrase_invokes_callback_for_each_word
+        Expected call was not made to function [mocked_callback]
+words_test.c:35: Test Failure: -> words_tests -> phrase_invokes_callback_for_each_word
+        Expected call was not made to function [mocked_callback]
 Completed "main": 4 passes, 4 failures, 0 exceptions.
 -----------------------------
 
@@ -533,21 +547,21 @@ Besides, we get to use the function we created earlier...
 [source,c]
 -----------------------------
 void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
-char *words = strdup(sentence);
-int word_count = split_words(words);
-char *word = words;
-while (word_count-- > 0) {
-  (*walker)(word, memo);
-  word = word + strlen(word) + 1;
-}
-free(words);
+  char *words = strdup(sentence);
+  int word_count = split_words(words);
+  char *word = words;
+  while (word_count-- > 0) {
+    (*walker)(word, memo);
+    word = word + strlen(word) + 1;
+  }
+  free(words);
 }
 ------------------------------
 
 And with some work we are rewarded with...
 
 ------------------------------
-Running "main"...
+Running "main" (4 tests)...
 Completed "main": 8 passes, 0 failures, 0 exceptions.
 ------------------------------
 
@@ -571,12 +585,13 @@ In other words you'll get less bugs.
 Writing basic tests
 ~~~~~~~~~~~~~~~~~~~
 
-Cgreen tests are simply C functions with no parameters and a 'void' return value.
-An example might be...
+Cgreen tests are simply C functions with no parameters and a 'void'
+return value. To signal that they actually are tests we mark them with
+the +Ensure+ macro. An example might be...
 
 [source,c]
 -----------------------------
-static void strlen_of_hello_should_be_five() {
+Ensure(strlen_of_hello_should_be_five) {
     assert_equal(strlen("Hello"), 5);
 }
 -----------------------------
@@ -587,11 +602,11 @@ of an assertion. Assertions send messages to Cgreen, which in turn outputs the r
 Here are the standard assertions...
 
 |=========================================================
-|Assertion |Description
+|*Assertion* |*Description*
 |assert_true(boolean) |Passes if boolean evaluates true
 |assert_false(boolean) |Fails if boolean evaluates true
-|assert_equal(first, second) |Passes if 'first == second'
-|assert_not_equal(first, second) |Passes if 'first != second'
+|assert_equal(tried, expected) |Passes if 'tried == expected'
+|assert_not_equal(tried, unexpected) |Passes if 'tried != unexpected'
 |assert_string_equal(char *, char *) |Uses 'strcmp()' and passes if the strings are equal
 |assert_string_not_equal(char *, char *) |Uses 'strcmp()' and fails if the strings are equal
 
@@ -606,11 +621,11 @@ Each assertion has a default message comparing the two values. If you want to su
 your own failure messages, then you must use the '*_with_message()' counterparts...
 
 |=========================================================
-|Assertion
+|*Assertion*
 |assert_true_with_message(boolean, message, ...)
 |assert_false_with_message(boolean, message, ...)
-|assert_equal_with_message(first, second, message, ...)
-|assert_not_equal_with_message(first, second, message, ...)
+|assert_equal_with_message(tried, expected, message, ...)
+|assert_not_equal_with_message(tried, unexpected, message, ...)
 |assert_string_equal_with_message(char *, char *, message, ...)
 |assert_string_not_equal_with_message(char *, char *, message, ...)
 
@@ -626,7 +641,7 @@ like the template in 'printf()'. We could change the test above to be...
 
 [source,c]
 -----------------------------
-static void strlen_of_hello_should_be_five() {
+Ensure(strlen_of_hello_should_be_five) {
     const char *greeting = "Hello";
     int length = strlen(greeting);
     assert_equal_with_message(length, 5, "[%s] should be 5, but was %d", greeting, length);
@@ -647,8 +662,10 @@ TestSuite *our_tests() {
 }
 -----------------------------
 
-In case you have spotted that 'strlen_of_hello_should_be_five()' should have an ampersand
-in front of it, 'add_test()' is a macro. The '&' is added automatically.
+In case you have spotted that 'strlen_of_hello_should_be_five()'
+should have an ampersand in front of it, 'add_test()' is a macro. The
+'&' is added automatically. Further more, the Ensure-macro actually
+mangles the tests name, so it might be difficult to find them in the debugger.
 
 To run the test suite, we call 'run_test_suite()' on it. This function cleans up the 
 test suite after running it, so we can just write...
@@ -662,14 +679,14 @@ The results of assertions are ultimately delivered as passes and failures to a c
 of callbacks defined in a 'TestReporter' structure. The only predefined one in Cgreen 
 is the 'TextReporter' that delivers messages in plain text.
 
-A full test script now looks like...
+The complete test code now looks like...
 
 [source,c]
 -----------------------------
 #include "cgreen/cgreen.h"
 #include <string.h>
 
-static void strlen_of_hello_should_be_five() {
+Ensure(strlen_of_hello_should_be_five) {
     assert_equal(strlen("Hello"), 5);
 }
 
@@ -686,21 +703,21 @@ int main(int argc, char **argv) {
 
 The return value of 'run_test_suite()' is a Unix exit code.
 
-Compliling and running gives...
+Compiling and running gives...
 
 -----------------------------
 gcc -c strlen_test.c
 gcc strlen_test.o -lcgreen -o strlen_test
 ./strlen_test
-Running "main"...
-Completed "main": 1 pass, 0 failures, 0 exceptions.
+Running "our_tests" (1 tests)...
+Completed "our_tests": 1 pass, 0 failures, 0 exceptions.
 -----------------------------
 
 The test messages are only shown on failure. If we break our test...
 
 [source,c]
 -----------------------------
-static void strlen_of_hello_should_be_five() {
+Ensure(strlen_of_hello_should_be_five) {
     assert_equal(strlen("Hiya", 5);
 }
 -----------------------------
@@ -708,14 +725,15 @@ static void strlen_of_hello_should_be_five() {
 ...we'll get the helpful message...
 
 -----------------------------
-Running "main"...
-Failure!: strlen_of_hello_should_be_five ->
-        [5] shold be [4] at [strlen_test.c] line [6]
-Completed "main": 0 passes, 1 failure, 0 exceptions.
+Running "our_tests" (1 tests)...
+strlen.c:5: Test Failure: -> strlen_of_hello_should_be_five
+        [4] should match [5]
+Completed "our_tests": 0 passes, 1 failure, 0 exceptions.
 -----------------------------
                 
-Cgreen appends the location of the test failure to our error string.
-
+Cgreen starts every message with the location of the test failure so
+that the usual error message identifying tools (like emacs
++next-error+) will work out of the box.
 
 Once we have a basic test scaffold up, it's pretty easy to add more tests. Adding a test
 of 'strlen()' with an empty string for example...
@@ -723,7 +741,7 @@ of 'strlen()' with an empty string for example...
 [source,c]
 -----------------------------
 ...
-static void strlen_of_empty_string_should_be_zero() {
+Ensure(strlen_of_empty_string_should_be_zero) {
     assert_equal(strlen("\0"), 0);
 }
 
@@ -765,7 +783,7 @@ static void drop_schema() {
     mysql_close(connection);
 }
 
-static void can_add_person_to_database() {
+Ensure(can_add_person_to_database) {
     create_schema();
     Person *person = create_person();
     set_person_name(person, "Fred");
@@ -775,7 +793,7 @@ static void can_add_person_to_database() {
     drop_schema();
 }
 
-static void cannot_add_duplicate_person() {
+Ensure(void cannot_add_duplicate_person) {
     create_schema();
     Person *person = create_person();
     set_person_name(person, "Fred");
@@ -798,14 +816,15 @@ int main(int argc, char **argv) {
 }
 --------------------------
 
-We have already factored out the duplicate code into it's own functions 'create_scheme()'
-and 'drop_schema()', so things are not so bad. At least not yet. What happens when we
-get dozens of tests? For a test subject as compicated as a database
-http://www.martinfowler.com/eaaCatalog/activeRecord.html[ActiveRecord], having dozens
- f tests is very likely.
+We have already factored out the duplicate code into it's own
+functions 'create_scheme()' and 'drop_schema()', so things are not so
+bad. At least not yet. What happens when we get dozens of tests? For a
+test subject as complicated as a database
+http://www.martinfowler.com/eaaCatalog/activeRecord.html[ActiveRecord],
+having dozens of tests is very likely.
 
-We can get Cgreen to do some of the work for us by declaring these methods as 'setup()' and
-'teardown()' functions in the test suite.
+We can get Cgreen to do some of the work for us by declaring these methods as 'setup' and
+'teardown' functions in the test suite.
  
 Here is the new version...
 
@@ -816,7 +835,7 @@ static void create_schema() { ... }
 
 static void drop_schema() { ... }
 
-static void can_add_person_to_database() {
+Ensure(can_add_person_to_database) {
     Person *person = create_person();
     set_person_name(person, "Fred");
     save_person(person);
@@ -824,7 +843,7 @@ static void can_add_person_to_database() {
     assert_string_equal(get_person_name(person), "Fred");
 }
 
-static void cannot_add_duplicate_person() {
+Ensure(cannot_add_duplicate_person) {
     Person *person = create_person();
     set_person_name(person, "Fred");
     assert_true(save_person(person));
@@ -835,8 +854,8 @@ static void cannot_add_duplicate_person() {
 
 TestSuite *person_tests() {
     TestSuite *suite = create_test_suite();
-    setup(suite, create_schema);
-    teardown(suite, drop_schema);
+    set_setup(suite, create_schema);
+    set_teardown(suite, drop_schema);
     add_test(suite, can_add_person_to_database);
     add_test(suite, cannot_add_duplicate_person);
     return suite;
@@ -844,18 +863,23 @@ TestSuite *person_tests() {
 ...
 ---------------------------
 
-With this new arrangement Cgreen runs the 'create_schema()' function before each test,
-and the 'drop_schema()' function after each test. This saves some repetitive typing and
-reduces the chance of accidents. It also makes the tests more focused.
+With this new arrangement Cgreen runs the 'create_schema()' function
+before each test, and the 'drop_schema()' function after each
+test. This saves some repetitive typing and reduces the chance of
+accidents. It also makes the tests more focused.
 
-The reason we try so hard to strip everything out of the test functions is that that
-the test suite acts as documentation. In our +person.h+ example we can easily see that
-'Person' has some kind of name property, and that this value must be unique. For the tests
-to act like a readable specification we have to remove as much mechanical clutter as we can.
+The reason we try so hard to strip everything out of the test
+functions is the fact that the test suite acts as documentation. In
+our +person.h+ example we can easily see that 'Person' has some kind
+of name property, and that this value must be unique. For the tests to
+act like a readable specification we have to remove as much mechanical
+clutter as we can.
 
-A couple of details. Currently only one 'setup()' and 'teardown()' may be added to each
-'TestSuite'. Also the 'teardown()' function may not be run if the test crashes, causing
-some test interference. This brings us nicely onto the next section...
+A couple of details. You can have only one 'setup' and one 'teardown'
+in each 'TestSuite' as indicated by the names 'set_setup()' and
+'set_teardown()'. Also the 'teardown' function may not be run if
+the test crashes, causing some test interference. This brings us
+nicely onto the next section...
 
 Each test in it's own process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -864,7 +888,7 @@ Consider this test method...
 
 [source,c]
 -----------------------------
-void will_seg_fault() {
+Ensure(will_seg_fault) {
     int *p = NULL;
     (*p)++;
 }
@@ -876,8 +900,9 @@ because it will stop you receiving the very test output you need to tackle the p
 To prevent segmentation faults and other problems bringing down the test suites, Cgreen
 runs every test in it's own process.
 
-Just before the 'setup()' call, Cgreen 'fork()''s. The main process wait's for the test
-to complete normally or die. This includes the 'teardown()'. If the test process dies, 
+Just before calling the 'setup' function, Cgreen 'fork()''s. The main
+process wait's for the test to complete normally or die. This includes
+the calling the 'teardown' function, if any. If the test process dies,
 an exception is reported and the main test process carries on.
 
 For example...
@@ -887,7 +912,7 @@ For example...
 #include "cgreen/cgreen.h"
 #include <stdlib.h>
 
-static void will_seg_fault() {
+Ensure(will_seg_fault) {
     int *p = NULL;
     (*p)++;
 }
@@ -903,8 +928,9 @@ int main(int argc, char **argv) {
 When built and run, this gives...
 
 -----------------------------
-Running "main"...
-Exception!: will_seg_fault -> Test "will_seg_fault" failed to complete
+Running "main" (1 tests)...
+crash_test.c:4: Exception!: -> will_seg_fault
+        Test exited in unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal
 Completed "main": 0 passes, 0 failures, 1 exception.
 -----------------------------
 
@@ -945,9 +971,9 @@ Here is an example of time limiting a test...
 [source,c]
 -----------------------------
 ...
-static void will_seg_fault() { ... }
+Ensure(will_seg_fault) { ... }
 
-static void this_would_stall() {
+Ensure(this_would_stall) {
     die_in(1);
     while(0 == 0) { }
 }
@@ -963,9 +989,11 @@ int main(int argc, char **argv) {
 When executed, the code will slow for a second, and then finish with...
 
 ---------------------------
-Running "main"...
-Exception!: will_seg_fault -> Test "will_seg_fault" failed to complete
-Exception!: will_stall -> Test "this_would_stall" failed to complete
+Running "main" (2 tests)...
+crash_test.c:4: Exception!: -> will_seg_fault
+        Test exited in unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal
+crash_test.c:9: Exception!: -> will_stall
+        Test exited in unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal
 Completed "main": 0 passes, 0 failures, 2 exceptions.
 ---------------------------
 
@@ -992,8 +1020,8 @@ E.g...
 #include "cgreen/cgreen.h"
 #include <string.h>
 
-static void strlen_of_hello_should_be_five() { ... }
-static void strlen_of_empty_string_should_be_zero() { ... }
+Ensure(strlen_of_hello_should_be_five) { ... }
+Ensure(strlen_of_empty_string_should_be_zero) { ... }
 
 TestSuite *our_tests() {
     TestSuite *suite = create_test_suite();
@@ -1025,65 +1053,45 @@ int main(int argc, char **argv) {
 }
 -----------------------
 
-It's usually easier to place the 'TestSuite'
-prototypes in the runner
-scripts, rather than have lot's of header files.
-This is the same reasoning that let us drop the prototypes
-for the test functions in the actual test scripts.
-We can get away with this, because the tests are more about
-documentation than encapsulation.
+It's usually easier to place the 'TestSuite' prototypes in the runner
+scripts, rather than have lot's of header files.  This is the same
+reasoning that let us drop the prototypes for the test functions in
+the actual test scripts.  We can get away with this, because the tests
+are more about documentation than encapsulation.
                          
-It's sometimes handy to be able to run just a single test
-from the command line, so we added a simple 'if'
-block to take the test name as an optional argument.
-The entire test suite will be searched for the named
-test.
-This trick also saves us a recomplile when we debug.
-             
-            
-We've placed each test suite in it's own file, but that
-is not necessary.
-We could build several test suites in the same file, even
-nesting them.
-We can even add mixtures of test functions and test suites
-to the same parent test suite.
-Loops will give trouble, however.
-             
-            
-If we do place several suites in the same file, then
-all the suites will be named the same
-in the breadcrumb trail in the test message.
-They will all be named after the function the create call sits in.
-If you want to get around this, or you just like to name
-your test suites, you can use 'create_named_test_suite()'
-instead of 'create_test_suite()'.
-This takes a single string parameter.
-In fact 'create_test_suite()' is just a macro that
-inserts the '__func__' constant into
-'create_named_test_suite()'.
-             
-            
-What happens to 'setup()' and 'teardown()'
-in a 'TestSuite' that contains other
-'TestSuite's?
+It's sometimes handy to be able to run just a single test from the
+command line, so we added a simple 'if' block to take the test name as
+an optional argument.  The entire test suite will be searched for the
+named test.  This trick also saves us a recompile when we debug.
 
+We've placed each test suite in it's own file, but that is not
+necessary.  We could build several test suites in the same file, even
+nesting them.  We can even add mixtures of test functions and test
+suites to the same parent test suite.  Loops will give trouble,
+however.
 
-Well firstly, Cgreen does not 'fork()' when running
-a suite.
-It leaves it up to the child suite to 'fork()'
-the individual tests.
-This means that a 'setup()' and 'teardown()'
-will run in the main process.
-They will be run once for each child suite.
+If we do place several suites in the same file, then all the suites
+will be named the same in the breadcrumb trail in the test message.
+They will all be named after the function the create call sits in.  If
+you want to get around this, or you just like to name your test
+suites, you can use 'create_named_test_suite()' instead of
+'create_test_suite()'.  This takes a single string parameter.  In fact
+'create_test_suite()' is just a macro that inserts the '__func__'
+constant into 'create_named_test_suite()'.
 
+What happens to 'setup' and 'teardown' functions in a 'TestSuite' that
+contains other 'TestSuite's?
 
-We can use this to speed up our 'Person' tests
-above.
-Remember we were creating a new connection and closing it
-again in the fixtures.
-This means opening and closing a lot of connections.
-At the slight risk of some test interference, we could
-reuse the connection accross tests...
+Well firstly, Cgreen does not 'fork()' when running a suite.  It
+leaves it up to the child suite to 'fork()' the individual tests.
+This means that a 'setup' and 'teardown' will run in the main
+process.  They will be run once for each child suite.
+
+We can use this to speed up our 'Person' tests above.  Remember we
+were creating a new connection and closing it again in the fixtures.
+This means opening and closing a lot of connections.  At the slight
+risk of some test interference, we could reuse the connection accross
+tests...
 
 [source,c]
 -----------------------
@@ -1098,8 +1106,8 @@ static void drop_schema() {
     mysql_query(connection, "drop table people");
 }
 
-static void can_add_person_to_database() { ... }
-static void cannot_add_duplicate_person() { ... }
+Ensure(can_add_person_to_database) { ... }
+Ensure(cannot_add_duplicate_person) { ... }
 
 void open_connection() {
     connection = mysql_init(NULL);
@@ -1112,40 +1120,32 @@ void close_connection() {
 
 TestSuite *person_tests() {
     TestSuite *suite = create_test_suite();
-    setup(suite, create_schema);
-    teardown(suite, drop_schema);
+    set_setup(suite, create_schema);
+    set_teardown(suite, drop_schema);
     add_test(suite, can_add_person_to_database);
     add_test(suite, cannot_add_duplicate_person);
 
     TestSuite *fixture = create_named_test_suite("Mysql fixture");
     add_suite(fixture, suite);
-    setup(fixture, open_connection);
-    teardown(fixture, close_connection);
+    set_setup(fixture, open_connection);
+    set_teardown(fixture, close_connection);
     return fixture;
 }
 -----------------------
 
-The trick here is creating a test suite as a wrapper
-whose sole purpose to wrap the main test suite in
-the fixture.
-This is our 'fixture' pointer.
-This code is a little confusing, because we have two sets of
-fixtures in the same test script.
+The trick here is creating a test suite as a wrapper whose sole
+purpose to wrap the main test suite in the fixture.  This is our
+'fixture' pointer.  This code is a little confusing, because we have
+two sets of fixtures in the same test script.
 
+We have the MySQL connection fixture.  This is runs
+'open_connection()' and 'close_connection()' just once at the
+beginning and end of the person tests.  This is because the 'suite'
+pointer is the only member of 'fixture'.
 
-We have the MySQL connection fixture.
-This is runs 'open_connection()' and
-'close_connection()' just
-once at the beginning and end of the person tests.
-This is because the 'suite' pointer is the
-only member of 'fixture'.
-
-
-We also have the schema fixture, the 'create_schema()'
-and 'drop_schema()', which is run before
-and after every test.
-Those are still attached to the inner 'suite'.
-
+We also have the schema fixture, the 'create_schema()' and
+'drop_schema()', which is run before and after every test.  Those are
+still attached to the inner 'suite'.
 
 In the real world we would probably place the connection
 fixture in it's own file...
@@ -1170,8 +1170,8 @@ static void close_connection() {
 TestSuite *connection_fixture(TestSuite *suite) {
     TestSuite *fixture = create_named_test_suite("Mysql fixture");
     add_suite(fixture, suite);
-    setup(fixture, open_connection);
-    teardown(fixture, close_connection);
+    set_setup(fixture, open_connection);
+    set_teardown(fixture, close_connection);
     return fixture;
 }
 -----------------------
@@ -1181,37 +1181,27 @@ This allows the reuse of common fixtures across projects.
 Mocking functions with Cgreen
 -----------------------------
         
-When testing you want certainty above all else.
-Random events destroy confidence in your test suite
-and force needless extra runs &quot;to be sure&quot;.
-A good test places the subject under test into a
-tightly controlled environment.
-A test chamber if you like.
-This makes the tests fast, repeatable and reliable.
+When testing you want certainty above all else.  Random events destroy
+confidence in your test suite and force needless extra runs &quot;to
+be sure&quot;.  A good test places the subject under test into a
+tightly controlled environment.  A test chamber if you like.  This
+makes the tests fast, repeatable and reliable.
 
+To create a test chamber for testing code, we have to control any
+outgoing calls from the code under test.  We won't believe our test
+failure if our code is making calls to the internet for example.  The
+internet can fail all by itself.  Not only do we not have total
+control, but it means we have to get dependent components working
+before we can test the higher level code.  This makes it difficult to
+code top down.
 
-To create a test chamber for testing code, we have
-to control any outgoing calls from the code under test.
-We won't believe our test failure if our code is making
-calls to the internet for example.
-The internet can fail all by itself.
-Not only do we not have total control, but it means
-we have to get dependent components
-working before we can test the higher level code.
-This makes it difficult to code top down.
+The solution to this dilemma is to write stub code for the components
+whilst the higher level code is written.  This pollutes the code base
+with temporary code, and the test isolation disappears when the system
+is eventually fleshed out.
 
-
-The solution to this dilemma is to write stub code for
-the components whilst the higher level code is written.
-This pollutes the code base with temporary code, and
-the test isolation disappears when the system is eventually
-fleshed out.
-
-
-The ideal is to have minimal stubs written for each
-individual test.
-Cgreen encourages this approach by making such tests
-easier to write.
+The ideal is to have minimal stubs written for each individual test.
+Cgreen encourages this approach by making such tests easier to write.
          
 The problem with streams
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1227,48 +1217,39 @@ char *read_paragraph(int (*read)(void *), void *stream) {
     while ((ch = (*read)(stream)) != EOF) {
         if (++length > buffer_size) {
             buffer_size += 100;
-            buffer = realloc(buffer, buffer_size + 1);
+            buffer = (char *)realloc(buffer, buffer_size + 1);
         }
         if ((buffer[length] = ch) == '\n') {
             break;
         }
+        buffer[length + 1] = '\0';
     }
     return buffer;
 }
 -----------------------
 
-This is a fairly generic stream filter that turns
-the incoming characters into C string paragraphs.
-Each call creates one paragraph, returning a pointer
-to it or returning 'NULL' if there is no paragraph.
-The paragraph has memory allocated to it and the
-stream is advanced ready for the next call.
-That's quite a bit of functionality, and there
-are plenty of nasty boundary conditions.
-I really want this code tested before I deploy it.
+This is a fairly generic stream filter that turns the incoming
+characters into C string paragraphs.  Each call creates one paragraph,
+returning a pointer to it or returning 'NULL' if there is no
+paragraph.  The paragraph has memory allocated to it and the stream is
+advanced ready for the next call.  That's quite a bit of
+functionality, and there are plenty of nasty boundary conditions.  I
+really want this code tested before I deploy it.
 
+The problem is the stream dependency.  We could use a real stream, but
+that will cause all sorts of headaches.  It makes the test of our
+paragraph formatter dependent on a working stream.  It means we have
+to write the stream first, bottom up coding rather than top down.  It
+means we will have to simulate stream failures - not easy.  It will
+also mean setting up external resources.  This is more work, will run
+slower, and could lead to spurious test failures.
 
-The problem is the stream dependency.
-We could use a real stream, but that will cause all sorts of
-headaches.
-It makes the test of our paragraph formatter dependent
-on a working stream.
-It means we have to write the stream first, bottom up coding
-rather than top down.
-It means we will have to simulate stream failures - not easy.
-It will also mean setting up external resources.
-This is more work, will run slower, and could lead
-to spurious test failures.
+By contrast we could write a simulation of the stream for each test,
+called a "server stub".
 
-
-By contrast we could write a simulation of the stream for each
-test, called a "server stub".
-
-
-For example, when the stream is empty nothing should happen.
-We hopefully get 'NULL' from 'read_paragraph'
-when the stream is exhausted.
-That is, it just returns a steady stream of 'EOF's.
+For example, when the stream is empty nothing should happen.  We
+hopefully get 'NULL' from 'read_paragraph' when the stream is
+exhausted.  That is, it just returns a steady stream of 'EOF's.
 
 [source,c]
 -----------------------
@@ -1276,7 +1257,7 @@ static int empty_stream(void *stream) {
     return EOF;
 }
 
-static void reading_lines_from_empty_stream_gives_null() {
+Ensure(reading_lines_from_empty_stream_gives_null) {
     assert_equal(read_paragraph(&empty_stream, NULL), NULL);
 }
 
@@ -1287,20 +1268,15 @@ TestSuite *stream_tests() {
 }
 -----------------------
 
-Our simulation is easy here, because our fake stream returns only
-one value.
-Things are harder when the function result changes from
-call to call as a real stream would.
-Simulating this would mean messing around with static variables and counters
-that are reset for each test.
-And of course, we will be writing quite a few stubs.
-Often a different one for each test.
-That's a lot of clutter.
+Our simulation is easy here, because our fake stream returns only one
+value.  Things are harder when the function result changes from call
+to call as a real stream would.  Simulating this would mean messing
+around with static variables and counters that are reset for each
+test.  And of course, we will be writing quite a few stubs.  Often a
+different one for each test.  That's a lot of clutter.
 
-
-Cgreen handles this clutter for us
-by letting us write a single programmable function
-for all our tests.
+Cgreen handles this clutter for us by letting us write a single
+programmable function for all our tests.
              
 Record and playback
 ~~~~~~~~~~~~~~~~~~~
@@ -1315,57 +1291,52 @@ static int stub_stream(void *stream) {
 }
 -----------------------
 
-Hardly longer that our trivial server stub above,
-it is just a macro to generate a return value,
-but we can reuse this in test after test.
+Hardly longer that our trivial server stub above, it is just a macro
+to generate a return value, but we can reuse this in test after test.
 
-
-For our simple example above we just tell it to always return
-'EOF'...
+For our simple example above we just tell it to always return 'EOF'...
 
 [source,c]
 -----------------------
+#include <cgreen/mocks.h>
+
 static int stub_stream(void *stream) {
     return (int)mock();
 }
 
-static void reading_lines_from_empty_stream_gives_null() {
-    always_return(stub_stream, EOF);
+Ensure(reading_lines_from_empty_stream_gives_null) {
+    always_expect(stub_stream, will_return(EOF));
     assert_equal(read_paragraph(stub_stream, NULL), NULL);
 }
 -----------------------
 
-The 'always_return()' macro takes as arguments the
-function name and the return value.
-We have told 'stub_stream()' to always return
-'EOF' when called.
+The 'always_expect()' macro takes as arguments the function name and
+the 'will_return()' defines the return value.  We have told
+'stub_stream()' to always return 'EOF' when called.
 
 
 Let's see if our production code actually works...
 
 -----------------------
-Running "main"...
+Running "main" (1 tests)...
 Completed "main": 1 pass, 0 failures, 0 exceptions.
 -----------------------
 
-So far, so good.
-On to the next test.
+So far, so good.  On to the next test.
 
-
-If we want to test a one character line, we have to send
-the terminating 'EOF' or '"\n"'
-as well as the single character.
-Otherwise our code will loop forever, giving an infinite
-line of that character.
+If we want to test a one character line, we have to send the
+terminating 'EOF' or '"\n"' as well as the single character.
+Otherwise our code will loop forever, giving an infinite line of that
+character.
 
 
 Here is how we can do this...
 
 [source,c]
 -----------------------
-static void one_character_stream_gives_one_character_line() {
-    will_return(stub_stream, 'a');
-    will_return(stub_stream, EOF);
+Ensure(one_character_stream_gives_one_character_line) {
+    expect(stub_stream, will_return('a'));
+    expect(stub_stream, will_return(EOF));
     char *line = read_paragraph(&stub_stream, NULL);
     assert_string_equal(line, "a");
     free(line);
@@ -1382,14 +1353,13 @@ given back once the test proper starts.
 We'll add this test to the suite and run it...
 
 -----------------------
-Running "main"...
-Failure!: stream_tests -> one_character_stream_gives_one_character_line ->
-        [] should match [a] at [stream_test.c] line [19]
-Completed "main": 1 pass, 1 failure, 0 exceptions.
+Running "main" (2 tests)...
+streams_tests.c:19: Test Failure: -> one_character_stream_gives_one_character_line
+        [èa] should match [a]
+Completed "main": 0 passes, 1 failure, 0 exceptions.
 -----------------------
 
-Oops. Our code under test doesn't work.
-Already we need a fix...
+Oops. Our code under test doesn't work. Already we need a fix...
 
 [source,c]
 -----------------------
@@ -1400,11 +1370,12 @@ char *read_paragraph(int (*read)(void *), void *stream) {
     while ((ch = (*read)(stream)) != EOF) {
         if (++length > buffer_size) {
             buffer_size += 100;
-            buffer = realloc(buffer, buffer_size + 1);
+            buffer = (char *)realloc(buffer, buffer_size + 1);
         }
         if ((buffer[length - 1] = ch) == '\n') {
             break;
         }
+        buffer[length] = '\0';
     }
     return buffer;
 }
@@ -1413,62 +1384,54 @@ char *read_paragraph(int (*read)(void *), void *stream) {
 After which everything is fine...
 
 -----------------------
-Running "main"...
+Running "main" (2 tests)...
 Completed "main": 2 passes, 0 failures, 0 exceptions.
 -----------------------
              
-            
-How do the Cgreen stubs work?
-The 'will_return()' calls build up a static list of
-return values which are cleared between tests.
-The 'mock()' macro captures the
-'__func__' property.
-It uses these to look up entries in the return list, and also to
-generate more helpful messages.
+How do the Cgreen stubs work?  The 'will_return()' calls build up a
+static list of return values which are cleared between tests.  The
+'mock()' macro captures the '__func__' property.  It uses these to
+look up entries in the return list, and also to generate more helpful
+messages.
 
 
 We can crank out our tests quite quickly now...
 
 [source,c]
 -----------------------
-static void one_word_stream_gives_one_word_line() {
-    will_return(stub_stream, 't');
-    will_return(stub_stream, 'h');
-    will_return(stub_stream, 'e');
-    always_return(stub_stream, EOF);
+Ensure(one_word_stream_gives_one_word_line) {
+    expect(stub_stream, will_return('t'));
+    expect(stub_stream, will_return('h'));
+    expect(stub_stream, will_return('e'));
+    always_expect(stub_stream, will_return(EOF));
     assert_string_equal(read_paragraph(&stub_stream, NULL), "the");
 }
 -----------------------
 
-I've been a bit naughty.
-As each test runs in it's own process, I haven't bothered
-to free the pointers to the paragraphs.
-I've just let the operating system do it.
-Purists may want to add the extra clean up code.
+I've been a bit naughty.  As each test runs in it's own process, I
+haven't bothered to free the pointers to the paragraphs.  I've just
+let the operating system do it.  Purists may want to add the extra
+clean up code.
 
+I've also used 'always_expect()' for the last instruction.  Without
+this, if the stub is given an instruction it does not expect, it will
+throw a test failure.  This is overly restrictive, as our
+'read_paragraph()' function could quite legitimately call the stream
+after it had run off of the end.  OK, that would be odd behaviour, but
+that's not what we are testing here.  If we were, it would be placed
+in a test of it's own.  The 'always_expect()' call tells Cgreen to
+keep going after the first three letters, allowing extra calls.
 
-I've also used 'always_return()' for the last instruction.
-Withou this, if the stub is given an instruction is does
-not expect, it will throw a test failure.
-This is overly restrictive, as our 'read_paragraph()'
-function could quite legitimately call the stream after it had
-run off of the end.
-OK, that would be odd behaviour, but that's not what we are testing here.
-If we were, it would be placed in a test of it's own.
-The 'always_return()' call tells <emphasis>Cgreen to keep
-going after the first three letters, allowing extra calls.
-             
-            
-As we build more tests, they start to look like a specification
-of the behaviour...
+As we build more tests, they start to look like a specification of the
+behaviour...
 
 [source,c]
 -----------------------
-static void drops_line_ending_from_word_and_stops() {
-    will_return(stub_stream, 't');
-    will_return(stub_stream, 'h');
-    will_return(stub_stream, 'e');
-    will_return(stub_stream, '\n');
+Ensure(drops_line_ending_from_word_and_stops) {
+    expect(stub_stream, will_return('t'));
+    expect(stub_stream, will_return('h'));
+    expect(stub_stream, will_return('e'));
+    expect(stub_stream, will_return('\n'));
     assert_string_equal(read_paragraph(&stub_stream, NULL), "the");
 }
 -----------------------
@@ -1477,27 +1440,27 @@ static void drops_line_ending_from_word_and_stops() {
 
 [source,c]
 -----------------------
-static void single_line_ending_gives_empty_line() {
-    will_return(stub_stream, '\n');
+Ensure(single_line_ending_gives_empty_line) {
+    expect(stub_stream, will_return('\n'));
     assert_string_equal(read_paragraph(&stub_stream, NULL), "");
 }
 -----------------------
 
 
-This time we musn't use 'always_return()'.
-We want to leave the stream where it is, ready for the next
-call to 'read_paragraph()'.
-If we call the stream beyond the line ending, we want to fail.
+This time we musn't use 'always_return()'.  We want to leave the
+stream where it is, ready for the next call to 'read_paragraph()'.  If
+we call the stream beyond the line ending, we want to fail.
              
-            
-It turns out that we are failing anyway...
+Oops, that was a little too fast. Turns out we are failing anyway...
 
 -----------------------
-Running "main"...
-Failure!: stream_tests -> drops_line_ending_from_word_and_stops -> [the
-] should match [the] at [stream_test.c] line [36]
-Failure!: stream_tests -> single_line_ending_gives_empty_line -> [
-] should match [] at [stream_test.c] line [41]
+Running "main" (5 tests)...
+streams_tests.c:36: Test Failure: -> drops_line_ending_from_word_and_stops
+        [the
+è ] should match [the]
+streams_tests.c:41: Test Failure: -> single_line_ending_gives_empty_line
+        [
+ è ] should match []
 Completed "main": 3 passes, 2 failures, 0 exceptions.
 -----------------------
 
@@ -1513,7 +1476,7 @@ char *read_paragraph(int (*read)(void *), void *stream) {
     while ((ch = (*read)(stream)) != EOF) {
         if (++length > buffer_size) {
             buffer_size += 100;
-            buffer = realloc(buffer, buffer_size + 1);
+            buffer = (char *)realloc(buffer, buffer_size + 1);
         }
         if ((buffer[length - 1] = ch) == '\n') {
             buffer[--length] = '\0';
@@ -1528,14 +1491,13 @@ char *read_paragraph(int (*read)(void *), void *stream) {
 And we are passing again...
 
 -----------------------
-Running "main"...
+Running "main" (5 tests)...
 Completed "main": 5 passes, 0 failures, 0 exceptions.
 -----------------------
              
-            
-There are no limits to the number of stubbed methods within a
-test, only that two stubs cannot have the same name.
-So this will cause problems...
+There are no limits to the number of stubbed methods within a test,
+only that two stubs cannot have the same name.  So the following will
+cause problems...
 
 [source,c]
 -----------------------
@@ -1543,8 +1505,8 @@ static int stub_stream(void *stream) {
     return (int)mock();
 }
 
-static void bad_test() {
-    will_return(stub_stream, 'a');
+Ensure(bad_test) {
+    expect(stub_stream, will_return('a'));
     do_stuff(&stub_stream, &stub_stream);
 }
 -----------------------
@@ -1561,28 +1523,23 @@ static int second_stream(void *stream) {
     return (int)mock();
 }
 
-static void good_test() {
-    will_return(first_stream, 'a');
-    will_return(second_stream, 'a');
+Ensure(good_test) {
+    expect(first_stream, will_return('a'));
+    expect(second_stream, will_return('a');
     do_stuff(&first_stream, &second_stream);
 }
 -----------------------
 
-We now have a way of writing fast, clear tests with no
-external dependencies.
-The information flow is still one way though, from stub to the
-code under test.
-When our code calls complex procedures, we won't want to pick
-apart the effects to infer what happened.
-That's too much like detective work.
-And why should we?
-We just want to know that we dispatched the correct information
-down the line.
+We now have a way of writing fast, clear tests with no external
+dependencies.  The information flow is still one way though, from stub
+to the code under test.  When our code calls complex procedures, we
+won't want to pick apart the effects to infer what happened.  That's
+too much like detective work.  And why should we?  We just want to
+know that we dispatched the correct information down the line.
 
-
-Things get more interesting when we thing of
-the traffic going the other way, from code to stub.
-This gets us into the same territory as mock objects.
+Things get more interesting when we thing of the traffic going the
+other way, from code to stub.  This gets us into the same territory as
+mock objects.
              
 Setting expectations on mock functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1604,23 +1561,18 @@ void by_paragraph(int (*read)(void *), void *in, void (*write)(void *, char *), 
 }
 -----------------------
 
-This is the start of a formatter utility.
-Later filters will probably break the paragaphs up into justified text,
-but right now that is all abstracted behind the
-'void write(void *, char *)' interface.
-Our current interests are: does it loop through the paragraphs, and does
+This is the start of a formatter utility.  Later filters will probably
+break the paragaphs up into justified text, but right now that is all
+abstracted behind the 'void write(void *, char *)' interface.  Our
+current interests are: does it loop through the paragraphs, and does
 it crash?
 
-
-We could test correct paragraph formation by writing a stub
-that collects the paragraphs into a 'struct'.
-We could then pick apart that 'struct' and test
-each piece with assertions.
-This approach is extremely clumsy in C.
-The language is just not suited to building and tearing down
-complex edifices, never mind navigating them with assertions.
-We would badly clutter our tests.
-
+We could test correct paragraph formation by writing a stub that
+collects the paragraphs into a 'struct'.  We could then pick apart
+that 'struct' and test each piece with assertions.  This approach is
+extremely clumsy in C.  The language is just not suited to building
+and tearing down complex edifices, never mind navigating them with
+assertions.  We would badly clutter our tests.
 
 Instead we'll test the output as soon as possible, right in
 the called function...
@@ -1632,7 +1584,7 @@ void expect_one_letter_paragraph(char *paragraph, void *stream) {
     assert_string_equal(paragraph, "a", NULL);
 }
 
-void one_character_is_made_into_a_one_letter_paragraph() {
+Ensure(one_character_is_made_into_a_one_letter_paragraph) {
     by_paragraph(
             &one_character_stream,
             NULL,
@@ -1642,15 +1594,13 @@ void one_character_is_made_into_a_one_letter_paragraph() {
 ...
 -----------------------
 
-By placing the assertions into the mocked function, we
-keep the tests minimal.
-The catch with this method is that we are back to writing
-individual functions for each test.
-We have the same problem as we had with hand coded stubs.
+By placing the assertions into the mocked function, we keep the tests
+minimal.  The catch with this method is that we are back to writing
+individual functions for each test.  We have the same problem as we
+had with hand coded stubs.
 
-
-Again, <emphasis>Cgreen has a way to automate this.
-Here is the rewritten test...
+Again, 'Cgreen' has a way to automate this.  Here is the rewritten
+test...
 
 [source,c]
 -----------------------
@@ -1662,127 +1612,157 @@ static void writer(void *stream, char *paragraph) {
     mock(stream, paragraph);
 }
 
-void one_character_is_made_into_a_one_letter_paragraph() {
-    will_return(reader, 'a');
-    always_return(reader, EOF);
-    expect(writer, want_string(paragraph, "a"));
+Ensure(one_character_is_made_into_a_one_letter_paragraph) {
+    expect(reader, will_return('a'));
+    always_expect(reader, will_return(EOF));
+    expect(writer, when(paragraph, is_equal_to_string("a")));
     by_paragraph(&reader, NULL, &writer, NULL);
 }
 -----------------------
 
 Where are the assertions?
 
+Unlike our earlier stub, 'reader()' can now check it's parameters.  In
+object oriented circles, an object that checks it's parameters as well
+as simulating behaviour is called a mock object.  By analogy
+'reader()' is a mock function, or mock callback.
 
-Unlike our earlier stub, 'reader()' can now check it's
-parameters.
-In object oriented circles, an object that checks it's
-parameters as well as simulating behaviour is called a
-mock object.
-By analogy 'reader()' is a mock function, or
-mock callback.
-             
-            
-Using the 'expect' macro, we have stated that
-'writer()' will be called just once.
-That call must have the string '"a"' for the
-paragraph parameter.
-If this parameter does not match, the mock function will
-issue a failure straight to the test suite.
-This is what saves us writing a lot of assertions.
-             
-            
-Here is the full list of instructions that can be sent to the mocks...
+Using the 'expect' macro, we have stated that 'writer()' will be
+called just once.  That call must have the string '"a"' for the
+paragraph parameter.  If this parameter does not match, the mock
+function will issue a failure straight to the test suite.  This is
+what saves us writing a lot of assertions.
+
+When specifying behavior of mocks there are three parts. First, how
+often the specified behaviour will be executed:
 
 |=========================================
-|Macro| Parameters
-|'will_return(function, result)'| Returns result once only, but successive calls 
-will be replayed in order. Generates a failure when called too many times.
-|'always_return(function, result)'| Returns result repeatedly.
-|'expect(function, arguments...)'| Sets up an expectation on each argument. If there is a mismatch,
- or a call is made without an expectation, a failure is generated.
-|'always_expect(function, arguments...)'| Must receive exactly these arguments from now on.
-|'expect_never(function)'| This function must not be called or a failure is generated.
-|'will_respond(function, result, arguments...)'| Combines 'will_return()' and 'expect()'.
-|'always_respond(function, result, arguments...)'| Combines 'always_return()' and 'always_expect()'
+|*Macro*|*Description*
+|'expect(function, ...)'|Execute once in order
+|'always_expect(function, ...)'|Execute this behavior from here onwards
+|'expect_never(function)'|This mock should never be called
 |=========================================
 
-The 'expect_never()' macro is slightly different.
-It's only task is to confirm that a method was never run.
+You can specify constraints and behaviours for each expectation
+(except for 'expect_never()' naturally). A constraint places
+restrictions on the parameters (and will tell you if the expected
+restriction was not met), and a behaviour specifies what the mock
+should do if the parameter constraints are met.
 
+A parameter constraint is defined using the 'when(parameter,
+constraint)' macro. It takes two parameters:
 
-The 'will_respond()' macro combines the 'will_return()'
-and the 'expect()' calls into one call, as does 'always_respond'.
+|=================================================
+|*Parameter*|*Description*
+|parameter|The name of the parameter to the mock function
+|constraint|A constraint placed on that parameter
+|=================================================
 
+There is a multitude of constraints available:
 
-Each parameter can be tested with a constraint.
-Two constraints are available:
-'want(parameter, expected)' for integers and pointers, and
-'want_string(parameter, expected)' does a string comparison.
+|========================================
+|*Constraint*|*Type*
+|is_equal_to(value)| Integers
+|is_not_equal_to(value)| Integers
+|is_greater_than(value)| Integers
+|is_less_than(value)| Integers
+||
+|is_equal_to_contents_of(pointer, size_of_contents)|Bytes/Structures
+|is_not_equal_to_contents_of(pointer, size_of_contents)|Bytes/Structures
+||
+|is_equal_to_string(value)|String
+|is_not_equal_to_string(value)|String
+|contains_string(value)|String
+|does_not_contain_string(value)|String
+|begins_with_string(value)|String
+||
+|is_equal_to_double(value)|Double
+|is_not_equal_to_double(value)|Double
+|========================================
 
+Then there are two ways to return results:
+
+|========================================
+|*Macro*|*Description*
+|will_return(value)|Return the value from the mock function (which needs to be declared returning that type
+|will_set_contents_of_parameter(parameter_name, value, size)|Writes the value in the referenced parameter
+|========================================
+
+You can combine these in various ways:
+
+[source,c]
+-----------------------
+  expect(mocked_file_writer,
+        when(data, is_equal_to(42)),
+        will_return(EOF));
+  expect(mocked_file_reader,
+        when(file, is_equal_to_contents_of(&FD, sizeof(FD))),
+        when(input, is_equal_to_string("Hello world!"),
+        will_set_contents_of_parameter(status, FD_CLOSED)));
+-----------------------
+
+If multiple 'when()' are specified they all need to be fullfilled. You
+can of course only have one for each parameter to your mock function.
+
+You can also have multiple 'will_set_contents_of_parameter()', one for
+each reference parameter, but only one 'will_return()'.
 
 It's about time we actually ran our test...
 
 -----------------------
-Running "main"...
+Running "main" (6 tests)...
 Completed "main": 6 passes, 0 failures, 0 exceptions.
 -----------------------
 
-Confident that a single character works, we can further
-specify the behaviour.
-Firstly an input sequence...
+Confident that a single character works, we can further specify the
+behaviour.  Firstly an input sequence...
 
 [source,c]
 -----------------------
-static void no_line_endings_makes_one_paragraph() {
-    will_return(reader, 'a');
-    will_return(reader, ' ');
-    will_return(reader, 'b');
-    will_return(reader, ' ');
-    will_return(reader, 'c');
-    always_return(reader, EOF);
-    expect(writer, want_string(paragraph, "a b c"));
+Ensure(no_line_endings_makes_one_paragraph) {
+    expect(reader, will_return('a'));
+    expect(reader, will_return(' '));
+    expect(reader, will_return('b'));
+    expect(reader, will_return(' '));
+    expect(reader, will_return('c'));
+    always_expect(reader, will_return(EOF));
+    expect(writer, when(paragraph, is_equal_to_string("a b c")));
     by_paragraph(&reader, NULL, &writer, NULL);
 }
 -----------------------
 
-A more intelligent programmer than me would place all
-these calls in a loop.
-Next, checking an output sequence...
+A more intelligent programmer than me would place all these calls in a
+loop.  Next, checking an output sequence...
 
 [source,c]
 -----------------------
-static void line_endings_generate_separate_paragraphs() {
-    will_return(reader, 'a');
-    will_return(reader, '\n');
-    will_return(reader, 'b');
-    will_return(reader, '\n');
-    will_return(reader, 'c');
-    always_return(reader, EOF);
-    expect(writer, want_string(paragraph, "a"));
-    expect(writer, want_string(paragraph, "b"));
-    expect(writer, want_string(paragraph, "c"));
+Ensure(line_endings_generate_separate_paragraphs) {
+    expect(reader, will_return('a'));
+    expect(reader, will_return('\n'));
+    expect(reader, will_return('b'));
+    expect(reader, will_return('\n'));
+    expect(reader, will_return('c'));
+    always_expect(reader, will_return(EOF));
+    expect(writer, when(paragraph, is_equal_to_string("a")));
+    expect(writer, when(paragraph, is_equal_to_string("b")));
+    expect(writer, when(paragraph, is_equal_to_string("c")));
     by_paragraph(&reader, NULL, &writer, NULL);
 }
 -----------------------
 
-Like the 'will_return()' stubs above, the
-'expect()' calls follow a record and playback model.
-Each one tests a successive call.
-This sequence confirms that we get '"a"',
-'"b"' and '"c"' in
-order.
+Again we can se that the 'expect()' calls follow a record and playback
+model.  Each one tests a successive call.  This sequence confirms that
+we get '"a"', '"b"' and '"c"' in order.
 
-
-Then we'll make sure the correct stream pointers are passed to
-the correct functions.
-This is a more realistic parameter check...
+Then we'll make sure the correct stream pointers are passed to the
+correct functions.  This is a more realistic parameter check...
 
 [source,c]
 -----------------------
-static void resources_are_paired_with_the_functions() {
-    will_respond(reader, 'a', want(stream, 1));
-    always_respond(reader, EOF, want(stream, 1));
-    expect(writer, want(stream, 2));
+Ensure(resources_are_paired_with_the_functions) {
+    expect(reader, when(stream, is_equal_to(1)), will_return('a'));
+    always_expect(reader, when(stream, is_equal_to(1)), will_return(EOF));
+    expect(writer, when(stream, is_equal_to(2)));
     by_paragraph(&reader, (void *)1, &writer, (void *)2);
 }
 -----------------------
@@ -1792,9 +1772,9 @@ there is no paragraph.
 
 [source,c]
 -----------------------
-static void empty_paragraphs_are_ignored() {
-    will_return(reader, '\n');
-    always_return(reader, EOF);
+Ensure(empty_paragraphs_are_ignored) {
+    expect(reader, will_return('\n'));
+    always_expect(reader, will_return(EOF));
     expect_never(writer);
     by_paragraph(&reader, NULL, &writer, NULL);
 }
@@ -1803,14 +1783,13 @@ static void empty_paragraphs_are_ignored() {
 This last test is our undoing...
 
 -----------------------
-Running "main"...
-Failure!: stream_tests -> empty_paragraphs_are_ignored ->
-        Unexpected call to function [writer] at [stream_test.c] line [96]
+Running "main" (10 tests)...
+streams_tests.c:93: Test Failure: -> empty_paragraphs_are_ignored
+        Function [writer] has an expectation that it will never be called, but it was
 Completed "main": 14 passes, 1 failure, 0 exceptions.
 -----------------------
 
-Obviously blank lines are still being dispatched to the
-'writer()'.
+Obviously blank lines are still being dispatched to the 'writer()'.
 Once this is pointed out, the fix is obvious...
 
 [source,c]
@@ -1827,8 +1806,8 @@ void by_paragraph(int (*read)(void *), void *in, void (*write)(void *, char *), 
 }
 -----------------------
 
-Tests with 'expect_never()' can be very effective
-at uncovering subtle bugs.
+Tests with 'expect_never()' can be very effective at uncovering subtle
+bugs.
 
 -----------------------
 Running "main"...
