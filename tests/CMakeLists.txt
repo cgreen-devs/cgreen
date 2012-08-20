@@ -50,4 +50,4 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/some_file "Some stuff")
 
 macro_add_unit_test(test_cgreen "${test_SRCS}" "${TEST_TARGET_LIBRARIES}")
 
-add_test(test_cgreen_named test_cgreen integer_one_should_assert_true)
+add_test(test_cgreen_named ${RUNTIME_OUTPUT_PATH}/test_cgreen integer_one_should_assert_true)
