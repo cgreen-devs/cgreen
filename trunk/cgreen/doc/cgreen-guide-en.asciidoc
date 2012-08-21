@@ -7,19 +7,21 @@ Cgreen Quickstart Guide
 What is Cgreen?
 ~~~~~~~~~~~~~~~
 
-Cgreen is a unit tester for the C software developer. This is a test automation
-and software quality assurance tool for development teams. The tool is
-completely open source published under the http://www.gnu.org/licenses/lgpl.html[LGPL]
+*Cgreen* is a unit tester for the C software developer. This is a test
+automation and software quality assurance tool for development
+teams. The tool is completely open source published under the
+http://www.gnu.org/licenses/lgpl.html[LGPL]
 
-Unit testing is a development practice popularised by the agile development community.
-It is characterised by writing many small tests alongside the normal code. Often the
-tests are written before the code they are testing, in a tight test-code-refactor loop.
-Done this way, the practice is known as Test Driven Development. Cgreen supports this
-style of working.
+Unit testing is a development practice popularised by the agile
+development community.  It is characterised by writing many small
+tests alongside the normal code. Often the tests are written before
+the code they are testing, in a tight test-code-refactor loop.  Done
+this way, the practice is known as Test Driven Development. *Cgreen*
+supports this style of working.
 
-Unit tests are written in the same language as the code, in our case C. This avoids
-the mental overhead of constantly switching language, and also allows you to use any
-application code in your tests.
+Unit tests are written in the same language as the code, in our case
+C. This avoids the mental overhead of constantly switching language,
+and also allows you to use any application code in your tests.
 
 The feature list is:
 
@@ -30,14 +32,15 @@ The feature list is:
 - Ability to mock functions.
 - The reporting mechanism can be easily extended.
         
-This tool is for C programming, not C++.
+This tool is primarily for C programming, although lately there is
+also some support for C++.
 
 Installing Cgreen
 ~~~~~~~~~~~~~~~~~
 
-There are two ways to install Cgreen in your system.   
+There are two ways to install *Cgreen* in your system.   
       
-The first is to use the RPM or DEB package provided by the Cgreen
+The first is to use the RPM or DEB package provided by the *Cgreen*
 Team. You can fetch it from http://cgreen.sourceforge.net[Cgreen
 website project]. Download and install in your system using the normal
 procedures for your system.
@@ -61,22 +64,22 @@ make install
 
 (On cygwin you need to install before the tests can be run.)
 
-This is called an 'out of source build'. It compiles Cgreen from
+This is called an 'out of source build'. It compiles *Cgreen* from
 outside the sources directory. This helps the overall file
 organization and enables multi-target builds from the same sources by
 leaving the complete source tree untouched.
 
-Is possible to use the +Makefile+. This file is used to compile
-and test Cgreen without the need of CMake tool. However it does not contain the rules
-to install in your system.
+Is possible to use the +Makefile+. This file is used to compile and
+test *Cgreen* without the need of CMake tool. However it does not
+contain the rules to install in your system.
 
-Both methods will create a library called (on unix called +libcgreen.so+) which can be
-used in conjunction with the +cgreen.h+ header file to compile test
-code. The created library is installed in the system, by default in
-the +/usr/local/lib/+.
+Both methods will create a library called (on unix called
++libcgreen.so+) which can be used in conjunction with the +cgreen.h+
+header file to compile test code. The created library is installed in
+the system, by default in the +/usr/local/lib/+.
 
-We'll first write a test to confirm everything is working. Let's start with a simple
-test module with no tests, called +first_test.c+...
+We'll first write a test to confirm everything is working. Let's start
+with a simple test module with no tests, called +first_test.c+...
 
 [source,c]
 ---------------------------------------
@@ -91,7 +94,7 @@ int main(int argc, char **argv) {
 This is a very unexciting test. It just creates an empty test suite
 and runs it.  It's usually easier to proceed in small steps, though,
 and this is the smallest one I could think of. The only complication
-is the +cgreen.h+ header file.  Here I am assuming we have the Cgreen
+is the +cgreen.h+ header file.  Here I am assuming we have the *Cgreen*
 folder in the path to ensure compilation works.
 
 Building this test is, of course, trivial...
@@ -109,12 +112,12 @@ Running "main" (0 tests)...
 Completed "main": 0 passes, 0 failures, 0 exceptions.
 -----------------------------
 
-All of the above rather assumes you are working in a Unix like environment,
-probably with 'gcc'. The code is pretty much standard C99, so any C compiler
-should work.
-Cgreen should compile on all systems that support the +sys/msg.h+ messaging library.
-This has been tested on Linux, Mac OSX and Cygwin so far, but not Windows, although that
-might work too.
+All of the above rather assumes you are working in a Unix like
+environment, probably with 'gcc'. The code is pretty much standard
+C99, so any C compiler should work.  *Cgreen* should compile on all
+systems that support the +sys/msg.h+ messaging library.  This has been
+tested on Linux, Mac OSX and Cygwin so far, but not Windows, although
+that might work too.
 
 So far we have tested compilation, and that the test suite actually runs.
 Let's add a meaningless test or two so that you can see how it runs...
@@ -160,10 +163,11 @@ the only method supported.
 Five minutes doing TDD with Cgreen
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For a more realistic example we need something to test. We'll pretend that we are
-writing a function to split the words of a sentence in place. It does this by replacing
-any spaces with string terminators and returns the number of conversions plus one.
-Here is an example of what we have in mind...
+For a more realistic example we need something to test. We'll pretend
+that we are writing a function to split the words of a sentence in
+place. It does this by replacing any spaces with string terminators
+and returns the number of conversions plus one.  Here is an example of
+what we have in mind...
 
 [source,c]
 -------------------------------
@@ -171,12 +175,14 @@ char *sentence = strdup("Just the first test");
 word_count = split_words(sentence);
 -------------------------------
 
-'sentence' should now point at "Just\0the\0first\0test". Not an obviously useful
-function, but we'll be using it for something more practical below.
+'sentence' should now point at "Just\0the\0first\0test". Not an
+obviously useful function, but we'll be using it for something more
+practical below.
 
-This time around we'll add a little more structure to our tests. Rather than having
-the test as a stand alone program, we'll separate the runner from the test cases.
-That way, multiple test suites of test cases can be included in the 'main()' runner file.
+This time around we'll add a little more structure to our
+tests. Rather than having the test as a stand alone program, we'll
+separate the runner from the test cases.  That way, multiple test
+suites of test cases can be included in the 'main()' runner file.
 This makes it less work to add more tests.
 
 Here is the, so far empty, test case in 'words_test.c'...
@@ -209,11 +215,11 @@ int main(int argc, char **argv) {
 }
 -------------------------------
 
-Cgreen has two ways of running tests. The default is to run all tests
+*Cgreen* has two ways of running tests. The default is to run all tests
 in their own processes. This is what happens if you invoke
 'run_test_suite()'. This makes all the tests independent, but the
 constant 'fork()ing' can make the tests difficult to debug.  To make
-debugging simpler, Cgreen does not fork() when only a single test is
+debugging simpler, *Cgreen* does not fork() when only a single test is
 run by name with 'run_single_test()'.
 
 Building this scaffolding...
@@ -231,7 +237,8 @@ Running "main" (0 tests)...
 Completed "main": 0 passes, 0 failures, 0 exceptions.
 -------------------------------
 
-All this scaffolding is pure overhead, but from now on adding tests will be a lot easier.
+All this scaffolding is pure overhead, but from now on adding tests
+will be a lot easier.
 
 Here is a first test of 'split_words()'...
 
@@ -255,8 +262,8 @@ TestSuite *words_tests() {
 }
 -------------------------------
 
-The 'assert_equal()' macro takes in the two values to compare. With the default
-'TextReporter' the message is sent to 'STDOUT'.
+The 'assert_equal()' macro takes in the two values to compare. With
+the default 'TextReporter' the message is sent to 'STDOUT'.
 
 To get this to compile we need to create the +words.h+ header file...
 
@@ -293,14 +300,16 @@ words_test.c:7: Test Failure: -> words_tests -> word_count_returned_from_split
 Completed "main": 0 passes, 1 failure, 0 exceptions.
 -------------------------------
 
-The breadcrumb trail is the nesting of the tests. It goes from the test suites, 
-which can nested in each other, through the test function, and finally to the message
-from the assertion. In the language of Cgreen, a failure is a mismatched assertion,
-an exception is accumulated when a test fails to complete for any reason.
+The breadcrumb trail is the nesting of the tests. It goes from the
+test suites, which can nested in each other, through the test
+function, and finally to the message from the assertion. In the
+language of *Cgreen*, a failure is a mismatched assertion, an exception
+is accumulated when a test fails to complete for any reason.
       
-We could get this to pass just by returning the value 4. Doing TDD in really small
-steps, you would actually do this, but frankly this example is too simple. Instead 
-we'll go straight to the core of the implementation...
+We could get this to pass just by returning the value 4. Doing TDD in
+really small steps, you would actually do this, but frankly this
+example is too simple. Instead we'll go straight to the core of the
+implementation...
 
 [source,c]
 --------------------------------
@@ -317,9 +326,11 @@ int split_words(char *sentence) {
 }
 ---------------------------------
 
-There is a hidden problem here, but our tests still passed so we'll pretend we didn't notice.
+There is a hidden problem here, but our tests still passed so we'll
+pretend we didn't notice.
 
-Time to add another test. We want to confirm that the string is broken into separate words...
+Time to add another test. We want to confirm that the string is broken
+into separate words...
 
 [source,c]
 ---------------------------------
@@ -381,8 +392,8 @@ words_test.c:7: Test Failure: -> words_tests -> word_count_returned_from_split
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ----------------------------------
 
-Our earlier test now fails, because we have affected the 'strlen()' call in our loop.
-Moving the length calculation out of the loop...
+Our earlier test now fails, because we have affected the 'strlen()'
+call in our loop.  Moving the length calculation out of the loop...
 
 [source,c]
 ----------------------------------
@@ -402,16 +413,17 @@ Running "main" (2 tests)...
 Completed "main": 2 passes, 0 failures, 0 exceptions.
 ----------------------------------
 
-It's nice to keep the code under control while we are actually writing it, rather
-than debugging later when things are more complicated.
+It's nice to keep the code under control while we are actually writing
+it, rather than debugging later when things are more complicated.
 
 That was pretty straight forward. Let's do something more interesting.
 
 What are mock functions?
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The next example is more realistic. Still in our +words.h+ file, we want to write
-a function that invokes a callback on each word in a sentence. Something like...
+The next example is more realistic. Still in our +words.h+ file, we
+want to write a function that invokes a callback on each word in a
+sentence. Something like...
 
 [source,c]
 ----------------------------------
@@ -419,16 +431,19 @@ void act_on_word(const char *word, void *memo) { ... }
 words("This is a sentence", &act_on_word, &memo);
 ----------------------------------
 
-Here the 'memo' pointer is just some accumulated data that the 'act_on_word()'
-callback is working with. Other people will write the 'act_on_word()' function
-and probably many other functions like it. The callback is actually a flex point,
-and not of interest right now.
+Here the 'memo' pointer is just some accumulated data that the
+'act_on_word()' callback is working with. Other people will write the
+'act_on_word()' function and probably many other functions like
+it. The callback is actually a flex point, and not of interest right
+now.
 
-The function under test is the 'words()' function and we want to make sure it walks
-the sentence correctly, dispatching individual words as it goes. How to test this?
+The function under test is the 'words()' function and we want to make
+sure it walks the sentence correctly, dispatching individual words as
+it goes. How to test this?
 
-Let's start with a one word sentence. In this case we would expect the callback to
-be invoked once with the only word, right? Here is the test for that...
+Let's start with a one word sentence. In this case we would expect the
+callback to be invoked once with the only word, right? Here is the
+test for that...
 
 [source,c]
 ---------------------------------
@@ -441,7 +456,8 @@ void mocked_callback(const char *word, void *memo) {
 }
 
 Ensure(single_word_sentence_invokes_callback_once) {
-  expect(mocked_callback, when(word, is_equal_to_string("Word")), when(memo, is_equal_to(NULL)));
+  expect(mocked_callback,
+    when(word, is_equal_to_string("Word")), when(memo, is_equal_to(NULL)));
   words("Word", &mocked_callback, NULL);
 }
 
@@ -455,16 +471,20 @@ TestSuite *words_tests() {
 
 What is the funny looking 'mock()' function?
 
-A mock is basically a programmable object. In C objects are limited to functions,
-so this is a mock function. The macro 'mock()' compares the incoming
-parameters with any expected values and dispatches messages to the test suite if
-there is a mismatch. It also returns any values that have been preprogrammed in the test.
+A mock is basically a programmable object. In C objects are limited to
+functions, so this is a mock function. The macro 'mock()' compares the
+incoming parameters with any expected values and dispatches messages
+to the test suite if there is a mismatch. It also returns any values
+that have been preprogrammed in the test.
  
-The test function is 'single_word_sentence_invokes_callback_once()'. Using the 'expect()'
-macro it programs the mock function to expect a single call. That call will have
-parameters "Word" and 'NULL'. If they don't match later, we will get a test failure.
+The test function is
+'single_word_sentence_invokes_callback_once()'. Using the 'expect()'
+macro it programs the mock function to expect a single call. That call
+will have parameters "Word" and 'NULL'. If they don't match later, we
+will get a test failure.
 
-Only the test method, not the mock callback, is added to the test suite.
+Only the test method, not the mock callback, should be added to the
+test suite.
 
 For a successful compile and link, the +words.h+ file must now look like...
 
@@ -491,8 +511,8 @@ words_test.c:27: Test Failure: -> words_tests -> single_word_sentence_invokes_ca
 Completed "main": 2 passes, 1 failure, 0 exceptions.
 ----------------------------
 
-Cgreen reports that the callback was never invoked. We can easily get the test to
-pass by filling out the implementation with...
+*Cgreen* reports that the callback was never invoked. We can easily get
+the test to pass by filling out the implementation with...
 
 [source,c]
 ----------------------------
@@ -501,11 +521,13 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
 }
 ----------------------------
 
-That is, we just invoke it once with the whole string. This is a temporary measure
-to get us moving. Now everything should pass, although it's not much of a test yet.
+That is, we just invoke it once with the whole string. This is a
+temporary measure to get us moving. Now everything should pass,
+although it's not much of a test yet.
 
-That was all pretty conventional, but let's tackle the trickier case of actually
-splitting the sentence. Here is the test function we will add to +words_test.c+...
+That was all pretty conventional, but let's tackle the trickier case
+of actually splitting the sentence. Here is the test function we will
+add to +words_test.c+...
 
 [source,c]
 ----------------------------
@@ -518,8 +540,9 @@ Ensure(phrase_invokes_callback_for_each_word) {
 }
 ----------------------------
 
-Each call is expected in sequence. Any failures, or left over calls, or extra calls,
-and we get failures. We can see all this when we run the tests...
+Each call is expected in sequence. Any failures, or left over calls,
+or extra calls, and we get failures. We can see all this when we run
+the tests...
 
 ----------------------------
 Running "main" (4 tests)...
@@ -537,12 +560,13 @@ words_test.c:35: Test Failure: -> words_tests -> phrase_invokes_callback_for_eac
 Completed "main": 4 passes, 4 failures, 0 exceptions.
 -----------------------------
 
-The first failure tells the story. Our little 'words()' function called the mock
-callback with the entire sentence. This makes sense, because that was the hack to
-get to the next test.
+The first failure tells the story. Our little 'words()' function
+called the mock callback with the entire sentence. This makes sense,
+because that was the hack to get to the next test.
 
-Although not relevant to this guide, I cannot resist getting these tests to pass.
-Besides, we get to use the function we created earlier...
+Although not relevant to this guide, I cannot resist getting these
+tests to pass.  Besides, we get to use the function we created
+earlier...
 
 [source,c]
 -----------------------------
@@ -565,27 +589,29 @@ Running "main" (4 tests)...
 Completed "main": 8 passes, 0 failures, 0 exceptions.
 ------------------------------
 
-More work than I like to admit as it took me three goes to get this right. I firstly
-forgot the '+ 1' added on to 'strlen()', then forgot to swap 'sentence' for 'word'
-in the '(*walker)()' call, and finally third time lucky. Of course running the tests
-each time made these mistakes very obvious. It's taken me far longer to write these
+More work than I like to admit as it took me three goes to get this
+right. I firstly forgot the '+ 1' added on to 'strlen()', then forgot
+to swap 'sentence' for 'word' in the '(*walker)()' call, and finally
+third time lucky. Of course running the tests each time made these
+mistakes very obvious. It's taken me far longer to write these
 paragraphs than it has to write the code.
 
 Building Cgreen test suites
 ---------------------------
 
-Cgreen is a tool for building unit tests in the C language. These are usually written
-alongside the production code by the programmer to prevent bugs. Even though the test
-suites are created by software developers, they are intended to be human readable C
-code, as part of their function is an executable specification.
-Used in this way, the test harness delivers constant quality assurance.
+*Cgreen* is a tool for building unit tests in the C language. These are
+usually written alongside the production code by the programmer to
+prevent bugs. Even though the test suites are created by software
+developers, they are intended to be human readable C code, as part of
+their function is an executable specification.  Used in this way, the
+test harness delivers constant quality assurance.
 
 In other words you'll get less bugs.
 
 Writing basic tests
 ~~~~~~~~~~~~~~~~~~~
 
-Cgreen tests are simply C functions with no parameters and a 'void'
+*Cgreen* tests are simply C functions with no parameters and no
 return value. To signal that they actually are tests we mark them with
 the +Ensure+ macro. An example might be...
 
@@ -596,8 +622,9 @@ Ensure(strlen_of_hello_should_be_five) {
 }
 -----------------------------
 
-The test function name can be anything you want. The 'assert_equal()' call is an example
-of an assertion. Assertions send messages to Cgreen, which in turn outputs the results.
+The test function name can be anything you want. The 'assert_equal()'
+call is an example of an assertion. Assertions send messages to
+*Cgreen*, which in turn outputs the results.
 
 Here are the standard assertions...
 
@@ -612,13 +639,16 @@ Here are the standard assertions...
 
 |=========================================================
 
-The boolean assertion macros accept an 'int' value. The equality assertions accept anything
-that can be cast to 'intptr_t' and simply perform an '==' operation. The string comparisons
-are slightly different in that they use the '<string.h>' library function 'strcmp()'.
-If 'assert_equal()' is used on 'char *' pointers then the pointers have to point at the same string.
+The boolean assertion macros accept an 'int' value. The equality
+assertions accept anything that can be cast to 'intptr_t' and simply
+perform an '==' operation. The string comparisons are slightly
+different in that they use the '<string.h>' library function
+'strcmp()'.  If 'assert_equal()' is used on 'char *' pointers then the
+pointers have to point at the same string.
 
-Each assertion has a default message comparing the two values. If you want to substitute
-your own failure messages, then you must use the '*_with_message()' counterparts...
+Each assertion has a default message comparing the two values. If you
+want to substitute your own failure messages, then you must use the
+'*_with_message()' counterparts...
 
 |=========================================================
 |*Assertion*
@@ -631,13 +661,16 @@ your own failure messages, then you must use the '*_with_message()' counterparts
 
 |=========================================================
 
-All these assertions have an additional 'char *' message parameter, which is the message
-you wished to display on failure. If this is set to 'NULL', then the default message 
-is shown instead. The most useful assertion from this group is 'assert_true_with_message()'
-as you can use that to create your own assertion functions with your own messages.
+All these assertions have an additional 'char *' message parameter,
+which is the message you wished to display on failure. If this is set
+to 'NULL', then the default message is shown instead. The most useful
+assertion from this group is 'assert_true_with_message()' as you can
+use that to create your own assertion functions with your own
+messages.
 
-Actually the assertion macros have variable argument lists. The failure message acts 
-like the template in 'printf()'. We could change the test above to be...
+Actually the assertion macros have variable argument lists. The
+failure message acts like the template in 'printf()'. We could change
+the test above to be...
 
 [source,c]
 -----------------------------
@@ -650,8 +683,8 @@ Ensure(strlen_of_hello_should_be_five) {
 
 A slightly more user friendly message when things go wrong. 
 
-For the test above to work there needs to be a running test suite. We can create one
-expecially for this test like so...
+For the test above to work there needs to be a running test suite. We
+can create one expecially for this test like so...
 
 [source,c]
 -----------------------------
@@ -665,19 +698,21 @@ TestSuite *our_tests() {
 In case you have spotted that 'strlen_of_hello_should_be_five()'
 should have an ampersand in front of it, 'add_test()' is a macro. The
 '&' is added automatically. Further more, the Ensure-macro actually
-mangles the tests name, so it might be difficult to find them in the debugger.
+mangles the tests name, so it is not actually a function name. (This
+also might make them a bit difficlut to find in the debugger....)
 
-To run the test suite, we call 'run_test_suite()' on it. This function cleans up the 
-test suite after running it, so we can just write...
+To run the test suite, we call 'run_test_suite()' on it. This function
+cleans up the test suite after running it, so we can just write...
 
 [source,c]
 -----------------------------
 run_test_suite(our_tests(), create_text_reporter());
 -----------------------------
 
-The results of assertions are ultimately delivered as passes and failures to a collection
-of callbacks defined in a 'TestReporter' structure. The only predefined one in Cgreen 
-is the 'TextReporter' that delivers messages in plain text.
+The results of assertions are ultimately delivered as passes and
+failures to a collection of callbacks defined in a 'TestReporter'
+structure. The only predefined one in *Cgreen* is the 'TextReporter'
+that delivers messages in plain text like we have already seen.
 
 The complete test code now looks like...
 
@@ -731,12 +766,12 @@ strlen.c:5: Test Failure: -> strlen_of_hello_should_be_five
 Completed "our_tests": 0 passes, 1 failure, 0 exceptions.
 -----------------------------
                 
-Cgreen starts every message with the location of the test failure so
+*Cgreen* starts every message with the location of the test failure so
 that the usual error message identifying tools (like emacs
 +next-error+) will work out of the box.
 
-Once we have a basic test scaffold up, it's pretty easy to add more tests. Adding a test
-of 'strlen()' with an empty string for example...
+Once we have a basic test scaffold up, it's pretty easy to add more
+tests. Adding a test of 'strlen()' with an empty string for example...
 
 [source,c]
 -----------------------------
@@ -759,8 +794,9 @@ And so on.
 Set up and tear down
 ~~~~~~~~~~~~~~~~~~~~
 
-It's common for test suites to have a lot of duplicate code, especially when setting
-up similar tests. Take this database code for example...
+It's common for test suites to have a lot of duplicate code,
+especially when setting up similar tests. Take this database code for
+example...
 
 [source,c]
 -----------------------------
@@ -823,8 +859,8 @@ test subject as complicated as a database
 http://www.martinfowler.com/eaaCatalog/activeRecord.html[ActiveRecord],
 having dozens of tests is very likely.
 
-We can get Cgreen to do some of the work for us by declaring these methods as 'setup' and
-'teardown' functions in the test suite.
+We can get *Cgreen* to do some of the work for us by declaring these
+methods as 'setup' and 'teardown' functions in the test suite.
  
 Here is the new version...
 
@@ -863,7 +899,7 @@ TestSuite *person_tests() {
 ...
 ---------------------------
 
-With this new arrangement Cgreen runs the 'create_schema()' function
+With this new arrangement *Cgreen* runs the 'create_schema()' function
 before each test, and the 'drop_schema()' function after each
 test. This saves some repetitive typing and reduces the chance of
 accidents. It also makes the tests more focused.
@@ -894,13 +930,14 @@ Ensure(will_seg_fault) {
 }
 -----------------------------
 
-Crashes are not something you would normally want to have in a test run. Not least 
-because it will stop you receiving the very test output you need to tackle the problem.
+Crashes are not something you would normally want to have in a test
+run. Not least because it will stop you receiving the very test output
+you need to tackle the problem.
 
-To prevent segmentation faults and other problems bringing down the test suites, Cgreen
-runs every test in it's own process.
+To prevent segmentation faults and other problems bringing down the
+test suites, *Cgreen* runs every test in it's own process.
 
-Just before calling the 'setup' function, Cgreen 'fork()''s. The main
+Just before calling the 'setup' function, *Cgreen* 'fork()''s. The main
 process wait's for the test to complete normally or die. This includes
 the calling the 'teardown' function, if any. If the test process dies,
 an exception is reported and the main test process carries on.
@@ -934,19 +971,21 @@ crash_test.c:4: Exception!: -> will_seg_fault
 Completed "main": 0 passes, 0 failures, 1 exception.
 -----------------------------
 
-The obvious thing to do now is to fire up the debugger. Unfortunately, the constant
-'fork()''ing of Cgreen can be an extra complication too many when debugging. It's enough
-of a problem to find the bug.
+The obvious thing to do now is to fire up the debugger. Unfortunately,
+the constant 'fork()''ing of *Cgreen* can be an extra complication too
+many when debugging. It's enough of a problem to find the bug.
 
-To get around this, and also to allow the running of one test at a time, Cgreen has the
-'run_single_test()' function. The signatures of the two run methods are...
+To get around this, and also to allow the running of one test at a
+time, *Cgreen* has the 'run_single_test()' function. The signatures of
+the two run methods are...
 
 - 'int run_test_suite(TestSuite *suite, TestReporter *reporter);'
 - 'int run_single_test(TestSuite *suite, char *test, TestReporter *reporter);'
 
-The extra parameter of 'run_single_test()', the 'test' string, is the name of the test to select.
-This could be any test, even in nested test suites (see below). Here is how we would use 
-it to debug our crashing test...
+The extra parameter of 'run_single_test()', the 'test' string, is the
+name of the test to select.  This could be any test, even in nested
+test suites (see below). Here is how we would use it to debug our
+crashing test...
 
 [source,c]
 -----------------------------
@@ -957,14 +996,15 @@ int main(int argc, char **argv) {
 }
 -----------------------------
 
-When run in this way, Cgreen will not 'fork()'.
+When run in this way, *Cgreen* will not 'fork()'.
 
-This deals with the segmentation fault case, but what about a process that fails to complete
-by getting stuck in a loop?
+This deals with the segmentation fault case, but what about a process
+that fails to complete by getting stuck in a loop?
 
-Well, Cgreen will wait forever too. Using the C signal handlers, we can place a time limit on the
-process by sending it an interrupt. To save us writing this ourselves, Cgreen includes the
-'die_in()' function to help us out.
+Well, *Cgreen* will wait forever too. Using the C signal handlers, we
+can place a time limit on the process by sending it an interrupt. To
+save us writing this ourselves, *Cgreen* includes the 'die_in()'
+function to help us out.
 
 Here is an example of time limiting a test...
 
@@ -997,23 +1037,23 @@ crash_test.c:9: Exception!: -> will_stall
 Completed "main": 0 passes, 0 failures, 2 exceptions.
 ---------------------------
 
-Note that you see the test results as they come in. Cgreen streams the results as they
-happen, making it easier to figure out where the test suite has problems.
+Note that you see the test results as they come in. *Cgreen* streams the
+results as they happen, making it easier to figure out where the test
+suite has problems.
 
-Of course, if you want to set a general time limit on all your tests, then you can add
-a 'die_in()' to a 'setup()' function. Cgreen will then apply the limit to all of them.
+Of course, if you want to set a general time limit on all your tests,
+then you can add a 'die_in()' to a 'setup()' function. *Cgreen* will
+then apply the limit to all of them.
 
 Building composite test suites
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
-The 'TestSuite' is a composite structure.
-This means test suites can be added to test suites, building
-a tree structure that will be executed in order.
+The 'TestSuite' is a composite structure.  This means test suites can
+be added to test suites, building a tree structure that will be
+executed in order.
 
-Let's combine the 'strlen()' tests with the
-'Person' tests above.
-Firstly we need to remove the 'main()' calls.
-E.g...
+Let's combine the 'strlen()' tests with the 'Person' tests above.
+Firstly we need to remove the 'main()' calls.  E.g...
 
 [source,c]
 -----------------------------
@@ -1082,7 +1122,7 @@ constant into 'create_named_test_suite()'.
 What happens to 'setup' and 'teardown' functions in a 'TestSuite' that
 contains other 'TestSuite's?
 
-Well firstly, Cgreen does not 'fork()' when running a suite.  It
+Well firstly, *Cgreen* does not 'fork()' when running a suite.  It
 leaves it up to the child suite to 'fork()' the individual tests.
 This means that a 'setup' and 'teardown' will run in the main
 process.  They will be run once for each child suite.
@@ -1201,7 +1241,7 @@ with temporary code, and the test isolation disappears when the system
 is eventually fleshed out.
 
 The ideal is to have minimal stubs written for each individual test.
-Cgreen encourages this approach by making such tests easier to write.
+*Cgreen* encourages this approach by making such tests easier to write.
          
 The problem with streams
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1275,7 +1315,7 @@ around with static variables and counters that are reset for each
 test.  And of course, we will be writing quite a few stubs.  Often a
 different one for each test.  That's a lot of clutter.
 
-Cgreen handles this clutter for us by letting us write a single
+*Cgreen* handles this clutter for us by letting us write a single
 programmable function for all our tests.
              
 Record and playback
@@ -1311,8 +1351,9 @@ Ensure(reading_lines_from_empty_stream_gives_null) {
 -----------------------
 
 The 'always_expect()' macro takes as arguments the function name and
-the 'will_return()' defines the return value.  We have told
-'stub_stream()' to always return 'EOF' when called.
+the 'will_return()' defines the return value. This is an expectation
+of a call to the stub, and we have told 'stub_stream()' to always
+return 'EOF' when called.
 
 
 Let's see if our production code actually works...
@@ -1343,12 +1384,11 @@ Ensure(one_character_stream_gives_one_character_line) {
 }
 -----------------------
 
-Unlike the 'always_return()' instruction, 'will_return()'
-sets just a single return value.
-It acts like a record and playback model.
-Successive instructions map out the return sequence that will be
-given back once the test proper starts.
-
+Unlike the 'always_expect()' instruction, 'expect()' sets up an
+expectation of a single call and specifying 'will_return()' sets the
+single return value for just that call.  It acts like a record and
+playback model.  Successive expectations map out the return sequence
+that will be given back once the test proper starts.
 
 We'll add this test to the suite and run it...
 
@@ -1388,12 +1428,15 @@ Running "main" (2 tests)...
 Completed "main": 2 passes, 0 failures, 0 exceptions.
 -----------------------
              
-How do the Cgreen stubs work?  The 'will_return()' calls build up a
-static list of return values which are cleared between tests.  The
-'mock()' macro captures the '__func__' property.  It uses these to
-look up entries in the return list, and also to generate more helpful
-messages.
+How do the *Cgreen* stubs work?  Each 'expect()' describes one call to
+the stub and the 'will_return()' calls build up a static list of
+return values which are used and returned in order as those calls
+arrive. The return values are cleared between tests.
 
+The 'mock()' macro captures the parameter names and the '__func__'
+property (the name of the stub function).  *Cgreen* can then use these
+to look up entries in the return list, and also to generate more
+helpful messages.
 
 We can crank out our tests quite quickly now...
 
@@ -1419,11 +1462,11 @@ throw a test failure.  This is overly restrictive, as our
 'read_paragraph()' function could quite legitimately call the stream
 after it had run off of the end.  OK, that would be odd behaviour, but
 that's not what we are testing here.  If we were, it would be placed
-in a test of it's own.  The 'always_expect()' call tells Cgreen to
+in a test of it's own.  The 'always_expect()' call tells *Cgreen* to
 keep going after the first three letters, allowing extra calls.
 
-As we build more tests, they start to look like a specification of the
-behaviour...
+As we build more and more tests, they start to look like a
+specification of the wanted behaviour...
 
 [source,c]
 -----------------------
@@ -1445,7 +1488,6 @@ Ensure(single_line_ending_gives_empty_line) {
     assert_string_equal(read_paragraph(&stub_stream, NULL), "");
 }
 -----------------------
-
 
 This time we musn't use 'always_return()'.  We want to leave the
 stream where it is, ready for the next call to 'read_paragraph()'.  If
@@ -1599,7 +1641,7 @@ minimal.  The catch with this method is that we are back to writing
 individual functions for each test.  We have the same problem as we
 had with hand coded stubs.
 
-Again, 'Cgreen' has a way to automate this.  Here is the rewritten
+Again, *Cgreen* has a way to automate this.  Here is the rewritten
 test...
 
 [source,c]
@@ -1627,20 +1669,21 @@ object oriented circles, an object that checks it's parameters as well
 as simulating behaviour is called a mock object.  By analogy
 'reader()' is a mock function, or mock callback.
 
-Using the 'expect' macro, we have stated that 'writer()' will be
-called just once.  That call must have the string '"a"' for the
-paragraph parameter.  If this parameter does not match, the mock
-function will issue a failure straight to the test suite.  This is
-what saves us writing a lot of assertions.
+Using the 'expect' macro, we have set up the expectation that
+'writer()' will be called just once.  That call must have the string
+'"a"' for the 'paragraph' parameter.  If the actual value of that
+parameter does not match, the mock function will issue a failure
+straight to the test suite.  This is what saves us writing a lot of
+assertions.
 
 When specifying behavior of mocks there are three parts. First, how
-often the specified behaviour will be executed:
+often the specified behaviour or expectation will be executed:
 
 |=========================================
 |*Macro*|*Description*
-|'expect(function, ...)'|Execute once in order
-|'always_expect(function, ...)'|Execute this behavior from here onwards
-|'expect_never(function)'|This mock should never be called
+|'expect(function, ...)'|Expected once, in order
+|'always_expect(function, ...)'|Expect this behavior from here onwards
+|'expect_never(function)'|This mock is never expected to be called
 |=========================================
 
 You can specify constraints and behaviours for each expectation
@@ -1698,14 +1741,16 @@ You can combine these in various ways:
   expect(mocked_file_reader,
         when(file, is_equal_to_contents_of(&FD, sizeof(FD))),
         when(input, is_equal_to_string("Hello world!"),
-        will_set_contents_of_parameter(status, FD_CLOSED)));
+        will_set_contents_of_parameter(status, FD_CLOSED, sizeof(bool))));
 -----------------------
 
 If multiple 'when()' are specified they all need to be fullfilled. You
-can of course only have one for each parameter to your mock function.
+can of course only have one for each of the parameters of your mock
+function.
 
-You can also have multiple 'will_set_contents_of_parameter()', one for
-each reference parameter, but only one 'will_return()'.
+You can also have multiple 'will_set_contents_of_parameter()' in an
+expectation, one for each reference parameter, but naturally only one
+'will_return()'.
 
 It's about time we actually ran our test...
 
@@ -1859,7 +1904,7 @@ extends the object from 'create_reporter()'.
 The text reporter only outputs content at the start of the first test,
 at the end of the test run to display the results, when a failure
 occours, and when a test fails to complete.
-A quick look at the +text_reporter.c+ file in +Cgreen+
+A quick look at the +text_reporter.c+ file in *Cgreen*
 reveals that the overrides just output a message and
 chain to the versions in +reporter.h+.
 
@@ -1869,7 +1914,7 @@ about the methods in the 'TestReporter' structure.
              
 The TestReporter structure
 
-The Cgreen 'TestReporter' is a pseudo class that looks
+The *Cgreen* 'TestReporter' is a pseudo class that looks
 something like...
 
 [source,c]
@@ -1894,39 +1939,45 @@ struct _TestReporter {
 
 The first block are the methods that can be overridden.
 
-[horizontal]
-'void (*destroy)(TestReporter *)':: This is the destructor for the default 
+'void (*destroy)(TestReporter *)'::
+This is the destructor for the default 
 structure. If this is overridden, then the overriding function must call 
 'destroy_reporter(TestReporter *reporter)' to finish the clean up. 
 
-'void (*start)(TestReporter *, const char *)':: The first of the callbacks. At 
-the start of each test suite Cgreen will call this method on the reporter with 
+'void (*start)(TestReporter *, const char *)'::
+The first of the callbacks. At 
+the start of each test suite *Cgreen* will call this method on the reporter with 
 the name of the suite being entered. The default version keeps track of the stack 
 of tests in the 'breadcrumb' pointer of 'TestReporter'. If you make use of the 
 breadcrumb functions, as the defaults do, then you will need to call 
 'reporter_start()' to keep the book keeping in sync.
  
-'void (*finish)(TestReporter *, const char *)':: The counterpart to the 
+'void (*finish)(TestReporter *, const char *)'::
+The counterpart to the 
 '(*start)()' call called on leaving the test suite. It needs to be chained to the 
 'reporter_finish()' to keep track of the breadcrumb book keeping. The text 
 reporter uses the state of the breadcrumb to decide if it is ending teh top level 
 test. If so, it prints the familiar summary of passes and fails.
 
-'void (*show_pass)(TestReporter *, const char *, int, const char *, va_list)':: This method is initially empty, so there is no need to chain the call to any 
-other function. Besides the pointer to the reporter structure, Cgreen also passes 
+'void (*show_pass)(TestReporter *, const char *, int, const char *, va_list)'::
+This method is initially empty, so there is no need to chain the call to any 
+other function. Besides the pointer to the reporter structure, *Cgreen* also passes 
 the file name of the test, the line number of failed assertion, the message to 
 show and any additional parameters to substitute into the message. The message 
 comes in as 'printf()' style format string, and so the variable argument list 
 should match the substitutions. 
 
-'void (*show_fail)(TestReporter *, const char *, int, const char *, va_list)':: The partner of 'show_pass()', and the one you'll likely overload first. 
+'void (*show_fail)(TestReporter *, const char *, int, const char *, va_list)'::
+The partner of 'show_pass()', and the one you'll likely overload first. 
 
-'void (*show_incomplete)(TestReporter *, const char *)':: When a test fails to 
+'void (*show_incomplete)(TestReporter *, const char *)'::
+When a test fails to 
 complete, this is the handler that is called. As it's an unexpected outcome, no 
 message is received, but we do get the name of the test. The text reporter 
 combines this with the breadcrumb to produce the exception report.
 
-'void (*assert_true)(TestReporter *, const char *, int, int, const char *, ...)':: This is not normally overridden and is really internal. It is the raw 
+'void (*assert_true)(TestReporter *, const char *, int, int, const char *, ...)'::
+This is not normally overridden and is really internal. It is the raw 
 entry point for the test messages from the test suite. By default it dispatches 
 teh call to either 'show_pass()' or 'show_fail()'.
 
@@ -1950,31 +2001,29 @@ When the 'finish()' message handler is invoked, a
 name is popped off.
 
 
-There are a bunch of utility functions in +cgreen/breadcrumb.h+
-that can read the state of this stack.
-Most useful are 'get_current_from_breadcrumb()' which
-takes the breadcrumb pointer and returns the curent test name,
-and 'get_breadcrumb_depth()' which gives the current
-depth of the stack.
-A depth of zero means that the test run has finished.
+There are a bunch of utility functions in +cgreen/breadcrumb.h+ that
+can read the state of this stack.  Most useful are
+'get_current_from_breadcrumb()' which takes the breadcrumb pointer and
+returns the curent test name, and 'get_breadcrumb_depth()' which gives
+the current depth of the stack.  A depth of zero means that the test
+run has finished.
 
 
-If you need to traverse all the names in the breadcrumb,
-then you can call 'walk_breadcrumb()'.
-Here is the full signature...
+If you need to traverse all the names in the breadcrumb, then you can
+call 'walk_breadcrumb()'.  Here is the full signature...
 
 [source,c]
 -----------------------
 void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *), void *memo);
 -----------------------
 
-The 'void (*walker)(const char *, void *)' is a callback
+The 'void (\*walker)(const char \*, void \*)' is a callback
 that will be passed the name of the test suite for each
 level of nesting.
 It is also poassed the 'memo' pointer that was
 passed to the 'walk_breadcrumb()' call.
 You can use this pointer for anything you want, as
-all <emphasis>Cgreen does is pass it from call to call.
+all *Cgreen* does is pass it from call to call.
 This is so aggregate information can be kept track of whilst
 still being reentrant.
 
@@ -1990,7 +2039,7 @@ An example XML reporter
 ~~~~~~~~~~~~~~~~~~~~~~~
             
 Let's make things real with an example.
-Suppose we want to send the output from <emphasis>Cgreen in XML format,
+Suppose we want to send the output from *Cgreen* in XML format,
 say for storing in a repository or for sending across the network.
              
             
@@ -2115,7 +2164,8 @@ gcc xml_reporter.o test_as_xml.o -lcgreen -o xml
 Yep, nothing.
 
 
-Let's add the outer test tags first, so that we can see Cgreen navigating the test suite...
+Let's add the outer test tags first, so that we can see *Cgreen*
+navigating the test suite...
 
 -----------------------
 #include "xml_reporter.h"

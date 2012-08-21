@@ -62,8 +62,8 @@ Within this new directory, we let cmake configure the Makefiles
     $ cmake ../cgreen
 We then get the following make targets:
     $ make
-    $ make install
     $ make test
+    $ make install
 
 You also have some options
 - build with static libraries
@@ -71,3 +71,11 @@ You also have some options
 
 To enable any of these use the cmake graphical user interface (CMakeSetup
 on Windows or ccmake on UNIX) to turn these options on or off.
+
+Note on CYGWIN: Cygwin is not a WIN32 platform, but it is a
+DLL-platform where libraries normally goes in the bin directory. I
+have yet to convince CMake to do this, so the make the above work you
+need to install before running the tests and also set PATH to include
+"/usr/local/lib" (or by setting the PATH to include the build
+directory where the libraries are you can of course run the
+tests). /Thomas 2012-08-20
