@@ -1,7 +1,8 @@
+# Required cmake version
+cmake_minimum_required(VERSION 2.8.4)
+
 project(cgreen C)
 
-# Required cmake version
-cmake_minimum_required(VERSION 2.6.0)
 set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove when CMake >= 2.8.4 is required
 
 
