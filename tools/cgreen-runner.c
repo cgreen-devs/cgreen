@@ -15,7 +15,17 @@ struct test_item {
 };
 
 #define cgreen_spec_prefix "CgreenSpec_"
-#define nm_output_column_separator " "
+#define cgreen_suite_default "default_"
+
+#ifdef __CYGWIN__
+// Cygwin and MacOSX nm lists external names with a leading '_'
+// which dlsym() doesn't want, so we'll include the '_' in the separator
+#  define nm_output_column_separator " _"
+#else
+#  define nm_output_column_separator " "
+#endif
+
+
 
 static uint32_t discover_tests_in(const char *, struct test_item *, const uint32_t);
 static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, const uint32_t number_of_tests, TestSuite* suite);
@@ -66,8 +76,11 @@ int main(int argc, char **argv) {
     add_discovered_tests_to_suite(test_library_handle, discovered_tests, number_of_tests, suite);
 
     if (test_name) {
-	char *test_name_with_prefix = malloc(strlen(cgreen_spec_prefix) + strlen(test_name) + 1);
+	char *test_name_with_prefix = malloc(strlen(cgreen_spec_prefix) +
+                                             strlen(cgreen_suite_default) +
+                                             strlen(test_name) + 1);
 	strcpy(test_name_with_prefix, cgreen_spec_prefix);
+	strcat(test_name_with_prefix, cgreen_suite_default);
 	strcat(test_name_with_prefix, test_name);
 	printf("Only running test %s ...\n", test_name);
 	status = run_single_test(suite, test_name_with_prefix, reporter);
@@ -111,25 +124,24 @@ static uint32_t discover_tests_in(const char* test_library, struct test_item* te
     uint32_t number_of_tests = 0;
     char line[1024];
     while (fgets(line, sizeof(line)-1, nm_output_pipe) != NULL) {
-       char *match = strstr(line, nm_output_column_separator cgreen_spec_prefix);
-       if (match != NULL) {
-	   match += strlen(nm_output_column_separator);
+        char *match = strstr(line, nm_output_column_separator cgreen_spec_prefix);
+        if (match != NULL) {
+            match += strlen(nm_output_column_separator);
 
-	   const char* const cgreen_spec_default = cgreen_spec_prefix "default";
-           if (0 != strncmp(match, cgreen_spec_default, strlen(cgreen_spec_default)))
-           {
-	       match[strlen(match) - 1] = 0; /* remove newline */
-	       test_items[number_of_tests].name = strdup(match);
+            if (0 == strncmp(match, cgreen_spec_prefix, strlen(cgreen_spec_prefix)))
+                {
+                    match[strlen(match) - 1] = 0; /* remove newline */
+                    test_items[number_of_tests].name = strdup(match);
 
-	       //const size_t cgreen_spec_prefix_length = strlen(cgreen_spec_prefix);
-	       //printf("Discovered test %s ...\n", match + cgreen_spec_prefix_length);
+                    // const size_t cgreen_spec_prefix_length = strlen(cgreen_spec_prefix);
+                    // printf("Discovered test %s ...\n", match + cgreen_spec_prefix_length);
 
-	       if (++number_of_tests > maximum_number_of_test_items) {
-		   printf("Found too many tests (%d)! Giving up. Consider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
-		   exit(1);
-	       }
-           }
-       }
+                    if (++number_of_tests > maximum_number_of_test_items) {
+                        printf("Found too many tests (%d)! Giving up. Consider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
+                        exit(1);
+                    }
+                }
+        }
     }
 
     pclose(nm_output_pipe);
