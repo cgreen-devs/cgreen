@@ -77,7 +77,7 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 
 	clear_output();
 
-	va_list arguments = NULL;
+	va_list arguments;
 
 	reporter->show_pass(reporter, "file", 2, "test_name", arguments);
 	assert_no_output();
@@ -93,7 +93,7 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 Ensure(will_report_failing_of_test_only_once) {
 	reporter->start_test(reporter, "test_name");
 
-	va_list arguments = NULL;
+	va_list arguments;
 
 	clear_output();
 	reporter->failures++;	// Simulating a failed assert
