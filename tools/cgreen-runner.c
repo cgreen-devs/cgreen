@@ -17,7 +17,7 @@ struct test_item {
 #define cgreen_spec_prefix "CgreenSpec_"
 #define cgreen_suite_default "default_"
 
-#ifdef __CYGWIN__
+#if defined(__CYGWIN__) || defined(__APPLE__)
 // Cygwin and MacOSX nm lists external names with a leading '_'
 // which dlsym() doesn't want, so we'll include the '_' in the separator
 #  define nm_output_column_separator " _"
