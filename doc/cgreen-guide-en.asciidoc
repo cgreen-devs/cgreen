@@ -142,8 +142,8 @@ int main(int argc, char **argv) {
 }
 -----------------------------
 
-A test is denoted by the *Ensure*. You can consider it having a 'void
-(void)' signature. You add the test to your suite using
+A test is denoted by the macro *Ensure*. You can think of a test as
+having a 'void (void)' signature. You add the test to your suite using
 'add_test()'.
 
 On compiling and running, we now get the output...
@@ -185,7 +185,7 @@ separate the runner from the test cases.  That way, multiple test
 suites of test cases can be included in the 'main()' runner file.
 This makes it less work to add more tests.
 
-Here is the, so far empty, test case in 'words_test.c'...
+Here is the, so far empty, test case in +words_test.c+...
 
 [source,c]
 -------------------------------
@@ -197,7 +197,7 @@ TestSuite *suite = create_test_suite();
 }
 -------------------------------
 
-Here is the 'all_tests.c' test runner...
+Here is the +all_tests.c+ test runner...
 
 [source,c]
 -------------------------------
@@ -272,7 +272,7 @@ To get this to compile we need to create the +words.h+ header file...
 int split_words(char *sentence);
 -------------------------------
 
-...and to get the code to link we need a stub function in 'words.c'...
+...and to get the code to link we need a stub function in +words.c+...
 
 [source,c]
 -------------------------------
@@ -1913,6 +1913,7 @@ To change the reporting mechanism ourselves, we just have to know a little
 about the methods in the 'TestReporter' structure.
              
 The TestReporter structure
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The *Cgreen* 'TestReporter' is a pseudo class that looks
 something like...
@@ -2394,100 +2395,131 @@ And finally the desired output...
 
 Job done.
                          
-Possible other extensions include reporters that write to <emphasis>syslog,
+Possible other extensions include reporters that write to 'syslog',
 talk to IDE plug-ins, paint pretty printed documents or just return a boolean
 for monitoring purposes.
              
-Automaticaly tests collector	
-----------------------------
+Automatic Test Discovery
+------------------------
 
-The collector tool
-~~~~~~~~~~~~~~~~~~
-            
-When we want to add a new test, we open the test script and create a new
-void function. So we add the name of the function inside of TestSuite.
-				
-In summary each new test added we should added inside of TestSuite too.                
+Forgot to add your test?
+~~~~~~~~~~~~~~~~~~~~~~~~
 
+When we write a new test we need to keep to things in our
+heads. Firstly, and mainly, are the details about the test we are
+trying to write. And writing tests are no trivial matter so this might
+well take a lot of brain power.
 
-The collector tool change this
-boring behaviour. The idea is to save work of add every tests written inside
-of 'TestSuite'. Basically each test is to be declared with the macro
-Ensure in which is automatically inserted
-inside of 'TestSuite'.
-                                                          
-Example
-~~~~~~~
-            
-To use the collector tool we need to modify the definition of each functions.
-Before we used:
+So, it comes to no big surprise, that sometimes you write your test
+you forget to add it to the suite. When we run it it appears that it
+passed on the first try! Although this *should* really make you
+suspicious, sometimes you get so happy that you just continue with
+churning out more tests and more code. It's not until some (possibly
+looong) time later that you realize, after much headache and
+debugging, that the test did not actually pass. It was never even run!
 
-[source,c]
------------------------
-void one_should_assert_char_equal_to_one() {
-	char x = 1;
-	char y = 1;
-    assert_equal(x, y);
-}
------------------------
+There are practices to minimize the risk of this happening, such as
+always running the test as soon as you can set up the test. This way
+you will see it fail before trying to get it to pass.
 
-Now we need to rewrite to:
+But it is still a practice, something we, as humans, might fail to do
+at some point. Usually this happens when we are most stressed and in
+need of security.
 
-[source,c]				
------------------------
-Ensure one_should_assert_char_equal_to_one() {
-	char x = 1;
-	char y = 1;
-    assert_equal(x, y);
-}
------------------------
-                
-For each writen test, we must declared like Ensure type. 
-It is a C macro and tell to collector that this test should be put inside the TestSuite.                
- 
+The solution - the 'cgreen-runner'
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the TestSuite we don't more need to write the testes with compound the TestSuite. Just let
-like:
+*Cgreen* gives you a tool to avoid not only the risk of this
+happening, but also the extra work and extra code. It is called the
+'cgreen-runner'.
 
-[source,c]
------------------------                
-TestSuite *assertion_tests() {
+The 'cgreen-runner' should come with your *Cgreen* installation if
+your platform supports the technique that is required, which is
+'programatic access to dynamic loading of libraries'. This means
+that a program can load an external library of code into memory and
+inspect it. Kind of self-inspection, or reflexion.
+
+So all you have to do is to build a dynamically loadable library of
+all tests (and of course your objects under test and other necessary
+code). Then you can run the 'cgreen-runner' and point it to the
+library. The runner will then load the library, enumerate all tests in
+it, and run every test.
+
+It's automatic, and there is nothing to forget.
+
+Using the runner
+~~~~~~~~~~~~~~~~
+
+Assuming your tests are in +first_test.c+ the typical command to
+build your library using gcc would be
+
+[code, c]
+--------------------------
+$ gcc -o first_test.o -fPIC first_test.c
+$ gcc -shared -o first_test.so first_test.o -lcgreen
+--------------------------
+
+The '-fPIC' means to generate +position independent code+ which is
+required if you want to load the library dynamically.
+
+How to build a dynamically loadable shared library might vary a lot
+depending on you platform. Can't really help you there, sorry!
+
+Now we can run the tests using the 'cgreen-runner':
+
+[code, c]
+-------------------------
+$ cgreen-runner first_test.dll
+Discovered: 2 tests
+Opening [first_test.dll] to run all discovered tests ...
+Running "main" (2 tests)...
+first_test.c:8: Test Failure: -> this_test_should_fail
+        [0] should be true
+Completed "main": 1 pass, 1 failure, 0 exceptions.
+-------------------------
+
+More or less exactly the same output as when we ran our first test in
+the beginning of this quickstart tutorial.
+
+Now we can actually delete the main function in our source code. We
+don't need all this:
+
+[code, c]
+------------------------
+int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
-    add_tests();
-    return suite;
-}                
------------------------     
-                           
-Assuming that our test script is the file +assertion_tests.c+, 
-running the 'collector' we have:
-				
------------------------                
-./collector assertion_tests.c
------------------------
-
-The finally result in test script is:
-
-[source,c]
------------------------
-Ensure one_should_assert_char_equal_to_one() {
-	char x = 1;
-	char y = 1;
-    assert_equal(x, y);
+    add_test(suite, this_test_should_pass);
+    add_test(suite, this_test_should_fail);
+    return run_test_suite(suite, create_text_reporter());
 }
+------------------------
 
-TestSuite *assertion_tests() {
-    TestSuite *suite = create_test_suite(&one_should_assert_char_equal_to_one);
-    add_tests();
-    return suite;
-}
------------------------
-           
-          
-The tool read all script, do the necessary substituitions and write to the
-original file.
-So just add a new test and run the collector tool to adjust automatically the
-TestSuite.
-           
+It always feel good to delete code, right?
+
+We can also select which test to run:
+
+[code, c]
+-------------------------
+$ cgreen-runner.exe first_test.dll this_test_should_fail
+Discovered: 2 tests
+Opening [first_test.dll] to only run test 'this_test_should_fail' ...
+Running "main" (2 tests)...
+first_test.c:8: Test Failure: -> this_test_should_fail
+        [0] should be true
+Completed "main": 0 passes, 1 failure, 0 exceptions.
+-------------------------
+
+Setup, Teardown and custom reporters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+At the time of writing there is no way to use setup and teardown
+functions with the runner (that I am aware of).
+
+Neither is it possible to use custom reporters as outlined in the
+previous chapter.
+
+In both these cases you need to resort to the standard, programatic,
+way of invoking your tests. But, who knows...
 
 [appendix]
 Revision History
