@@ -71,7 +71,11 @@ include_directories(
 ### cgreen
 add_library(${CGREEN_SHARED_LIBRARY} SHARED ${cgreen_SRCS})
 
-target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES} stdc++)
+if (WITH_CXX)
+   target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES} stdc++)
+else (WITH_CXX)
+   target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES})
+endif (WITH_CXX)
 
 set_target_properties(
   ${CGREEN_SHARED_LIBRARY}

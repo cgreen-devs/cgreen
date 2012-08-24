@@ -148,6 +148,7 @@ static uint32_t register_test(struct test_item  *test_items, uint32_t maximum_nu
 
 
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
+// XXX: nm is more portable across object formats...
 static uint32_t discover_tests_in(const char* test_library, struct test_item* test_items, const uint32_t maximum_number_of_test_items)
 {
     char cmd[2048];
