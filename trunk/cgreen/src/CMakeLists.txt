@@ -84,26 +84,13 @@ set_target_properties(
         ${CGREEN_LIBRARY_NAME}
 )
 
-IF (CYGWIN)
-# install shared library in a directory normally in the PATH
-  install(
-    TARGETS
-      ${CGREEN_SHARED_LIBRARY}
-    DESTINATION
-      ${BIN_INSTALL_DIR}
-    COMPONENT
-      libraries
+install(
+  TARGETS ${CGREEN_SHARED_LIBRARY}
+  RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+  LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+  ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+  COMPONENT libraries
 )
-else (CYGWIN)
-  install(
-    TARGETS
-      ${CGREEN_SHARED_LIBRARY}
-    DESTINATION
-      ${LIB_INSTALL_DIR}
-    COMPONENT
-      libraries
-)
-endif (CYGWIN)
 
 if (WITH_STATIC_LIBRARY)
   add_library(${CGREEN_STATIC_LIBRARY} STATIC ${cgreen_SRCS})
