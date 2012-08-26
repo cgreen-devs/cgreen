@@ -14,25 +14,25 @@ struct test_item {
     char *name;
 };
 
-#define cgreen_spec_prefix "CgreenSpec_"
-#define cgreen_suite_default "default_"
+#define CGREEN_SPEC_PREFIX "CgreenSpec_"
+#define CGREEN_SUITE_DEFAULT "default_"
 
 #if defined(__CYGWIN__) || defined(__APPLE__)
 // Cygwin and MacOSX nm lists external names with a leading '_'
 // which dlsym() doesn't want, so we'll include the '_' in the separator
-#  define nm_output_column_separator " _"
+#  define NM_OUTPUT_COLUMN_SEPARATOR " _"
 #else
-#  define nm_output_column_separator " "
+#  define NM_OUTPUT_COLUMN_SEPARATOR " "
 #endif
 
 
 /* Forward declarations: */
 static uint32_t discover_tests_in(const char *, struct test_item *, const uint32_t max);
-static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, const uint32_t number_of_tests, TestSuite* suite);
+static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, TestSuite* suite);
 static int file_exists (const char *filename);
 static void reflective_runner_cleanup(void*);
 static char *mangle_test_name(const char *test_name);
-static bool ensure_test_exists(struct test_item  discovered_tests[], int number_of_tests, char *test_name_with_prefix);
+static bool ensure_test_exists(struct test_item  discovered_tests[], char *test_name_with_prefix);
 
 int main(int argc, char **argv) {
     int status;
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     const char* test_library = argv[1];
     const char* test_name = NULL;
     if (argc == 3) {
-		test_name = argv[2];
+        test_name = argv[2];
     }
 
     if (!file_exists(test_library)) {
@@ -61,6 +61,7 @@ int main(int argc, char **argv) {
     const uint32_t MAXIMUM_NUMBER_OF_TESTS = 2048;
     struct test_item discovered_tests[MAXIMUM_NUMBER_OF_TESTS];
     memset(discovered_tests, 0, sizeof(discovered_tests));
+
     const uint32_t number_of_tests = discover_tests_in(test_library, discovered_tests, MAXIMUM_NUMBER_OF_TESTS);
 
     printf("Discovered: %d tests\n", number_of_tests);
@@ -75,50 +76,48 @@ int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
     TestReporter *reporter = create_text_reporter();
 
-    add_discovered_tests_to_suite(test_library_handle, discovered_tests, number_of_tests, suite);
+    add_discovered_tests_to_suite(test_library_handle, discovered_tests, suite);
 
     if (test_name) {
-		char *test_name_with_prefix = mangle_test_name(test_name);
-		bool found = ensure_test_exists(discovered_tests, number_of_tests, test_name_with_prefix);
-		printf(" to only run test '%s' ...\n", test_name);
-		if (!found) {
-			fprintf(stderr, "ERROR: No such test: '%s'\n", test_name);
-			exit(1);
-		}
-		status = run_single_test(suite, test_name_with_prefix, reporter);
-		free(test_name_with_prefix);
+        char *test_name_with_prefix = mangle_test_name(test_name);
+        bool found = ensure_test_exists(discovered_tests, test_name_with_prefix);
+        printf(" to only run test '%s' ...\n", test_name);
+        if (!found) {
+            fprintf(stderr, "ERROR: No such test: '%s'\n", test_name);
+            exit(1);
+        }
+        status = run_single_test(suite, test_name_with_prefix, reporter);
+        free(test_name_with_prefix);
     } else {
-		printf(" to run all discovered tests ...\n");
-		status = run_test_suite(suite, reporter);
+        printf(" to run all discovered tests ...\n");
+        status = run_test_suite(suite, reporter);
     }
 
     reflective_runner_cleanup(test_library_handle);
 
     for (uint32_t i = 0; i != number_of_tests; ++i)
-		free(discovered_tests[i].name);
+        free(discovered_tests[i].name);
 
     return status;
 }
 
 static char *mangle_test_name(const char *test_name) {
-	char *test_name_with_prefixes = malloc(strlen(cgreen_spec_prefix) +
-										 strlen(cgreen_suite_default) +
-										 strlen(test_name) + 1);
-	strcpy(test_name_with_prefixes, cgreen_spec_prefix);
-	strcat(test_name_with_prefixes, cgreen_suite_default);
-	strcat(test_name_with_prefixes, test_name);
-	return test_name_with_prefixes;
+    char *test_name_with_prefixes = malloc(strlen(CGREEN_SPEC_PREFIX) +
+                                           strlen(CGREEN_SUITE_DEFAULT) +
+                                           strlen(test_name) + 1);
+    strcpy(test_name_with_prefixes, CGREEN_SPEC_PREFIX);
+    strcat(test_name_with_prefixes, CGREEN_SUITE_DEFAULT);
+    strcat(test_name_with_prefixes, test_name);
+    return test_name_with_prefixes;
 }
 
 
-static bool ensure_test_exists(struct test_item  discovered_tests[], int number_of_tests, char *test_name_with_prefix) {
-	bool myfound;
-	for (int i = 0; i < number_of_tests; i++)
-		if (strcmp(discovered_tests[i].name, test_name_with_prefix) == 0) {
-			myfound = true;
-			break;
-		}
-	return myfound;
+static bool ensure_test_exists(struct test_item discovered_tests[], char *test_name_with_prefix) {
+    for (int i = 0; discovered_tests[i].name != NULL; i++)
+        if (strcmp(discovered_tests[i].name, test_name_with_prefix) == 0) {
+            return true;
+        }
+    return false;
 }
 
 static int file_exists(const char *filename)
@@ -131,19 +130,16 @@ static void reflective_runner_cleanup(void *handle)
     dlclose(handle);
 }
 
-static uint32_t register_test(struct test_item  *test_items, uint32_t maximum_number_of_tests, uint32_t number_of_tests, char *match) {
-	match += strlen(nm_output_column_separator);
-	match[strlen(match) - 1] = 0; /* remove newline */
-	test_items[number_of_tests].name = strdup(match);
+static void register_test(struct test_item *test_items, uint32_t maximum_number_of_tests, char *name) {
+    int number_of_tests;
 
-	// const size_t cgreen_spec_prefix_length = strlen(cgreen_spec_prefix);
-	// printf("Discovered test %s ...\n", match + cgreen_spec_prefix_length);
+    for (number_of_tests = 0; test_items[number_of_tests].name != NULL; number_of_tests++);
+    test_items[number_of_tests].name = strdup(name);
 
-	if (++number_of_tests > maximum_number_of_tests) {
-		printf("Found too many tests (%d)! Giving up. Consider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
-		exit(1);
-	}
-	return(number_of_tests);
+    if (number_of_tests == maximum_number_of_tests) {
+        printf("Found too many tests (%d)! Giving up. Consider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
+        exit(1);
+    }
 }
 
 
@@ -165,9 +161,12 @@ static uint32_t discover_tests_in(const char* test_library, struct test_item* te
     uint32_t number_of_tests = 0;
     char line[1024];
     while (fgets(line, sizeof(line)-1, nm_output_pipe) != NULL) {
-        char *match = strstr(line, nm_output_column_separator cgreen_spec_prefix);
+        char *match = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR CGREEN_SPEC_PREFIX);
         if (match != NULL) {
-			number_of_tests = register_test(test_items, maximum_number_of_test_items, number_of_tests, match);
+            char *function_name = match + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
+            function_name[strlen(function_name) - 1] = 0; /* remove newline */
+            register_test(test_items, maximum_number_of_test_items, function_name);
+            number_of_tests++;
         }
     }
 
@@ -176,11 +175,9 @@ static uint32_t discover_tests_in(const char* test_library, struct test_item* te
     return number_of_tests;
 }
 
-static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, const uint32_t number_of_tests, TestSuite* suite)
+static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, TestSuite* suite)
 {
-    for (uint32_t i = 0; i < number_of_tests; i++) {
-        //printf("Discovered test %s ...\n", testlist[i].name);
-
+    for (int i = 0; tests[i].name != NULL; i++) {
         char *error;
         CgreenTest *cgreen_test = (CgreenTest *)(dlsym(handle, tests[i].name));
 
