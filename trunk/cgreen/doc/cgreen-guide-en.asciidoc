@@ -711,7 +711,7 @@ run_test_suite(our_tests(), create_text_reporter());
 
 The results of assertions are ultimately delivered as passes and
 failures to a collection of callbacks defined in a 'TestReporter'
-structure. The only predefined one in *Cgreen* is the 'TextReporter'
+tructure. The only predefined one in *Cgreen* is the 'TextReporter'
 that delivers messages in plain text like we have already seen.
 
 The complete test code now looks like...
@@ -1881,12 +1881,17 @@ Here is the code for 'create_text_reporter()'...
 
 [source,c]
 -----------------------
-TestReporter *create_text_reporter() {
+TestReporter *create_text_reporter(void) {
     TestReporter *reporter = create_reporter();
-    reporter->start = &text_reporter_start;
-    reporter->finish = &text_reporter_finish;
+    if (reporter == NULL) {
+        return NULL;
+    }
+    reporter->start_suite = &text_reporter_start_suite;
+    reporter->start_test = &text_reporter_start_test;
     reporter->show_fail = &show_fail;
     reporter->show_incomplete = &show_incomplete;
+    reporter->finish_test = &text_reporter_finish;
+    reporter->finish_suite = &text_reporter_finish;
     return reporter;
 }
 -----------------------
@@ -1922,13 +1927,19 @@ something like...
 -----------------------
 typedef struct _TestReporter TestReporter;
 struct _TestReporter {
-    void (*destroy)(TestReporter *);
-    void (*start)(TestReporter *, const char *);
-    void (*finish)(TestReporter *, const char *);
-    void (*show_pass)(TestReporter *, const char *, int, const char *, va_list);
-    void (*show_fail)(TestReporter *, const char *, int, const char *, va_list);
-    void (*show_incomplete)(TestReporter *, const char *);
-    void (*assert_true)(TestReporter *, const char *, int, int, const char *, ...);
+    void (*destroy)(TestReporter *reporter);
+    void (*start_suite)(TestReporter *reporter, const char *name, const int count);
+    void (*start_test)(TestReporter *reporter, const char *name);
+    void (*show_pass)(TestReporter *reporter, const char *file, int line,
+                                   const char *message, va_list arguments);
+    void (*show_fail)(TestReporter *reporter, const char *file, int line,
+                                   const char *message, va_list arguments);
+    void (*show_incomplete)(TestReporter *reporter, const char *file, int line,
+                                   const char *message, va_list arguments);
+    void (*assert_true)(TestReporter *reporter, const char *file, int line, int result,
+                                   const char * message, ...);
+    void (*finish_test)(TestReporter *reporter, const char *file, int line);
+    void (*finish_suite)(TestReporter *reporter, const char *file, int line);
     int passes;
     int failures;
     int exceptions;
@@ -1940,48 +1951,65 @@ struct _TestReporter {
 
 The first block are the methods that can be overridden.
 
-'void (*destroy)(TestReporter *)'::
+'void (*destroy)(TestReporter *reporter)'::
 This is the destructor for the default 
 structure. If this is overridden, then the overriding function must call 
 'destroy_reporter(TestReporter *reporter)' to finish the clean up. 
 
-'void (*start)(TestReporter *, const char *)'::
-The first of the callbacks. At 
-the start of each test suite *Cgreen* will call this method on the reporter with 
-the name of the suite being entered. The default version keeps track of the stack 
-of tests in the 'breadcrumb' pointer of 'TestReporter'. If you make use of the 
-breadcrumb functions, as the defaults do, then you will need to call 
+'void (*start_suite)(TestReporter *reporter, const char *name, const int count)'::
+This is the first of the callbacks. At the start of
+each test suite *Cgreen* will call this method on the reporter with
+the name of the suite being entered and the number of tests in that
+suite. The default version keeps track of the stack of tests in the
+'breadcrumb' pointer of 'TestReporter'. If you make use of the
+breadcrumb functions, as the defaults do, then you will need to call
 'reporter_start()' to keep the book keeping in sync.
- 
-'void (*finish)(TestReporter *, const char *)'::
-The counterpart to the 
-'(*start)()' call called on leaving the test suite. It needs to be chained to the 
-'reporter_finish()' to keep track of the breadcrumb book keeping. The text 
-reporter uses the state of the breadcrumb to decide if it is ending teh top level 
-test. If so, it prints the familiar summary of passes and fails.
 
-'void (*show_pass)(TestReporter *, const char *, int, const char *, va_list)'::
-This method is initially empty, so there is no need to chain the call to any 
-other function. Besides the pointer to the reporter structure, *Cgreen* also passes 
-the file name of the test, the line number of failed assertion, the message to 
-show and any additional parameters to substitute into the message. The message 
-comes in as 'printf()' style format string, and so the variable argument list 
-should match the substitutions. 
+'void (*start_test)(TestReporter *reporter, const char *name)'::
+At the start of each test *Cgreen* will call this method on the
+reporter with the name of the test being entered. Again, the default
+version keeps track of the stack of tests in the 'breadcrumb' pointer
+of 'TestReporter'. If you make use of the breadcrumb functions, as the
+defaults do, then you will need to call 'reporter_start()' to keep the
+book keeping in sync.
 
-'void (*show_fail)(TestReporter *, const char *, int, const char *, va_list)'::
-The partner of 'show_pass()', and the one you'll likely overload first. 
+'void (*show_pass)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)'::
+This method is initially empty as there most reporters see little
+point in reporting passing tests (but you might do), so there is no
+need to chain the call to any other function. Besides the pointer to
+the reporter structure, *Cgreen* also passes the file name of the
+test, the line number of failed assertion, the message to show and any
+additional parameters to substitute into the message. The message
+comes in as 'printf()' style format string, and so the variable
+argument list should match the substitutions.
 
-'void (*show_incomplete)(TestReporter *, const char *)'::
-When a test fails to 
-complete, this is the handler that is called. As it's an unexpected outcome, no 
-message is received, but we do get the name of the test. The text reporter 
-combines this with the breadcrumb to produce the exception report.
+'void (*show_fail)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)'::
+The partner of 'show_pass()', and the one you'll likely overload first.
 
-'void (*assert_true)(TestReporter *, const char *, int, int, const char *, ...)'::
-This is not normally overridden and is really internal. It is the raw 
-entry point for the test messages from the test suite. By default it dispatches 
-teh call to either 'show_pass()' or 'show_fail()'.
+'void (*show_incomplete)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)'::
+When a test fails to complete, this is the handler that is called. As it's an unexpected
+outcome, no message is received, but we do get the name of the
+test. The text reporter combines this with the breadcrumb to produce
+the exception report.
 
+'void (*assert_true)(TestReporter *reporter, const char *file, int line, int result, const char * message, ...)'::
+This is not normally
+overridden and is really internal. It is the raw entry point for the
+test messages from the test suite. By default it dispatches the call
+to either 'show_pass()' or 'show_fail()'.
+
+'void (*finish_test)(TestReporter *reporter, const char *file, int line)'::
+The counterpart to the '(*start_test)()' call. It is called
+on leaving the test. It needs to be chained to the
+'reporter_finish()' to keep track of the breadcrumb book keeping.
+
+'void (*finish_suite)(TestReporter *reporter, const char *file, int line)'::
+The counterpart to the '(*start_suite)()' call called on
+leaving the test suite, and similar to the '(*finish_test)()' if your
+reporter needs a handle on that event too. The default text reporter
+chains both this and '(*finish_test)()' to the same function where it
+figures out if it is the end of the top level suite. If so, it prints
+the familiar summary of passes and fails.
 
 The second block is simply resources and book keeping that the reporter
 can use to liven up the messages...
@@ -1992,15 +2020,11 @@ can use to liven up the messages...
 'exceptions':: The number of test functions that have failed to complete so far. 
 'breadcrumb':: This is a pointer to the list of test names in the stack.
 				
-The 'breadcrumb' pointer is different and needs a
-little explanation.
-Basically it is a stack, analagous to the breadcrumb trail you
-see on websites.
-Everytime the 'start()' handler is invoked, the
-name is placed in this stack.
-When the 'finish()' message handler is invoked, a
+The 'breadcrumb' pointer is different and needs a little explanation.
+Basically it is a stack, analogous to the breadcrumb trail you see on
+websites.  Everytime a 'start()' handler is invoked, the name is
+placed in this stack.  When a 'finish()' message handler is invoked, a
 name is popped off.
-
 
 There are a bunch of utility functions in +cgreen/breadcrumb.h+ that
 can read the state of this stack.  Most useful are
@@ -2008,7 +2032,6 @@ can read the state of this stack.  Most useful are
 returns the curent test name, and 'get_breadcrumb_depth()' which gives
 the current depth of the stack.  A depth of zero means that the test
 run has finished.
-
 
 If you need to traverse all the names in the breadcrumb, then you can
 call 'walk_breadcrumb()'.  Here is the full signature...
@@ -2021,7 +2044,7 @@ void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *
 The 'void (\*walker)(const char \*, void \*)' is a callback
 that will be passed the name of the test suite for each
 level of nesting.
-It is also poassed the 'memo' pointer that was
+It is also passed the 'memo' pointer that was
 passed to the 'walk_breadcrumb()' call.
 You can use this pointer for anything you want, as
 all *Cgreen* does is pass it from call to call.
@@ -2049,8 +2072,8 @@ Suppose also that we have come up with the following format...
 [source,xml]
 -----------------------
 <?xml?>
-<test name="Top Level">
-    <test name="A Group">
+<suite name="Top Level">
+    <suite name="A Group">
         <test name="a_test_that_passes">
         </test>
         <test name="a_test_that_fails">
@@ -2059,14 +2082,12 @@ Suppose also that we have come up with the following format...
                 <location file="test_as_xml.c" line="8"/>
             </fail>
         </test>
-    </test>
-</test>
+    </suite>
+</suite>
 -----------------------
 
-In other words a simple nesting of tests with only failures
-encoded.
+In other words a simple nesting of tests with only failures encoded.
 The absence of failure is a pass.
-
 
 Here is a test script, +test_in_xml.c+ that we can use to construct the
 above output...
@@ -2075,39 +2096,40 @@ above output...
 -----------------------
 #include "cgreen/cgreen.h"
 
-void a_test_that_passes() {
+Ensure(this_test_passes) {
     assert_true(1);
 }
 
-void a_test_that_fails() {
+Ensure(this_test_fails) {
     assert_true_with_message(0, "A failure");
 }
 
-TestSuite *create_test_group() {
-    TestSuite *suite = create_named_test_suite("A Group");
-    add_test(suite, a_test_that_passes);
-    add_test(suite, a_test_that_fails);
+TestSuite *test_group() {
+    TestSuite *suite = create_test_suite();
+    add_test(suite, this_test_passes);
+    add_test(suite, this_test_fails);
     return suite;
 }
 
 int main(int argc, char **argv) {
-    TestSuite *suite = create_named_test_suite("Top Level");
-    add_suite(suite, create_test_group());
+    TestSuite *suite = create_test_suite();
+    add_suite(suite, test_group());
     return run_test_suite(suite, create_text_reporter());
 }
 -----------------------
 
-The text reporter is used just to confirm that everything
-is working.
+The text reporter is used just to confirm that everything is working.
 So far it is.
 
 -----------------------
-Running "Top Level"...
-Failure!: A Group -> a_test_that_fails -> A failure at [test_as_xml.c] line [8]
-Completed "Top Level": 1 pass, 1 failure, 0 exceptions.
+Running "main" (2 tests)...
+test_in_xml.c:8: Test Failure: -> test_group -> this_test_fails 
+	A failure
+Running "main" (2 tests)...
+Completed "main": 1 pass, 1 failure, 0 exceptions.
 -----------------------
              
-            
+          
 Our first move is to switch the reporter from text, to our
 not yet written XML version...
 
@@ -2119,8 +2141,8 @@ not yet written XML version...
 ...
 
 int main(int argc, char **argv) {
-    TestSuite *suite = create_named_test_suite("Top Level");
-    add_suite(suite, create_test_group());
+    TestSuite *suite = create_test_suite();
+    add_suite(suite, test_group());
     return run_test_suite(suite, create_xml_reporter());
 }
 -----------------------
@@ -2173,24 +2195,38 @@ navigating the test suite...
 #include "cgreen/reporter.h"
 #include <stdio.h>
 
-static void xml_reporter_start(TestReporter *reporter, const char *name);
-static void xml_reporter_finish(TestReporter *reporter, const char *name);
+static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count);
+static void xml_reporter_start_test(TestReporter *reporter, const char *name);
+static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line);
+static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line);
 
 TestReporter *create_xml_reporter() {
     TestReporter *reporter = create_reporter();
-    reporter->start = &xml_reporter_start;
-    reporter->finish = &xml_reporter_finish;
+    reporter->start_suite = &xml_reporter_start_suite;
+    reporter->start_test = &xml_reporter_start_test;
+    reporter->finish_test = &xml_reporter_finish_test;
+    reporter->finish_suite = &xml_reporter_finish_suite;
     return reporter;
 }
 
-static void xml_reporter_start(TestReporter *reporter, const char *name) {
+static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count) {
+    printf("<suite name=\"%s\">\n", name);
+    reporter_start(reporter, name);
+}
+
+static void xml_reporter_start_test(TestReporter *reporter, const char *name) {
     printf("<test name=\"%s\">\n", name);
     reporter_start(reporter, name);
 }
 
-static void xml_reporter_finish(TestReporter *reporter, const char *name) {
-    reporter_finish(reporter, name);
+static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line) {
+    reporter_finish(reporter, filename, line);
     printf("</test>\n");
+}
+
+static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
+    reporter_finish(reporter, filename, line);
+    printf("</suite>\n");
 }
 -----------------------
 
@@ -2198,19 +2234,18 @@ Although chaining to the underlying 'reporter_start()'
 and 'reporter_finish()' functions is optional, I want to
 make use of some of the facilities later.
 
-
 Our output meanwhile, is making it's first tentative steps...
 
 [source,xml]
 -----------------------
-<test name="Top Level">
-<test name="A Group">
-<test name="a_test_that_passes">
+<suite name="main">
+<suite name="test_group">
+<test name="this_test_passes">
 </test>
-<test name="a_test_that_fails">
+<test name="this_test_fails">
 </test>
-</test>
-</test>
+</suite>
+</suite>
 -----------------------
 
 We don't want a passing message, so the 'show_fail()' function is all we
@@ -2223,9 +2258,11 @@ static void xml_show_fail(TestReporter *reporter, const char *file, int line, co
 
 TestReporter *create_xml_reporter() {
     TestReporter *reporter = create_reporter();
-    reporter->start = &xml_reporter_start;
-    reporter->finish = &xml_reporter_finish;
+    reporter->start_suite = &xml_reporter_start_suite;
+    reporter->start_test = &xml_reporter_start_test;
     reporter->show_fail = &xml_show_fail;
+    reporter->finish_test = &xml_reporter_finish_test;
+    reporter->finish_suite = &xml_reporter_finish_suite;
     return reporter;
 }
 
@@ -2233,9 +2270,9 @@ TestReporter *create_xml_reporter() {
 
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     printf("<fail>\n");
-    printf("\t<message>");
+    printf("\t<message>\"");
     vprintf(message, arguments);
-    printf("]]></message>\n");
+    printf("\"</message>\n");
     printf("\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
     printf("</fail>\n");
 }
@@ -2251,17 +2288,18 @@ This gets us pretty close to what we want...
 			
 [source,xml]				
 -----------------------
-<test name="Top Level">
-<test name="A Group">
-<test name="a_test_that_passes">
+<suite name="main">
+<suite name="test_group">
+<test name="this_test_passes">
 </test>
-<test name="a_test_that_fails">
+<test name="this_test_fails">
 <fail>
-    <message>A failure]]></message>
-    <location file="test_as_xml.c" line="9"/></fail>
+        <message>A failure</message>
+        <location file="test_in_xml.c" line="9"/>
+</fail>
 </test>
-</test>
-</test>
+</suite>
+</suite>
 -----------------------
 
 For completeness we should add a tag for an incomplete test.
@@ -2270,86 +2308,89 @@ time...
 
 [source,c]
 -----------------------
+#include "xml_reporter.h"
+#include "cgreen/reporter.h"
+#include "cgreen/breadcrumb.h"
+
+...
+
 static void xml_show_incomplete(TestReporter *reporter, const char *name) {
     printf("<fail>\n");
-    printf("\t<message>Failed to complete]]></message>\n");
+    printf("\t<message>Failed to complete</message>\n");
     printf("</fail>\n");
 }
 -----------------------
 
 All that's left then is the XML declaration and the thorny issue of
-indenting.
-Although the indenting is not strictly necessary, it would make the
-output a lot more readable.
-             
-            
-The test depth is kept track of for us with the 'breadcrumb'
-object in the 'TestReporter' structure.
-We'll add an 'indent()' function that outputs the
-correct number of tabs...
+indenting.  Although the indenting is not strictly necessary, it would
+make the output a lot more readable.
+
+The test depth is kept track of for us with the 'breadcrumb' object in
+the 'TestReporter' structure.  We'll add an 'indent()' function that
+outputs the correct number of tabs...
 
 [source,c]
 -----------------------
 static indent(TestReporter *reporter) {
-    int depth = get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb);
+    int depth = get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb);
     while (depth-- > 0) {
         printf("\t");
     }
 }
 -----------------------
 
-The 'get_breadcrumb_depth()' function just gives the
-current test depth.
-As that is just the number of tabs to output, the implementation
-is trivial.
-             
+The 'get_breadcrumb_depth()' function just gives the current test
+depth as recorded in the reporters breadcrumb (from
++cgreen/breadcrumb.h+).  As that is just the number of tabs to output,
+the implementation is trivial.
             
-We can then use this function in the rest of the code.
-Here is the complete listing...
+We can then use this function in the rest of the code.  Here is the
+complete listing...
 
 [source,c]
 -----------------------
 #include "xml_reporter.h"
 #include "cgreen/reporter.h"
 #include "cgreen/breadcrumb.h"
-#include <stdio.h>
-#include <stdarg.h>
 
-static indent(TestReporter *reporter);
-static void xml_reporter_start(TestReporter *reporter, const char *name);
-static void xml_reporter_finish(TestReporter *reporter, const char *name);
+#include <stdio.h>
+
+static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count);
+static void xml_reporter_start_test(TestReporter *reporter, const char *name);
+static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line);
+static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line);
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-static void xml_show_incomplete(TestReporter *reporter, const char *name);
 
 TestReporter *create_xml_reporter() {
     TestReporter *reporter = create_reporter();
-    reporter->start = &xml_reporter_start;
-    reporter->finish = &xml_reporter_finish;
+    reporter->start_suite = &xml_reporter_start_suite;
+    reporter->start_test = &xml_reporter_start_test;
     reporter->show_fail = &xml_show_fail;
-    reporter->show_incomplete = &xml_show_incomplete;
+    reporter->finish_test = &xml_reporter_finish_test;
+    reporter->finish_suite = &xml_reporter_finish_suite;
     return reporter;
 }
 
 static indent(TestReporter *reporter) {
-    int depth = get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb);
+    int depth = get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb);
     while (depth-- > 0) {
         printf("\t");
     }
 }
 
-static void xml_reporter_start(TestReporter *reporter, const char *name) {
-    if (get_breadcrumb_depth((Breadcrumb *)reporter->breadcrumb) == 0) {
+static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count) {
+    if (get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb) == 0) {
         printf("<?xml?>\n");
     }
     indent(reporter);
-    printf("<test name=\"%s\">\n", name);
+    printf("<suite name=\"%s\">\n", name);
     reporter_start(reporter, name);
 }
 
-static void xml_reporter_finish(TestReporter *reporter, const char *name) {
-    reporter_finish(reporter, name);
+static void xml_reporter_start_test(TestReporter *reporter, const char *name) {
     indent(reporter);
-    printf("</test>\n");
+    printf("<test name=\"%s\">\n", name);
+    reporter_start(reporter, name);
 }
 
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
@@ -2358,7 +2399,7 @@ static void xml_show_fail(TestReporter *reporter, const char *file, int line, co
     indent(reporter);
     printf("\t<message>");
     vprintf(message, arguments);
-    printf("]]></message>\n");
+    printf("</message>\n");
     indent(reporter);
     printf("\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
     indent(reporter);
@@ -2373,40 +2414,51 @@ static void xml_show_incomplete(TestReporter *reporter, const char *name) {
     indent(reporter);
     printf("</fail>\n");
 }
+
+static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line) {
+    reporter_finish(reporter, filename, line);
+    indent(reporter);
+    printf("</test>\n");
+}
+
+static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
+    reporter_finish(reporter, filename, line);
+    indent(reporter);
+    printf("</suite>\n");
+}
 -----------------------
 
 And finally the desired output...
 
 -----------------------
 <?xml?>
-<test name="Top Level">
-    <test name="A Group">
-        <test name="a_test_that_passes">
+<suite name="main">
+    <suite name="test_group">
+        <test name="this_test_passes">
         </test>
-        <test name="a_test_that_fails">
+        <test name="this_test_fails">
             <fail>
-                <message>A failure]]></message>
-                <location file="test_as_xml.c" line="9"/>
+                <message>A failure</message>
+                <location file="test_in_xml.c" line="9"/>
             </fail>
         </test>
-    </test>
-</test>
+    </suite>
+</suite>
 -----------------------
 
 Job done.
-                         
+
 Possible other extensions include reporters that write to 'syslog',
 talk to IDE plug-ins, paint pretty printed documents or just return a boolean
 for monitoring purposes.
-             
+
 Automatic Test Discovery
 ------------------------
 
 Forgot to add your test?
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-When we write a new test we need to keep to things in our
-heads. Firstly, and mainly, are the details about the test we are
+When we write a new test we focus on the details about the test we are
 trying to write. And writing tests are no trivial matter so this might
 well take a lot of brain power.
 
@@ -2424,7 +2476,7 @@ you will see it fail before trying to get it to pass.
 
 But it is still a practice, something we, as humans, might fail to do
 at some point. Usually this happens when we are most stressed and in
-need of security.
+need of certainty.
 
 The solution - the 'cgreen-runner'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2463,7 +2515,7 @@ The '-fPIC' means to generate +position independent code+ which is
 required if you want to load the library dynamically.
 
 How to build a dynamically loadable shared library might vary a lot
-depending on you platform. Can't really help you there, sorry!
+depending on your platform. Can't really help you there, sorry!
 
 Now we can run the tests using the 'cgreen-runner':
 
@@ -2484,7 +2536,7 @@ the beginning of this quickstart tutorial.
 Now we can actually delete the main function in our source code. We
 don't need all this:
 
-[code, c]
+[source, c]
 ------------------------
 int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();

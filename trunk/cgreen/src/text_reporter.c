@@ -99,3 +99,6 @@ static void show_breadcrumb(const char *name, void *memo) {
 #endif
 
 /* vim: set ts=4 sw=4 et cindent: */
+/* Local variables: */
+/* tab-width: 4     */
+/* End:             */
