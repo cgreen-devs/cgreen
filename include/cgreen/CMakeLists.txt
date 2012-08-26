@@ -19,6 +19,7 @@ set(cgreen_HDRS
   suite.h
   c_assertions.h
   vector.h
+  breadcrumb.h
 )
 
 install(
