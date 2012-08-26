@@ -11,15 +11,17 @@ if (UNIX)
     endif (WITH_CXX)
 
     add_definitions(-D_REENTRANT)           # for gmtime_r()
-    add_definitions(-D_XOPEN_SOURCE) 	    # for popen() and pclose()
+    add_definitions(-D_XOPEN_SOURCE)        # for popen() and pclose()
     add_definitions(-D_XOPEN_SOURCE_EXTENDED) # for strdup(), which isn't part of C99
     add_definitions(-D__STDC_FORMAT_MACROS) # for PRI*PTR format macros, required by C99
 
-    # with -fPIC
-    check_c_compiler_flag("-fPIC" WITH_FPIC)
-    if (WITH_FPIC)
-      add_definitions(-fPIC)
-    endif (WITH_FPIC)
+    if (NOT CYGWIN)
+        # with -fPIC
+        check_c_compiler_flag("-fPIC" WITH_FPIC)
+        if (WITH_FPIC)
+            add_definitions(-fPIC)
+        endif (WITH_FPIC)
+    endif (NOT CYGWIN)
 
     if (CMAKE_SIZEOF_VOID_P MATCHES "8")
       # with large file support
