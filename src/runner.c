@@ -126,6 +126,7 @@ static void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, Test
 }
 
 static int in_child_process() {
+    fflush(NULL);               /* Flush all buffers before forking */
     pid_t child = fork();
     if (child < 0) {
         die("Could not fork process\n");
@@ -149,7 +150,7 @@ static void allow_ctrl_c() {
 }
 
 static void stop() {
-    exit(EXIT_SUCCESS);
+    _exit(EXIT_SUCCESS);
 }
 
 static int per_test_timeout_defined() {
