@@ -41,6 +41,7 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 				get_current_from_breadcrumb(
 						(CgreenBreadcrumb *) reporter->breadcrumb),
 				number_of_tests);
+        fflush(stdout);
 	}
 }
 
