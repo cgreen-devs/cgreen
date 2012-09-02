@@ -73,6 +73,7 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
 	printf("\n\t");
 	vprintf((message == NULL ? "<NULL for failure message>" : message), arguments);
 	printf("\n");
+    fflush(NULL);
 }
 
 static void show_incomplete(TestReporter *reporter, const char *file, int line,
@@ -86,6 +87,7 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line,
 	printf("\n");
 	vprintf((message == NULL ? "\tTest exited unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal" : message), arguments);
 	printf("\n");
+    fflush(NULL);
 }
 
 static void show_breadcrumb(const char *name, void *memo) {
