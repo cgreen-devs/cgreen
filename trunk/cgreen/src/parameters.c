@@ -42,7 +42,7 @@ static char *tokenise_by_commas_and_whitespace(char *list) {
     int i, length;
 
     for (i = 0, length = strlen(list); i < length; i++) {
-        if (isspace(list[i]) || list[i] == ',') {
+        if (isspace((int)list[i]) || list[i] == ',') {
             list[i] = '\0';
         }
     }
