@@ -3,8 +3,8 @@
 #include "cgreen/breadcrumb.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 
 
 static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count);
@@ -33,7 +33,6 @@ static FILE *file_stack[100];
 
 static void indent(FILE *out, TestReporter *reporter) {
     int depth = get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb);
-    printf("depth = %d\n", depth); fflush(NULL);
     while (depth-- > 0) {
         fprintf(out, "\t");
     }
