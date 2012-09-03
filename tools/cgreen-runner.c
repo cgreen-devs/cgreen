@@ -51,15 +51,17 @@ static int run_tests(TestReporter *reporter, const char *test_name, void *test_l
     if (test_name) {
         char *test_name_with_prefix = mangle_test_name(test_name);
         bool found = ensure_test_exists(discovered_tests, test_name_with_prefix);
-        printf(" to only run test '%s' ...\n", test_name);
+		if (verbose)
+			printf(" to only run test '%s' ...\n", test_name);
         if (!found) {
-            fprintf(stderr, "\nERROR: No such test: '%s'\n", test_name);
+            fprintf(stderr, "ERROR: No such test: '%s'\n", test_name);
             exit(1);
         }
         status = run_single_test(suite, test_name_with_prefix, reporter);
         free(test_name_with_prefix);
     } else {
-        printf(" to run all discovered tests ...\n");
+		if (verbose)
+			printf(" to run all discovered tests ...\n");
         status = run_test_suite(suite, reporter);
     }
 
@@ -82,10 +84,12 @@ static int cgreen(TestReporter *reporter, const char *test_library, const char *
 
     const uint32_t number_of_tests = discover_tests_in(test_library, discovered_tests, MAXIMUM_NUMBER_OF_TESTS);
 
-    printf("Discovered: %d tests\n", number_of_tests);
+	if (verbose)
+		printf("Discovered: %d tests\n", number_of_tests);
 
     if (!no_run) {
-        printf("Opening [%s]", test_library);
+		if (verbose)
+			printf("Opening [%s]", test_library);
         test_library_handle = dlopen (test_library, RTLD_NOW);
         if (test_library_handle == NULL) {
             fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
@@ -224,7 +228,7 @@ static void register_test(struct test_item *test_items, int maximum_number_of_te
     test_items[number_of_tests].name = strdup(name);
 
     if (number_of_tests == maximum_number_of_tests) {
-        printf("\nERROR: Found too many tests (%d)! Giving up.\nConsider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
+        fprintf(stderr, "\nERROR: Found too many tests (%d)! Giving up.\nConsider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
         exit(1);
     }
 }
