@@ -296,7 +296,7 @@ gcc all_tests.o words_test.o words.o -lcgreen -o all_tests
 -------------------------------
 Running "main" (1 tests)...
 words_test.c:7: Test Failure: -> words_tests -> word_count_returned_from_split
-    [0] should match [4]
+    [0] should be [4]
 Completed "main": 0 passes, 1 failure, 0 exceptions.
 -------------------------------
 
@@ -361,7 +361,7 @@ Sure enough, we get a failure...
 ----------------------------------
 Running "main" (2 tests)...
 words_test.c:15: Test Failure: -> words_tests -> spaces_should_be_converted_to_zeroes
-    [-32] should match [0]
+    [-32] should be [0]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ----------------------------------
 
@@ -388,7 +388,7 @@ int split_words(char *sentence) {
 ----------------------------------
 Running "main" (2 tests)...
 words_test.c:7: Test Failure: -> words_tests -> word_count_returned_from_split
-    [2] should match [4]
+    [2] should be [4]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ----------------------------------
 
@@ -762,7 +762,7 @@ Ensure(strlen_of_hello_should_be_five) {
 -----------------------------
 Running "our_tests" (1 tests)...
 strlen.c:5: Test Failure: -> strlen_of_hello_should_be_five
-        [4] should match [5]
+        [4] should be [5]
 Completed "our_tests": 0 passes, 1 failure, 0 exceptions.
 -----------------------------
                 
@@ -1395,7 +1395,7 @@ We'll add this test to the suite and run it...
 -----------------------
 Running "main" (2 tests)...
 streams_tests.c:19: Test Failure: -> one_character_stream_gives_one_character_line
-        [èa] should match [a]
+        [èa] should be [a]
 Completed "main": 0 passes, 1 failure, 0 exceptions.
 -----------------------
 
@@ -1499,10 +1499,10 @@ Oops, that was a little too fast. Turns out we are failing anyway...
 Running "main" (5 tests)...
 streams_tests.c:36: Test Failure: -> drops_line_ending_from_word_and_stops
         [the
-è ] should match [the]
+è ] should be [the]
 streams_tests.c:41: Test Failure: -> single_line_ending_gives_empty_line
         [
- è ] should match []
+ è ] should be []
 Completed "main": 3 passes, 2 failures, 0 exceptions.
 -----------------------
 
