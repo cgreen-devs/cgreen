@@ -102,7 +102,7 @@ void assert_equal_(const char *file, int line, intptr_t tried, intptr_t expected
             file,
             line,
             (tried == expected),
-            "[%d] should match [%d]", tried, expected);
+            "[%d] should be [%d]", tried, expected);
 }
 
 void assert_not_equal_(const char *file, int line, intptr_t tried, intptr_t expected) {
@@ -111,7 +111,7 @@ void assert_not_equal_(const char *file, int line, intptr_t tried, intptr_t expe
             file,
             line,
             (tried != expected),
-            "[%d] should not match [%d]", tried, expected);
+            "[%d] should not be [%d]", tried, expected);
 }
 
 void assert_double_equal_(const char *file, int line, double tried, double expected) {
@@ -120,7 +120,7 @@ void assert_double_equal_(const char *file, int line, double tried, double expec
             file,
             line,
             doubles_are_equal(tried, expected),
-            "[%f] should match [%f] within %d significant figures", tried, expected, significant_figures);
+            "[%f] should be [%f] within %d significant figures", tried, expected, significant_figures);
 }
 
 void assert_double_not_equal_(const char *file, int line, double tried, double expected) {
@@ -129,7 +129,7 @@ void assert_double_not_equal_(const char *file, int line, double tried, double e
             file,
             line,
             ! doubles_are_equal(tried, expected),
-            "[%f] should not match [%f] within %d significant figures", tried, expected, significant_figures);
+            "[%f] should not be [%f] within %d significant figures", tried, expected, significant_figures);
 }
 
 void assert_string_equal_(const char *file, int line, const char *tried, const char *expected) {
@@ -138,7 +138,7 @@ void assert_string_equal_(const char *file, int line, const char *tried, const c
             file,
             line,
             strings_are_equal(tried, expected),
-            "[%s] should match [%s]", show_null_as_the_string_null(tried), show_null_as_the_string_null(expected));
+            "[%s] should be [%s]", show_null_as_the_string_null(tried), show_null_as_the_string_null(expected));
 }
 
 void assert_string_not_equal_(const char *file, int line, const char *tried, const char *expected) {
@@ -147,7 +147,7 @@ void assert_string_not_equal_(const char *file, int line, const char *tried, con
             file,
             line,
             ! strings_are_equal(tried, expected),
-            "[%s] should not match [%s]", show_null_as_the_string_null(tried), show_null_as_the_string_null(expected));
+            "[%s] should not be [%s]", show_null_as_the_string_null(tried), show_null_as_the_string_null(expected));
 }
 
 void significant_figures_for_assert_double_are(int figures) {
