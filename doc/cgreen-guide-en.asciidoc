@@ -116,8 +116,7 @@ All of the above rather assumes you are working in a Unix like
 environment, probably with 'gcc'. The code is pretty much standard
 C99, so any C compiler should work.  *Cgreen* should compile on all
 systems that support the +sys/msg.h+ messaging library.  This has been
-tested on Linux, Mac OSX and Cygwin so far, but not Windows, although
-that might work too.
+tested on Linux, MacOSX and Cygwin so far, but not Windows.
 
 So far we have tested compilation, and that the test suite actually runs.
 Let's add a meaningless test or two so that you can see how it runs...
@@ -127,11 +126,11 @@ Let's add a meaningless test or two so that you can see how it runs...
 #include "cgreen/cgreen.h"
 
 Ensure(this_test_should_pass) {
-    assert_true(1);
+    assert_true(1 == 1);
 }
 
 Ensure(this_test_should_fail) {
-    assert_true(0);
+    assert_true(0 == 1);
 }
 
 int main(int argc, char **argv) {
@@ -151,13 +150,16 @@ On compiling and running, we now get the output...
 -----------------------------
 Running "main" (2 tests)...
 first_test.c:8: Test Failure: -> this_test_should_fail
-    [0] should be true
+    [0 == 1] should be true
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 -----------------------------
 
-The 'TextReporter', created by the 'create_text_reporter()' call, is the simplest
-way to output the test results. It just streams the failures as text. Currently it's
-the only method supported.
+The 'TextReporter', created by the 'create_text_reporter()' call, is
+the simplest way to output the test results. It just streams the
+failures as text.
+
+Of course "0 == 1" should never be true, but this shows how cgreen
+presents the expression that you want to assert.
 
 
 Five minutes doing TDD with Cgreen
@@ -177,7 +179,7 @@ word_count = split_words(sentence);
 
 'sentence' should now point at "Just\0the\0first\0test". Not an
 obviously useful function, but we'll be using it for something more
-practical below.
+practical later.
 
 This time around we'll add a little more structure to our
 tests. Rather than having the test as a stand alone program, we'll
@@ -240,7 +242,7 @@ Completed "main": 0 passes, 0 failures, 0 exceptions.
 All this scaffolding is pure overhead, but from now on adding tests
 will be a lot easier.
 
-Here is a first test of 'split_words()'...
+Here is a first test of 'split_words()' in +words_test.c+...
 
 [source,c]
 -------------------------------
@@ -295,8 +297,8 @@ gcc all_tests.o words_test.o words.o -lcgreen -o all_tests
 
 -------------------------------
 Running "main" (1 tests)...
-words_test.c:7: Test Failure: -> words_tests -> word_count_returned_from_split
-    [0] should be [4]
+words_test.c:10: Test Failure: -> words_tests -> word_count_returned_from_split 
+	[word_count] should be [4] but was [0]
 Completed "main": 0 passes, 1 failure, 0 exceptions.
 -------------------------------
 
@@ -328,6 +330,12 @@ int split_words(char *sentence) {
 
 There is a hidden problem here, but our tests still passed so we'll
 pretend we didn't notice.
+
+[source,c]
+---------------------------------
+Running "main" (1 tests)...
+Completed "main": 1 pass, 0 failures, 0 exceptions.
+---------------------------------
 
 Time to add another test. We want to confirm that the string is broken
 into separate words...
@@ -361,7 +369,7 @@ Sure enough, we get a failure...
 ----------------------------------
 Running "main" (2 tests)...
 words_test.c:15: Test Failure: -> words_tests -> spaces_should_be_converted_to_zeroes
-    [-32] should be [0]
+	[comparison] should be [0] but was [-32]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ----------------------------------
 
@@ -388,7 +396,7 @@ int split_words(char *sentence) {
 ----------------------------------
 Running "main" (2 tests)...
 words_test.c:7: Test Failure: -> words_tests -> word_count_returned_from_split
-    [2] should be [4]
+	[word_count] should be [4] but was [2]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ----------------------------------
 
@@ -505,9 +513,9 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
 This gives us the expected failing tests...
 
 ----------------------------
-Running "main"...
+Running "main" (3 tests)...
 words_test.c:27: Test Failure: -> words_tests -> single_word_sentence_invokes_callback_once 
-	Expected call was not made to function [mocked_callback]words_testFailure!: words_tests -> single_word_sentence_invokes_callback_once ->
+	Expected call was not made to function [mocked_callback]
 Completed "main": 2 passes, 1 failure, 0 exceptions.
 ----------------------------
 
@@ -550,7 +558,6 @@ words_test.c:32: Test Failure: -> words_tests -> phrase_invokes_callback_for_eac
         Expected [[word] parameter in [mocked_callback]] to [equal string] ["Birds"]
                 actual value:   ["Birds of a feather"]
                 expected value: ["Birds"]
-
 words_test.c:33: Test Failure: -> words_tests -> phrase_invokes_callback_for_each_word
         Expected call was not made to function [mocked_callback]
 words_test.c:34: Test Failure: -> words_tests -> phrase_invokes_callback_for_each_word
@@ -699,7 +706,7 @@ In case you have spotted that 'strlen_of_hello_should_be_five()'
 should have an ampersand in front of it, 'add_test()' is a macro. The
 '&' is added automatically. Further more, the Ensure-macro actually
 mangles the tests name, so it is not actually a function name. (This
-also might make them a bit difficlut to find in the debugger....)
+also might make them a bit difficult to find in the debugger....)
 
 To run the test suite, we call 'run_test_suite()' on it. This function
 cleans up the test suite after running it, so we can just write...
@@ -762,7 +769,7 @@ Ensure(strlen_of_hello_should_be_five) {
 -----------------------------
 Running "our_tests" (1 tests)...
 strlen.c:5: Test Failure: -> strlen_of_hello_should_be_five
-        [4] should be [5]
+	[strlen("Hiya")] should be [5] but was [4]
 Completed "our_tests": 0 passes, 1 failure, 0 exceptions.
 -----------------------------
                 
@@ -967,7 +974,7 @@ When built and run, this gives...
 -----------------------------
 Running "main" (1 tests)...
 crash_test.c:4: Exception!: -> will_seg_fault
-        Test exited in unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal
+        Test exited unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal
 Completed "main": 0 passes, 0 failures, 1 exception.
 -----------------------------
 

@@ -19,12 +19,12 @@ namespace cgreen {
 
 #define assert_true(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, result, "[" #result "] should be true", NULL)
 #define assert_false(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, ! result, "[" #result "] should be false", NULL)
-#define assert_equal(tried, expected) assert_equal_(__FILE__, __LINE__, (intptr_t)tried, (intptr_t)expected)
-#define assert_not_equal(tried, expected) assert_not_equal_(__FILE__, __LINE__, (intptr_t)tried, (intptr_t)expected)
-#define assert_double_equal(tried, expected) assert_double_equal_(__FILE__, __LINE__, tried, expected)
-#define assert_double_not_equal(tried, expected) assert_double_not_equal_(__FILE__, __LINE__, tried, expected)
-#define assert_string_equal(tried, expected) assert_string_equal_(__FILE__, __LINE__, tried, expected)
-#define assert_string_not_equal(tried, expected) assert_string_not_equal_(__FILE__, __LINE__, tried, expected)
+#define assert_equal(tried, expected) assert_equal_(__FILE__, __LINE__, #tried, (intptr_t)tried, (intptr_t)expected)
+#define assert_not_equal(tried, expected) assert_not_equal_(__FILE__, __LINE__, #tried, (intptr_t)tried, (intptr_t)expected)
+#define assert_double_equal(tried, expected) assert_double_equal_(__FILE__, __LINE__, #tried, tried, expected)
+#define assert_double_not_equal(tried, expected) assert_double_not_equal_(__FILE__, __LINE__, #tried, tried, expected)
+#define assert_string_equal(tried, expected) assert_string_equal_(__FILE__, __LINE__, #tried, tried, expected)
+#define assert_string_not_equal(tried, expected) assert_string_not_equal_(__FILE__, __LINE__, #tried, tried, expected)
 
 #define assert_true_with_message(result, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, result, __VA_ARGS__)
 #define assert_false_with_message(result, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, ! result, __VA_ARGS__)
@@ -40,12 +40,12 @@ namespace cgreen {
 #define pass() assert_true(true)
 #define fail(...) assert_true_with_message(false, __VA_ARGS__)
 
-void assert_equal_(const char *file, int line, intptr_t tried, intptr_t expected);
-void assert_not_equal_(const char *file, int line, intptr_t tried, intptr_t expected);
-void assert_double_equal_(const char *file, int line, double tried, double expected);
-void assert_double_not_equal_(const char *file, int line, double tried, double expected);
-void assert_string_equal_(const char *file, int line, const char *tried, const char *expected);
-void assert_string_not_equal_(const char *file, int line, const char *tried, const char *expected);
+void assert_equal_(const char *file, int line, const char *expression, intptr_t tried, intptr_t expected);
+void assert_not_equal_(const char *file, int line, const char *expression, intptr_t tried, intptr_t expected);
+void assert_double_equal_(const char *file, int line, const char *expression, double tried, double expected);
+void assert_double_not_equal_(const char *file, int line, const char *expression, double tried, double expected);
+void assert_string_equal_(const char *file, int line, const char *expression, const char *tried, const char *expected);
+void assert_string_not_equal_(const char *file, int line, const char *expression, const char *tried, const char *expected);
 void assert_that_double_(const char *file, int line, const char *actual_string, double actual, Constraint *constraint);
 
 void significant_figures_for_assert_double_are(int figures);
