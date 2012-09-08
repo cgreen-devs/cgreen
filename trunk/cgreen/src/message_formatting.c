@@ -123,7 +123,7 @@ void format_expectation_failure_message_for(char *message, size_t message_size, 
 					"\t\texpected value:\t[\"%s\"]",
 					(const char *)actual,
 					(const char *)constraint->expected_value);
-		add_blank_line_to(message, message_size);
+		//add_blank_line_to(message, message_size);
 
 		return;
     }
@@ -133,7 +133,7 @@ void format_expectation_failure_message_for(char *message, size_t message_size, 
 		snprintf(message + strlen(message), message_size - strlen(message) - 1,
 				"\t\tat offset:\t[%d]\n",
 				difference_index);
-		add_blank_line_to(message, message_size);
+		//add_blank_line_to(message, message_size);
 		return;
     }
 
@@ -147,7 +147,7 @@ void format_expectation_failure_message_for(char *message, size_t message_size, 
 		 constraint->expected_value);
     }
 
-    add_blank_line_to(message, message_size);
+    //add_blank_line_to(message, message_size);
 }
 
 #ifdef __cplusplus
