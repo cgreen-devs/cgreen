@@ -14,7 +14,7 @@ namespace cgreen {
 
 #define expect(f, ...) expect_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
 #define always_expect(f, ...) always_expect_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
-#define expect_never(f, ...) expect_never_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
+#define never_expect(f, ...) never_expect_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
 
 extern const int UNLIMITED_TIME_TO_LIVE;
 
@@ -23,7 +23,7 @@ intptr_t mock_(TestReporter *test_reporter, const char *function, const char *pa
 
 void expect_(TestReporter *test_reporter, const char *function, const char *test_file, int test_line, ...);
 void always_expect_(TestReporter *test_reporter, const char *function, const char *test_file, int test_line, ...);
-void expect_never_(TestReporter *test_reporter, const char *function, const char *test_file, int test_line, ...);
+void never_expect_(TestReporter *test_reporter, const char *function, const char *test_file, int test_line, ...);
 
 #define when(parameter, constraint) when_(#parameter, constraint)
 Constraint *when_(const char *parameter, Constraint *constraint);

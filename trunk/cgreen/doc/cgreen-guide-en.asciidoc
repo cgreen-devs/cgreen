@@ -718,7 +718,7 @@ run_test_suite(our_tests(), create_text_reporter());
 
 The results of assertions are ultimately delivered as passes and
 failures to a collection of callbacks defined in a 'TestReporter'
-tructure. The only predefined one in *Cgreen* is the 'TextReporter'
+structure. The only predefined one in *Cgreen* is the 'TextReporter'
 that delivers messages in plain text like we have already seen.
 
 The complete test code now looks like...
@@ -1690,11 +1690,11 @@ often the specified behaviour or expectation will be executed:
 |*Macro*|*Description*
 |'expect(function, ...)'|Expected once, in order
 |'always_expect(function, ...)'|Expect this behavior from here onwards
-|'expect_never(function)'|This mock is never expected to be called
+|'never_expect(function)'|This mock is never expected to be called
 |=========================================
 
 You can specify constraints and behaviours for each expectation
-(except for 'expect_never()' naturally). A constraint places
+(except for 'never_expect()' naturally). A constraint places
 restrictions on the parameters (and will tell you if the expected
 restriction was not met), and a behaviour specifies what the mock
 should do if the parameter constraints are met.
@@ -1827,7 +1827,7 @@ there is no paragraph.
 Ensure(empty_paragraphs_are_ignored) {
     expect(reader, will_return('\n'));
     always_expect(reader, will_return(EOF));
-    expect_never(writer);
+    never_expect(writer);
     by_paragraph(&reader, NULL, &writer, NULL);
 }
 -----------------------
@@ -1858,7 +1858,7 @@ void by_paragraph(int (*read)(void *), void *in, void (*write)(void *, char *), 
 }
 -----------------------
 
-Tests with 'expect_never()' can be very effective at uncovering subtle
+Tests with 'never_expect()' can be very effective at uncovering subtle
 bugs.
 
 -----------------------

@@ -191,7 +191,7 @@ void always_expect_(TestReporter* test_reporter, const char *function, const cha
     cgreen_vector_add(global_expectation_queue, expectation);
 }
 
-void expect_never_(TestReporter* test_reporter, const char *function, const char *test_file, int test_line, ...) {
+void never_expect_(TestReporter* test_reporter, const char *function, const char *test_file, int test_line, ...) {
     if (have_always_expectation_for(function)) {
         test_reporter->assert_true(
                 test_reporter,
