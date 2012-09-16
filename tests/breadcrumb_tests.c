@@ -54,7 +54,7 @@ void mock_walker(const char *name, void *memo) {
 }
 
 Ensure(empty_breadcrumb_does_not_trigger_walker) {
-    expect_never(mock_walker);
+    never_expect(mock_walker);
     walk_breadcrumb(breadcrumb, &mock_walker, NULL);
 }
 

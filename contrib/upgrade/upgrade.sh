@@ -10,3 +10,4 @@ perl -pi -e 's/\bwill_return\((\w+),\ ([^,\)]+)/expect($1, will_return($2)/' $@
 perl -pi -e 's/\bwant_non_null_?\(\"(\w+)\"\)/when($1, is_non_null)/' $@
 perl -pi -e 's/\bsetup\(/set_setup(/g' $@
 perl -pi -e 's/\bteardown\(/set_teardown(/g' $@
+perl -pi -e 's/\bexpect_never\(/never_expect(/g' $@
