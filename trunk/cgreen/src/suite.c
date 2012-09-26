@@ -112,8 +112,8 @@ void set_teardown(TestSuite *suite, void (*tear_down)()) {
 }
 
 int count_tests(TestSuite *suite) {
-	int count = 0;
-	int i;
+    int count = 0;
+    int i;
     for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
             count++;

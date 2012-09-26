@@ -314,7 +314,7 @@ void trigger_unfulfilled_expectations(CgreenVector *expectation_queue,
                     expectation->test_file,
                     expectation->test_line,
                     0,
-                    "Expected call was not made to function [%s]", expectation->function);
+                    "Expected call was not made to function [%s]\n", expectation->function);
         }
     }
 }
