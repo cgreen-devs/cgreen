@@ -67,12 +67,11 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
 		const char *message, va_list arguments) {
 	int i = 0;
 	printf("%s:%d: ", file, line);
-	printf("Test Failure: ");
+	printf("Failure: ");
 	walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb,
 			(void *) &i);
 	printf("\n\t");
-	vprintf((message == NULL ? "<NULL for failure message>" : message), arguments);
-	printf("\n");
+	vprintf((message == NULL ? "<NULL for failure message>\n" : message), arguments);
     fflush(NULL);
 }
 
@@ -80,12 +79,12 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line,
 		const char *message, va_list arguments) {
 	int i = 0;
 	printf("%s:%d: ", file, line);
-	printf("Exception!: ");
+	printf("Exception: ");
 	walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb,
 			(void *) &i);
 
 	printf("\n");
-	vprintf((message == NULL ? "\tTest exited unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal" : message), arguments);
+	vprintf((message == NULL ? "\tTest terminated unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal" : message), arguments);
 	printf("\n");
     fflush(NULL);
 }

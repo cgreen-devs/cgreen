@@ -36,31 +36,31 @@ void assert_that_(const char *file, int line, const char *actual_string, intptr_
         return;
     }
 
-	char message[512] = {'\0'};
+    char message[512] = {'\0'};
 
-	if (parameters_are_not_valid_for(constraint, actual)) {
-		format_validation_failure_message_for(message, sizeof(message), "", constraint, actual);
+    if (parameters_are_not_valid_for(constraint, actual)) {
+        format_validation_failure_message_for(message, sizeof(message), "", constraint, actual);
 
-	    (*get_test_reporter()->assert_true)(
-	    		get_test_reporter(),
-	            file,
-	            line,
-	            false,
-	            message);
-		return;
+        (*get_test_reporter()->assert_true)(
+                                            get_test_reporter(),
+                                            file,
+                                            line,
+                                            false,
+                                            message);
+        return;
 	}
-
-	format_expectation_failure_message_for(message, sizeof(message) - 1,
-            constraint, actual_string, actual);
+    
+    format_expectation_failure_message_for(message, sizeof(message) - 1,
+                                           constraint, actual_string, actual);
 
     (*get_test_reporter()->assert_true)(
-        get_test_reporter(),
-        file,
-        line,
-        (*constraint->compare)(constraint, actual),
-        message
-    );
-  
+                                        get_test_reporter(),
+                                        file,
+                                        line,
+                                        (*constraint->compare)(constraint, actual),
+                                        message
+                                        );
+
     constraint->destroy(constraint);
 }
 
@@ -102,7 +102,7 @@ void assert_equal_(const char *file, int line, const char *expression, intptr_t 
             file,
             line,
             (tried == expected),
-            "[%s] should be [%d] but was [%d]", expression, expected, tried);
+            "[%s] should be [%d] but was [%d]\n", expression, expected, tried);
 }
 
 void assert_not_equal_(const char *file, int line, const char *expression, intptr_t tried, intptr_t expected) {
@@ -111,7 +111,7 @@ void assert_not_equal_(const char *file, int line, const char *expression, intpt
             file,
             line,
             (tried != expected),
-            "[%s] should not be [%d] but was", expression, expected, tried);
+            "[%s] should not be [%d] but was\n", expression, expected, tried);
 }
 
 void assert_double_equal_(const char *file, int line, const char *expression, double tried, double expected) {
@@ -120,7 +120,7 @@ void assert_double_equal_(const char *file, int line, const char *expression, do
             file,
             line,
             doubles_are_equal(tried, expected),
-            "[%s] should be [%f] within %d significant figures but was [%f]", expression, expected, significant_figures, tried);
+            "[%s] should be [%f] within %d significant figures but was [%f]\n", expression, expected, significant_figures, tried);
 }
 
 void assert_double_not_equal_(const char *file, int line, const char *expression, double tried, double expected) {
@@ -129,7 +129,7 @@ void assert_double_not_equal_(const char *file, int line, const char *expression
             file,
             line,
             ! doubles_are_equal(tried, expected),
-            "[%s] should not be [%f] within %d significant figures but was [%f]", expression, expected, significant_figures, tried);
+            "[%s] should not be [%f] within %d significant figures but was [%f]\n", expression, expected, significant_figures, tried);
 }
 
 void assert_string_equal_(const char *file, int line, const char *expression, const char *tried, const char *expected) {
@@ -138,7 +138,7 @@ void assert_string_equal_(const char *file, int line, const char *expression, co
             file,
             line,
             strings_are_equal(tried, expected),
-            "[%s] should be [%s] but was [%s]", expression, show_null_as_the_string_null(expected), show_null_as_the_string_null(tried));
+            "[%s] should be [%s] but was [%s]\n", expression, show_null_as_the_string_null(expected), show_null_as_the_string_null(tried));
 }
 
 void assert_string_not_equal_(const char *file, int line, const char *expression, const char *tried, const char *expected) {
@@ -147,7 +147,7 @@ void assert_string_not_equal_(const char *file, int line, const char *expression
             file,
             line,
             ! strings_are_equal(tried, expected),
-            "[%s] should not be [%s] but was", expression, show_null_as_the_string_null(expected));
+            "[%s] should not be [%s] but was\n", expression, show_null_as_the_string_null(expected));
 }
 
 void significant_figures_for_assert_double_are(int figures) {

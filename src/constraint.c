@@ -79,7 +79,7 @@ Constraint *create_equal_to_value_constraint(intptr_t expected_value, const char
 
     constraint->compare = &compare_want_value;
     constraint->execute = &test_want;
-    constraint->name = "equal value";
+    constraint->name = "equal";
     constraint->expected_value = expected_value;
     constraint->expected_value_name = expected_value_name;
     constraint->size_of_expected_value = sizeof(intptr_t);

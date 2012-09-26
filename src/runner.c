@@ -88,8 +88,8 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
 }
 
 static void run_named_test(TestSuite *suite, const char *name, TestReporter *reporter) {
-	(*reporter->start_suite)(reporter, suite->name, count_tests(suite));
-	int i;
+    (*reporter->start_suite)(reporter, suite->name, count_tests(suite));
+    int i;
     for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
             if (strcmp(suite->tests[i].name, name) == 0) {
@@ -102,19 +102,19 @@ static void run_named_test(TestSuite *suite, const char *name, TestReporter *rep
         }
     }
     send_reporter_completion_notification(reporter);
-	(*reporter->finish_suite)(reporter, suite->filename, suite->line);
+    (*reporter->finish_suite)(reporter, suite->filename, suite->line);
 }
 
 
 static void run_test_in_the_current_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter) {
-	(*reporter->start_test)(reporter, test->name);
-	run_the_test_code(suite, test, reporter);
+    (*reporter->start_test)(reporter, test->name);
+    run_the_test_code(suite, test, reporter);
     send_reporter_completion_notification(reporter);
-	(*reporter->finish_test)(reporter, test->filename, test->line);
+    (*reporter->finish_test)(reporter, test->filename, test->line);
 }
 
 static void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter) {
-	(*reporter->start_test)(reporter, test->name);
+    (*reporter->start_test)(reporter, test->name);
     if (in_child_process()) {
         run_the_test_code(suite, test, reporter);
         send_reporter_completion_notification(reporter);
@@ -290,7 +290,7 @@ static void run_the_test_code(TestSuite *suite, CgreenTest *spec, TestReporter *
         (*suite->setup)();
     } else {
         if (spec->context->setup != NULL) {
-        	run_setup_for(spec);
+            run_setup_for(spec);
         }
     }
 

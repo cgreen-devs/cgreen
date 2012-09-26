@@ -23,10 +23,6 @@ static int find_index_of_difference(char *expected, char *actual, size_t size_to
     return -1;
 }
 
-static void add_blank_line_to(char *message, size_t message_size) {
-	snprintf(message + strlen(message), message_size - strlen(message) - 1, "\n");
-}
-
 static bool actual_value_not_necessary_for(Constraint *constraint, const char *actual_string, const char *actual_value_string) {
   (void)(constraint); // UNUSED!
 	return strings_are_equal(actual_string, actual_value_string) ||
@@ -92,39 +88,34 @@ void format_expectation_failure_message_for(char *message, size_t message_size, 
     snprintf(actual_value_string, sizeof(actual_value_string) - 1, "%" PRIdPTR, actual);
 
     snprintf(message, message_size - 1,
-            "Expected [%s] to [%s] ",
+            "Expected [%s] to [%s]",
             actual_string,
             constraint->name);
 
     if (no_expected_value_in(constraint)) {
-    	add_blank_line_to(message, message_size);
-    	add_blank_line_to(message, message_size);
+        strcat(message, "\n");
         return;
-    }
+    } else
+        strcat(message, " ");
 
     snprintf(message + strlen(message), message_size - strlen(message) - 1,
             "[%s]\n",
             constraint->expected_value_name);
 
-
     if (actual_value_not_necessary_for(constraint, actual_string, actual_value_string)) {
         /* when the actual string and the actual value are the same, don't print both of them */
         /* also, don't print "0" for false and "1" for true */
     	/* also, don't print expected/actual for contents constraints since that is useless */
-        add_blank_line_to(message, message_size);
         return;
     }
 
     /* for string constraints, print out the strings encountered and not their pointer values */
     if (values_are_strings_in(constraint)) {
-
 		snprintf(message + strlen(message), message_size - strlen(message) - 1,
 					"\t\tactual value:\t[\"%s\"]\n"
-					"\t\texpected value:\t[\"%s\"]",
+					"\t\texpected value:\t[\"%s\"]\n",
 					(const char *)actual,
 					(const char *)constraint->expected_value);
-		//add_blank_line_to(message, message_size);
-
 		return;
     }
 
@@ -133,7 +124,6 @@ void format_expectation_failure_message_for(char *message, size_t message_size, 
 		snprintf(message + strlen(message), message_size - strlen(message) - 1,
 				"\t\tat offset:\t[%d]\n",
 				difference_index);
-		//add_blank_line_to(message, message_size);
 		return;
     }
 
@@ -143,11 +133,9 @@ void format_expectation_failure_message_for(char *message, size_t message_size, 
 
     if(strstr(constraint->name, "not ") == NULL) {
 	snprintf(message + strlen(message), message_size - strlen(message) - 1,
-		 "\t\texpected value:\t[%" PRIdPTR "]",
+		 "\t\texpected value:\t[%" PRIdPTR "]\n",
 		 constraint->expected_value);
     }
-
-    //add_blank_line_to(message, message_size);
 }
 
 #ifdef __cplusplus
