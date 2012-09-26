@@ -98,6 +98,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *pa
     }
 
     destroy_cgreen_vector(parameter_names);
+    destroy_cgreen_vector(actual_values);
 
     destroy_expectation_if_time_to_die(expectation);
 

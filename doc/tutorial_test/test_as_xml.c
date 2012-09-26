@@ -1,12 +1,13 @@
 #include <cgreen/cgreen.h>
+#include <stdbool.h>
 #include "xml_reporter.h"
 
-void a_test_that_passes() {
-    assert_true(1);
+Ensure(a_test_that_passes) {
+    assert_that(1 == 1);
 }
 
-void a_test_that_fails() {
-    assert_true_with_message(0, "A failure");
+Ensure(a_test_that_fails) {
+    fail("A failure");
 }
 
 TestSuite *create_test_group() {

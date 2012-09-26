@@ -1,5 +1,5 @@
 # Required cmake version
-cmake_minimum_required(VERSION 2.8.4)
+cmake_minimum_required(VERSION 2.8.1)
 
 project(cgreen C)
 

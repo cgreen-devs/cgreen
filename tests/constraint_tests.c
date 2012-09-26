@@ -45,8 +45,8 @@ Ensure(compare_contents_is_correct_on_larger_than_intptr_array) {
     		create_equal_to_contents_constraint(content, sizeof(content), "content");
 
     int not_content[] = { 0, 1, 2, 3, 4, 5, 6, 7, 108, 109, 110, 111, 112, 113, 114, 115 };
-    assert_true(compare_constraint(is_equal_to_contents, also_content));
-    assert_false(compare_constraint(is_equal_to_contents, not_content));
+    assert_that(compare_constraint(is_equal_to_contents, also_content), is_true);
+    assert_that(compare_constraint(is_equal_to_contents, not_content), is_false);
 
     destroy_constraint(is_equal_to_contents);
 }
@@ -54,8 +54,8 @@ Ensure(compare_contents_is_correct_on_larger_than_intptr_array) {
 Ensure(compare_is_correct_when_using_integers) {
     Constraint *is_equal_to_37 = create_equal_to_value_constraint(37, "37");
 
-    assert_true(compare_constraint(is_equal_to_37, 37));
-    assert_false(compare_constraint(is_equal_to_37, 36));
+    assert_that(compare_constraint(is_equal_to_37, 37), is_true);
+    assert_that(compare_constraint(is_equal_to_37, 36), is_false);
 
     destroy_constraint(is_equal_to_37);
 }
@@ -81,8 +81,8 @@ Ensure(matching_strings_as_equal) {
     Constraint *equals_string_hello_constraint =
     		create_equal_to_string_constraint("Hello", "user_greeting");
 
-    assert_true(compare_constraint(equals_string_hello_constraint, "Hello"));
-    assert_false(compare_constraint(equals_string_hello_constraint, "Goodbye"));
+    assert_that(compare_constraint(equals_string_hello_constraint, "Hello"), is_true);
+    assert_that(compare_constraint(equals_string_hello_constraint, "Goodbye"), is_false);
 
     destroy_constraint(equals_string_hello_constraint);
 }
@@ -91,7 +91,7 @@ Ensure(matching_null_string_against_non_null_string) {
     Constraint *equals_string_hello_constraint =
     		create_equal_to_string_constraint("Hello", "user_greeting");
 
-    assert_false(compare_constraint(equals_string_hello_constraint, NULL));
+    assert_that(compare_constraint(equals_string_hello_constraint, NULL), is_false);
 
     destroy_constraint(equals_string_hello_constraint);
 }
@@ -100,8 +100,8 @@ Ensure(matching_against_null_string) {
     Constraint *equals_null_string_constraint =
     		create_equal_to_string_constraint((const char *)NULL, "user_greeting");
 
-    assert_true(compare_constraint(equals_null_string_constraint, NULL));
-    assert_false(compare_constraint(equals_null_string_constraint, "Hello"));
+    assert_that(compare_constraint(equals_null_string_constraint, NULL), is_true);
+    assert_that(compare_constraint(equals_null_string_constraint, "Hello"), is_false);
 
     destroy_constraint(equals_null_string_constraint);
 }
@@ -111,8 +111,8 @@ Ensure(matching_doubles_as_equal_with_default_significance) {
 
     intptr_t boxed_37 = box_double(37.0);
     intptr_t boxed_36 = box_double(36.0);
-    assert_true(compare_constraint(equal_to_double_37, boxed_37));
-    assert_false(compare_constraint(equal_to_double_37, boxed_36));
+    assert_that(compare_constraint(equal_to_double_37, boxed_37), is_true);
+    assert_that(compare_constraint(equal_to_double_37, boxed_36), is_false);
 
     destroy_constraint(equal_to_double_37);
     (void)unbox_double(boxed_37);
@@ -124,10 +124,10 @@ Ensure(matching_doubles_respects_significant_figure_setting) {
     intptr_t boxed_339 = box_double(339.0);
 
     significant_figures_for_assert_double_are(2);
-    assert_true(compare_constraint(want_337, boxed_339));
+    assert_that(compare_constraint(want_337, boxed_339), is_true);
 
     significant_figures_for_assert_double_are(3);
-    assert_false(compare_constraint(want_337, boxed_339));
+    assert_that(compare_constraint(want_337, boxed_339), is_false);
 
     destroy_constraint(want_337);
     (void)unbox_double(boxed_339);
@@ -186,7 +186,7 @@ Ensure(compare_equal_to_contents_is_false_on_null) {
     Constraint *is_equal_to_contents =
     		create_equal_to_contents_constraint(content, sizeof(content), "content");
 
-    assert_false(compare_constraint(is_equal_to_contents, NULL));
+    assert_that(compare_constraint(is_equal_to_contents, NULL), is_false);
 
     destroy_constraint(is_equal_to_contents);
 }
@@ -196,7 +196,7 @@ Ensure(compare_not_equal_to_contents_is_false_on_null) {
     Constraint *is_not_equal_to_contents =
     		create_not_equal_to_contents_constraint(content, sizeof(content), "content");
 
-    assert_false(compare_constraint(is_not_equal_to_contents, NULL));
+    assert_that(compare_constraint(is_not_equal_to_contents, NULL), is_false);
 
     destroy_constraint(is_not_equal_to_contents);
 }

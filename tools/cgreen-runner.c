@@ -258,7 +258,7 @@ static uint32_t discover_tests_in(const char* test_library, struct test_item* te
             char *function_name = match + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
             function_name[strlen(function_name) - 1] = 0; /* remove newline */
             if (verbose)
-                printf("Discovered test '%s''\n", &function_name[strlen(CGREEN_SPEC_PREFIX)+strlen(CGREEN_SUITE_DEFAULT)]);
+                printf("Discovered test '%s'\n", &function_name[strlen(CGREEN_SPEC_PREFIX)+strlen(CGREEN_SUITE_DEFAULT)]);
             register_test(test_items, maximum_number_of_test_items, function_name);
             number_of_tests++;
         }

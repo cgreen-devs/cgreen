@@ -8,7 +8,7 @@
 
 namespace cgreen {
 
-	#define assert_that(actual, constraint) assert_that_(__FILE__, __LINE__, #actual, actual, constraint)
+	#define assert_that_constraint(actual, constraint) assert_that_(__FILE__, __LINE__, #actual, actual, constraint)
 
 	void assert_that_(const char *file, int line, const char *actual_string, const std::string& actual, Constraint *constraint);
 	void assert_that_(const char *file, int line, const char *actual_string, const std::string *actual, Constraint *constraint);
