@@ -12,7 +12,7 @@ using namespace cgreen;
 static void assert_slurped(const char *path, int gulp, const char *expected_contents);
 
 Ensure(missing_file_gives_null) {
-    assert_equal(slurp("not_there", 1024), NULL);
+    assert_that(slurp("not_there", 1024), is_null);
 }
 
 Ensure(whole_file_can_be_read) {

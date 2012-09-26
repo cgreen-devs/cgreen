@@ -1,11 +1,11 @@
 #include <cgreen/cgreen.h>
 
 Ensure(this_test_should_pass) {
-    assert_true(1 == 1);
+    assert_that(1 == 1);
 }
 
 Ensure(this_test_should_fail) {
-    assert_true(0 == 1);
+    assert_that(0 == 1);
 }
 
 int main(int argc, char **argv) {

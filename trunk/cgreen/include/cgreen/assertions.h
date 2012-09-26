@@ -35,6 +35,23 @@ namespace cgreen {
 #define assert_string_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, strings_are_equal(tried, expected), __VA_ARGS__)
 #define assert_string_not_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, !strings_are_equal(tried, expected), __VA_ARGS__)
 
+#define assert_that_NARG(...) \
+         assert_that_NARG_(__VA_ARGS__,assert_that_RSEQ_N())
+
+#define assert_that_NARG_(...) \
+         assert_that_ARG_N(__VA_ARGS__)
+
+#define assert_that_ARG_N( \
+          _1,_2,N,...) N
+
+#define assert_that_RSEQ_N() \
+        assert_that_constraint, assert_that_expression, ASSERT_THAT_REQUIRES_BOOLEAN_EXPRESSION_OR_ACTUAL_VALUE_AND_CONSTRAINT
+
+#define assert_that(...) assert_that_NARG(__VA_ARGS__)(__VA_ARGS__)
+
+#define assert_that_expression(expression) \
+		assert_that_(__FILE__, __LINE__, #expression, expression, is_true);
+
 #define assert_that_double(actual, constraint) assert_that_double_(__FILE__, __LINE__, #actual, (double)actual, constraint)
 
 #define pass() assert_true(true)

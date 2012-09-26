@@ -18,16 +18,16 @@ Ensure(can_add_person_to_database) {
     set_person_name(person, "Fred");
     save_person(person);
     Person *found = find_person_by_name("Fred");
-    assert_string_equal(get_person_name(person), "Fred", NULL);
+    assert_that(get_person_name(person), is_equal_to_string("Fred"));
 }
 
 Ensure(cannot_add_duplicate_person) {
     Person *person = create_person();
     set_person_name(person, "Fred");
-    assert_true(save_person(person), NULL);
+    assert_that(save_person(person), is_null);
     Person *duplicate = create_person();
     set_person_name(duplicate, "Fred");
-    assert_false(save_person(duplicate), NULL);
+    assert_that(save_person(duplicate), is_null);
 }
 
 void open_connection() {

@@ -26,12 +26,6 @@ public:
     }
 };
 
-#define assert_that_class(actual, expected) \
-  assert_true_with_message(actual expected, "Expected [%s] to be [%s]", #actual, #expected)
-
-#define is_equal_to_class(type) ==type
-#define is_not_equal_to_class(type) !=type
-
 static std::string* bob_pointer = NULL;
 static std::string* alice_pointer = NULL;
 
@@ -43,13 +37,13 @@ void setup(void) {
 Ensure(custom_large_classes_are_equal) {
     MyType my_class = { 3.1337f, 3.14159f, 90210 };
     MyType other = { 0.0f, 0.0f, 90210 };
-    assert_that_class(my_class, is_equal_to_class(other));
+    assert_that(my_class == other);
 }
 
 Ensure(custom_large_classes_are_not_equal) {
     MyType my_class = { 3.1337f, 3.14159f, 90210 };
     MyType other = { 3.1337f, 3.14159f, 90211 };
-    assert_that_class(my_class, is_not_equal_to_class(other));
+    assert_that(my_class != other);
 }
 
 Ensure(stl_string_references_are_not_equal) {
@@ -90,7 +84,7 @@ Ensure(stl_string_reference_and_pointer_are_equal) {
     alice_pointer = new std::string("alice");
     std::string alice_reference("alice");
 
-    assert_that(alice_reference, is_equal_to_string(*alice_pointer));
+    assert_that(alice_reference, is_equal_to_string(alice_pointer));
 }
 
 Ensure(stl_string_pointer_is_not_null) {
