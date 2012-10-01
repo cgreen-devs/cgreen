@@ -1,4 +1,3 @@
-
 if (WITH_CXX)
   project(cgreen-library CXX)
 else()

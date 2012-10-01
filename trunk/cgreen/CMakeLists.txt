@@ -32,10 +32,6 @@ include(MacroCopyFile)
 include(ConfigureChecks.cmake)
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-if (CYGWIN)
-  option(USE_W32API "Build using Windows API instead of *nix (experimental)" OFF)
-endif (CYGWIN)
-
 # check subdirectories
 add_subdirectory(doc)
 add_subdirectory(include)
