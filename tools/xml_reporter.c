@@ -81,7 +81,7 @@ static void xml_show_incomplete(TestReporter *reporter, const char *filename __a
     FILE *out = file_stack[file_stack_p-1];
     indent(out, reporter);
     fprintf(out, "<error type=\"Fatal\" message=\"");
-    vfprintf(out, message, arguments);
+	vfprintf(out, (message == NULL ? "Test exited unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal" : message), arguments);
     fprintf(out, "\">\n");
     indent(out, reporter);
     fprintf(out, "</error>\n");
