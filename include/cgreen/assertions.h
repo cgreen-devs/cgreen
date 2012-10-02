@@ -17,8 +17,8 @@ namespace cgreen {
     extern "C" {
 #endif
 
-#define assert_true(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, result, "[" #result "] should be true", NULL)
-#define assert_false(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, ! result, "[" #result "] should be false", NULL)
+#define assert_true(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, result, "[" #result "] should be true\n", NULL)
+#define assert_false(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, ! result, "[" #result "] should be false\n", NULL)
 #define assert_equal(tried, expected) assert_equal_(__FILE__, __LINE__, #tried, (intptr_t)tried, (intptr_t)expected)
 #define assert_not_equal(tried, expected) assert_not_equal_(__FILE__, __LINE__, #tried, (intptr_t)tried, (intptr_t)expected)
 #define assert_double_equal(tried, expected) assert_double_equal_(__FILE__, __LINE__, #tried, tried, expected)

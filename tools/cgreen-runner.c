@@ -14,9 +14,9 @@
 #include "gopt.h"
 
 
-struct test_item {
+typedef struct test_item {
     char *name;
-};
+} TestItem;
 
 #define CGREEN_SPEC_PREFIX "CgreenSpec_"
 #define CGREEN_SUITE_DEFAULT "default_"
@@ -33,16 +33,16 @@ static bool verbose = false;
 static bool no_run = false;
 
 /* Forward declarations: */
-static uint32_t discover_tests_in(const char *, struct test_item *, const uint32_t max);
-static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, TestSuite* suite);
+static uint32_t discover_tests_in(const char *, TestItem *, const uint32_t max);
+static void add_discovered_tests_to_suite(void *handle, TestItem* tests, TestSuite* suite);
 static int file_exists (const char *filename);
 static void reflective_runner_cleanup(void*);
 static char *mangle_test_name(const char *test_name);
-static bool ensure_test_exists(struct test_item  discovered_tests[], char *test_name_with_prefix);
+static bool ensure_test_exists(TestItem discovered_tests[], char *test_name_with_prefix);
 
 
 /*----------------------------------------------------------------------*/
-static int run_tests(TestReporter *reporter, const char *test_name, void *test_library_handle, struct test_item  discovered_tests[], int number_of_tests) {
+static int run_tests(TestReporter *reporter, const char *test_name, void *test_library_handle, TestItem discovered_tests[], int number_of_tests) {
     int status;
     TestSuite *suite = create_test_suite();
 
@@ -51,8 +51,8 @@ static int run_tests(TestReporter *reporter, const char *test_name, void *test_l
     if (test_name) {
         char *test_name_with_prefix = mangle_test_name(test_name);
         bool found = ensure_test_exists(discovered_tests, test_name_with_prefix);
-		if (verbose)
-			printf(" to only run test '%s' ...\n", test_name);
+        if (verbose)
+            printf(" to only run test '%s' ...\n", test_name);
         if (!found) {
             fprintf(stderr, "ERROR: No such test: '%s'\n", test_name);
             exit(1);
@@ -60,8 +60,8 @@ static int run_tests(TestReporter *reporter, const char *test_name, void *test_l
         status = run_single_test(suite, test_name_with_prefix, reporter);
         free(test_name_with_prefix);
     } else {
-		if (verbose)
-			printf(" to run all discovered tests ...\n");
+        if (verbose)
+            printf(" to run all discovered tests ...\n");
         status = run_test_suite(suite, reporter);
     }
 
@@ -79,17 +79,17 @@ static int cgreen(TestReporter *reporter, const char *test_library, const char *
     int status = 0;
     void *test_library_handle;
     const uint32_t MAXIMUM_NUMBER_OF_TESTS = 2048;
-    struct test_item discovered_tests[MAXIMUM_NUMBER_OF_TESTS];
+    TestItem discovered_tests[MAXIMUM_NUMBER_OF_TESTS];
     memset(discovered_tests, 0, sizeof(discovered_tests));
 
     const uint32_t number_of_tests = discover_tests_in(test_library, discovered_tests, MAXIMUM_NUMBER_OF_TESTS);
 
-	if (verbose)
-		printf("Discovered: %d tests\n", number_of_tests);
+    if (verbose)
+        printf("Discovered: %d tests\n", number_of_tests);
 
     if (!no_run) {
-		if (verbose)
-			printf("Opening [%s]", test_library);
+        if (verbose)
+            printf("Opening [%s]", test_library);
         test_library_handle = dlopen (test_library, RTLD_NOW);
         if (test_library_handle == NULL) {
             fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
@@ -200,7 +200,7 @@ static char *mangle_test_name(const char *test_name) {
 
 
 /*----------------------------------------------------------------------*/
-static bool ensure_test_exists(struct test_item discovered_tests[], char *test_name_with_prefix) {
+static bool ensure_test_exists(TestItem discovered_tests[], char *test_name_with_prefix) {
     for (int i = 0; discovered_tests[i].name != NULL; i++)
         if (strcmp(discovered_tests[i].name, test_name_with_prefix) == 0) {
             return true;
@@ -221,7 +221,7 @@ static void reflective_runner_cleanup(void *handle)
 }
 
 /*----------------------------------------------------------------------*/
-static void register_test(struct test_item *test_items, int maximum_number_of_tests, char *name) {
+static void register_test(TestItem *test_items, int maximum_number_of_tests, char *name) {
     int number_of_tests;
 
     for (number_of_tests = 0; test_items[number_of_tests].name != NULL; number_of_tests++);
@@ -237,7 +237,7 @@ static void register_test(struct test_item *test_items, int maximum_number_of_te
 /*----------------------------------------------------------------------*/
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
 // XXX: but nm is more portable across object formats...
-static uint32_t discover_tests_in(const char* test_library, struct test_item* test_items, const uint32_t maximum_number_of_test_items)
+static uint32_t discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items)
 {
     char cmd[2048];
     strcpy(cmd, "/usr/bin/nm ");
@@ -270,7 +270,7 @@ static uint32_t discover_tests_in(const char* test_library, struct test_item* te
 }
 
 /*----------------------------------------------------------------------*/
-static void add_discovered_tests_to_suite(void *handle, struct test_item* tests, TestSuite* suite)
+static void add_discovered_tests_to_suite(void *handle, TestItem *tests, TestSuite *suite)
 {
     for (int i = 0; tests[i].name != NULL; i++) {
         char *error;
