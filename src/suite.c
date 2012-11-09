@@ -46,7 +46,7 @@ bool has_teardown(TestSuite *suite) {
 void do_nothing() {
 }
 
-TestSuite *create_named_test_suite(const char *name, const char *filename, int line) {
+TestSuite *create_named_test_suite_(const char *name, const char *filename, int line) {
     TestSuite *suite = (TestSuite *)malloc(sizeof(TestSuite));
     suite->name = name;
     suite->filename = filename;
