@@ -4,18 +4,18 @@
 #include "words.h"
 #include <string.h>
 
-Ensure(word_count_returned_from_split) {
+Ensure(word_count_are_returned_from_split) {
     char *sentence = strdup("Birds of a feather");
     int word_count = split_words(sentence);
-    assert_equal(word_count, 4);
+    assert_that(word_count, is_equal_to(4));
     free(sentence);
 }
 
-Ensure(spaces_should_be_converted_to_zeroes) {
+Ensure(spaces_are_converted_to_zeroes) {
     char *sentence = strdup("Birds of a feather");
     split_words(sentence);
     int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
-    assert_equal(comparison, 0);
+    assert_that(comparison, is_equal_to(0));
     free(sentence); 
 }
 
@@ -38,8 +38,8 @@ Ensure(phrase_invokes_callback_for_each_word) {
 
 TestSuite *words_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, word_count_returned_from_split);
-    add_test(suite, spaces_should_be_converted_to_zeroes);
+    add_test(suite, word_count_are_returned_from_split);
+    add_test(suite, spaces_are_converted_to_zeroes);
     add_test(suite, single_word_sentence_invokes_callback_once);
     add_test(suite, phrase_invokes_callback_for_each_word);
     return suite;

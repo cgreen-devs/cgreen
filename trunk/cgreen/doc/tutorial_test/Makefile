@@ -1,9 +1,15 @@
-CC = gcc -c
+.IGNORE :
+.SILENT :
+
+CC = gcc -c -Wall
 LINK = gcc
 #LIBDIRS = -L/home/Thomas/Utveckling/Cgreen/cgreen/build/src
 LIBDIRS = -L/usr/local/lib
 
-all: run1 run2 run3 run4 run5 run6 run7 run8 run9 run10 run11 run12 run13 run14 run15 run16 run17
+all: run1 run2 run3 run4 run5 run6 run7 run8 run9 run10 run11 run12 run13 run14 run15 run16 run17 run18 run19 run20 run21 run22 run23
+
+clean:
+	rm *.o
 
 run1: first_test.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
@@ -72,3 +78,28 @@ run16: crash_test1.o
 run17: crash_test2.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 	-./$@
+
+run18: stream_test1.o stream1.o
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+	-./$@
+
+run19: stream_test2.o stream1.o
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+	-./$@
+
+run20: stream_test2.o stream2.o
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+	-./$@
+
+run21: stream_test3.o stream2.o
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+	-./$@
+
+run22: stream_test4.o stream2.o
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+	-./$@
+
+run23: stream_test4.o stream3.o
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+	-./$@
+

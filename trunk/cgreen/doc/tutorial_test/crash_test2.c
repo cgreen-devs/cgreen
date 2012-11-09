@@ -15,5 +15,5 @@ int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
     add_test(suite, will_seg_fault);
     add_test(suite, will_stall);
-    run_test_suite(suite, create_text_reporter());
+    return run_test_suite(suite, create_text_reporter());
 }

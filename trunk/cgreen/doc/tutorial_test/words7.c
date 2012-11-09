@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 
 int split_words(char *sentence) {
   int i, count = 1, length = strlen(sentence);
