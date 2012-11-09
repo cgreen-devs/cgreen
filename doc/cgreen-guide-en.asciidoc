@@ -7,7 +7,7 @@ Cgreen Quickstart Guide
 What is Cgreen?
 ~~~~~~~~~~~~~~~
 
-*Cgreen* is a unit tester for the C software developer. This is a test
+*Cgreen* is a unit tester for the C software developer, a test
 automation and software quality assurance tool for development
 teams. The tool is completely open source published under the
 http://www.gnu.org/licenses/lgpl.html[LGPL]
@@ -17,33 +17,63 @@ development community.  It is characterised by writing many small
 tests alongside the normal code. Often the tests are written before
 the code they are testing, in a tight test-code-refactor loop.  Done
 this way, the practice is known as Test Driven Development. *Cgreen*
-supports this style of working.
+supports this style of development.
 
 Unit tests are written in the same language as the code, in our case
 C. This avoids the mental overhead of constantly switching language,
 and also allows you to use any application code in your tests.
 
-The feature list is:
+Here are some of its features:
 
 - Fully composable test suites
-- 'setup()' and 'teardown()' for tests and test suites.
-- Each test runs in it's own process.
-- An isolated test can be run in a single process for debugging.
-- Ability to mock functions.
-- The reporting mechanism can be easily extended.
+- 'setup()' and 'teardown()' for tests and test suites
+- Each test runs in it's own process
+- An isolated test can be run in a single process for debugging
+- Ability to mock functions
+- The reporting mechanism can be easily extended
+- Automatic discovery of tests
         
-This tool is primarily for C programming, although lately there is
-also some support for C++.
+*Cgreen* was primarily developed to support C programming, but there
+is also support for C++.
+
+
+Cgreen - Vanilla or Chocolate?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Test driven development (TDD) catched on when the JUnit framework for
+Java spread to other langauges, giving us a family of xUnit
+tools. *Cgreen* was born in this wave and have many similarities to
+the xUnit family.
+
+But TDD evolved over time and modern thinking and practice is more
+along the lines of BDD, an abbreviation of Behaviour Driven
+Development, made popular by people like Dan North and frameworks like
+JBehave, RSpec, Cucumber and Jasmine.
+
+*Cgreen* follows this trend and has evolved to embrace BDD-style
+testing. Although the fundamental mechanisms in TDD and BDD are
+much the same, the shift in focus by changing wording from 'tests' to
+'behaviour specifications' is significant.
+
+This document will present TDD-style Cgreen first and then go on to
+describe the minor differences that will allow you to think, drive and
+test in BDD fashion.
 
 Installing Cgreen
 ~~~~~~~~~~~~~~~~~
 
-There are two ways to install *Cgreen* in your system.   
+There are two ways to install *Cgreen* in your system.
+
+Installing a package
+^^^^^^^^^^^^^^^^^^^^
       
-The first is to use the RPM or DEB package provided by the *Cgreen*
+The first way is to use the RPM or DEB package provided by the *Cgreen*
 Team. You can fetch it from http://cgreen.sourceforge.net[Cgreen
-website project]. Download and install in your system using the normal
-procedures for your system.
+website project]. Download and install it using the normal procedures
+for your system.
+
+Installing from source
+^^^^^^^^^^^^^^^^^^^^^^
 
 The second way is indicated for developers and advanced
 users. Basically this consists of fetching the sources of the project
@@ -64,19 +94,20 @@ make install
 
 (On cygwin you need to install before the tests can be run.)
 
-This is called an 'out of source build'. It compiles *Cgreen* from
-outside the sources directory. This helps the overall file
-organization and enables multi-target builds from the same sources by
-leaving the complete source tree untouched.
+As you can see, we create a separate build directory before going
+there and building. This is called an 'out of source build'. It
+compiles *Cgreen* from outside the sources directory. This helps the
+overall file organization and enables multi-target builds from the
+same sources by leaving the complete source tree untouched.
 
 Is possible to use the +Makefile+. This file is used to compile and
 test *Cgreen* without the need of CMake tool. However it does not
-contain the rules to install in your system.
+contain the rules to install on your system.
 
-Both methods will create a library called (on unix called
-+libcgreen.so+) which can be used in conjunction with the +cgreen.h+
-header file to compile test code. The created library is installed in
-the system, by default in the +/usr/local/lib/+.
+Both methods will create a library (on unix called +libcgreen.so+)
+which can be used in conjunction with the +cgreen.h+ header file to
+compile test code. The created library is installed in the system, by
+default in the +/usr/local/lib/+.
 
 We'll first write a test to confirm everything is working. Let's start
 with a simple test module with no tests, called +first_test.c+...
@@ -126,11 +157,11 @@ Let's add a meaningless test or two so that you can see how it runs...
 #include "cgreen/cgreen.h"
 
 Ensure(this_test_should_pass) {
-    assert_true(1 == 1);
+    assert_that(1 == 1, is_true);
 }
 
 Ensure(this_test_should_fail) {
-    assert_true(0 == 1);
+    assert_that(0, is_equal_to(1));
 }
 
 int main(int argc, char **argv) {
@@ -150,7 +181,7 @@ On compiling and running, we now get the output...
 -----------------------------
 Running "main" (2 tests)...
 first_test.c:8: Test Failure: -> this_test_should_fail
-    [0 == 1] should be true
+    Expected [0] to [equal] [1]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 -----------------------------
 
@@ -158,7 +189,7 @@ The 'TextReporter', created by the 'create_text_reporter()' call, is
 the simplest way to output the test results. It just streams the
 failures as text.
 
-Of course "0 == 1" should never be true, but this shows how cgreen
+Of course "0" would never equal "1", but this shows how *Cgreen*
 presents the expression that you want to assert.
 
 
@@ -253,7 +284,7 @@ Here is a first test of 'split_words()' in +words_test.c+...
 Ensure(word_count_returned_from_split) {
   char *sentence = strdup("Birds of a feather");
   int word_count = split_words(sentence);
-  assert_equal(word_count, 4);
+  assert_that(word_count, is_equal_to(4));
   free(sentence);
 }
 
@@ -264,8 +295,10 @@ TestSuite *words_tests() {
 }
 -------------------------------
 
-The 'assert_equal()' macro takes in the two values to compare. With
-the default 'TextReporter' the message is sent to 'STDOUT'.
+The 'assert_that()' macro takes two parameters, the value to assert
+and a constraint. The constraints comes in various forms. In this case
+we use the probably most common, 'is_equal_to()'. With the default
+'TextReporter' the message is sent to 'STDOUT'.
 
 To get this to compile we need to create the +words.h+ header file...
 
@@ -297,17 +330,20 @@ gcc all_tests.o words_test.o words.o -lcgreen -o all_tests
 
 -------------------------------
 Running "main" (1 tests)...
-words_test.c:10: Test Failure: -> words_tests -> word_count_returned_from_split 
-	[word_count] should be [4] but was [0]
+words_test.c:10: Failure: -> words_tests -> word_count_returned_from_split 
+	Expected [word_count] to [equal] [4]
+		actual value:	[0]
+		expected value:	[4]
 Completed "main": 0 passes, 1 failure, 0 exceptions.
 -------------------------------
 
-The breadcrumb trail is the nesting of the tests. It goes from the
-test suites, which can nested in each other, through the test
-function, and finally to the message from the assertion. In the
-language of *Cgreen*, a failure is a mismatched assertion, an exception
-is accumulated when a test fails to complete for any reason.
-      
+The breadcrumb trail following the "Failure" text is the nesting of
+the tests. It goes from the test suites, which can be nested in each
+other, through the test function, and finally to the message from the
+assertion. In the language of *Cgreen*, a "failure" is a mismatched
+assertion, an "exception" occurs when a test fails to complete for any
+reason.
+
 We could get this to pass just by returning the value 4. Doing TDD in
 really small steps, you would actually do this, but frankly this
 example is too simple. Instead we'll go straight to the core of the
@@ -352,7 +388,7 @@ Ensure(spaces_should_be_converted_to_zeroes) {
   char *sentence = strdup("Birds of a feather");
   split_words(sentence);
   int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
-  assert_equal(comparison, 0);
+  assert_that(comparison, is_equal_to(0));
   free(sentence); 
 }
 
@@ -368,8 +404,10 @@ Sure enough, we get a failure...
 
 ----------------------------------
 Running "main" (2 tests)...
-words_test.c:15: Test Failure: -> words_tests -> spaces_should_be_converted_to_zeroes
-	[comparison] should be [0] but was [-32]
+words_test.c:18: Failure: -> words_tests -> spaces_should_be_converted_to_zeroes 
+	Expected [comparison] to [equal] [0]
+		actual value:	[-32]
+		expected value:	[0]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ----------------------------------
 
@@ -395,8 +433,10 @@ int split_words(char *sentence) {
 
 ----------------------------------
 Running "main" (2 tests)...
-words_test.c:7: Test Failure: -> words_tests -> word_count_returned_from_split
-	[word_count] should be [4] but was [2]
+words_test.c:10: Failure: -> words_tests -> word_count_returned_from_split 
+	Expected [word_count] to [equal] [4]
+		actual value:	[2]
+		expected value:	[4]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ----------------------------------
 
@@ -624,34 +664,69 @@ the +Ensure+ macro. An example might be...
 
 [source,c]
 -----------------------------
-Ensure(strlen_of_hello_should_be_five) {
-    assert_equal(strlen("Hello"), 5);
+Ensure(strlen_of_hello_is_five) {
+    assert_that(strlen("Hello"), is_equal_to(5));
 }
 -----------------------------
 
-The test function name can be anything you want. The 'assert_equal()'
-call is an example of an assertion. Assertions send messages to
-*Cgreen*, which in turn outputs the results.
+The test name can be anything you want as long as it fullfills the
+rules for an identifier in C.
 
-Here are the standard assertions...
+The 'assert_that()' call is the primary part of an assertion, which is
+complemented with a constraint, in this case 'is_equal_to()'. This
+makes a very fluent interface to the asserts, that actually reads like
+english.
+
+Assertions send messages to *Cgreen*, which in turn
+outputs the results.
+
+Here are the standard constraints...
 
 |=========================================================
-|*Assertion* |*Description*
-|assert_true(boolean) |Passes if boolean evaluates true
-|assert_false(boolean) |Fails if boolean evaluates true
-|assert_equal(tried, expected) |Passes if 'tried == expected'
-|assert_not_equal(tried, unexpected) |Passes if 'tried != unexpected'
-|assert_string_equal(char *, char *) |Uses 'strcmp()' and passes if the strings are equal
-|assert_string_not_equal(char *, char *) |Uses 'strcmp()' and fails if the strings are equal
-
+|*Constraint* |*Passes if actual value/expression...*
+|is_true |evaluates to true
+|is_false |evaluates to false
+|is_equal_to(value) |'== value'
+|is_not_equal_to(value) |'!= value'
+|is_greater_than(value) |'> value'
+|is_less_than(value) |'< value'
+|is_equal_to_contents_of(pointer, size)|matches the data pointed to by 'pointer' to a size of 'size' bytes
+|is_not_equal_to_contents_of(pointer, size)|does not match the data pointed to by 'pointer' to a size of 'size' bytes
+|is_equal_to_string(value) |are equal when compared using 'strcmp()'
+|is_not_equal_to_string(value) |are not equal when compared using 'strcmp()'
+|contains_string(value) |contains 'value' when evaluated using 'strstr()'
+|does_contain_string(value) |does not contain 'value' when evaluated using 'strstr()'
+|begins_with_string(value) |starts with the string 'value'
+|is_equal_to_double(value) |are equal to 'value' within the number of significant digits (you can set 'significant_figures_for_assert_double_are(int figures)')
+|is_not_equal_to_double(value) |are not equal to 'value' within the number of significant digits
 |=========================================================
 
 The boolean assertion macros accept an 'int' value. The equality
 assertions accept anything that can be cast to 'intptr_t' and simply
 perform an '==' operation. The string comparisons are slightly
 different in that they use the '<string.h>' library function
-'strcmp()'.  If 'assert_equal()' is used on 'char *' pointers then the
-pointers have to point at the same string.
+'strcmp()'.  If 'is_equal_to()' is used on 'char *' pointers then the
+pointers have to point at the same string to pass.
+
+Legacy style assertions
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Cgreen have been around for a while, developed and matured. There is
+another style of assertions that was the initial version, a style
+that we now call the 'legacy style'. If you are not interested in
+historical artifacts, I recommend that you skip this section.
+
+But for completness, here are the legacy style assertion macros:
+
+|=========================================================
+|*Assertion* |*Description*
+|assert_true(boolean) |Passes if boolean evaluates true
+|assert_false(boolean) |Fails if boolean evaluates true
+|assert_equal(first, second) |Passes if 'first == second'
+|assert_not_equal(first, second) |Passes if 'first != second'
+|assert_string_equal(char *, char *) |Uses 'strcmp()' and passes if the strings are equal
+|assert_string_not_equal(char *, char *) |Uses 'strcmp()' and fails if the strings are equal
+|=========================================================
 
 Each assertion has a default message comparing the two values. If you
 want to substitute your own failure messages, then you must use the
@@ -665,7 +740,6 @@ want to substitute your own failure messages, then you must use the
 |assert_not_equal_with_message(tried, unexpected, message, ...)
 |assert_string_equal_with_message(char *, char *, message, ...)
 |assert_string_not_equal_with_message(char *, char *, message, ...)
-
 |=========================================================
 
 All these assertions have an additional 'char *' message parameter,
@@ -681,30 +755,36 @@ the test above to be...
 
 [source,c]
 -----------------------------
-Ensure(strlen_of_hello_should_be_five) {
+Ensure(strlen_of_hello_is_five) {
     const char *greeting = "Hello";
     int length = strlen(greeting);
     assert_equal_with_message(length, 5, "[%s] should be 5, but was %d", greeting, length);
 }
 -----------------------------
 
-A slightly more user friendly message when things go wrong. 
+A slightly more user friendly message when things go wrong. But,
+actually, Cgreens default messages are so good that you are
+encouraged to skip the legacy style and go for the more modern
+constaints style assertions.
 
-For the test above to work there needs to be a running test suite. We
-can create one expecially for this test like so...
+A runner
+~~~~~~~~
+
+For the tests to actually be run there needs to be a running test
+suite. (But see also <<runner>>.) We can create one especially for this test like so...
 
 [source,c]
 -----------------------------
 TestSuite *our_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, strlen_of_hello_should_be_five);
+    add_test(suite, strlen_of_hello_is_five);
     return suite;
 }
 -----------------------------
 
-In case you have spotted that 'strlen_of_hello_should_be_five()'
-should have an ampersand in front of it, 'add_test()' is a macro. The
-'&' is added automatically. Further more, the Ensure-macro actually
+In case you have spotted that 'strlen_of_hello_is_five()' should have
+an ampersand in front of it, 'add_test()' is actually a macro. The '&'
+is added automatically. Further more, the Ensure-macro actually
 mangles the tests name, so it is not actually a function name. (This
 also might make them a bit difficult to find in the debugger....)
 
@@ -718,8 +798,9 @@ run_test_suite(our_tests(), create_text_reporter());
 
 The results of assertions are ultimately delivered as passes and
 failures to a collection of callbacks defined in a 'TestReporter'
-structure. The only predefined one in *Cgreen* is the 'TextReporter'
-that delivers messages in plain text like we have already seen.
+structure. The only predefined 'TestReporter' in *Cgreen* is the
+'TextReporter' that delivers messages in plain text like we have
+already seen.
 
 The complete test code now looks like...
 
@@ -728,13 +809,13 @@ The complete test code now looks like...
 #include "cgreen/cgreen.h"
 #include <string.h>
 
-Ensure(strlen_of_hello_should_be_five) {
-    assert_equal(strlen("Hello"), 5);
+Ensure(strlen_of_hello_is_five) {
+    assert_that(strlen("Hello"), is_equal_to(5));
 }
 
 TestSuite *our_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, strlen_of_hello_should_be_five);
+    add_test(suite, strlen_of_hello_is_five);
     return suite;
 }
 
@@ -755,12 +836,12 @@ Running "our_tests" (1 tests)...
 Completed "our_tests": 1 pass, 0 failures, 0 exceptions.
 -----------------------------
 
-The test messages are only shown on failure. If we break our test...
+The test messages are only shown on failure. If we break our test to see it...
 
 [source,c]
 -----------------------------
-Ensure(strlen_of_hello_should_be_five) {
-    assert_equal(strlen("Hiya", 5);
+Ensure(strlen_of_hello_is_five) {
+    assert_that(strlen("Hiya", is_equal_to(5));
 }
 -----------------------------
 
@@ -768,8 +849,10 @@ Ensure(strlen_of_hello_should_be_five) {
 
 -----------------------------
 Running "our_tests" (1 tests)...
-strlen.c:5: Test Failure: -> strlen_of_hello_should_be_five
-	[strlen("Hiya")] should be [5] but was [4]
+strlen_test.c:5: Failure: -> strlen_of_hello_is_five 
+	Expected [strlen("Hiya")] to [equal] [5]
+		actual value:	[4]
+		expected value:	[5]
 Completed "our_tests": 0 passes, 1 failure, 0 exceptions.
 -----------------------------
                 
@@ -783,14 +866,14 @@ tests. Adding a test of 'strlen()' with an empty string for example...
 [source,c]
 -----------------------------
 ...
-Ensure(strlen_of_empty_string_should_be_zero) {
+Ensure(strlen_of_empty_string_is_zero) {
     assert_equal(strlen("\0"), 0);
 }
 
 TestSuite *our_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, strlen_of_hello_should_be_five);
-    add_test(suite, strlen_of_empty_string_should_be_zero);
+    add_test(suite, strlen_of_hello_is_five);
+    add_test(suite, strlen_of_empty_string_is_zero);
     return suite;
 }
 ...
@@ -832,18 +915,18 @@ Ensure(can_add_person_to_database) {
     set_person_name(person, "Fred");
     save_person(person);
     Person *found = find_person_by_name("Fred");
-    assert_string_equal(get_person_name(person), "Fred");
+    assert_that(get_person_name(person), is_equal_to_string("Fred"));
     drop_schema();
 }
 
-Ensure(void cannot_add_duplicate_person) {
+Ensure(cannot_add_duplicate_person) {
     create_schema();
     Person *person = create_person();
     set_person_name(person, "Fred");
-    assert_true(save_person(person));
+    assert_that(save_person(person), is_true);
     Person *duplicate = create_person();
     set_person_name(duplicate, "Fred");
-    assert_false(save_person(duplicate));
+    assert_that(save_person(duplicate), is_false);
     drop_schema();
 }
 
@@ -883,16 +966,16 @@ Ensure(can_add_person_to_database) {
     set_person_name(person, "Fred");
     save_person(person);
     Person *found = find_person_by_name("Fred");
-    assert_string_equal(get_person_name(person), "Fred");
+    assert_that(get_person_name(person), is_equal_to_string("Fred"));
 }
 
 Ensure(cannot_add_duplicate_person) {
     Person *person = create_person();
     set_person_name(person, "Fred");
-    assert_true(save_person(person));
+    assert_that(save_person(person), is_true);
     Person *duplicate = create_person();
     set_person_name(duplicate, "Fred");
-    assert_false(save_person(duplicate));
+    assert_that(save_person(duplicate), is_false);
 }
 
 TestSuite *person_tests() {
@@ -973,7 +1056,7 @@ When built and run, this gives...
 
 -----------------------------
 Running "main" (1 tests)...
-crash_test.c:4: Exception!: -> will_seg_fault
+crash_test.c:4: Exception: -> will_seg_fault
         Test exited unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal
 Completed "main": 0 passes, 0 failures, 1 exception.
 -----------------------------
@@ -1037,9 +1120,9 @@ When executed, the code will slow for a second, and then finish with...
 
 ---------------------------
 Running "main" (2 tests)...
-crash_test.c:4: Exception!: -> will_seg_fault
+crash_test.c:4: Exception: -> will_seg_fault
         Test exited in unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal
-crash_test.c:9: Exception!: -> will_stall
+crash_test.c:9: Exception: -> will_stall
         Test exited in unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal
 Completed "main": 0 passes, 0 failures, 2 exceptions.
 ---------------------------
@@ -1067,13 +1150,13 @@ Firstly we need to remove the 'main()' calls.  E.g...
 #include "cgreen/cgreen.h"
 #include <string.h>
 
-Ensure(strlen_of_hello_should_be_five) { ... }
-Ensure(strlen_of_empty_string_should_be_zero) { ... }
+Ensure(strlen_of_hello_is_five) { ... }
+Ensure(strlen_of_empty_string_is_zero) { ... }
 
 TestSuite *our_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, strlen_of_hello_should_be_five);
-    add_test(suite, strlen_of_empty_string_should_be_zero);
+    add_test(suite, strlen_of_hello_is_five);
+    add_test(suite, strlen_of_empty_string_is_zero);
     return suite;
 }
 ----------------------------
@@ -1105,7 +1188,7 @@ scripts, rather than have lot's of header files.  This is the same
 reasoning that let us drop the prototypes for the test functions in
 the actual test scripts.  We can get away with this, because the tests
 are more about documentation than encapsulation.
-                         
+
 It's sometimes handy to be able to run just a single test from the
 command line, so we added a simple 'if' block to take the test name as
 an optional argument.  The entire test suite will be searched for the
@@ -1229,10 +1312,10 @@ Mocking functions with Cgreen
 -----------------------------
         
 When testing you want certainty above all else.  Random events destroy
-confidence in your test suite and force needless extra runs &quot;to
-be sure&quot;.  A good test places the subject under test into a
-tightly controlled environment.  A test chamber if you like.  This
-makes the tests fast, repeatable and reliable.
+confidence in your test suite and force needless extra runs "to be
+sure".  A good test places the subject under test into a tightly
+controlled environment.  A test chamber if you like.  This makes the
+tests fast, repeatable and reliable.
 
 To create a test chamber for testing code, we have to control any
 outgoing calls from the code under test.  We won't believe our test
@@ -1305,7 +1388,7 @@ static int empty_stream(void *stream) {
 }
 
 Ensure(reading_lines_from_empty_stream_gives_null) {
-    assert_equal(read_paragraph(&empty_stream, NULL), NULL);
+    assert_that(read_paragraph(&empty_stream, NULL), is_null);
 }
 
 TestSuite *stream_tests() {
@@ -1348,12 +1431,12 @@ For our simple example above we just tell it to always return 'EOF'...
 #include <cgreen/mocks.h>
 
 static int stub_stream(void *stream) {
-    return (int)mock();
+    return (int)mock(stream);
 }
 
 Ensure(reading_lines_from_empty_stream_gives_null) {
     always_expect(stub_stream, will_return(EOF));
-    assert_equal(read_paragraph(stub_stream, NULL), NULL);
+    assert_that(read_paragraph(stub_stream, NULL), is_null);
 }
 -----------------------
 
@@ -1366,8 +1449,8 @@ return 'EOF' when called.
 Let's see if our production code actually works...
 
 -----------------------
-Running "main" (1 tests)...
-Completed "main": 1 pass, 0 failures, 0 exceptions.
+Running "stream_tests" (1 tests)...
+Completed "stream_tests": 1 pass, 0 failures, 0 exceptions.
 -----------------------
 
 So far, so good.  On to the next test.
@@ -1386,7 +1469,7 @@ Ensure(one_character_stream_gives_one_character_line) {
     expect(stub_stream, will_return('a'));
     expect(stub_stream, will_return(EOF));
     char *line = read_paragraph(&stub_stream, NULL);
-    assert_string_equal(line, "a");
+    assert_that(line, is_equal_to_string("a"));
     free(line);
 }
 -----------------------
@@ -1400,10 +1483,12 @@ that will be given back once the test proper starts.
 We'll add this test to the suite and run it...
 
 -----------------------
-Running "main" (2 tests)...
-streams_tests.c:19: Test Failure: -> one_character_stream_gives_one_character_line
-        [�a] should be [a]
-Completed "main": 0 passes, 1 failure, 0 exceptions.
+Running "stream_tests" (2 tests)...
+stream_test.c:19: Failure: -> one_character_stream_gives_one_character_line 
+	Expected [line] to [equal string] ["a"]
+		actual value:	["8a"]
+		expected value:	["a"]
+Completed "stream_tests": 1 pass, 1 failure, 0 exceptions.
 -----------------------
 
 Oops. Our code under test doesn't work. Already we need a fix...
@@ -1431,8 +1516,8 @@ char *read_paragraph(int (*read)(void *), void *stream) {
 After which everything is fine...
 
 -----------------------
-Running "main" (2 tests)...
-Completed "main": 2 passes, 0 failures, 0 exceptions.
+Running "stream_tests" (2 tests)...
+Completed "stream_tests": 2 passes, 0 failures, 0 exceptions.
 -----------------------
              
 How do the *Cgreen* stubs work?  Each 'expect()' describes one call to
@@ -1454,7 +1539,7 @@ Ensure(one_word_stream_gives_one_word_line) {
     expect(stub_stream, will_return('h'));
     expect(stub_stream, will_return('e'));
     always_expect(stub_stream, will_return(EOF));
-    assert_string_equal(read_paragraph(&stub_stream, NULL), "the");
+    assert_that(read_paragraph(&stub_stream, NULL), is_equal_to_string("the"));
 }
 -----------------------
 
@@ -1482,7 +1567,7 @@ Ensure(drops_line_ending_from_word_and_stops) {
     expect(stub_stream, will_return('h'));
     expect(stub_stream, will_return('e'));
     expect(stub_stream, will_return('\n'));
-    assert_string_equal(read_paragraph(&stub_stream, NULL), "the");
+    assert_that(read_paragraph(&stub_stream, NULL), is_equal_to_string("the"));
 }
 -----------------------
 
@@ -1492,7 +1577,7 @@ Ensure(drops_line_ending_from_word_and_stops) {
 -----------------------
 Ensure(single_line_ending_gives_empty_line) {
     expect(stub_stream, will_return('\n'));
-    assert_string_equal(read_paragraph(&stub_stream, NULL), "");
+    assert_that(read_paragraph(&stub_stream, NULL), is_equal_to_string(""));
 }
 -----------------------
 
@@ -1503,14 +1588,18 @@ we call the stream beyond the line ending, we want to fail.
 Oops, that was a little too fast. Turns out we are failing anyway...
 
 -----------------------
-Running "main" (5 tests)...
-streams_tests.c:36: Test Failure: -> drops_line_ending_from_word_and_stops
-        [the
-� ] should be [the]
-streams_tests.c:41: Test Failure: -> single_line_ending_gives_empty_line
-        [
- � ] should be []
-Completed "main": 3 passes, 2 failures, 0 exceptions.
+Running "stream_tests" (5 tests)...
+stream_test.c:36: Failure: -> drops_line_ending_from_word_and_stops 
+	Expected [read_paragraph(&stub_stream, NULL)] to [equal string] ["the"]
+		actual value:	["the
+"]
+		expected value:	["the"]
+stream_test.c:41: Failure: -> single_line_ending_gives_empty_line 
+	Expected [read_paragraph(&stub_stream, NULL)] to [equal string] [""]
+		actual value:	["
+öjj"]
+		expected value:	[""]
+Completed "stream_tests": 3 passes, 2 failures, 0 exceptions.
 -----------------------
 
 Clearly we are passing through the line ending.
@@ -1540,8 +1629,8 @@ char *read_paragraph(int (*read)(void *), void *stream) {
 And we are passing again...
 
 -----------------------
-Running "main" (5 tests)...
-Completed "main": 5 passes, 0 failures, 0 exceptions.
+Running "stream_tests" (5 tests)...
+Completed "stream_tests": 5 passes, 0 failures, 0 exceptions.
 -----------------------
              
 There are no limits to the number of stubbed methods within a test,
@@ -1690,7 +1779,7 @@ often the specified behaviour or expectation will be executed:
 |*Macro*|*Description*
 |'expect(function, ...)'|Expected once, in order
 |'always_expect(function, ...)'|Expect this behavior from here onwards
-|'never_expect(function)'|This mock is never expected to be called
+|'never_expect(function)'|This mock is expected to never be called
 |=========================================
 
 You can specify constraints and behaviours for each expectation
@@ -1708,7 +1797,8 @@ constraint)' macro. It takes two parameters:
 |constraint|A constraint placed on that parameter
 |=================================================
 
-There is a multitude of constraints available:
+There is a multitude of constraints available (actually, exactly the
+same as for the assertions we saw earlier):
 
 |========================================
 |*Constraint*|*Type*
@@ -1762,8 +1852,8 @@ expectation, one for each reference parameter, but naturally only one
 It's about time we actually ran our test...
 
 -----------------------
-Running "main" (6 tests)...
-Completed "main": 6 passes, 0 failures, 0 exceptions.
+Running "stream_tests" (6 tests)...
+Completed "stream_tests": 6 passes, 0 failures, 0 exceptions.
 -----------------------
 
 Confident that a single character works, we can further specify the
@@ -1835,10 +1925,10 @@ Ensure(empty_paragraphs_are_ignored) {
 This last test is our undoing...
 
 -----------------------
-Running "main" (10 tests)...
+Running "stream_tests" (10 tests)...
 streams_tests.c:93: Test Failure: -> empty_paragraphs_are_ignored
         Function [writer] has an expectation that it will never be called, but it was
-Completed "main": 14 passes, 1 failure, 0 exceptions.
+Completed "stream_tests": 14 passes, 1 failure, 0 exceptions.
 -----------------------
 
 Obviously blank lines are still being dispatched to the 'writer()'.
@@ -1862,12 +1952,168 @@ Tests with 'never_expect()' can be very effective at uncovering subtle
 bugs.
 
 -----------------------
-Running "main"...
-Completed "main": 14 passes, 0 failures, 0 exceptions.
+Running "stream_tests"...
+Completed "stream_tests": 14 passes, 0 failures, 0 exceptions.
 -----------------------
 
 All done.
-             
+
+BDD Cgreen
+----------
+
+As mentioned earlier, *Cgreen* also supports the behaviour driven
+style of test driving code. The thinking behind BDD is that we don't
+really want to test anything, if we just could specify the behaviour
+of our code and ensure that it actually behaves this way we would be
+fine.
+
+This might seem like an age old dream, but when you think about it,
+there is actually very little difference in the mechanics from
+TDD. First we write how we want it, then implement it. But the small
+change in wording, from `test´ to `behaviour´, from `test that´ to `ensure
+that´, makes a huge difference in thinking, and also very often in quality
+of the resulting code.
+
+The CUT
+~~~~~~~
+
+Since BDD talks about behaviour, there has to be something that we can
+talk about as having the wanted behaviour. This is usually called the
+CUT, the Class Under Test. *Cgreen* requires you to define a name for
+it.
+
+[source, c]
+-----------------------
+#include <cgreen/cgreen.h>
+Describe(CUT);
+-----------------------
+
+Since *CGreen* supports C++ there you naturally have the objects and
+also the Class Under Test. But in plain C you will have to think about
+what is actually the "class" under test. E.g. in 'sort.c' you might
+see
+
+[source, c]
+---------------------
+#include <cgreen/cgreen.h>
+Describe(Sorter);
+
+Ensure(Sorter, can_sort_an_empty_list) {
+  ensure_that(sorter(NULL), is_null);
+}
+---------------------
+
+In this example you can clearly see what difference BDD style makes
+when it comes to naming. Convention, and natural language, dictates
+that typical names for what TDD would call tests, now starts with
+'can' or 'finds' or other verbs, which makes the specification so much
+easier to read.
+
+Yes, I wrote 'specification'. Because that is how BDD views what TDD
+basically calls a test suite. The suite specifies the behaviour of a
+`class´. (That's why some BDD frameworks draw on 'spec', like
+*RSpec*.)
+
+As you can see in the short example above, you have to give the CUT in
+the 'Ensure()' declaration too. If you don't, *Cgreen* will get
+confused about which style you are using and your source won't
+compile.
+
+Contexts and Before and After
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The complete specification of the behaviour of a CUT might become long
+and require various forms of setup. When using TDD style you
+would probably break this up into multiple suites having their own
+'setup()' and 'teardown()'.
+
+With BDD style we could consider the suite as a behaviour
+specification for our CUT 'in a particular context'. E.g.
+
+[source, c]
+------------------------
+#include <cgreen/cgreen.h>
+
+Describe(shopping_basket_for_returning_customer);
+
+Customer *customer;
+
+BeforeEach(shopping_basket_for_returning_customer){
+  customer = create_test_customer();
+  login(customer);
+}
+
+AfterEach(shopping_basket_for_returning_customer) {
+  logout(customer);
+  destroy_customer(customer);
+}
+
+Ensure(shopping_basket_for_returning_customer, can_use_discounts) {
+  ...
+}
+-----------------------------------------------
+
+The ''context'' would then be 'shopping_basket_for_returning_customer',
+with the CUT being the shopping basket ''class''.
+
+We have added two ''functions'' which are exactly what they say they
+are. Before each ''test'' (or behaviour specification) the customer
+record will always be create and the customer logged in, exactly like
+we could do with the 'setUp()' function in TDD style. In the same
+manner, after each ''test'' the customer will be logged out and the
+record destroyed.
+
+I've been holding back on running *Cgreen* with this example because
+you need to write all three of the new ''functions'' (of course you
+can see that they are CPP macros, right?), to make that work.
+
+And there is one more thing. To run this using the same kind of main
+program that we saw earlier, we need must add the CUT when we add the
+test to suite:
+
+[source, c]
+----------------------
+
+TestSuite *shopping_basket_tests()
+{
+  TestSuite *suite = create_test_suite();
+  add_test_with_context(suite, shopping_basket_for_returning_customer, can_use_discounts);
+  return suite;
+}
+-----------------------
+
+Note that you don't need to (and shouldn't) add any setup or teardown
+to the suite. That's already taken care of by the BeforeEvery() and
+AfterEvery() definitions.
+
+Now we are ready to run the tests by compiling and linking as
+always.
+
+[[changing_style]]
+
+Changing Style
+~~~~~~~~~~~~~~
+
+If you have some TDD style *Cgreen* test suites, it is quite easy to
+change them over to BDD style. Here are the steps required
+
+* Add 'Describe(CUT);'
+
+* Turn your current setup function into a 'BeforeEach()' definition by
+changing is signature to match the macro. If you don't have any setup
+function you need to define an empty 'BeforeEach()'.
+
+* Dito for 'AfterEach()'.
+
+* Remove any 'set_setup()' and 'set_teardown()'
+
+* Add the CUT to each 'Ensure()' as the first parameter
+
+* Change the call to add the tests to 'add_test_with_context()'
+
+Done.
+
+
 Changing Cgreen Reporting
 -------------------------
 
@@ -2459,6 +2705,8 @@ Possible other extensions include reporters that write to 'syslog',
 talk to IDE plug-ins, paint pretty printed documents or just return a boolean
 for monitoring purposes.
 
+[[runner]]
+
 Automatic Test Discovery
 ------------------------
 
@@ -2469,7 +2717,7 @@ When we write a new test we focus on the details about the test we are
 trying to write. And writing tests are no trivial matter so this might
 well take a lot of brain power.
 
-So, it comes to no big surprise, that sometimes you write your test
+So, it comes as no big surprise, that sometimes you write your test
 you forget to add it to the suite. When we run it it appears that it
 passed on the first try! Although this *should* really make you
 suspicious, sometimes you get so happy that you just continue with
@@ -2533,7 +2781,7 @@ Discovered: 2 tests
 Opening [first_test.dll] to run all discovered tests ...
 Running "main" (2 tests)...
 first_test.c:8: Test Failure: -> this_test_should_fail
-        [0] should be true
+        Expected [0] to be true
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 -------------------------
 
@@ -2572,7 +2820,9 @@ Setup, Teardown and custom reporters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 At the time of writing there is no way to use setup and teardown
-functions with the runner (that I am aware of).
+functions with the runner. If you have setup and/or teardown you need
+to go to the BDD style using 'BeforeEach()' and 'AfterEach()' as
+described in <<changing_style>> above.
 
 Neither is it possible to use custom reporters as outlined in the
 previous chapter.
