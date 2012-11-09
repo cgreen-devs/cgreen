@@ -1,7 +1,7 @@
 #include <cgreen/cgreen.h>
 #include <string.h>
 
-Ensure(strlen_of_hello_should_be_five) {
+Ensure(strlen_of_hello_is_five) {
     const char *greeting = "Hello";
     int length = strlen(greeting);
     assert_equal_with_message(length, 5, "[%s] should be 5, but was %d", greeting, length);
@@ -9,7 +9,7 @@ Ensure(strlen_of_hello_should_be_five) {
 
 TestSuite *our_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, strlen_of_hello_should_be_five);
+    add_test(suite, strlen_of_hello_is_five);
     return suite;
 }
 

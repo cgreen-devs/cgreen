@@ -9,14 +9,14 @@ static int stub_stream(void *stream) {
 
 Ensure(reading_lines_from_empty_stream_gives_null) {
     always_expect(stub_stream, will_return(EOF));
-    assert_equal(read_paragraph(&stub_stream, NULL), NULL);
+    assert_that(read_paragraph(&stub_stream, NULL), is_null);
 }
 
 Ensure(one_character_stream_gives_one_character_line) {
     expect(stub_stream, will_return('a'));
     expect(stub_stream, will_return(EOF));
     char *line = read_paragraph(&stub_stream, NULL);
-    assert_string_equal(line, "a");
+    assert_that(line, is_equal_to_string("a"));
     free(line);
 }
 
@@ -25,7 +25,7 @@ Ensure(one_word_stream_gives_one_word_line) {
     expect(stub_stream, will_return('h'));
     expect(stub_stream, will_return('e'));
     always_expect(stub_stream, will_return(EOF));
-    assert_string_equal(read_paragraph(&stub_stream, NULL), "the");
+    assert_that(read_paragraph(&stub_stream, NULL), is_equal_to_string("the"));
 }
 
 Ensure(drops_line_ending_from_word_and_stops) {
@@ -33,12 +33,12 @@ Ensure(drops_line_ending_from_word_and_stops) {
     expect(stub_stream, will_return('h'));
     expect(stub_stream, will_return('e'));
     expect(stub_stream, will_return('\n'));
-    assert_string_equal(read_paragraph(&stub_stream, NULL), "the");
+    assert_that(read_paragraph(&stub_stream, NULL), is_equal_to_string("the"));
 }
 
 Ensure(single_line_ending_gives_empty_line) {
     expect(stub_stream, will_return('\n'));
-    assert_string_equal(read_paragraph(&stub_stream, NULL), "");
+    assert_that(read_paragraph(&stub_stream, NULL), is_equal_to_string(""));
 }
 
 static int reader(void *stream) {
