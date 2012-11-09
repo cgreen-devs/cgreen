@@ -20,6 +20,7 @@ typedef struct test_item {
 
 #define CGREEN_SPEC_PREFIX "CgreenSpec_"
 #define CGREEN_SUITE_DEFAULT "default_"
+#define CGREEN_NAME_SEPARATOR "_"
 
 #if defined(__CYGWIN__) || defined(__APPLE__)
 // Cygwin and MacOSX nm lists external names with a leading '_'
@@ -235,6 +236,21 @@ static void register_test(TestItem *test_items, int maximum_number_of_tests, cha
 
 
 /*----------------------------------------------------------------------*/
+static const char *test_name(const char *name)
+{
+	return strstr(&name[strlen(CGREEN_SPEC_PREFIX)], CGREEN_NAME_SEPARATOR)+1;
+}
+
+/*----------------------------------------------------------------------*/
+static const char *suite_name(const char *name)
+{
+	static char copy[1000];
+	strcpy(copy, &name[strlen(CGREEN_SPEC_PREFIX)]);
+	*strstr(copy, CGREEN_NAME_SEPARATOR) = '\0';
+	return copy;
+}
+
+/*----------------------------------------------------------------------*/
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
 // XXX: but nm is more portable across object formats...
 static uint32_t discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items)
@@ -255,11 +271,11 @@ static uint32_t discover_tests_in(const char* test_library, TestItem* test_items
     while (fgets(line, sizeof(line)-1, nm_output_pipe) != NULL) {
         char *match = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR CGREEN_SPEC_PREFIX);
         if (match != NULL) {
-            char *function_name = match + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
-            function_name[strlen(function_name) - 1] = 0; /* remove newline */
+            char *name = match + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
+            name[strlen(name) - 1] = 0; /* remove newline */
             if (verbose)
-                printf("Discovered test '%s'\n", &function_name[strlen(CGREEN_SPEC_PREFIX)+strlen(CGREEN_SUITE_DEFAULT)]);
-            register_test(test_items, maximum_number_of_test_items, function_name);
+                printf("Discovered: %s %s\n", suite_name(name), test_name(name));
+            register_test(test_items, maximum_number_of_test_items, name);
             number_of_tests++;
         }
     }
