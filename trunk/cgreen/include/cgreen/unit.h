@@ -24,31 +24,31 @@ typedef struct {
 #define spec_name(contextName, specName) CgreenSpec_##contextName##_##specName
 
 
-#define Describe_NARG(...) \
-         Describe_NARG_(__VA_ARGS__,Describe_RSEQ_N())
-
-#define Describe_NARG_(...) \
-         Describe_ARG_N(__VA_ARGS__)
-
-#define Describe_ARG_N( \
-          _1,_2,_3,N,...) N
-
-#define Describe_RSEQ_N() \
-        DescribeSubjectWithSetupAndTeardown, DescribeSubjectWithSetup, DescribeSubject, DESCRIBE_REQUIRES_SUBJECT
-
-#define DescribeSubject(subject) \
-static CgreenContext contextFor##subject = { #subject, __FILE__, NULL, NULL };
-
-#define DescribeSubjectWithSetup(subject, ...) \
-static void setup(void); \
-static CgreenContext contextFor##subject = { #subject, __FILE__, &setup, NULL };
-
-#define DescribeSubjectWithSetupAndTeardown(subject, ...) \
+#define Describe(subject) \
 static void setup(void); \
 static void teardown(void); \
-static CgreenContext contextFor##subject = { #subject, __FILE__, &setup, &teardown };
+static CgreenContext contextFor##subject = { #subject, __FILE__, &setup, &teardown }; \
+extern void(*setupFor##subject##Pointer)(void); \
+extern void(*teardownFor##subject##Pointer)(void); \
+static void setup(void) { \
+  if (setupFor##subject##Pointer != NULL) setupFor##subject##Pointer(); \
+} \
+static void teardown(void) { \
+  if (teardownFor##subject##Pointer != NULL) teardownFor##subject##Pointer(); \
+}
 
-#define Describe(...) Describe_NARG(__VA_ARGS__)(__VA_ARGS__)
+#define BeforeEach(subject) \
+void setupFor##subject(void); \
+void(*setupFor##subject##Pointer)(void) = &setupFor##subject; \
+void setupFor##subject(void)
+
+#define AfterEach(subject) \
+static void teardownFor##subject(void); \
+void(*teardownFor##subject##Pointer)(void) = &teardownFor##subject; \
+static void teardownFor##subject(void)
+
+
+
 
 #define Ensure_NARG(...) \
          Ensure_NARG_(__VA_ARGS__,Ensure_RSEQ_N())
