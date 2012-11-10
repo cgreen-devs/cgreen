@@ -45,7 +45,7 @@ static bool ensure_test_exists(TestItem discovered_tests[], char *test_name_with
 /*----------------------------------------------------------------------*/
 static int run_tests(TestReporter *reporter, const char *test_name, void *test_library_handle, TestItem discovered_tests[], int number_of_tests) {
     int status;
-    TestSuite *suite = create_test_suite();
+    TestSuite *suite = create_named_test_suite("main");
 
     add_discovered_tests_to_suite(test_library_handle, discovered_tests, suite);
 

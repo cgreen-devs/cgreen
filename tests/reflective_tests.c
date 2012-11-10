@@ -5,13 +5,13 @@ using namespace cgreen;
 
 static int counter = 0;
 
-Describe(ReflectiveRunner, with_setup, withTeardown);
+Describe(ReflectiveRunner);
 
-void setup() {
+BeforeEach(ReflectiveRunner) {
     counter += 5;
 }
 
-void teardown() {
+AfterEach(ReflectiveRunner) {
     counter += 1;
 }
 
