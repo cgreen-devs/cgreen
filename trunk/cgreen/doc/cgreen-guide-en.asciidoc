@@ -17,7 +17,7 @@ development community.  It is characterised by writing many small
 tests alongside the normal code. Often the tests are written before
 the code they are testing, in a tight test-code-refactor loop.  Done
 this way, the practice is known as Test Driven Development. *Cgreen*
-supports this style of development.
+was designed to support this style of development.
 
 Unit tests are written in the same language as the code, in our case
 C. This avoids the mental overhead of constantly switching language,
@@ -771,7 +771,8 @@ A runner
 ~~~~~~~~
 
 For the tests to actually be run there needs to be a running test
-suite. (But see also <<runner>>.) We can create one especially for this test like so...
+suite. (But see also <<runner, Automatic Test Discovery>>.) We can
+create one especially for this test like so...
 
 [source,c]
 -----------------------------
@@ -2083,13 +2084,13 @@ TestSuite *shopping_basket_tests()
 -----------------------
 
 Note that you don't need to (and shouldn't) add any setup or teardown
-to the suite. That's already taken care of by the BeforeEvery() and
-AfterEvery() definitions.
+to the suite. That's already taken care of by the 'BeforeEach()' and
+'AfterEach()' definitions.
 
 Now we are ready to run the tests by compiling and linking as
 always.
 
-[[changing_style]]
+[[changing_style, Changing Style]]
 
 Changing Style
 ~~~~~~~~~~~~~~
@@ -2103,7 +2104,7 @@ change them over to BDD style. Here are the steps required
 changing is signature to match the macro. If you don't have any setup
 function you need to define an empty 'BeforeEach()'.
 
-* Dito for 'AfterEach()'.
+* Ditto for 'AfterEach()'.
 
 * Remove any 'set_setup()' and 'set_teardown()'
 
@@ -2112,6 +2113,15 @@ function you need to define an empty 'BeforeEach()'.
 * Change the call to add the tests to 'add_test_with_context()'
 
 Done.
+
+It is good that this is a simple process, because you can change over
+from TDD style to BDD style in small steps. You can convert one source
+file at a time, by just following the recipe above. Everything will
+still work as before but your tests and code will likely improve.
+
+And once you have changed style you can fully benefit from the
+automatic discovery of tests as described in <<runner, Automatic Test
+Discovery>>.
 
 
 Changing Cgreen Reporting
@@ -2705,7 +2715,7 @@ Possible other extensions include reporters that write to 'syslog',
 talk to IDE plug-ins, paint pretty printed documents or just return a boolean
 for monitoring purposes.
 
-[[runner]]
+[[runner, Automatic Test Discovery]]
 
 Automatic Test Discovery
 ------------------------
@@ -2819,10 +2829,9 @@ Completed "main": 0 passes, 1 failure, 0 exceptions.
 Setup, Teardown and custom reporters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-At the time of writing there is no way to use setup and teardown
-functions with the runner. If you have setup and/or teardown you need
-to go to the BDD style using 'BeforeEach()' and 'AfterEach()' as
-described in <<changing_style>> above.
+If you need setup and teardown functions with the runner you need to
+go to the BDD style using 'BeforeEach()' and 'AfterEach()' as
+described in <<changing_style, Changing Style>> above.
 
 Neither is it possible to use custom reporters as outlined in the
 previous chapter.
