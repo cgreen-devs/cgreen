@@ -708,6 +708,13 @@ different in that they use the '<string.h>' library function
 'strcmp()'.  If 'is_equal_to()' is used on 'char *' pointers then the
 pointers have to point at the same string to pass.
 
+A cautionary note about the constraints is that you cannot use C/C++
+string literal concatenation (like "don't" "use" "string"
+"concatenation") in the parameters to the constraints. If you do, you
+will get weird error messages about missing arguments to the
+constraint macros. This is caused by the macros using argument strings
+to produce nice failure messages.
+
 Legacy style assertions
 ~~~~~~~~~~~~~~~~~~~~~~~
 
