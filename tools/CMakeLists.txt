@@ -20,9 +20,5 @@ add_library(${CGREEN_RUNNER_TESTS_LIBRARY} SHARED ${runner_tests_SRCS})
 
 target_link_libraries(${CGREEN_RUNNER_TESTS_LIBRARY} ${CGREEN_SHARED_LIBRARY} dl m)
 
-message($<TARGET_LINK_FILE:CGREEN_RUNNER_TESTS_LIBRARY>)
-
 add_test(NAME cgreen_runner_unit_tests COMMAND cgreen-runner $<TARGET_FILE_NAME:cgreen_runner_tests>)
-
-MESSAGE("name =" $<TARGET_SONAME_FILE:CGREEN_RUNNER_TESTS_LIBRARY>)
 
