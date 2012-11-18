@@ -21,7 +21,9 @@ typedef struct {
 	int line;
 } CgreenTest;
 
-#define spec_name(contextName, specName) CgreenSpec_##contextName##_##specName
+#define CGREEN_SPEC_PREFIX "CgreenSpec"
+#define CGREEN_SEPARATOR "__"
+#define spec_name(contextName, specName) CgreenSpec__##contextName##__##specName
 
 
 #define Describe(subject) \

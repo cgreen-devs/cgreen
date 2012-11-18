@@ -15,31 +15,72 @@ typedef struct test_item {
     char *name;
 } TestItem;
 
-#define CGREEN_SPEC_PREFIX "CgreenSpec_"
-#define CGREEN_SUITE_DEFAULT "default_"
-#define CGREEN_NAME_SEPARATOR "_"
-
-#if defined(__CYGWIN__) || defined(__APPLE__)
-// Cygwin and MacOSX nm lists external names with a leading '_'
-// which dlsym() doesn't want, so we'll include the '_' in the separator
-#  define NM_OUTPUT_COLUMN_SEPARATOR " _"
-#else
-#  define NM_OUTPUT_COLUMN_SEPARATOR " "
-#endif
-
-static bool verbose = false;
-static bool no_run = false;
-
-/* Forward declarations: */
-static uint32_t discover_tests_in(const char *, TestItem *, const uint32_t max);
-static void add_discovered_tests_to_suite(void *handle, TestItem* tests, TestSuite* suite);
-static void reflective_runner_cleanup(void*);
-static char *mangle_test_name(const char *test_name);
-static bool ensure_test_exists(TestItem discovered_tests[], char *test_name_with_prefix);
+#define CGREEN_DEFAULT_SUITE "default"
 
 
 /*----------------------------------------------------------------------*/
-static int run_tests(TestReporter *reporter, const char *test_name, void *test_library_handle, TestItem discovered_tests[], int number_of_tests) {
+static char *mangle_test_name(const char *original_test_name) {
+
+    char *context = strdup(original_test_name);
+    const char *test_name = strchr(original_test_name, ':')+1;
+    if (strchr(context, ':') != NULL) {
+        *strchr(context, ':') = '\0';
+    } else {
+        free(context);
+        context = strdup(CGREEN_DEFAULT_SUITE);
+        test_name = original_test_name;
+    }
+    
+    char *test_name_with_prefixes = malloc(strlen(CGREEN_SPEC_PREFIX) +
+                                           strlen(CGREEN_SEPARATOR) +
+                                           strlen(context) +
+                                           strlen(CGREEN_SEPARATOR) +
+                                           strlen(test_name) + 1);
+    strcpy(test_name_with_prefixes, CGREEN_SPEC_PREFIX);
+    strcat(test_name_with_prefixes, CGREEN_SEPARATOR);
+    strcat(test_name_with_prefixes, context);
+    strcat(test_name_with_prefixes, CGREEN_SEPARATOR);
+    strcat(test_name_with_prefixes, test_name);
+    return test_name_with_prefixes;
+}
+
+
+/*----------------------------------------------------------------------*/
+static void add_discovered_tests_to_suite(void *handle, TestItem *tests, TestSuite *suite)
+{
+    for (int i = 0; tests[i].name != NULL; i++) {
+        char *error;
+        CgreenTest *cgreen_test = (CgreenTest *)(dlsym(handle, tests[i].name));
+
+        if ((error = dlerror()) != NULL)  {
+            fprintf (stderr, "%s\n", error);
+            exit(1);
+        }
+
+        add_test_(suite, tests[i].name, cgreen_test);
+    }
+}
+
+
+/*----------------------------------------------------------------------*/
+static bool ensure_test_exists(char *test_name_with_prefix, TestItem discovered_tests[]) {
+    for (int i = 0; discovered_tests[i].name != NULL; i++)
+        if (strcmp(discovered_tests[i].name, test_name_with_prefix) == 0) {
+            return true;
+        }
+    return false;
+}
+
+
+/*----------------------------------------------------------------------*/
+static void reflective_runner_cleanup(void *handle)
+{
+    dlclose(handle);
+}
+
+
+/*----------------------------------------------------------------------*/
+static int run_tests(TestReporter *reporter, const char *test_name, void *test_library_handle, TestItem discovered_tests[], int number_of_tests, bool verbose) {
     int status;
     TestSuite *suite = create_named_test_suite("main");
 
@@ -47,7 +88,7 @@ static int run_tests(TestReporter *reporter, const char *test_name, void *test_l
 
     if (test_name) {
         char *test_name_with_prefix = mangle_test_name(test_name);
-        bool found = ensure_test_exists(discovered_tests, test_name_with_prefix);
+        bool found = ensure_test_exists(test_name_with_prefix, discovered_tests);
         if (verbose)
             printf(" to only run test '%s' ...\n", test_name);
         if (!found) {
@@ -70,61 +111,6 @@ static int run_tests(TestReporter *reporter, const char *test_name, void *test_l
 }
 
 
-
-/*======================================================================*/
-int runner(TestReporter *reporter, const char *test_library, const char *test_name) {
-    int status = 0;
-    void *test_library_handle;
-    const uint32_t MAXIMUM_NUMBER_OF_TESTS = 2048;
-    TestItem discovered_tests[MAXIMUM_NUMBER_OF_TESTS];
-    memset(discovered_tests, 0, sizeof(discovered_tests));
-
-    const uint32_t number_of_tests = discover_tests_in(test_library, discovered_tests, MAXIMUM_NUMBER_OF_TESTS);
-
-    if (verbose)
-        printf("Discovered: %d tests\n", number_of_tests);
-
-    if (!no_run) {
-        if (verbose)
-            printf("Opening [%s]", test_library);
-        test_library_handle = dlopen (test_library, RTLD_NOW);
-        if (test_library_handle == NULL) {
-            fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
-            exit(1);
-        }
-	status = run_tests(reporter, test_name, test_library_handle, discovered_tests, number_of_tests);
-    }
-    return(status);
-}
-
-
-/*----------------------------------------------------------------------*/
-static char *mangle_test_name(const char *test_name) {
-    char *test_name_with_prefixes = malloc(strlen(CGREEN_SPEC_PREFIX) +
-                                           strlen(CGREEN_SUITE_DEFAULT) +
-                                           strlen(test_name) + 1);
-    strcpy(test_name_with_prefixes, CGREEN_SPEC_PREFIX);
-    strcat(test_name_with_prefixes, CGREEN_SUITE_DEFAULT);
-    strcat(test_name_with_prefixes, test_name);
-    return test_name_with_prefixes;
-}
-
-
-/*----------------------------------------------------------------------*/
-static bool ensure_test_exists(TestItem discovered_tests[], char *test_name_with_prefix) {
-    for (int i = 0; discovered_tests[i].name != NULL; i++)
-        if (strcmp(discovered_tests[i].name, test_name_with_prefix) == 0) {
-            return true;
-        }
-    return false;
-}
-
-/*----------------------------------------------------------------------*/
-static void reflective_runner_cleanup(void *handle)
-{
-    dlclose(handle);
-}
-
 /*----------------------------------------------------------------------*/
 static void register_test(TestItem *test_items, int maximum_number_of_tests, char *name) {
     int number_of_tests;
@@ -140,24 +126,38 @@ static void register_test(TestItem *test_items, int maximum_number_of_tests, cha
 
 
 /*----------------------------------------------------------------------*/
-static const char *test_name(const char *name)
-{
-	return strstr(&name[strlen(CGREEN_SPEC_PREFIX)], CGREEN_NAME_SEPARATOR)+1;
+static const char *start_of_context_name(const char *name) {
+    return &name[strlen(CGREEN_SPEC_PREFIX)+strlen(CGREEN_SEPARATOR)];
 }
 
+
 /*----------------------------------------------------------------------*/
-static const char *suite_name(const char *name)
-{
-	static char copy[1000];
-	strcpy(copy, &name[strlen(CGREEN_SPEC_PREFIX)]);
-	*strstr(copy, CGREEN_NAME_SEPARATOR) = '\0';
-	return copy;
+static const char *test_name(const char *name) {
+    return strstr(start_of_context_name(name), CGREEN_SEPARATOR) + strlen(CGREEN_SEPARATOR);
 }
+
+
+/*----------------------------------------------------------------------*/
+static const char *suite_name(const char *name) {
+    static char copy[1000];
+    strcpy(copy, start_of_context_name(name));
+    *strstr(copy, CGREEN_SEPARATOR) = '\0';
+    return copy;
+}
+
+
+#if defined(__CYGWIN__) || defined(__APPLE__)
+// Cygwin and MacOSX nm lists external names with a leading '_'
+// which dlsym() doesn't want, so we'll include the '_' in the separator
+#  define NM_OUTPUT_COLUMN_SEPARATOR " _"
+#else
+#  define NM_OUTPUT_COLUMN_SEPARATOR " "
+#endif
 
 /*----------------------------------------------------------------------*/
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
 // XXX: but nm is more portable across object formats...
-static uint32_t discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items)
+static uint32_t discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items, bool verbose)
 {
     char cmd[2048];
     strcpy(cmd, "/usr/bin/nm ");
@@ -178,7 +178,7 @@ static uint32_t discover_tests_in(const char* test_library, TestItem* test_items
             char *name = match + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
             name[strlen(name) - 1] = 0; /* remove newline */
             if (verbose)
-                printf("Discovered: %s %s\n", suite_name(name), test_name(name));
+                printf("Discovered %s:%s\n", suite_name(name), test_name(name));
             register_test(test_items, maximum_number_of_test_items, name);
             number_of_tests++;
         }
@@ -189,18 +189,29 @@ static uint32_t discover_tests_in(const char* test_library, TestItem* test_items
     return number_of_tests;
 }
 
-/*----------------------------------------------------------------------*/
-static void add_discovered_tests_to_suite(void *handle, TestItem *tests, TestSuite *suite)
-{
-    for (int i = 0; tests[i].name != NULL; i++) {
-        char *error;
-        CgreenTest *cgreen_test = (CgreenTest *)(dlsym(handle, tests[i].name));
 
-        if ((error = dlerror()) != NULL)  {
-            fprintf (stderr, "%s\n", error);
+/*======================================================================*/
+int runner(TestReporter *reporter, const char *test_library, const char *test_name, bool verbose, bool no_run) {
+    int status = 0;
+    void *test_library_handle;
+    const uint32_t MAXIMUM_NUMBER_OF_TESTS = 2048;
+    TestItem discovered_tests[MAXIMUM_NUMBER_OF_TESTS];
+    memset(discovered_tests, 0, sizeof(discovered_tests));
+
+    const uint32_t number_of_tests = discover_tests_in(test_library, discovered_tests, MAXIMUM_NUMBER_OF_TESTS, verbose);
+
+    if (verbose)
+        printf("Discovered %d tests\n", number_of_tests);
+
+    if (!no_run) {
+        if (verbose)
+            printf("Opening [%s]", test_library);
+        test_library_handle = dlopen (test_library, RTLD_NOW);
+        if (test_library_handle == NULL) {
+            fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
             exit(1);
         }
-
-        add_test_(suite, tests[i].name, cgreen_test);
+	status = run_tests(reporter, test_name, test_library_handle, discovered_tests, number_of_tests, verbose);
     }
+    return(status);
 }

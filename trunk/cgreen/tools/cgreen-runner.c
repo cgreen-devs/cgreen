@@ -18,9 +18,11 @@ static int file_exists(const char *filename)
 
 /*----------------------------------------------------------------------*/
 static void usage(const char **argv) {
-    printf("Usage: %s [--xml <prefix>] <library> [<name>]\n\n", argv[0]);
+    printf("Usage: %s [--xml <prefix>] <library> [<test>]\n\n", argv[0]);
     printf("Discover and run all or a single named cgreen test(s) from a dynamically\n");
     printf("loadable library.\n\n");
+    printf("A single test can be run using the form [<context>:]<name> where <context> can\n");
+    printf("be omitted if there is no context.\n\n");
     printf("--xml <prefix>\tInstead of messages on stdout, write results into one XML-file\n");
     printf("\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
     printf("\t\twill be '<prefix>-<suite>.xml'\n");
@@ -96,7 +98,7 @@ int main(int argc, const char **argv) {
         exit(1);
     }
 
-    status = runner(reporter, test_library, test_name);
+    status = runner(reporter, test_library, test_name, verbose, no_run);
 
     return status;
 }
