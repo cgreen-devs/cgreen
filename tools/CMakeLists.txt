@@ -1,5 +1,3 @@
-ENABLE_TESTING()
-
 include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${CMAKE_BINARY_DIR})
 
 remove_definitions(-std=c++0x -Weffc++)
