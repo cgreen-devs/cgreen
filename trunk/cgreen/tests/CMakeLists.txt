@@ -34,6 +34,13 @@ if (WITH_CXX)
 endif (WITH_CXX)
 
 add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_SRCS})
+
+if (WITH_STATIC_LIBRARY)
+  set(CGREEN_LIBRARY ${CGREEN_STATIC_LIBRARY})
+else ()
+  set(CGREEN_LIBRARY ${CGREEN_STATIC_LIBRARY})
+endif()
+
 if (WITH_CXX)
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_SHARED_LIBRARY} m stdc++)
 else()
@@ -41,9 +48,9 @@ else()
 endif (WITH_CXX)
 
 if (WITH_CXX)
-  set(TEST_TARGET_LIBRARIES ${CGREEN_SHARED_LIBRARY} m stdc++)
+  set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY} m stdc++)
 else()
-  set(TEST_TARGET_LIBRARIES ${CGREEN_SHARED_LIBRARY} m)
+  set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY} m)
 endif(WITH_CXX)
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/some_file "Some stuff")
@@ -51,3 +58,4 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/some_file "Some stuff")
 macro_add_unit_test(test_cgreen "${test_SRCS}" "${TEST_TARGET_LIBRARIES}")
 
 add_test(test_cgreen_named ${RUNTIME_OUTPUT_PATH}/test_cgreen integer_one_should_assert_true)
+
