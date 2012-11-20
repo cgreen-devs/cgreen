@@ -12,7 +12,7 @@
 
 
 typedef struct test_item {
-    char *name;
+    char *symbol;
 } TestItem;
 
 #define CGREEN_DEFAULT_SUITE "default"
@@ -48,24 +48,24 @@ static char *mangle_test_name(const char *original_test_name) {
 /*----------------------------------------------------------------------*/
 static void add_discovered_tests_to_suite(void *handle, TestItem *tests, TestSuite *suite)
 {
-    for (int i = 0; tests[i].name != NULL; i++) {
+    for (int i = 0; tests[i].symbol != NULL; i++) {
         char *error;
-        CgreenTest *cgreen_test = (CgreenTest *)(dlsym(handle, tests[i].name));
+        CgreenTest *cgreen_test = (CgreenTest *)(dlsym(handle, tests[i].symbol));
 
         if ((error = dlerror()) != NULL)  {
             fprintf (stderr, "%s\n", error);
             exit(1);
         }
 
-        add_test_(suite, tests[i].name, cgreen_test);
+        add_test_(suite, tests[i].symbol, cgreen_test);
     }
 }
 
 
 /*----------------------------------------------------------------------*/
 static bool ensure_test_exists(char *test_name_with_prefix, TestItem discovered_tests[]) {
-    for (int i = 0; discovered_tests[i].name != NULL; i++)
-        if (strcmp(discovered_tests[i].name, test_name_with_prefix) == 0) {
+    for (int i = 0; discovered_tests[i].symbol != NULL; i++)
+        if (strcmp(discovered_tests[i].symbol, test_name_with_prefix) == 0) {
             return true;
         }
     return false;
@@ -106,17 +106,17 @@ static int run_tests(TestReporter *reporter, const char *test_name, void *test_l
     reflective_runner_cleanup(test_library_handle);
 
     for (int i = 0; i != number_of_tests; ++i)
-        free(discovered_tests[i].name);
+        free(discovered_tests[i].symbol);
     return(status);
 }
 
 
 /*----------------------------------------------------------------------*/
-static void register_test(TestItem *test_items, int maximum_number_of_tests, char *name) {
+static void register_test(TestItem *test_items, int maximum_number_of_tests, char *symbol) {
     int number_of_tests;
 
-    for (number_of_tests = 0; test_items[number_of_tests].name != NULL; number_of_tests++);
-    test_items[number_of_tests].name = strdup(name);
+    for (number_of_tests = 0; test_items[number_of_tests].symbol != NULL; number_of_tests++);
+    test_items[number_of_tests].symbol = strdup(symbol);
 
     if (number_of_tests == maximum_number_of_tests) {
         fprintf(stderr, "\nERROR: Found too many tests (%d)! Giving up.\nConsider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
@@ -127,7 +127,7 @@ static void register_test(TestItem *test_items, int maximum_number_of_tests, cha
 
 /*----------------------------------------------------------------------*/
 static const char *start_of_context_name(const char *name) {
-    return &name[strlen(CGREEN_SPEC_PREFIX)+strlen(CGREEN_SEPARATOR)];
+    return strstr(name, CGREEN_SPEC_PREFIX)+strlen(CGREEN_SPEC_PREFIX)+strlen(CGREEN_SEPARATOR);
 }
 
 
@@ -154,6 +154,10 @@ static const char *suite_name(const char *name) {
 #  define NM_OUTPUT_COLUMN_SEPARATOR " "
 #endif
 
+static bool is_cgreen_spec(const char* line) {
+    return strstr(line, CGREEN_SPEC_PREFIX) != NULL;
+}
+
 /*----------------------------------------------------------------------*/
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
 // XXX: but nm is more portable across object formats...
@@ -173,13 +177,12 @@ static uint32_t discover_tests_in(const char* test_library, TestItem* test_items
     uint32_t number_of_tests = 0;
     char line[1024];
     while (fgets(line, sizeof(line)-1, nm_output_pipe) != NULL) {
-        char *match = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR CGREEN_SPEC_PREFIX);
-        if (match != NULL) {
-            char *name = match + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
-            name[strlen(name) - 1] = 0; /* remove newline */
+        if (is_cgreen_spec(line)) {
+            char *symbol = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR) + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
+            symbol[strlen(symbol) - 1] = 0; /* remove newline */
             if (verbose)
-                printf("Discovered %s:%s\n", suite_name(name), test_name(name));
-            register_test(test_items, maximum_number_of_test_items, name);
+                printf("Discovered %s:%s\n", suite_name(symbol), test_name(symbol));
+            register_test(test_items, maximum_number_of_test_items, symbol);
             number_of_tests++;
         }
     }
