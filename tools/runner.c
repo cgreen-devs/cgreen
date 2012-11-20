@@ -31,11 +31,11 @@ static char *mangle_test_name(const char *original_test_name) {
         test_name = original_test_name;
     }
     
-    char *test_name_with_prefixes = malloc(strlen(CGREEN_SPEC_PREFIX) +
-                                           strlen(CGREEN_SEPARATOR) +
-                                           strlen(context) +
-                                           strlen(CGREEN_SEPARATOR) +
-                                           strlen(test_name) + 1);
+    char *test_name_with_prefixes = (char *)malloc(strlen(CGREEN_SPEC_PREFIX) +
+                                                   strlen(CGREEN_SEPARATOR) +
+                                                   strlen(context) +
+                                                   strlen(CGREEN_SEPARATOR) +
+                                                   strlen(test_name) + 1);
     strcpy(test_name_with_prefixes, CGREEN_SPEC_PREFIX);
     strcat(test_name_with_prefixes, CGREEN_SEPARATOR);
     strcat(test_name_with_prefixes, context);

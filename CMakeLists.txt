@@ -8,7 +8,7 @@ project(cgreen C)
 
 # global needed variables
 set(APPLICATION_NAME ${PROJECT_NAME})
-set(APPLICATION_VERSION "1.0.0-beta2")
+set(APPLICATION_VERSION "1.0.0-beta3")
 set(LIBRARY_VERSION "1.0.0")
 set(LIBRARY_SOVERSION "1")
 
