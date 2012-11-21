@@ -146,17 +146,19 @@ static const char *suite_name(const char *name) {
 }
 
 
-#if defined(__CYGWIN__) || defined(__APPLE__)
-// Cygwin and MacOSX nm lists external names with a leading '_'
-// which dlsym() doesn't want, so we'll include the '_' in the separator
-#  define NM_OUTPUT_COLUMN_SEPARATOR " _"
-#else
-#  define NM_OUTPUT_COLUMN_SEPARATOR " "
-#endif
-
+/*----------------------------------------------------------------------*/
 static bool is_cgreen_spec(const char* line) {
     return strstr(line, CGREEN_SPEC_PREFIX) != NULL;
 }
+
+
+#if defined(__CYGWIN__) || defined(__APPLE__)
+// Cygwin and MacOSX nm lists external names with a leading '_'
+// which dlsym() doesn't want, so we'll include the '_' in the separator
+#  define NM_OUTPUT_COLUMN_SEPARATOR "D _"
+#else
+#  define NM_OUTPUT_COLUMN_SEPARATOR "D "
+#endif
 
 /*----------------------------------------------------------------------*/
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
