@@ -4,13 +4,17 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove when CMake >= 2.8.4 is required
 
 project(cgreen C)
 
-
+enable_testing()
 
 # global needed variables
 set(APPLICATION_NAME ${PROJECT_NAME})
-set(APPLICATION_VERSION "1.0.0-beta3")
-set(LIBRARY_VERSION "1.0.0")
-set(LIBRARY_SOVERSION "1")
+set(APPLICATION_VERSION_MAJOR "1")
+set(APPLICATION_VERSION_MINOR "0")
+set(APPLICATION_VERSION_PATCH "0")
+set(APPLICATION_VERSION_STATUS "-beta3")
+set(APPLICATION_VERSION ${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}.${APPLICATION_VERSION_PATCH}${APPLICATION_VERSION_STATUS})
+set(LIBRARY_VERSION ${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}.${APPLICATION_VERSION_PATCH})
+set(LIBRARY_SOVERSION ${APPLICATION_VERSION_MAJOR})
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH
@@ -42,4 +46,5 @@ add_subdirectory(tools)
 if (WITH_UNIT_TESTS)
   include(MacroAddUnitTest)
   add_subdirectory(tests)
+  add_subdirectory(tools/tests)
 endif (WITH_UNIT_TESTS)
