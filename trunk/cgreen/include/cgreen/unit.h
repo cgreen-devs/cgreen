@@ -30,24 +30,24 @@ typedef struct {
 static void setup(void); \
 static void teardown(void); \
 static CgreenContext contextFor##subject = { #subject, __FILE__, &setup, &teardown }; \
-extern void(*setupFor##subject##Pointer)(void); \
-extern void(*teardownFor##subject##Pointer)(void); \
+extern void(*BeforeEach_For_##subject)(void); \
+extern void(*AfterEach_For_##subject)(void); \
 static void setup(void) { \
-  if (setupFor##subject##Pointer != NULL) setupFor##subject##Pointer(); \
+  if (BeforeEach_For_##subject != NULL) BeforeEach_For_##subject(); \
 } \
 static void teardown(void) { \
-  if (teardownFor##subject##Pointer != NULL) teardownFor##subject##Pointer(); \
+  if (AfterEach_For_##subject != NULL) AfterEach_For_##subject(); \
 }
 
 #define BeforeEach(subject) \
-void setupFor##subject(void); \
-void(*setupFor##subject##Pointer)(void) = &setupFor##subject; \
-void setupFor##subject(void)
+void BeforeEach_For_##subject##_Function(void); \
+void(*BeforeEach_For_##subject)(void) = &BeforeEach_For_##subject##_Function; \
+void BeforeEach_For_##subject##_Function(void)
 
 #define AfterEach(subject) \
-static void teardownFor##subject(void); \
-void(*teardownFor##subject##Pointer)(void) = &teardownFor##subject; \
-static void teardownFor##subject(void)
+static void AfterEach_For_##subject##_Function(void); \
+void(*AfterEach_For_##subject)(void) = &AfterEach_For_##subject##_Function; \
+static void AfterEach_For_##subject##_Function(void)
 
 
 
