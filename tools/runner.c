@@ -13,6 +13,8 @@
 
 typedef struct test_item {
     char *symbol;
+    const char *context;
+    const char *test_name;
 } TestItem;
 
 #define CGREEN_DEFAULT_SUITE "default"
@@ -46,26 +48,93 @@ static char *mangle_test_name(const char *original_test_name) {
 
 
 /*----------------------------------------------------------------------*/
-static void add_discovered_tests_to_suite(void *handle, TestItem *tests, TestSuite *suite)
-{
-    for (int i = 0; tests[i].symbol != NULL; i++) {
-        char *error;
-        CgreenTest *cgreen_test = (CgreenTest *)(dlsym(handle, tests[i].symbol));
-
-        if ((error = dlerror()) != NULL)  {
-            fprintf (stderr, "%s\n", error);
-            exit(1);
-        }
-
-        add_test_(suite, tests[i].symbol, cgreen_test);
-    }
+static bool is_cgreen_spec(const char* line) {
+    return strstr(line, CGREEN_SPEC_PREFIX) != NULL;
 }
 
 
 /*----------------------------------------------------------------------*/
-static bool ensure_test_exists(char *test_name_with_prefix, TestItem discovered_tests[]) {
-    for (int i = 0; discovered_tests[i].symbol != NULL; i++)
-        if (strcmp(discovered_tests[i].symbol, test_name_with_prefix) == 0) {
+static char *context_name_of(const char* name) {
+    char *context = strdup(name);
+    char *colon = strchr(context, ':');
+    if (colon)
+        *colon = '\0';
+    else
+        return CGREEN_DEFAULT_SUITE;
+    return context;
+}
+
+
+/*----------------------------------------------------------------------*/
+static char *test_name_of(const char *name) {
+    char *test = strdup(name);
+    char *colon = strchr(test, ':');
+    if (colon)
+        return colon+1;
+    else
+        return test;
+}
+
+
+/*----------------------------------------------------------------------*/
+static bool test_name_matches(const char *test_name, TestItem test) {
+    //    return strcmp(test.context, context_name_of(test_name)) == 0 &&
+    //        strcmp(test.test_name, test_name_of(test_name)) == 0;
+    return fnmatch(context_name_of(test_name), test.context, 0) == 0 &&
+        fnmatch(test_name_of(test_name), test.test_name, 0) == 0;
+}
+
+
+/*----------------------------------------------------------------------*/
+static int add_matching_tests_to_suite(void *handle, const char *test_name_pattern, TestItem *test_items, TestSuite *suite)
+{
+    int count = 0;
+
+    for (int i = 0; test_items[i].symbol != NULL; i++) {
+        if (test_name_pattern == NULL || test_name_matches(test_name_pattern, test_items[i])) {
+            char *error;
+            CgreenTest *cgreen_test = (CgreenTest *)(dlsym(handle, test_items[i].symbol));
+
+            if ((error = dlerror()) != NULL)  {
+                fprintf (stderr, "%s\n", error);
+                exit(1);
+            }
+
+            add_test_(suite, test_items[i].symbol, cgreen_test);
+            count++;
+        }
+    }
+    return count;
+}
+
+
+/*----------------------------------------------------------------------*/
+static const char *start_of_context_name(const char *symbol) {
+    char *context = strdup(symbol);
+    return strstr(context, CGREEN_SPEC_PREFIX)+strlen(CGREEN_SPEC_PREFIX)+strlen(CGREEN_SEPARATOR);
+}
+
+
+/*----------------------------------------------------------------------*/
+static const char *test_name_of_symbol(const char *symbol) {
+    char *test_name = strdup(symbol);
+    return strstr(start_of_context_name(test_name), CGREEN_SEPARATOR) + strlen(CGREEN_SEPARATOR);
+}
+
+
+/*----------------------------------------------------------------------*/
+static const char *suite_name_of_symbol(const char *symbol) {
+    static char copy[1000];
+    strcpy(copy, start_of_context_name(symbol));
+    *strstr(copy, CGREEN_SEPARATOR) = '\0';
+    return copy;
+}
+
+
+/*----------------------------------------------------------------------*/
+static bool matching_test_exists(const char *test_name, TestItem tests[]) {
+    for (int i = 0; tests[i].symbol != NULL; i++)
+        if (test_name_matches(test_name, tests[i])) {
             return true;
         }
     return false;
@@ -80,33 +149,45 @@ static void reflective_runner_cleanup(void *handle)
 
 
 /*----------------------------------------------------------------------*/
-static int run_tests(TestReporter *reporter, const char *test_name, void *test_library_handle, TestItem discovered_tests[], int number_of_tests, bool verbose) {
+static int count(TestItem test_items[]) {
+    int i;
+    for (i = 0; test_items[i].symbol != NULL; i++);
+    return i;
+}
+
+
+/*----------------------------------------------------------------------*/
+static int run_tests(TestReporter *reporter, const char *test_name, void *test_library_handle, TestItem test_items[], bool verbose) {
     int status;
     TestSuite *suite = create_named_test_suite("main");
 
-    add_discovered_tests_to_suite(test_library_handle, discovered_tests, suite);
+    int number_of_matches = add_matching_tests_to_suite(test_library_handle, test_name, test_items, suite);
 
-    if (test_name) {
-        char *test_name_with_prefix = mangle_test_name(test_name);
-        bool found = ensure_test_exists(test_name_with_prefix, discovered_tests);
+    if (number_of_matches == 1) {
+        char *test_name_as_symbol = mangle_test_name(test_name);
+        bool found = matching_test_exists(test_name, test_items);
         if (verbose)
-            printf(" to only run test '%s' ...\n", test_name);
+            printf(" to only run one test: '%s' ...\n", test_name);
         if (!found) {
             fprintf(stderr, "ERROR: No such test: '%s'\n", test_name);
             exit(1);
         }
-        status = run_single_test(suite, test_name_with_prefix, reporter);
-        free(test_name_with_prefix);
+	status = run_single_test(suite, test_name_as_symbol, reporter);
+        free(test_name_as_symbol);
     } else {
-        if (verbose)
-            printf(" to run all discovered tests ...\n");
+        if (verbose) {
+            if (number_of_matches != count(test_items))
+                printf(" to run %d matching tests ...\n", number_of_matches);
+            else
+                printf(" to run all %d discovered tests ...\n", count(test_items));
+        }
         status = run_test_suite(suite, reporter);
     }
 
     reflective_runner_cleanup(test_library_handle);
 
-    for (int i = 0; i != number_of_tests; ++i)
-        free(discovered_tests[i].symbol);
+    for (int i = 0; test_items[i].symbol != NULL; ++i)
+        free(test_items[i].symbol);
     return(status);
 }
 
@@ -117,6 +198,8 @@ static void register_test(TestItem *test_items, int maximum_number_of_tests, cha
 
     for (number_of_tests = 0; test_items[number_of_tests].symbol != NULL; number_of_tests++);
     test_items[number_of_tests].symbol = strdup(symbol);
+    test_items[number_of_tests].context = suite_name_of_symbol(symbol);
+    test_items[number_of_tests].test_name = test_name_of_symbol(symbol);
 
     if (number_of_tests == maximum_number_of_tests) {
         fprintf(stderr, "\nERROR: Found too many tests (%d)! Giving up.\nConsider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
@@ -124,32 +207,6 @@ static void register_test(TestItem *test_items, int maximum_number_of_tests, cha
     }
 }
 
-
-/*----------------------------------------------------------------------*/
-static const char *start_of_context_name(const char *name) {
-    return strstr(name, CGREEN_SPEC_PREFIX)+strlen(CGREEN_SPEC_PREFIX)+strlen(CGREEN_SEPARATOR);
-}
-
-
-/*----------------------------------------------------------------------*/
-static const char *test_name(const char *name) {
-    return strstr(start_of_context_name(name), CGREEN_SEPARATOR) + strlen(CGREEN_SEPARATOR);
-}
-
-
-/*----------------------------------------------------------------------*/
-static const char *suite_name(const char *name) {
-    static char copy[1000];
-    strcpy(copy, start_of_context_name(name));
-    *strstr(copy, CGREEN_SEPARATOR) = '\0';
-    return copy;
-}
-
-
-/*----------------------------------------------------------------------*/
-static bool is_cgreen_spec(const char* line) {
-    return strstr(line, CGREEN_SPEC_PREFIX) != NULL;
-}
 
 
 #if defined(__CYGWIN__) || defined(__APPLE__)
@@ -163,7 +220,7 @@ static bool is_cgreen_spec(const char* line) {
 /*----------------------------------------------------------------------*/
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
 // XXX: but nm is more portable across object formats...
-static uint32_t discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items, bool verbose)
+static void discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items, bool verbose)
 {
     char cmd[2048];
     strcpy(cmd, "/usr/bin/nm ");
@@ -173,25 +230,21 @@ static uint32_t discover_tests_in(const char* test_library, TestItem* test_items
     FILE *nm_output_pipe = popen(cmd, "r");
     if (nm_output_pipe == NULL) {
         printf("\nERROR: Failed to run command ('/usr/bin/nm')\n" );
-        return 0;
+        return;
     }
 
-    uint32_t number_of_tests = 0;
     char line[1024];
     while (fgets(line, sizeof(line)-1, nm_output_pipe) != NULL) {
         if (is_cgreen_spec(line)) {
             char *symbol = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR) + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
             symbol[strlen(symbol) - 1] = 0; /* remove newline */
             if (verbose)
-                printf("Discovered %s:%s\n", suite_name(symbol), test_name(symbol));
+                printf("Discovered %s:%s\n", suite_name_of_symbol(symbol), test_name_of_symbol(symbol));
             register_test(test_items, maximum_number_of_test_items, symbol);
-            number_of_tests++;
         }
     }
 
     pclose(nm_output_pipe);
-
-    return number_of_tests;
 }
 
 
@@ -203,10 +256,10 @@ int runner(TestReporter *reporter, const char *test_library, const char *test_na
     TestItem discovered_tests[MAXIMUM_NUMBER_OF_TESTS];
     memset(discovered_tests, 0, sizeof(discovered_tests));
 
-    const uint32_t number_of_tests = discover_tests_in(test_library, discovered_tests, MAXIMUM_NUMBER_OF_TESTS, verbose);
+    discover_tests_in(test_library, discovered_tests, MAXIMUM_NUMBER_OF_TESTS, verbose);
 
     if (verbose)
-        printf("Discovered %d tests\n", number_of_tests);
+        printf("Discovered %d tests\n", count(discovered_tests));
 
     if (!no_run) {
         if (verbose)
@@ -216,7 +269,7 @@ int runner(TestReporter *reporter, const char *test_library, const char *test_na
             fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
             exit(1);
         }
-	status = run_tests(reporter, test_name, test_library_handle, discovered_tests, number_of_tests, verbose);
+	status = run_tests(reporter, test_name, test_library_handle, discovered_tests, verbose);
     }
-    return(status);
+    return status;
 }
