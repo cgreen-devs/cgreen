@@ -162,7 +162,7 @@ static int run_tests(TestReporter *reporter, const char *test_name, void *test_l
 
     int number_of_matches = add_matching_tests_to_suite(test_library_handle, test_name, test_items, suite);
 
-    if (number_of_matches == 1) {
+    if (test_name != NULL && number_of_matches == 1) {
         char *test_name_as_symbol = mangle_test_name(test_name);
         bool found = matching_test_exists(test_name, test_items);
         if (verbose)
