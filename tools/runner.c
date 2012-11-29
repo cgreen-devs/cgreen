@@ -124,8 +124,7 @@ static const char *test_name_of_symbol(const char *symbol) {
 
 /*----------------------------------------------------------------------*/
 static const char *suite_name_of_symbol(const char *symbol) {
-    static char copy[1000];
-    strcpy(copy, start_of_context_name(symbol));
+	char *copy = strdup(start_of_context_name(symbol));
     *strstr(copy, CGREEN_SEPARATOR) = '\0';
     return copy;
 }
@@ -197,14 +196,15 @@ static void register_test(TestItem *test_items, int maximum_number_of_tests, cha
     int number_of_tests;
 
     for (number_of_tests = 0; test_items[number_of_tests].symbol != NULL; number_of_tests++);
-    test_items[number_of_tests].symbol = strdup(symbol);
-    test_items[number_of_tests].context = suite_name_of_symbol(symbol);
-    test_items[number_of_tests].test_name = test_name_of_symbol(symbol);
-
     if (number_of_tests == maximum_number_of_tests) {
         fprintf(stderr, "\nERROR: Found too many tests (%d)! Giving up.\nConsider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
         exit(1);
     }
+
+    test_items[number_of_tests].symbol = strdup(symbol);
+    test_items[number_of_tests].context = suite_name_of_symbol(symbol);
+    test_items[number_of_tests].test_name = test_name_of_symbol(symbol);
+	test_items[number_of_tests+1].symbol = NULL;
 }
 
 
