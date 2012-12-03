@@ -42,9 +42,9 @@ else ()
 endif()
 
 if (WITH_CXX)
-  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_SHARED_LIBRARY} m stdc++)
+  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_STATIC_LIBRARY} m stdc++)
 else()
-  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_SHARED_LIBRARY} m)
+  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_STATIC_LIBRARY} m)
 endif (WITH_CXX)
 
 if (WITH_CXX)

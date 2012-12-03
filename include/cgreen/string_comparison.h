@@ -1,7 +1,9 @@
 #ifndef CGREEN_STRING_COMPARISON_H
 #define CGREEN_STRING_COMPARISON_H
 
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 #include <string.h>
 
 #ifdef __cplusplus

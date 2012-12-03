@@ -1,6 +1,8 @@
 #include <cgreen/constraint_syntax_helpers.h>
 #include <cgreen/constraint.h>
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 #include <stddef.h>
 
 #ifdef __cplusplus

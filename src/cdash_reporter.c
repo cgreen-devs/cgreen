@@ -73,7 +73,12 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
     memo->difftimer = cdash_enlapsed_time;
     memo->begin = cdash_build_stamp(sbuildstamp, 15);
 
-    rep_dir = mkdir("./Testing", S_IXUSR|S_IRUSR|S_IWUSR|S_IXGRP|S_IRGRP|S_IXOTH|S_IRGRP);
+#ifndef WIN32
+    rep_dir = mkdir("./Testing", S_IXUSR|S_IRUSR|S_IWUSR|S_IXGRP|S_IRGRP|S_IXOTH);
+#else
+    rep_dir = mkdir("./Testing");
+#endif
+
     if (rep_dir) {
       if (errno != EEXIST) {
     	  free(memo);
@@ -93,7 +98,12 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
 
     strsize = snprintf(reporter_path, 255, "./Testing/%s", sbuildstamp);
 
-    rep_dir = mkdir(reporter_path, S_IXUSR|S_IRUSR|S_IWUSR|S_IXGRP|S_IRGRP|S_IXOTH|S_IRGRP);
+#ifndef WIN32
+    rep_dir = mkdir(reporter_path, S_IXUSR|S_IRUSR|S_IWUSR|S_IXGRP|S_IRGRP|S_IXOTH);
+#else
+    rep_dir = mkdir(reporter_path);
+#endif
+
     if (rep_dir) {
       if (errno != EEXIST) {
     	  free(memo);
@@ -264,7 +274,11 @@ static time_t cdash_build_stamp(char *sbuildstamp, size_t sb) {
 	char s[15];
 
 	t1 = time(0);
+#ifndef WIN32
 	gmtime_r(&t1, &d1);
+#else
+	d1 = *(gmtime(&t1));
+#endif
 
 	strftime(s, sizeof(s), "%Y%m%d-%H%M", &d1);
 	snprintf(sbuildstamp, sb, "%s", s);
@@ -279,7 +293,11 @@ static time_t cdash_current_time(char *strtime) {
 	size_t i;
 
 	t1 = time(0);
+#ifndef WIN32
 	gmtime_r(&t1, &d1);
+#else
+	d1 = *(gmtime(&t1));
+#endif
 
 	if(strtime == NULL)
 		return t1;

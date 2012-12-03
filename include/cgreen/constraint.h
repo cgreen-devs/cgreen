@@ -2,7 +2,9 @@
 #define CONSTRAINT_HEADER
 
 #include <cgreen/reporter.h>
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 #include <stddef.h>
 #include <stdint.h>
 

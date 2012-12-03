@@ -4,7 +4,7 @@
 #include <cgreen/message_formatting.h>
 #include <cgreen/reporter.h>
 #include <cgreen/string_comparison.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -158,7 +158,7 @@ const char *show_null_as_the_string_null(const char *string) {
     return (string == NULL ? "NULL" : string);
 }
 
-int doubles_are_equal(double tried, double expected) {
+bool doubles_are_equal(double tried, double expected) {
     return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(tried, expected));
 }
 

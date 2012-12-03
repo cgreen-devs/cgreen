@@ -1,7 +1,6 @@
 #include <cgreen/cgreen.h>
 #include <stdexcept>
 #include <memory>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>

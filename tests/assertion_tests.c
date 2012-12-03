@@ -1,5 +1,7 @@
 #include <cgreen/cgreen.h>
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -2,7 +2,9 @@
 #include <cgreen/suite.h>
 #include <cgreen/unit.h>
 #include <cgreen/vector.h>
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>

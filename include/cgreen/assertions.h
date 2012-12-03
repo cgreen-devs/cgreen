@@ -4,7 +4,9 @@
 #include <cgreen/constraint.h>
 #include <cgreen/string_comparison.h>
 #include <stdint.h>
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 
 #ifdef __cplusplus
 #include <cgreen/cpp_assertions.h>
@@ -67,7 +69,7 @@ void assert_that_double_(const char *file, int line, const char *actual_string, 
 
 void significant_figures_for_assert_double_are(int figures);
 const char *show_null_as_the_string_null(const char *string);
-int doubles_are_equal(double tried, double expected);
+bool doubles_are_equal(double tried, double expected);
 
 #ifdef __cplusplus
     }

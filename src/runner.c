@@ -9,8 +9,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <unistd.h>
+
+#ifndef WIN32
+#include <sys/wait.h>
+#endif
 
 #ifdef __cplusplus
 #include <stdexcept>
@@ -76,7 +79,11 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
 	int i;
     for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
+#ifndef WIN32
             run_test_in_its_own_process(suite, suite->tests[i].Runnable.test, reporter);
+#else
+            run_test_in_the_current_process(suite, suite->tests[i].Runnable.test, reporter);
+#endif
         } else {
             (*suite->setup)();
             run_every_test(suite->tests[i].Runnable.suite, reporter);
@@ -113,6 +120,7 @@ static void run_test_in_the_current_process(TestSuite *suite, CgreenTest *test, 
     (*reporter->finish_test)(reporter, test->filename, test->line);
 }
 
+#ifndef WIN32
 static void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter) {
     (*reporter->start_test)(reporter, test->name);
     if (in_child_process()) {
@@ -140,6 +148,7 @@ static void wait_for_child_process() {
     wait(&status);
     allow_ctrl_c();
 }
+#endif
 
 static void ignore_ctrl_c() {
     signal(SIGINT, SIG_IGN);
@@ -246,8 +255,8 @@ static void run_teardown_for(CgreenTest *spec) {
 static void run(CgreenTest *spec) {
 #ifdef __cplusplus
     va_list no_arguments;
-	char message[255];
-	TestReporter *reporter = get_test_reporter();
+    char message[255];
+    TestReporter *reporter = get_test_reporter();
 
     try {
 #endif
@@ -282,7 +291,12 @@ static void run_the_test_code(TestSuite *suite, CgreenTest *spec, TestReporter *
 
     if (per_test_timeout_defined()) {
     	validate_per_test_timeout_value();
+#ifndef WIN32
     	die_in(per_test_timeout_value());
+#else
+        va_list no_arguments;
+        reporter->show_fail(reporter, spec->filename, spec->line, "per-test timeouts are currently not supported on win32 platforms", no_arguments);
+#endif
     }
 
     // for historical reasons the suite can have a setup
@@ -316,6 +330,7 @@ static void die(const char *message, ...) {
 	exit(EXIT_FAILURE);
 }
 
+#ifndef WIN32
 void die_in(unsigned int seconds) {
     sighandler_t signal_result = signal(SIGALRM, (sighandler_t)&stop);
     if (SIG_ERR == signal_result) {
@@ -325,6 +340,7 @@ void die_in(unsigned int seconds) {
 
     alarm(seconds);
 }
+#endif
 
 
 #ifdef __cplusplus

@@ -56,7 +56,7 @@ void *memory_pool_reallocate(MemoryPool *pool, void *pointer, size_t bytes) {
 
 static void enlarge(MemoryPool *pool) {
     if (pool->size == pool->space) {
-        pool->blocks = realloc(pool->blocks, (pool->space + MEMORY_INCREMENT) * sizeof(void *));
+        pool->blocks = (void**)realloc(pool->blocks, (pool->space + MEMORY_INCREMENT) * sizeof(void *));
         pool->space += MEMORY_INCREMENT;
     }
 }
@@ -77,7 +77,8 @@ static void move_up_one(void **blocks, long amount) {
     if (amount == 0) {
         return;
     }
-    memmove(blocks[0], blocks[1], blocks[amount] - blocks[1]);
+    // FIXME: this doesn't compile and the smenatics might be wrong
+    //memmove(blocks[0], blocks[1], (size_t)(blocks[amount] - blocks[1]));
 }
 
 #ifdef __cplusplus
