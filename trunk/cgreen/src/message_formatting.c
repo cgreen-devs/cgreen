@@ -2,7 +2,9 @@
 #include <cgreen/message_formatting.h>
 #include <cgreen/string_comparison.h>
 #include <inttypes.h>
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 #include <stdio.h>
 #include <string.h>
 

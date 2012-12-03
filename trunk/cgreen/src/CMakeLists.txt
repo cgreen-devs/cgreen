@@ -20,12 +20,10 @@ set(CGREEN_SHARED_LIBRARY
   CACHE INTERNAL "cgreen shared library"
 )
 
-if (WITH_STATIC_LIBRARY)
-  set(CGREEN_STATIC_LIBRARY
-    cgreen_static
-    CACHE INTERNAL "cgreen static library"
-  )
-endif (WITH_STATIC_LIBRARY)
+set(CGREEN_STATIC_LIBRARY
+  cgreen_static
+  CACHE INTERNAL "cgreen static library"
+)
 
 set(CGREEN_LINK_LIBRARIES
 )
@@ -71,9 +69,9 @@ include_directories(
 add_library(${CGREEN_SHARED_LIBRARY} SHARED ${cgreen_SRCS})
 
 if (WITH_CXX)
-   target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES} stdc++)
+   target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES} stdc++ pthread)
 else (WITH_CXX)
-   target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES})
+   target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES} pthread)
 endif (WITH_CXX)
 
 set_target_properties(
@@ -95,28 +93,26 @@ install(
   COMPONENT libraries
 )
 
-if (WITH_STATIC_LIBRARY)
-  add_library(${CGREEN_STATIC_LIBRARY} STATIC ${cgreen_SRCS})
+add_library(${CGREEN_STATIC_LIBRARY} STATIC ${cgreen_SRCS})
 
-  target_link_libraries(${CGREEN_STATIC_LIBRARY} ${CGREEN_LINK_LIBRARIES} stdc++)
+target_link_libraries(${CGREEN_STATIC_LIBRARY} ${CGREEN_LINK_LIBRARIES} stdc++)
 
-  set_target_properties(
+set_target_properties(
+  ${CGREEN_STATIC_LIBRARY}
+    PROPERTIES
+      VERSION
+        ${LIBRARY_VERSION}
+      SOVERSION
+        ${LIBRARY_SOVERSION}
+      OUTPUT_NAME
+        ${CGREEN_LIBRARY_NAME}
+)
+
+install(
+  TARGETS
     ${CGREEN_STATIC_LIBRARY}
-      PROPERTIES
-        VERSION
-          ${LIBRARY_VERSION}
-        SOVERSION
-          ${LIBRARY_SOVERSION}
-        OUTPUT_NAME
-          ${CGREEN_LIBRARY_NAME}
-  )
-
-  install(
-    TARGETS
-      ${CGREEN_STATIC_LIBRARY}
-    DESTINATION
-      ${LIB_INSTALL_DIR}
-    COMPONENT
-      libraries
-  )
-endif (WITH_STATIC_LIBRARY)
+  DESTINATION
+    ${LIB_INSTALL_DIR}
+  COMPONENT
+    libraries
+)

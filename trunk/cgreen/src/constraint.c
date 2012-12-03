@@ -3,7 +3,9 @@
 #include <cgreen/constraint.h>
 #include <cgreen/message_formatting.h>
 #include <cgreen/string_comparison.h>
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

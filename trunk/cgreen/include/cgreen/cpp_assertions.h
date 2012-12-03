@@ -2,7 +2,7 @@
 #define CPP_ASSERTIONS_HEADER
 
 #include <cgreen/constraint.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <string>
 #include <typeinfo>
 

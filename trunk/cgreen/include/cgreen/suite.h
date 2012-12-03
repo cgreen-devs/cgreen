@@ -3,7 +3,9 @@
 
 #include <cgreen/reporter.h>
 #include <cgreen/unit.h>
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 
 #ifdef __cplusplus
 namespace cgreen {
