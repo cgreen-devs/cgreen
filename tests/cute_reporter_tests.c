@@ -30,7 +30,7 @@ static char *concat(char *output, char *buffer) {
 
 static int mocked_printf(const char *format, ...) {
 	char buffer[10000];
-	va_list ap;
+	va_list ap = {NULL};
 	va_start(ap, format);
 	vsprintf(buffer, format, ap);
 	va_end(ap);
@@ -77,7 +77,7 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 
 	clear_output();
 
-	va_list arguments;
+	va_list arguments = {NULL};
 
 	reporter->show_pass(reporter, "file", 2, "test_name", arguments);
 	assert_no_output();
@@ -93,7 +93,7 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 Ensure(will_report_failing_of_test_only_once) {
 	reporter->start_test(reporter, "test_name");
 
-	va_list arguments;
+	va_list arguments = {NULL};
 
 	clear_output();
 	reporter->failures++;	// Simulating a failed assert
