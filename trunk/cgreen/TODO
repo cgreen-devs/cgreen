@@ -4,6 +4,10 @@ TODO for Cgreen
 Unit tester
 -----------
 
+Text Reporter
+-------------
+Should report context name if not in default context
+
 Mocks
 -----
 Sort out counting glitches, especially in expect_never().
@@ -14,8 +18,8 @@ Suites
 ------
 Exceptions, as well as failures, should cause a bad exit code.
 
-Collector
----------
+Runner
+------
 
 Packages
 --------
