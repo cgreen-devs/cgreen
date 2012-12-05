@@ -1,5 +1,4 @@
 #include <cgreen/cgreen.h>
-#include "xml_reporter.h"
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -9,6 +8,7 @@
 #include <unistd.h>
 #include <fnmatch.h>
 
+#include "xml_reporter.h"
 #include "runner.h"
 
 

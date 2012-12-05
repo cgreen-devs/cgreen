@@ -1,2 +1,2 @@
-- Allow wildcards for tests, like Runner:* or Runner*:can*
-- Create suites for each context and run them separately so that the XML-files are partitioned accordingly
+- Create suites for each context and compose them into a single suite and run the composed suite
+  so that the XML-files are partitioned accordingly
