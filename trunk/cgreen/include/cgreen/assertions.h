@@ -19,6 +19,23 @@ namespace cgreen {
     extern "C" {
 #endif
 
+#include "internal/assertions_internal.h"
+
+/*
+  Modern style using constraints:
+
+   assert_that(actual, <constraint>(expected));
+   assert_that(<expression>);
+
+*/
+#define assert_that(...) assert_that_NARG(__VA_ARGS__)(__VA_ARGS__)
+#define assert_that_double(actual, constraint) assert_that_double_(__FILE__, __LINE__, #actual, (double)actual, constraint)
+
+#define pass() assert_true(true)
+#define fail(...) assert_true_with_message(false, __VA_ARGS__)
+
+
+/* Legacy style:*/
 #define assert_true(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, result, "[" #result "] should be true\n", NULL)
 #define assert_false(result) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, ! result, "[" #result "] should be false\n", NULL)
 #define assert_equal(tried, expected) assert_equal_(__FILE__, __LINE__, #tried, (intptr_t)tried, (intptr_t)expected)
@@ -37,39 +54,8 @@ namespace cgreen {
 #define assert_string_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, strings_are_equal(tried, expected), __VA_ARGS__)
 #define assert_string_not_equal_with_message(tried, expected, ...) (*get_test_reporter()->assert_true)(get_test_reporter(), __FILE__, __LINE__, !strings_are_equal(tried, expected), __VA_ARGS__)
 
-#define assert_that_NARG(...) \
-         assert_that_NARG_(__VA_ARGS__,assert_that_RSEQ_N())
-
-#define assert_that_NARG_(...) \
-         assert_that_ARG_N(__VA_ARGS__)
-
-#define assert_that_ARG_N( \
-          _1,_2,N,...) N
-
-#define assert_that_RSEQ_N() \
-        assert_that_constraint, assert_that_expression, ASSERT_THAT_REQUIRES_BOOLEAN_EXPRESSION_OR_ACTUAL_VALUE_AND_CONSTRAINT
-
-#define assert_that(...) assert_that_NARG(__VA_ARGS__)(__VA_ARGS__)
-
-#define assert_that_expression(expression) \
-		assert_that_(__FILE__, __LINE__, #expression, expression, is_true);
-
-#define assert_that_double(actual, constraint) assert_that_double_(__FILE__, __LINE__, #actual, (double)actual, constraint)
-
-#define pass() assert_true(true)
-#define fail(...) assert_true_with_message(false, __VA_ARGS__)
-
-void assert_equal_(const char *file, int line, const char *expression, intptr_t tried, intptr_t expected);
-void assert_not_equal_(const char *file, int line, const char *expression, intptr_t tried, intptr_t expected);
-void assert_double_equal_(const char *file, int line, const char *expression, double tried, double expected);
-void assert_double_not_equal_(const char *file, int line, const char *expression, double tried, double expected);
-void assert_string_equal_(const char *file, int line, const char *expression, const char *tried, const char *expected);
-void assert_string_not_equal_(const char *file, int line, const char *expression, const char *tried, const char *expected);
-void assert_that_double_(const char *file, int line, const char *actual_string, double actual, Constraint *constraint);
-
+/* Utility: */
 void significant_figures_for_assert_double_are(int figures);
-const char *show_null_as_the_string_null(const char *string);
-bool doubles_are_equal(double tried, double expected);
 
 #ifdef __cplusplus
     }
