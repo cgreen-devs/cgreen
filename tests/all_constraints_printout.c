@@ -54,7 +54,7 @@ Ensure(ConstraintPrintout, shows_a_nice_message_for_contains_string) {
 }
 
 Ensure(ConstraintPrintout, shows_a_nice_message_for_does_not_contain_string) {
-    char *contains_fourty_five = "this string is fortyfive", *fourty_five = "fourtyfive";
+    char *contains_fourty_five = "this string is fourtyfive", *fourty_five = "fourtyfive";
     assert_that(contains_fourty_five, does_not_contain_string(fourty_five));
 }
 
