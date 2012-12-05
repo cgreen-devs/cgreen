@@ -28,12 +28,21 @@ set(CGREEN_TEST_LIBRARY
   CACHE INTERNAL "cgreen tests shared library"
 )
 
+set(all_constraints_SRCS
+  all_constraints_printout.c)
+
+set(CGREEN_ALL_CONSTRAINTS_LIBRARY
+  cgreen_all_constraints
+  CACHE INTERNAL "library for printing all constraints")
+
 if (WITH_CXX)
   set(test_SRCS ${test_SRCS} cpp_assertion_tests.cpp)
   SET_SOURCE_FILES_PROPERTIES( ${test_SRCS} PROPERTIES LANGUAGE CXX )
 endif (WITH_CXX)
 
 add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_SRCS})
+
+add_library(${CGREEN_ALL_CONSTRAINTS_LIBRARY} SHARED ${all_constraints_SRCS})
 
 if (WITH_STATIC_LIBRARY)
   set(CGREEN_LIBRARY ${CGREEN_STATIC_LIBRARY})
@@ -42,9 +51,10 @@ else ()
 endif()
 
 if (WITH_CXX)
-  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_STATIC_LIBRARY} m stdc++)
+  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} m stdc++)
 else()
-  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_STATIC_LIBRARY} m)
+  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} m)
+  target_link_libraries(${CGREEN_ALL_CONSTRAINTS_LIBRARY} ${CGREEN_LIBRARY} m)
 endif (WITH_CXX)
 
 if (WITH_CXX)
