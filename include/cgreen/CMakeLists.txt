@@ -11,7 +11,6 @@ set(cgreen_HDRS
   constraint.h
   memory.h
   mocks.h
-  mock_table.h
   constraint_syntax_helpers.h
   string_comparison.h
   assertions.h
@@ -30,3 +29,5 @@ install(
   COMPONENT
     headers
 )
+
+add_subdirectory(internal)

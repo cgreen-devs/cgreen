@@ -1,7 +1,7 @@
 #ifndef MOCKS_HEADER
 #define MOCKS_HEADER
 
-#include <cgreen/mock_table.h>
+#include <cgreen/internal/mock_table.h>
 #include <cgreen/constraint.h>
 #include <cgreen/reporter.h>
 #include <cgreen/vector.h>
