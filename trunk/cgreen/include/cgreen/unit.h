@@ -6,77 +6,23 @@ namespace cgreen {
     extern "C" {
 #endif
 
-typedef struct {
-	const char* name;
-	const char* filename;
-	void (*setup)(void);
-	void (*teardown)(void);
-} CgreenContext;
+#include "internal/unit_implementation.h"
 
-typedef struct {
-	CgreenContext* context;
-	const char* name;
-	void(*run)(void);
-	const char* filename;
-	int line;
-} CgreenTest;
+/* BDD style: Describe the Subject Under Test or context by name */
+#define Describe(subject) DescribeImplementation(subject)
 
-#define CGREEN_SPEC_PREFIX "CgreenSpec"
-#define CGREEN_SEPARATOR "__"
-#define spec_name(contextName, specName) CgreenSpec__##contextName##__##specName
+/* BDD style: Run this before any tests for that SUT or in that context */
+#define BeforeEach(subject) BeforeEachImplementation(subject)
 
+/* BDD style: Run this after any tests for that SUT or in that context */
+#define AfterEach(subject) AfterEachImplementation(subject)
 
-#define Describe(subject) \
-static void setup(void); \
-static void teardown(void); \
-static CgreenContext contextFor##subject = { #subject, __FILE__, &setup, &teardown }; \
-extern void(*BeforeEach_For_##subject)(void); \
-extern void(*AfterEach_For_##subject)(void); \
-static void setup(void) { \
-  if (BeforeEach_For_##subject != NULL) BeforeEach_For_##subject(); \
-} \
-static void teardown(void) { \
-  if (AfterEach_For_##subject != NULL) AfterEach_For_##subject(); \
-}
+/* NOTE if you use BDD styel all three of the above are required */
+/* Then you must also use the BDD style Ensure(subject, test) */
 
-#define BeforeEach(subject) \
-void BeforeEach_For_##subject##_Function(void); \
-void(*BeforeEach_For_##subject)(void) = &BeforeEach_For_##subject##_Function; \
-void BeforeEach_For_##subject##_Function(void)
-
-#define AfterEach(subject) \
-static void AfterEach_For_##subject##_Function(void); \
-void(*AfterEach_For_##subject)(void) = &AfterEach_For_##subject##_Function; \
-static void AfterEach_For_##subject##_Function(void)
-
-
-
-
-#define Ensure_NARG(...) \
-         Ensure_NARG_(__VA_ARGS__,Ensure_RSEQ_N())
-
-#define Ensure_NARG_(...) \
-         Ensure_ARG_N(__VA_ARGS__)
-
-#define Ensure_ARG_N( \
-          _1,_2,N,...) N
-
-#define Ensure_RSEQ_N() \
-        EnsureWithContextAndSpecificationName, EnsureWithSpecificationName, ENSURE_REQUIRES_NAME
-
+/* TDD Style: Ensure(testname) {implementation} */
+/* BDD Style: Ensure(subject, testname) {implementation} */
 #define Ensure(...) Ensure_NARG(__VA_ARGS__)(__VA_ARGS__)
-
-#define EnsureWithContextAndSpecificationName(contextName, spec, ...) \
-	static void contextName##_##spec (void);\
-	CgreenTest spec_name(contextName, spec) = { &contextFor##contextName, #spec, &contextName##_##spec, __FILE__, __LINE__ };\
-	static void contextName##_##spec ()
-
-extern CgreenContext defaultContext;
-
-#define EnsureWithSpecificationName(spec, ...) \
-	static void spec (void);\
-	CgreenTest spec_name(default, spec) = { &defaultContext, #spec, &spec, __FILE__, __LINE__ };\
-	static void spec ()
 
 #ifdef __cplusplus
     }
