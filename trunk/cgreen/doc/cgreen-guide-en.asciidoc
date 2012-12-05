@@ -114,7 +114,7 @@ with a simple test module with no tests, called +first_test.c+...
 
 [source,c]
 ---------------------------------------
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 
 int main(int argc, char **argv) {
   TestSuite *suite = create_test_suite();
@@ -154,7 +154,7 @@ Let's add a meaningless test or two so that you can see how it runs...
 
 [source,c]
 -----------------------------
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 
 Ensure(this_test_should_pass) {
     assert_that(1 == 1, is_true);
@@ -222,7 +222,7 @@ Here is the, so far empty, test case in +words_test.c+...
 
 [source,c]
 -------------------------------
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 
 TestSuite *words_tests() {
 TestSuite *suite = create_test_suite();
@@ -234,7 +234,7 @@ Here is the +all_tests.c+ test runner...
 
 [source,c]
 -------------------------------
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 
 TestSuite *words_tests();
 
@@ -277,7 +277,7 @@ Here is a first test of 'split_words()' in +words_test.c+...
 
 [source,c]
 -------------------------------
-#include "cgreen/cgreen.h";
+#include <cgreen/cgreen.h>;
 #include "words.h";
 #include <string.h>;
 
@@ -378,7 +378,7 @@ into separate words...
 
 [source,c]
 ---------------------------------
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 #include "words.h"
 #include <string.h>;
 
@@ -814,7 +814,7 @@ The complete test code now looks like...
 
 [source,c]
 -----------------------------
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 #include <string.h>
 
 Ensure(strlen_of_hello_is_five) {
@@ -898,7 +898,7 @@ example...
 
 [source,c]
 -----------------------------
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 #include <stdlib.h>
 #include <mysql/mysql.h>
 #include "person.h"
@@ -1044,7 +1044,7 @@ For example...
 
 [source,c]
 -----------------------------
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 #include <stdlib.h>
 
 Ensure(will_seg_fault) {
@@ -1155,7 +1155,7 @@ Firstly we need to remove the 'main()' calls.  E.g...
 
 [source,c]
 -----------------------------
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 #include <string.h>
 
 Ensure(strlen_of_hello_is_five) { ... }
@@ -1966,8 +1966,8 @@ Completed "stream_tests": 14 passes, 0 failures, 0 exceptions.
 
 All done.
 
-BDD Cgreen
-----------
+BDD Style Cgreen
+----------------
 
 As mentioned earlier, *Cgreen* also supports the behaviour driven
 style of test driving code. The thinking behind BDD is that we don't
@@ -1982,18 +1982,18 @@ change in wording, from `test´ to `behaviour´, from `test that´ to `ensure
 that´, makes a huge difference in thinking, and also very often in quality
 of the resulting code.
 
-The CUT
-~~~~~~~
+The SUT - Subject Under Test
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Since BDD talks about behaviour, there has to be something that we can
 talk about as having the wanted behaviour. This is usually called the
-CUT, the Class Under Test. *Cgreen* requires you to define a name for
-it.
+SUT, the Subject Under Test. *Cgreen* in BDD mode requires that you
+define a name for it.
 
 [source, c]
 -----------------------
 #include <cgreen/cgreen.h>
-Describe(CUT);
+Describe(SUT);
 -----------------------
 
 Since *CGreen* supports C++ there you naturally have the objects and
@@ -2022,7 +2022,7 @@ basically calls a test suite. The suite specifies the behaviour of a
 `class´. (That's why some BDD frameworks draw on 'spec', like
 *RSpec*.)
 
-As you can see in the short example above, you have to give the CUT in
+As you can see in the short example above, you have to give the SUT in
 the 'Ensure()' declaration too. If you don't, *Cgreen* will get
 confused about which style you are using and your source won't
 compile.
@@ -2030,13 +2030,13 @@ compile.
 Contexts and Before and After
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The complete specification of the behaviour of a CUT might become long
+The complete specification of the behaviour of a SUT might become long
 and require various forms of setup. When using TDD style you
 would probably break this up into multiple suites having their own
 'setup()' and 'teardown()'.
 
 With BDD style we could consider the suite as a behaviour
-specification for our CUT 'in a particular context'. E.g.
+specification for our SUT 'in a particular context'. E.g.
 
 [source, c]
 ------------------------
@@ -2062,7 +2062,7 @@ Ensure(shopping_basket_for_returning_customer, can_use_discounts) {
 -----------------------------------------------
 
 The ''context'' would then be 'shopping_basket_for_returning_customer',
-with the CUT being the shopping basket ''class''.
+with the SUT being the shopping basket ''class''.
 
 We have added two ''functions'' which are exactly what they say they
 are. Before each ''test'' (or behaviour specification) the customer
@@ -2076,7 +2076,7 @@ you need to write all three of the new ''functions'' (of course you
 can see that they are CPP macros, right?), to make that work.
 
 And there is one more thing. To run this using the same kind of main
-program that we saw earlier, we need must add the CUT when we add the
+program that we saw earlier, we need must add the SUT when we add the
 test to suite:
 
 [source, c]
@@ -2105,7 +2105,7 @@ Changing Style
 If you have some TDD style *Cgreen* test suites, it is quite easy to
 change them over to BDD style. Here are the steps required
 
-* Add 'Describe(CUT);'
+* Add 'Describe(SUT);'
 
 * Turn your current setup function into a 'BeforeEach()' definition by
 changing is signature to match the macro. If you don't have any setup
@@ -2115,7 +2115,7 @@ function you need to define an empty 'BeforeEach()'.
 
 * Remove any 'set_setup()' and 'set_teardown()'
 
-* Add the CUT to each 'Ensure()' as the first parameter
+* Add the SUT to each 'Ensure()' as the first parameter
 
 * Change the call to add the tests to 'add_test_with_context()'
 
@@ -2364,7 +2364,7 @@ above output...
 
 [source,c]
 -----------------------
-#include "cgreen/cgreen.h"
+#include <cgreen/cgreen.h>
 
 Ensure(this_test_passes) {
     assert_true(1);

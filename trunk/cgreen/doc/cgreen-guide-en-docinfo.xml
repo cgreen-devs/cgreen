@@ -18,22 +18,19 @@
     <email>joaohf@gmail.com</email>
   </author>
 
-  <editor>
-    <firstname>João</firstname>
-    <surname>Freitas</surname>
-    <othername>joaohf</othername>
-    <authorblurb>
-      <para>
-      to the world.
-      </para>
-    </authorblurb>
-  </editor>
+  <author>
+    <firstname>Thomas</firstname>
+    <surname>Nilsson</surname>
+    <othername>thoni56</othername>
+    <email>thomas@junovagen.se</email>
+  </author>
+
 </authorgroup>
 
 <edition>Cgreen Unit Test for C language</edition>
 
 <copyright>
-  <year>2009</year>
+  <year>2012</year>
   <holder>Cgreen Team</holder>
 </copyright>
 
