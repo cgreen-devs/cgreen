@@ -2,6 +2,7 @@
 #define ASSERTIONS_HEADER
 
 #include <cgreen/constraint.h>
+#include <cgreen/reporter.h>
 #include <cgreen/string_comparison.h>
 #include <stdint.h>
 #ifndef __cplusplus

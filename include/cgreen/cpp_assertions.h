@@ -30,6 +30,7 @@ namespace cgreen {
 			assert_that_(file, line, actual_string, (const std::string *)&actual, constraint);
 
 		} else {
+			// TODO: update actual_string with output from operator<< of (T)actual
 			assert_that_(file, line, actual_string, (intptr_t)actual, constraint);
 		}
 	}
