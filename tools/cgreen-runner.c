@@ -26,6 +26,7 @@ static void usage(const char **argv) {
     printf("--xml <prefix>\tInstead of messages on stdout, write results into one XML-file\n");
     printf("\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
     printf("\t\twill be '<prefix>-<suite>.xml'\n");
+	printf("--suite <name>\tName the top level suite\n");
     printf("--no-run\tDon't run the tests\n");
     printf("--verbose\tShow progress information\n");
 }
@@ -40,12 +41,18 @@ int main(int argc, const char **argv) {
     const char *test_library;
     const char *test_name = NULL;
     const char *prefix;
+	const char *suite_name = "main";
     const char *tmp;
     void *options = gopt_sort(&argc, argv, gopt_start(
                                                       gopt_option('x', 
                                                                   GOPT_ARG, 
                                                                   gopt_shorts('x'), 
                                                                   gopt_longs("xml")
+                                                                  ),
+                                                      gopt_option('s', 
+                                                                  GOPT_ARG, 
+                                                                  gopt_shorts('s'), 
+                                                                  gopt_longs("suite")
                                                                   ),
                                                       gopt_option('v',
                                                                   GOPT_NOARG,
@@ -71,6 +78,8 @@ int main(int argc, const char **argv) {
     else
         reporter = create_text_reporter();
     
+    gopt_arg(options, 's', &suite_name);
+
     if (gopt_arg(options, 'v', &tmp))
         verbose = true;
 
@@ -98,7 +107,7 @@ int main(int argc, const char **argv) {
         exit(1);
     }
 
-    status = runner(reporter, test_library, test_name, verbose, no_run);
+    status = runner(reporter, test_library, suite_name, test_name, verbose, no_run);
 
     return status;
 }
