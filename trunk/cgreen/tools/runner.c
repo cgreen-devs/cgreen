@@ -157,9 +157,10 @@ static int count(TestItem test_items[]) {
 
 
 /*----------------------------------------------------------------------*/
-static int run_tests(TestReporter *reporter, const char *test_name, void *test_library_handle, TestItem test_items[], bool verbose) {
+static int run_tests(TestReporter *reporter, const char *suite_name, const char *test_name,
+					 void *test_library_handle, TestItem test_items[], bool verbose) {
     int status;
-    TestSuite *suite = create_named_test_suite("main");
+    TestSuite *suite = create_named_test_suite(suite_name);
 
     int number_of_matches = add_matching_tests_to_suite(test_library_handle, test_name, test_items, suite);
 
@@ -250,7 +251,7 @@ static void discover_tests_in(const char* test_library, TestItem* test_items, co
 
 
 /*======================================================================*/
-int runner(TestReporter *reporter, const char *test_library, const char *test_name, bool verbose, bool no_run) {
+int runner(TestReporter *reporter, const char *test_library, const char *suite_name, const char *test_name, bool verbose, bool no_run) {
     int status = 0;
     void *test_library_handle;
     const uint32_t MAXIMUM_NUMBER_OF_TESTS = 2048;
@@ -270,7 +271,7 @@ int runner(TestReporter *reporter, const char *test_library, const char *test_na
             fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
             exit(1);
         }
-	status = run_tests(reporter, test_name, test_library_handle, discovered_tests, verbose);
+	status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
     }
     return status;
 }
