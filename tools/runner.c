@@ -15,7 +15,7 @@
 typedef struct test_item {
     char *symbol;
     const char *context;
-    const char *test_name;
+    const char *name;
 } TestItem;
 
 #define CGREEN_DEFAULT_SUITE "default"
@@ -78,11 +78,9 @@ static char *test_name_of(const char *name) {
 
 
 /*----------------------------------------------------------------------*/
-static bool test_name_matches(const char *test_name, TestItem test) {
-    //    return strcmp(test.context, context_name_of(test_name)) == 0 &&
-    //        strcmp(test.test_name, test_name_of(test_name)) == 0;
-    return fnmatch(context_name_of(test_name), test.context, 0) == 0 &&
-        fnmatch(test_name_of(test_name), test.test_name, 0) == 0;
+static bool test_name_matches(const char *test_name_pattern, TestItem test) {
+    return fnmatch(context_name_of(test_name_pattern), test.context, 0) == 0 &&
+        fnmatch(test_name_of(test_name_pattern), test.name, 0) == 0;
 }
 
 
@@ -173,7 +171,7 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
             fprintf(stderr, "ERROR: No such test: '%s'\n", test_name);
             exit(1);
         }
-	status = run_single_test(suite, test_name_as_symbol, reporter);
+		status = run_single_test(suite, test_name_as_symbol, reporter);
         free(test_name_as_symbol);
     } else {
         if (verbose) {
@@ -205,7 +203,7 @@ static void register_test(TestItem *test_items, int maximum_number_of_tests, cha
 
     test_items[number_of_tests].symbol = strdup(symbol);
     test_items[number_of_tests].context = suite_name_of_symbol(symbol);
-    test_items[number_of_tests].test_name = test_name_of_symbol(symbol);
+    test_items[number_of_tests].name = test_name_of_symbol(symbol);
 	test_items[number_of_tests+1].symbol = NULL;
 }
 
