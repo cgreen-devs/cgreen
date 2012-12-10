@@ -56,7 +56,7 @@ Ensure(Runner, can_register_context_and_test_from_a_symbol) {
     TestItem test_items[2] = {{NULL, NULL, NULL}};
     register_test(test_items, 2, FUNCTION_NAME);
     assert_that(test_items[0].context, is_equal_to_string(CONTEXT_NAME));
-    assert_that(test_items[0].test_name, is_equal_to_string(TEST_NAME));
+    assert_that(test_items[0].name, is_equal_to_string(TEST_NAME));
 }
 
 Ensure(Runner, can_ensure_test_exists_from_context_and_name) {
