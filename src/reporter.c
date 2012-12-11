@@ -148,7 +148,7 @@ static void read_reporter_results(TestReporter *reporter, const char *filename, 
         }
     }
     if (! completed) {
-#ifndef __clang__
+#ifndef __llvm__
 	va_list no_arguments = {NULL};
 #else
 	va_list no_arguments;

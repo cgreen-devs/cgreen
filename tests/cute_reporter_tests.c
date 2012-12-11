@@ -77,7 +77,7 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 
 	clear_output();
 
-#ifndef __clang__
+#ifndef __llvm__
 	va_list arguments = {NULL};
 #else
 	va_list arguments;
@@ -97,7 +97,7 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 Ensure(will_report_failing_of_test_only_once) {
 	reporter->start_test(reporter, "test_name");
 
-#ifndef __clang__
+#ifndef __llvm__
 	va_list arguments = {NULL};
 #else
 	va_list arguments;
