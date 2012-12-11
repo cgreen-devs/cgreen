@@ -10,7 +10,6 @@ set(test_SRCS
   all_tests.c
   assertion_tests.c
   breadcrumb_tests.c
-  collector_tests.c
   constraint_tests.c
   cute_reporter_tests.c
   messaging_tests.c
@@ -18,7 +17,6 @@ set(test_SRCS
   parameters_test.c
   reflective_tests.c
   reflective_runner_no_teardown_tests.c
-  slurp_test.c
   unit_tests.c
   vector_tests.c
 )
