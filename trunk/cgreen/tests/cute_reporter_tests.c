@@ -77,7 +77,11 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 
 	clear_output();
 
+#ifndef __clang__
+	va_list arguments = {NULL};
+#else
 	va_list arguments;
+#endif
 
 	reporter->show_pass(reporter, "file", 2, "test_name", arguments);
 	assert_no_output();
@@ -93,7 +97,11 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 Ensure(will_report_failing_of_test_only_once) {
 	reporter->start_test(reporter, "test_name");
 
+#ifndef __clang__
+	va_list arguments = {NULL};
+#else
 	va_list arguments;
+#endif
 
 	clear_output();
 	reporter->failures++;	// Simulating a failed assert

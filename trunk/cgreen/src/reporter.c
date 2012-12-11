@@ -148,7 +148,11 @@ static void read_reporter_results(TestReporter *reporter, const char *filename, 
         }
     }
     if (! completed) {
-        va_list no_arguments;
+#ifndef __clang__
+	va_list no_arguments = {NULL};
+#else
+	va_list no_arguments;
+#endif
     	(*reporter->show_incomplete)(reporter, filename, line, NULL, no_arguments);
         reporter->exceptions++;
     }
