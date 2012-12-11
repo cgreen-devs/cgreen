@@ -42,7 +42,6 @@ set(cgreen_SRCS
   parameters.c
   reporter.c
   runner.c
-  slurp.c
   string_comparison.c
   suite.c
   text_reporter.c
