@@ -74,6 +74,23 @@ Ensure(Runner, can_match_test_name) {
     assert_that(test_name_matches("Context*:Test*", test_item));
 }
 
+Ensure(Runner, can_add_test_to_the_suite_for_its_context) {
+	ContextSuite *suite_list = NULL;
+	CgreenTest *test = (CgreenTest *)&test;
+	TestSuite *parent_suite = create_test_suite();
+
+	assert_that(suite_list, is_null);
+
+	add_test_to_context(parent_suite, &suite_list, "TheFirstContext", "TheName", test);
+	assert_that(suite_for_context(suite_list, "TheFirstContext")->size, is_equal_to(1));
+	assert_that(suite_for_context(suite_list, "TheSecondContext"), is_null);
+
+	add_test_to_context(parent_suite, &suite_list, "TheSecondContext", "TheName", test);
+	assert_that(suite_for_context(suite_list, "TheFirstContext")->size, is_equal_to(1));
+	assert_that(suite_for_context(suite_list, "TheSecondContext")->size, is_equal_to(1));
+}
+
+
 #ifdef __cplusplus
 } // namespace cgreen
 #endif

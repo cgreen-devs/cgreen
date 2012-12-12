@@ -18,6 +18,13 @@ typedef struct test_item {
     const char *name;
 } TestItem;
 
+typedef struct ContextSuite {
+	const char *context;
+	TestSuite *suite;
+	struct ContextSuite *next;
+} ContextSuite;
+
+
 #define CGREEN_DEFAULT_SUITE "default"
 
 
@@ -85,21 +92,58 @@ static bool test_name_matches(const char *test_name_pattern, TestItem test) {
 
 
 /*----------------------------------------------------------------------*/
+static TestSuite *suite_for_context(ContextSuite *suites, const char *context_name) {
+	ContextSuite *suite;
+
+	for (suite = suites; suite != NULL && strcmp(suite->context, context_name) != 0; suite = suite->next);   
+	if (suite != NULL)
+		return suite->suite;
+	else
+		return NULL;
+}
+
+
+/*----------------------------------------------------------------------*/
+static ContextSuite *push_new_context_suite(TestSuite *parent, const char* context_name, ContextSuite *next) {
+	ContextSuite *suite = (ContextSuite *)calloc(1, sizeof(ContextSuite));
+	suite->context = context_name;
+	suite->suite = create_named_test_suite(context_name);
+	suite->next = next;
+	add_suite_(parent, context_name, suite->suite);
+	return suite;
+}
+
+
+/*----------------------------------------------------------------------*/
+static void add_test_to_context(TestSuite *parent, ContextSuite **suites, const char *context_name, const char *test_name, CgreenTest *test) {
+	TestSuite *test_suite = suite_for_context(*suites, context_name);
+
+	if (test_suite == NULL) {
+		*suites = push_new_context_suite(parent, context_name, *suites);
+		test_suite = (*suites)->suite;
+	}
+	add_test_(test_suite, test_name, test);
+}
+
+
+/*----------------------------------------------------------------------*/
 static int add_matching_tests_to_suite(void *handle, const char *test_name_pattern, TestItem *test_items, TestSuite *suite)
 {
+	ContextSuite *suites = NULL;
+
     int count = 0;
 
     for (int i = 0; test_items[i].symbol != NULL; i++) {
         if (test_name_pattern == NULL || test_name_matches(test_name_pattern, test_items[i])) {
             char *error;
-            CgreenTest *cgreen_test = (CgreenTest *)(dlsym(handle, test_items[i].symbol));
+            CgreenTest *test_function = (CgreenTest *)(dlsym(handle, test_items[i].symbol));
 
             if ((error = dlerror()) != NULL)  {
                 fprintf (stderr, "%s\n", error);
                 exit(1);
             }
 
-            add_test_(suite, test_items[i].symbol, cgreen_test);
+            add_test_to_context(suite, &suites, test_items[i].context, test_items[i].name, test_function);
             count++;
         }
     }
