@@ -90,8 +90,11 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line,
 }
 
 static void show_breadcrumb(const char *name, void *memo) {
+	if (*(int *) memo > 1) {
+		printf("-> ");
+	}
 	if (*(int *) memo > 0) {
-		printf("-> %s ", name);
+		printf("%s ", name);
 	}
 	(*(int *) memo)++;
 }
