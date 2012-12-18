@@ -37,6 +37,7 @@ static std::string* bob_pointer = NULL;
 static std::string* alice_pointer = NULL;
 
 void setup(void) {
+	bob_pointer = alice_pointer = NULL;
 //  for testing output of exceptions during setup
 //	throw std::logic_error("this is why we fail");
 }

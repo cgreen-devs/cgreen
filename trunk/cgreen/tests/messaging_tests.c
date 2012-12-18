@@ -2,7 +2,6 @@
 #include <cgreen/messaging.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/msg.h>
 
 #ifdef __cplusplus
 using namespace cgreen;

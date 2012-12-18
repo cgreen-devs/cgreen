@@ -36,6 +36,7 @@ set(CGREEN_ALL_CONSTRAINTS_LIBRARY
 if (WITH_CXX)
   set(test_SRCS ${test_SRCS} cpp_assertion_tests.cpp)
   SET_SOURCE_FILES_PROPERTIES( ${test_SRCS} PROPERTIES LANGUAGE CXX )
+  SET_SOURCE_FILES_PROPERTIES( ${all_constraints_SRCS} PROPERTIES LANGUAGE CXX )
 endif (WITH_CXX)
 
 add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_SRCS})
@@ -50,6 +51,7 @@ endif()
 
 if (WITH_CXX)
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} m stdc++)
+  target_link_libraries(${CGREEN_ALL_CONSTRAINTS_LIBRARY} ${CGREEN_LIBRARY} m stdc++)
 else()
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} m)
   target_link_libraries(${CGREEN_ALL_CONSTRAINTS_LIBRARY} ${CGREEN_LIBRARY} m)

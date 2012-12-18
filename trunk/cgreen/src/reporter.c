@@ -2,7 +2,9 @@
 #include <cgreen/messaging.h>
 #include <cgreen/breadcrumb.h>
 #include <stdarg.h>
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -148,12 +150,8 @@ static void read_reporter_results(TestReporter *reporter, const char *filename, 
         }
     }
     if (! completed) {
-#ifndef __llvm__
-	va_list no_arguments = {NULL};
-#else
-	va_list no_arguments;
-#endif
-    	(*reporter->show_incomplete)(reporter, filename, line, NULL, no_arguments);
+        va_list no_arguments;
+        (*reporter->show_incomplete)(reporter, filename, line, NULL, no_arguments);
         reporter->exceptions++;
     }
 }

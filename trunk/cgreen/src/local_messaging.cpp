@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stack>
+#include <vector>
 #include <typeinfo>
 #ifdef __cplusplus
 namespace cgreen {
@@ -17,32 +18,30 @@ struct CgreenMessage {
 public:
     long type;
     int result;
-    CgreenMessage() : type(0), result(0) { printf("ctor\n"); }
+    CgreenMessage() : type(0), result(0) {}
     CgreenMessage(const CgreenMessage& other) : type(other.type), result(other.result) {}
     CgreenMessage& operator=(const CgreenMessage& other) {
         if (this == &other) { return *this; }
-        printf("operator=\n");
         this->type = other.type;
         this->result = other.result;
-        printf("end operator=\n");
         return *this;
     }
 };
 
-typedef struct CgreenMessageQueue_ {
+class CgreenMessageQueue {
+public:
+	CgreenMessageQueue(int tag_) : messages(), owner(0), tag(tag_) {}
     std::stack<CgreenMessage*> messages;
     pid_t owner;
     int tag;
-} CgreenMessageQueue;
+};
 
-static CgreenMessageQueue *queues = NULL;
+static std::vector<CgreenMessageQueue> queues;
 static int queue_count = 0;
 
 static void clean_up_messaging(void);
 
 int start_cgreen_messaging(int tag) {
-    CgreenMessageQueue *tmp;
-
     if (queue_count == 0) {
         int atexit_result = atexit(&clean_up_messaging);
 
@@ -51,16 +50,8 @@ int start_cgreen_messaging(int tag) {
         	return -1;
         }
     }
-    tmp = (CgreenMessageQueue *) realloc(queues, sizeof(CgreenMessageQueue) * ++queue_count);
-    printf("queue_count: %d\n", queue_count);
-    if (tmp == NULL) {
-    	/* ignoring return value here, as the world is ending anyways */
-        (void)atexit(&clean_up_messaging);
-        return -1;
-    }
-    queues = tmp;
-    queues[queue_count - 1].owner = getpid();
-    queues[queue_count - 1].tag = tag;
+	queue_count++;
+ 	queues.push_back(CgreenMessageQueue(tag));
     return queue_count - 1;
 }
 
@@ -79,21 +70,15 @@ int receive_cgreen_message(int messaging) {
     
     CgreenMessage *message;
     queues[messaging].messages.top();
-    printf("pre-top\n");
     message = queues[messaging].messages.top();
-    printf("post-top\n");
     fflush(stdout);
     queues[messaging].messages.pop();
-    //printf("pop type %d result %d\n", message.type, message.result);
     int result = message->result;
     delete message;
     return result;
 }
 
 static void clean_up_messaging() {
-    printf("clean_up\n");
-    free(queues);
-    queues = NULL;
     queue_count = 0;
 }
 
