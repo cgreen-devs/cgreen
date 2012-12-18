@@ -1,4 +1,3 @@
-#include <cgreen/cgreen.h>
 #include <stdexcept>
 #include <memory>
 #include <stdio.h>
@@ -6,22 +5,31 @@
 #include <string>
 #include <string.h>
 #include <typeinfo>
+#include <iostream>
+
+#include <cgreen/cgreen.h>
 
 using namespace cgreen;
 
 class MyType
 {
 public:
-    double x;
-    double y;
-    uint64_t z;
+    double x_;
+    double y_;
+    uint64_t z_;
+    MyType(double x, double y, uint64_t z) : x_(x), y_(y), z_(z) {}
     bool operator==(MyType& other)
     {
-        return this->z == other.z;
+        return this->z_ == other.z_;
     }
     bool operator!=(MyType& other)
     {
-        return this->z != other.z;
+        return this->z_ != other.z_;
+    }
+
+    std::ostream& operator<<(std::ostream& stream)
+    {
+    	return stream << "x: " << x_ << " " << "y: " << y_ << " " << "z: " << z_ << std::endl;
     }
 };
 
@@ -33,15 +41,22 @@ void setup(void) {
 //	throw std::logic_error("this is why we fail");
 }
 
+// TODO: future featre to use stream operators to print expected/actual
+//Ensure(outputs_expected_value_using_stream_operator) {
+//	MyType first = { 1.1, 2.2, 31337 };
+//	MyType second = { 1.1, 2.2, 65536 };
+//	assert_that(first, is_not_equal_to(second));
+//}
+
 Ensure(custom_large_classes_are_equal) {
-    MyType my_class = { 3.1337f, 3.14159f, 90210 };
-    MyType other = { 0.0f, 0.0f, 90210 };
+    MyType my_class(3.1337f, 3.14159f, 90210);
+    MyType other(0.0f, 0.0f, 90210);
     assert_that(my_class == other);
 }
 
 Ensure(custom_large_classes_are_not_equal) {
-    MyType my_class = { 3.1337f, 3.14159f, 90210 };
-    MyType other = { 3.1337f, 3.14159f, 90211 };
+    MyType my_class(3.1337f, 3.14159f, 90210);
+    MyType other(3.1337f, 3.14159f, 90211);
     assert_that(my_class != other);
 }
 

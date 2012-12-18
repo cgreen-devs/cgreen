@@ -8,6 +8,10 @@
 #include <unistd.h>
 #include <fnmatch.h>
 
+#ifndef __cpluscplus
+#include <stdbool.h>
+#endif
+
 #include "xml_reporter.h"
 #include "runner.h"
 
@@ -62,25 +66,28 @@ static bool is_cgreen_spec(const char* line) {
 
 
 /*----------------------------------------------------------------------*/
-static char *context_name_of(const char* name) {
+static const char *context_name_of(const char* name) {
     char *context = strdup(name);
     char *colon = strchr(context, ':');
-    if (colon)
+    if (colon) {
         *colon = '\0';
-    else
+    } else {
         return CGREEN_DEFAULT_SUITE;
+    }
+
     return context;
 }
 
 
 /*----------------------------------------------------------------------*/
-static char *test_name_of(const char *name) {
+static const char *test_name_of(const char *name) {
     char *test = strdup(name);
     char *colon = strchr(test, ':');
-    if (colon)
+    if (colon) {
         return colon+1;
-    else
-        return test;
+    }
+
+    return test;
 }
 
 
