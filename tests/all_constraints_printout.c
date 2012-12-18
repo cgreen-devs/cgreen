@@ -4,6 +4,10 @@
 
 #include <cgreen/cgreen.h>
 
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 Describe(ConstraintPrintout);
 BeforeEach(ConstraintPrintout) {}
 AfterEach(ConstraintPrintout) {}

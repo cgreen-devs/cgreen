@@ -42,6 +42,7 @@ static int mocked_printf(const char *format, ...) {
 TestReporter *reporter;
 
 static void setup_cute_reporter_tests() {
+    output = NULL;
     reporter = create_cute_reporter();
 
     // We can not use setup_reporting() since we are running
@@ -54,7 +55,7 @@ static void setup_cute_reporter_tests() {
 }
 
 static void cute_reporter_tests_teardown() {
-	destroy_reporter(reporter);
+    destroy_reporter(reporter);
     if (NULL != output) {
         free(output);
     }
@@ -77,12 +78,7 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 
 	clear_output();
 
-#ifndef __llvm__
-	va_list arguments = {NULL};
-#else
 	va_list arguments;
-#endif
-
 	reporter->show_pass(reporter, "file", 2, "test_name", arguments);
 	assert_no_output();
 
@@ -97,14 +93,9 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 Ensure(will_report_failing_of_test_only_once) {
 	reporter->start_test(reporter, "test_name");
 
-#ifndef __llvm__
-	va_list arguments = {NULL};
-#else
-	va_list arguments;
-#endif
-
 	clear_output();
 	reporter->failures++;	// Simulating a failed assert
+	va_list arguments;
 	reporter->show_fail(reporter, "file", 2, "test_name", arguments);
 	assert_that(output, begins_with_string("#failure"));
 	assert_that(output, contains_string("test_name"));

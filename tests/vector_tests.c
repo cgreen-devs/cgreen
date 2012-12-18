@@ -8,9 +8,11 @@ using namespace cgreen;
 
 static CgreenVector *vector;
 static char a = 'a', b = 'b', c = 'c';
+static int times_called = 0;
 
 static void set_up_vector() {
     vector = create_cgreen_vector(NULL);
+    times_called = 0;
 }
 
 static void tear_down_vector() {
@@ -77,7 +79,6 @@ Ensure(can_extract_middle_item) {
     assert_that(*(char *)cgreen_vector_get(vector, 1), is_equal_to('c'));
 }
 
-static int times_called = 0;
 static void sample_destructor(void *item) {
     (void)item;
     times_called++;
