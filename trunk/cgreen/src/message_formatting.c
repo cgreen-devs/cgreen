@@ -26,22 +26,22 @@ static int find_index_of_difference(char *expected, char *actual, size_t size_to
 }
 
 static bool actual_value_not_necessary_for(Constraint *constraint, const char *actual_string, const char *actual_value_string) {
-  (void)(constraint); // UNUSED!
-	return strings_are_equal(actual_string, actual_value_string) ||
+    (void)constraint; // UNUSED!
+    return strings_are_equal(actual_string, actual_value_string) ||
             strings_are_equal(actual_string, "true") ||
             strings_are_equal(actual_string, "false");
 }
 
 
 bool parameters_are_not_valid_for(Constraint *constraint, intptr_t actual) {
-	char message[10] = {'\0'};
-	format_validation_failure_message_for(message, sizeof(message), "", constraint, actual);
+    char message[10] = {'\0'};
+    format_validation_failure_message_for(message, sizeof(message), "", constraint, actual);
 
-	return strlen(message) > 0;
+    return strlen(message) > 0;
 }
 
 void format_validation_failure_message_for(char *message, size_t message_size, const char *function, Constraint *constraint, intptr_t actual) {
-  (void)(function); // UNUSED!
+    (void)function; // UNUSED!
 
 //	if (function != NULL && strlen(function) > 0) {
 //		snprintf(message, message_size - 1, "\tIn mocked function [%s]:\n", function);
