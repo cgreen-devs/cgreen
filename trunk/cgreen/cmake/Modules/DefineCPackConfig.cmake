@@ -5,7 +5,7 @@ include(InstallRequiredSystemLibraries)
 
 ### general settings
 set(CPACK_PACKAGE_NAME ${APPLICATION_NAME})
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The simple unit testint framework")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The simple unit testing framework")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README")
 set(CPACK_PACKAGE_VENDOR "The CGreen Development Team")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING")
@@ -27,13 +27,14 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSIO
 if (WIN32)
   ### nsis generator
   set(CPACK_GENERATOR "NSIS")
-  set(CPACK_NSIS_DISPLAY_NAME "The simple unit testing framework")
+  set(CPACK_NSIS_DISPLAY_NAME ${CPACK_PACKAGE_DESCRIPTION_SUMMARY})
   set(CPACK_NSIS_COMPRESSOR "/SOLID zlib")
-  set(CPACK_NSIS_MENU_LINKS "http://www.lastcraft.com/cgreen.php" "cgreen homepage")
+  set(CPACK_NSIS_MENU_LINKS "http://cgreen.sourceforge.net" "Cgreen Homepage")
   set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
 else()
   set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
-  set(CPACK_GENERATOR "TGZ")
+  set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local")
+  set(CPACK_PACKAGE_CONTACT "cgreen@cgreen.org")
 endif(WIN32)
 
 set(CPACK_COMPONENTS_ALL_IN_ONE_PACKAGE 1)
