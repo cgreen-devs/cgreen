@@ -41,7 +41,7 @@ void do_nothing(void);
 #define create_named_test_suite(name) create_named_test_suite_(name, __FILE__, __LINE__)
 #define add_test(suite, test) add_test_(suite, #test, &spec_name(default, test))
 #define add_test_with_context(suite, context, test) add_test_(suite, #test, &spec_name(context, test))
-#define add_tests(suite, ...) add_tests_(suite, #__VA_ARGS__, (CgreenTest *)__VA_ARGS__ +0)
+#define add_tests(suite, ...) add_tests_(suite, #__VA_ARGS__, (CgreenTest *)__VA_ARGS__)
 #define add_suite(owner, suite) add_suite_(owner, #suite, suite)
 
 TestSuite *create_named_test_suite_(const char *name, const char *filename, int line);

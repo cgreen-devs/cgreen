@@ -60,16 +60,16 @@ Ensure(Runner, can_register_context_and_test_from_a_symbol) {
 }
 
 Ensure(Runner, can_ensure_test_exists_from_context_and_name) {
-    TestItem test_items[5] = {{"", "Context1", "Test1"},
-                              {"", "Context1", "Test2"},
-                              {"", "Context2", "Test1"},
-                              {"", "Context2", "Test2"},
+    TestItem test_items[5] = {{(char *)"", "Context1", "Test1"},
+                              {(char *)"", "Context1", "Test2"},
+                              {(char *)"", "Context2", "Test1"},
+                              {(char *)"", "Context2", "Test2"},
                               {NULL, NULL, NULL}};
     assert_that(matching_test_exists("Context1:Test1", test_items));
 }
 
 Ensure(Runner, can_match_test_name) {
-    TestItem test_item = {"", "Context1", "Test1"};
+    TestItem test_item = {(char *)"", "Context1", "Test1"};
     assert_that(test_name_matches("Context1:Test1", test_item));
     assert_that(test_name_matches("Context*:Test*", test_item));
 }

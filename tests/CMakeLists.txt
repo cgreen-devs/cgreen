@@ -63,9 +63,9 @@ else()
   set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY} m)
 endif(WITH_CXX)
 
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/some_file "Some stuff")
-
 macro_add_unit_test(test_cgreen "${test_SRCS}" "${TEST_TARGET_LIBRARIES}")
 
 add_test(test_cgreen_named ${RUNTIME_OUTPUT_PATH}/test_cgreen integer_one_should_assert_true)
 
+# add verification that all public api is available as it should
+add_subdirectory(api)
