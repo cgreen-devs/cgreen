@@ -8,7 +8,7 @@ namespace cgreen {
 
 #include "internal/unit_implementation.h"
 
-/* BDD style: Describe the Subject Under Test or context by name */
+/* BDD style: Describe the Subject Under Test, or context, by name */
 #define Describe(subject) DescribeImplementation(subject)
 
 /* BDD style: Run this before any tests for that SUT or in that context */
@@ -17,7 +17,7 @@ namespace cgreen {
 /* BDD style: Run this after any tests for that SUT or in that context */
 #define AfterEach(subject) AfterEachImplementation(subject)
 
-/* NOTE if you use BDD styel all three of the above are required */
+/* NOTE if you use BDD style all three of the above are required */
 /* Then you must also use the BDD style Ensure(subject, test) */
 
 /* TDD Style: Ensure(testname) {implementation} */

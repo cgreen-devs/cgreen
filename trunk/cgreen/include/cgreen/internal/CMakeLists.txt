@@ -4,6 +4,7 @@ set(cgreen_internal_HDRS
   unit_implementation.h
   mock_table.h
   assertions_internal.h
+  suite_internal.h
 )
 
 install(

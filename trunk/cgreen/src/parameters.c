@@ -14,13 +14,17 @@ static char *end_of_token(char *token);
 static char *strip_box_double(char *token);
 static char *strip_d_macro(char *token);
 
+static char *stringdup(const char *string) {
+    return strcpy((char *)malloc(strlen(string)+1), string);
+}
+
 CgreenVector *create_vector_of_names(const char *parameters) {
     CgreenVector *names = create_cgreen_vector(&free);
     if ((parameters == NULL) || (strlen(parameters) == 0)) {
         return names;
     }
 
-    char *parameters_to_tokenize = strdup(parameters);
+    char *parameters_to_tokenize = stringdup(parameters);
     if (parameters_to_tokenize == NULL) {
     	return names;
     }
@@ -30,7 +34,7 @@ CgreenVector *create_vector_of_names(const char *parameters) {
     char *token = tokens;
     while (token < tokens + strlen(parameters)) {
         token = strip_d_macro(strip_box_double(skip_nulls_until(token, parameters_end)));
-        cgreen_vector_add(names, (void*)strdup(token));
+        cgreen_vector_add(names, (void*)stringdup(token));
         token = end_of_token(token);
     }
 

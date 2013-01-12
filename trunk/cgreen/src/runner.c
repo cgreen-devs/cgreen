@@ -1,7 +1,6 @@
 #include <cgreen/assertions.h>
 #include <cgreen/mocks.h>
 #include <cgreen/reporter.h>
-#include <cgreen/runner.h>
 #include <cgreen/suite.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -14,6 +13,8 @@
 #ifndef WIN32
 #include <sys/wait.h>
 #endif
+
+#include "runner.h"
 
 #ifdef __cplusplus
 #include <stdexcept>
@@ -187,7 +188,11 @@ static void validate_per_test_timeout_value() {
 
 static void run_setup_for(CgreenTest *spec) {
 #ifdef __cplusplus
+#if defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3
+    va_list no_arguments = NULL;
+#else
     va_list no_arguments;
+#endif
 	char message[255];
 	TestReporter *reporter = get_test_reporter();
 
@@ -220,7 +225,11 @@ static void run_setup_for(CgreenTest *spec) {
 
 static void run_teardown_for(CgreenTest *spec) {
 #ifdef __cplusplus
+#if defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3
+    va_list no_arguments = NULL;
+#else
     va_list no_arguments;
+#endif
 	char message[255];
 	TestReporter *reporter = get_test_reporter();
 
@@ -254,7 +263,11 @@ static void run_teardown_for(CgreenTest *spec) {
 
 static void run(CgreenTest *spec) {
 #ifdef __cplusplus
+#if defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3
+    va_list no_arguments = NULL;
+#else
     va_list no_arguments;
+#endif
     char message[255];
     TestReporter *reporter = get_test_reporter();
 

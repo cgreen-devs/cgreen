@@ -150,7 +150,11 @@ static void read_reporter_results(TestReporter *reporter, const char *filename, 
         }
     }
     if (! completed) {
+#if defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3
+	va_list no_arguments = NULL;
+#else
         va_list no_arguments;
+#endif
         (*reporter->show_incomplete)(reporter, filename, line, NULL, no_arguments);
         reporter->exceptions++;
     }
