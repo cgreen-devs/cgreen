@@ -78,7 +78,8 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 
 	clear_output();
 
-#if defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3
+#if (defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3) \
+ || (defined(__linux__) && __GNUC__ == 4 && __GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ == 3)
 	va_list arguments = NULL;
 #else
 	va_list arguments;
@@ -100,7 +101,8 @@ Ensure(will_report_failing_of_test_only_once) {
 	clear_output();
 	reporter->failures++;	// Simulating a failed assert
 
-#if defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3
+#if (defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3) \
+ || (defined(__linux__)  && __GNUC__ == 4 && __GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ == 3)
 	va_list arguments = NULL;
 #else
 	va_list arguments;

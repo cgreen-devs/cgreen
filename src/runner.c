@@ -188,13 +188,14 @@ static void validate_per_test_timeout_value() {
 
 static void run_setup_for(CgreenTest *spec) {
 #ifdef __cplusplus
-#if defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3
+#if (defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3) \
+ || (defined(__linux__) && __GNUC__ == 4 && __GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ == 3)
     va_list no_arguments = NULL;
 #else
     va_list no_arguments;
 #endif
-	char message[255];
-	TestReporter *reporter = get_test_reporter();
+    char message[255];
+    TestReporter *reporter = get_test_reporter();
 
     try {
 #endif
@@ -225,7 +226,8 @@ static void run_setup_for(CgreenTest *spec) {
 
 static void run_teardown_for(CgreenTest *spec) {
 #ifdef __cplusplus
-#if defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3
+#if (defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3) \
+ || (defined(__linux__) && __GNUC__ == 4 && __GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ == 3)
     va_list no_arguments = NULL;
 #else
     va_list no_arguments;
@@ -263,7 +265,8 @@ static void run_teardown_for(CgreenTest *spec) {
 
 static void run(CgreenTest *spec) {
 #ifdef __cplusplus
-#if defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3
+#if (defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3) \
+ || (defined(__linux__) && __GNUC__ == 4 && __GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ == 3)
     va_list no_arguments = NULL;
 #else
     va_list no_arguments;
