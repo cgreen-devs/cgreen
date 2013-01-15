@@ -1,4 +1,4 @@
-#include <cgreen/cpp_assertions.h>
+#include <cgreen/internal/cpp_assertions.h>
 #include <cgreen/constraint.h>
 #include <stdint.h>
 #include <string.h>

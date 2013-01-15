@@ -1,4 +1,11 @@
 #include <cgreen/cgreen.h>
+#include <cgreen/mocks.h>
+
+/*
+  These tests are only an attempt to exercise the whole public API of
+  Cgreen to ensure that it compiles.  Attempting to run them will
+  surely result in crashes, plagues and pestilence.  For unit tests
+  see other tests.  */
 
 #ifdef __cplusplus
 using namespace cgreen;
@@ -32,7 +39,16 @@ Ensure(constraints_compiles) {
     assert_that(string, begins_with_string(string));
 }
 
+static int int_stub(int parameter) {
+    return mock(parameter);
+}
+
 // Mocks
 Ensure(mocks_compiles) {
+    always_expect(int_stub, will_return(1));
+    always_expect(int_stub, will_set_contents_of_parameter(parameter, 1, sizeof(int)));
+    never_expect(int_stub);
+    expect(int_stub, when(parameter, is_equal_to(1)));
+    int_stub(1);
 }
 

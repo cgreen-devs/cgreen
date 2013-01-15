@@ -16,7 +16,6 @@ set(cgreen_HDRS
   assertions.h
   runner.h
   suite.h
-  c_assertions.h
   vector.h
   breadcrumb.h
 )

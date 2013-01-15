@@ -3,26 +3,18 @@
 
 #include <cgreen/constraint.h>
 #include <cgreen/reporter.h>
-#include <cgreen/string_comparison.h>
 #include <stdint.h>
 
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
 
-#ifdef __cplusplus
-#include <cgreen/cpp_assertions.h>
-#else
-#include <cgreen/c_assertions.h>
-#endif
-
+#include "internal/assertions_internal.h"
 
 #ifdef __cplusplus
 namespace cgreen {
     extern "C" {
 #endif
-
-#include "internal/assertions_internal.h"
 
 /*
   Modern style asserts using constraints:
