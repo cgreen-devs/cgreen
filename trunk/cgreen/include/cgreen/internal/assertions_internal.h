@@ -1,6 +1,20 @@
 #ifndef ASSERTIONS_INTERNAL_HEADER
 #define ASSERTIONS_INTERNAL_HEADER
 
+#include <cgreen/string_comparison.h>
+
+#ifdef __cplusplus
+#include "cpp_assertions.h"
+#else
+#include "c_assertions.h"
+#endif
+
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
+
 #define assert_that_NARG(...) \
          assert_that_NARG_(__VA_ARGS__,assert_that_RSEQ_N())
 
@@ -26,5 +40,10 @@ void assert_that_double_(const char *file, int line, const char *actual_string, 
 
 const char *show_null_as_the_string_null(const char *string);
 bool doubles_are_equal(double tried, double expected);
+
+#ifdef __cplusplus
+    }
+}
+#endif
 
 #endif

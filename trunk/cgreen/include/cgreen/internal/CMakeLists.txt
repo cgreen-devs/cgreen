@@ -3,8 +3,10 @@ project(cgreen-internal-headers C)
 set(cgreen_internal_HDRS
   unit_implementation.h
   mock_table.h
-  assertions_internal.h
   suite_internal.h
+  assertions_internal.h
+  c_assertions.h
+  cpp_assertions.h
 )
 
 install(
