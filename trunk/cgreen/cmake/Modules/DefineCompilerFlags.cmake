@@ -2,8 +2,13 @@
 
 include(CheckCCompilerFlag)
 
+set (COMPILER_IS_CLANG FALSE) 
+if (CMAKE_CC_COMPILER MATCHES "clang") 
+  set (COMPILER_IS_CLANG TRUE) 
+endif (CMAKE_CC_COMPILER MATCHES "clang") 
+
 if (UNIX)
-  if (CMAKE_COMPILER_IS_GNUCC)
+  if (CMAKE_COMPILER_IS_GNUCC OR COMPILER_IS_CLANG)
     if (WITH_CXX)
        add_definitions( -g -Weffc++ -Wall -Wextra -Wunused)
     else()
@@ -52,5 +57,5 @@ if (UNIX)
     if (WITH_FORTIFY_SOURCE)
       add_definitions(-D_FORTIFY_SOURCE=2)
     endif (WITH_FORTIFY_SOURCE)
-  endif (CMAKE_COMPILER_IS_GNUCC)
+  endif (CMAKE_COMPILER_IS_GNUCC OR COMPILER_IS_CLANG)
 endif (UNIX)
