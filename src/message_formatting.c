@@ -59,7 +59,7 @@ void format_validation_failure_message_for(char *message, size_t message_size, c
 
         if (constraint->size_of_expected_value <= 0) {
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
-                    "\t\tWanted to compare contents with [%s], but [%Zd] was given for the comparison size.\n",
+                    "\t\tWanted to compare contents with [%s], but [%d] was given for the comparison size.\n",
                         compared_to_name,
                         constraint->size_of_expected_value);
             return;
