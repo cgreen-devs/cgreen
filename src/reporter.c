@@ -15,7 +15,7 @@ namespace cgreen {
 enum {pass = 1, fail, completion};
 
 struct TestContext_ {
-	TestReporter *reporter;
+    TestReporter *reporter;
 };
 static TestContext context;
 
@@ -26,21 +26,22 @@ static void assert_true(TestReporter *reporter, const char *file, int line, int 
 static void read_reporter_results(TestReporter *reporter, const char *filename, int line);
 
 TestReporter *get_test_reporter() {
-	return context.reporter;
+    return context.reporter;
 }
 
 void setup_reporting(TestReporter *reporter) {
-	reporter->ipc = start_cgreen_messaging(45);
-	context.reporter = reporter;
+    reporter->ipc = start_cgreen_messaging(45);
+    context.reporter = reporter;
 }
 
 TestReporter *create_reporter() {
+    CgreenBreadcrumb *breadcrumb;
     TestReporter *reporter = (TestReporter *) malloc(sizeof(TestReporter));
     if (reporter == NULL) {
         return NULL;
     }
 
-    CgreenBreadcrumb *breadcrumb = create_breadcrumb();
+    breadcrumb = create_breadcrumb();
     if (breadcrumb == NULL) {
         free(reporter);
         return NULL;
@@ -67,12 +68,17 @@ void destroy_reporter(TestReporter *reporter) {
     destroy_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
     destroy_memo((TestReportMemo *)reporter->memo);
     free(reporter);
-    context.reporter = NULL;
+    //hack to allow destroy_reporter to be called in cute_reporter_tests when
+    //tests are running in same process
+    if (context.reporter == reporter)
+    {
+        context.reporter = NULL;
+    }
 }
 
 void destroy_memo(TestReportMemo *memo) {
     if (NULL != memo) {
-	free(memo);
+    free(memo);
     }
 }
 
@@ -126,14 +132,14 @@ static void assert_true(TestReporter *reporter, const char *file, int line, int 
     va_list arguments;
     va_start(arguments, message);
 
-	if (result) {
+    if (result) {
             (*reporter->show_pass)(reporter, file, line, message, arguments);
-	} else {
+    } else {
             (*reporter->show_fail)(reporter, file, line, message, arguments);
-	}
+    }
 
-	add_reporter_result(reporter, result);
-	va_end(arguments);
+    add_reporter_result(reporter, result);
+    va_end(arguments);
 }
 
 static void read_reporter_results(TestReporter *reporter, const char *filename, int line) {
@@ -145,17 +151,12 @@ static void read_reporter_results(TestReporter *reporter, const char *filename, 
         } else if (result == fail) {
             reporter->failures++;
         } else if (result == completion) {
-        	/* TODO: this should always be the last message; if it's not, there's a bad race */
+            /* TODO: this should always be the last message; if it's not, there's a bad race */
             completed = true;
         }
     }
     if (! completed) {
-#if (defined(__CYGWIN__) && __GNUC__ == 4 && __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 3) \
- || (defined(__linux__) && __GNUC__ == 4 && __GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ == 3)
-	va_list no_arguments = NULL;
-#else
-        va_list no_arguments;
-#endif
+        va_list no_arguments=NULL_VA_LIST;
         (*reporter->show_incomplete)(reporter, filename, line, NULL, no_arguments);
         reporter->exceptions++;
     }

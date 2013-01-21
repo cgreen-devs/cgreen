@@ -19,19 +19,23 @@ static char *stringdup(const char *string) {
 }
 
 CgreenVector *create_vector_of_names(const char *parameters) {
+    char *parameters_to_tokenize;
+    char *parameters_end;
+    char *tokens;
+    char *token;
     CgreenVector *names = create_cgreen_vector(&free);
     if ((parameters == NULL) || (strlen(parameters) == 0)) {
         return names;
     }
 
-    char *parameters_to_tokenize = stringdup(parameters);
+    parameters_to_tokenize = stringdup(parameters);
     if (parameters_to_tokenize == NULL) {
-    	return names;
+        return names;
     }
 
-    char *parameters_end = parameters_to_tokenize + strlen(parameters_to_tokenize);
-    char *tokens = tokenise_by_commas_and_whitespace(parameters_to_tokenize);
-    char *token = tokens;
+    parameters_end = parameters_to_tokenize + strlen(parameters_to_tokenize);
+    tokens = tokenise_by_commas_and_whitespace(parameters_to_tokenize);
+    token = tokens;
     while (token < tokens + strlen(parameters)) {
         token = strip_d_macro(strip_box_double(skip_nulls_until(token, parameters_end)));
         cgreen_vector_add(names, (void*)stringdup(token));

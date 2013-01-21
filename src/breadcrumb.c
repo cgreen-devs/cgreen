@@ -23,8 +23,8 @@ CgreenBreadcrumb *create_breadcrumb(void) {
 }
 
 void destroy_breadcrumb(CgreenBreadcrumb *breadcrumb) {
-	free(breadcrumb->trail);
-	free(breadcrumb);
+    free((void*)breadcrumb->trail);
+    free((void*)breadcrumb);
 }
 
 void push_breadcrumb(CgreenBreadcrumb *breadcrumb, const char *name) {
@@ -32,7 +32,7 @@ void push_breadcrumb(CgreenBreadcrumb *breadcrumb, const char *name) {
     if (breadcrumb->depth > breadcrumb->space) {
         const char **tmp;
         breadcrumb->space++;
-        tmp = (const char **) realloc(breadcrumb->trail,
+        tmp = (const char**) realloc((void*)breadcrumb->trail,
                 sizeof(const char *) * breadcrumb->space);
         if (tmp == NULL) {
             breadcrumb->space--;
@@ -45,7 +45,7 @@ void push_breadcrumb(CgreenBreadcrumb *breadcrumb, const char *name) {
 }
 
 void pop_breadcrumb(CgreenBreadcrumb *breadcrumb) {
-	breadcrumb->depth--;
+    breadcrumb->depth--;
 }
 
 const char *get_current_from_breadcrumb(CgreenBreadcrumb *breadcrumb) {
@@ -61,7 +61,8 @@ int get_breadcrumb_depth(CgreenBreadcrumb *breadcrumb) {
 }
 
 void walk_breadcrumb(CgreenBreadcrumb *breadcrumb, void (*walker)(const char *, void *), void *memo) {
-    for (int i = 0; i < breadcrumb->depth; i++) {
+    int i;
+    for (i = 0; i < breadcrumb->depth; i++) {
         (*walker)(breadcrumb->trail[i], memo);
     }
 }

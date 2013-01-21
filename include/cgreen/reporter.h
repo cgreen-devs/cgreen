@@ -8,6 +8,15 @@ namespace cgreen {
     extern "C" {
 #endif
 
+#ifdef _MSC_VER
+#define NULL_VA_LIST ""
+#elif (defined(__CYGWIN__)) \
+ || (defined(__linux__))
+#define NULL_VA_LIST NULL
+#else
+#define NULL_VA_LIST {}
+#endif
+
 typedef struct TestContext_ TestContext;
 
 typedef struct TestReporter_ TestReporter;
