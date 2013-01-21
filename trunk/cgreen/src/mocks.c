@@ -46,6 +46,13 @@ void destroy_expectation_if_time_to_die(RecordedExpectation *expectation);
 intptr_t mock_(TestReporter* test_reporter, const char *function, const char *parameters, ...) {
 
     RecordedExpectation *expectation = find_expectation(function);
+    va_list actuals;
+    CgreenVector *actual_values;
+    CgreenVector *parameter_names;
+    int failures_before_read_only_constraints_executed;
+    int failures_after_read_only_constraints_executed;
+    int i;
+    intptr_t stored_result;
     if (expectation == NULL) {
         /* TODO: fail in strict mode */
         return 0;
@@ -56,7 +63,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *pa
         return 0;
     }
 
-    intptr_t stored_result = stored_result_or_default_for(expectation->constraints);
+    stored_result = stored_result_or_default_for(expectation->constraints);
 
     /* no need to parse parameters if none were provided */
     if (strlen(parameters) == 0) {
@@ -64,12 +71,11 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *pa
         return stored_result;
     }
 
-    CgreenVector *parameter_names = create_vector_of_names(parameters);
-    CgreenVector *actual_values = create_cgreen_vector(NULL);
+    parameter_names = create_vector_of_names(parameters);
+    actual_values = create_cgreen_vector(NULL);
 
-    va_list actuals;
     va_start(actuals, parameters);
-    for (int i = 0; i < cgreen_vector_size(parameter_names); i++) {
+    for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
         uintptr_t actual = va_arg(actuals, uintptr_t);
         cgreen_vector_add(actual_values, (void*)actual);
     }
@@ -77,24 +83,24 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *pa
 
     // if read-only constraints aren't matching, content-setting ones might corrupt memory
     // apply read-only ones first, and if they don't fail, then do the deeper constraints
-    int failures_before_read_only_constraints_executed = test_reporter->failures;
+    failures_before_read_only_constraints_executed = test_reporter->failures;
 
-    for (int i = 0; i < cgreen_vector_size(parameter_names); i++) {
+    for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
         const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
         uintptr_t actual = (uintptr_t)cgreen_vector_get(actual_values, i);
         apply_any_read_only_parameter_constraints(expectation, parameter_name, actual, test_reporter);
     }
 
-    int failures_after_read_only_constraints_executed = test_reporter->failures;
+    failures_after_read_only_constraints_executed = test_reporter->failures;
 
     // FIXME: this comparison doesn't work because only parent processes' pass/fail counts are updated,
     //        and even then only once they read from the pipe
     if (failures_before_read_only_constraints_executed == failures_after_read_only_constraints_executed) {
-	for (int i = 0; i < cgreen_vector_size(parameter_names); i++) {
-	    const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
-	        uintptr_t actual = (uintptr_t)cgreen_vector_get(actual_values, i);
-	    apply_any_content_setting_parameter_constraints(expectation, parameter_name, actual, test_reporter);
-	}
+    for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
+        const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
+            uintptr_t actual = (uintptr_t)cgreen_vector_get(actual_values, i);
+        apply_any_content_setting_parameter_constraints(expectation, parameter_name, actual, test_reporter);
+    }
     }
 
     destroy_cgreen_vector(parameter_names);
@@ -126,6 +132,9 @@ void destroy_expectation_if_time_to_die(RecordedExpectation *expectation) {
 }
 
 void expect_(TestReporter* test_reporter, const char *function, const char *test_file, int test_line, ...) {
+    va_list constraints;
+    RecordedExpectation *expectation;
+
     if (have_always_expectation_for(function)) {
         test_reporter->assert_true(
                 test_reporter,
@@ -151,15 +160,16 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
     }
 
 
-    va_list constraints;
     va_start(constraints, test_line);
-    RecordedExpectation *expectation = create_recorded_expectation(function, test_file, test_line, constraints);
+    expectation = create_recorded_expectation(function, test_file, test_line, constraints);
     va_end(constraints);
     expectation->time_to_live = 1;
     cgreen_vector_add(global_expectation_queue, expectation);
 }
 
 void always_expect_(TestReporter* test_reporter, const char *function, const char *test_file, int test_line, ...) {
+    va_list constraints;
+    RecordedExpectation *expectation;
     if (have_always_expectation_for(function)) {
         test_reporter->assert_true(
                 test_reporter,
@@ -184,15 +194,16 @@ void always_expect_(TestReporter* test_reporter, const char *function, const cha
         return;
     }
 
-    va_list constraints;
     va_start(constraints, test_line);
-    RecordedExpectation *expectation = create_recorded_expectation(function, test_file, test_line, constraints);
+    expectation = create_recorded_expectation(function, test_file, test_line, constraints);
     va_end(constraints);
     expectation->time_to_live = UNLIMITED_TIME_TO_LIVE;
     cgreen_vector_add(global_expectation_queue, expectation);
 }
 
 void never_expect_(TestReporter* test_reporter, const char *function, const char *test_file, int test_line, ...) {
+    va_list constraints;
+    RecordedExpectation *expectation;
     if (have_always_expectation_for(function)) {
         test_reporter->assert_true(
                 test_reporter,
@@ -217,9 +228,8 @@ void never_expect_(TestReporter* test_reporter, const char *function, const char
         return;
     }
 
-    va_list constraints;
     va_start(constraints, test_line);
-    RecordedExpectation *expectation = create_recorded_expectation(function, test_file, test_line, constraints);
+    expectation = create_recorded_expectation(function, test_file, test_line, constraints);
     expectation->time_to_live = -UNLIMITED_TIME_TO_LIVE;
     cgreen_vector_add(global_expectation_queue, expectation);
 }
@@ -247,14 +257,16 @@ void tally_mocks(TestReporter *reporter) {
 }
 
 static RecordedExpectation *create_recorded_expectation(const char *function, const char *test_file, int test_line, va_list constraints) {
+    RecordedExpectation *expectation;
+    Constraint* constraint;
+
     ensure_expectation_queue_exists();
-    RecordedExpectation *expectation = (RecordedExpectation *)malloc(sizeof(RecordedExpectation));
+    expectation = (RecordedExpectation *)malloc(sizeof(RecordedExpectation));
     expectation->function = function;
     expectation->test_file = test_file;
     expectation->test_line = test_line;
     expectation->constraints = create_cgreen_vector((GenericDestructor)&destroy_constraint);
 
-    Constraint* constraint;
     while ((constraint = va_arg(constraints, Constraint *)) != (Constraint *)0) {
         cgreen_vector_add(expectation->constraints, constraint);
     }
@@ -280,7 +292,8 @@ static void ensure_expectation_queue_exists() {
 }
 
 void remove_expectation_for(const char *function) {
-    for (int i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
+    int i;
+    for (i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
         RecordedExpectation *expectation = (RecordedExpectation *)cgreen_vector_get(global_expectation_queue, i);
 
         if (NULL == expectation) {
@@ -297,7 +310,8 @@ void remove_expectation_for(const char *function) {
 
 void trigger_unfulfilled_expectations(CgreenVector *expectation_queue,
         TestReporter *reporter) {
-    for (int i = 0; i < cgreen_vector_size(expectation_queue); i++) {
+    int i;
+    for (i = 0; i < cgreen_vector_size(expectation_queue); i++) {
         RecordedExpectation *expectation = (RecordedExpectation *)cgreen_vector_get(expectation_queue, i);
 
         if (NULL == expectation) {
@@ -305,7 +319,7 @@ void trigger_unfulfilled_expectations(CgreenVector *expectation_queue,
             continue;
         }
 
-	if (is_always_call(expectation) || is_never_call(expectation)) {
+    if (is_always_call(expectation) || is_never_call(expectation)) {
             continue;
         }
 
@@ -321,7 +335,8 @@ void trigger_unfulfilled_expectations(CgreenVector *expectation_queue,
 }
 
 RecordedExpectation *find_expectation(const char *function) {
-    for (int i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
+    int i;
+    for (i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
         RecordedExpectation *expectation =
                 (RecordedExpectation *)cgreen_vector_get(global_expectation_queue, i);
         if (strcmp(expectation->function, function) == 0) {
@@ -332,7 +347,8 @@ RecordedExpectation *find_expectation(const char *function) {
 }
 
 void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter) {
-    for (int i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
+    int i;
+    for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
         if (constraint_is_not_for_parameter(constraint, parameter)) {
@@ -354,7 +370,8 @@ void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation,
 }
 
 void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter) {
-    for (int i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
+    int i;
+    for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
         if (constraint_is_not_for_parameter(constraint, parameter)) {
@@ -376,7 +393,8 @@ void apply_any_content_setting_parameter_constraints(RecordedExpectation *expect
 }
 
 intptr_t stored_result_or_default_for(CgreenVector* constraints) {
-    for (int i = 0; i < cgreen_vector_size(constraints); i++) {
+    int i;
+    for (i = 0; i < cgreen_vector_size(constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(constraints, i);
         if (constraint->type == RETURN_VALUE) {
             return constraint->expected_value;
@@ -391,7 +409,8 @@ bool is_always_call(RecordedExpectation* expectation) {
 }
 
 bool have_always_expectation_for(const char* function) {
-    for (int i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
+    int i;
+    for (i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
         RecordedExpectation *expectation =
                 (RecordedExpectation *)cgreen_vector_get(global_expectation_queue, i);
         if (strcmp(expectation->function, function) == 0) {
@@ -409,7 +428,8 @@ bool is_never_call(RecordedExpectation* expectation) {
 }
 
 bool have_never_call_expectation_for(const char* function) {
-    for (int i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
+    int i;
+    for (i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
         RecordedExpectation *expectation =
                 (RecordedExpectation *)cgreen_vector_get(global_expectation_queue, i);
         if (strcmp(expectation->function, function) == 0) {

@@ -28,7 +28,7 @@ namespace cgreen {
         assert_that_constraint, assert_that_expression, ASSERT_THAT_REQUIRES_BOOLEAN_EXPRESSION_OR_ACTUAL_VALUE_AND_CONSTRAINT
 
 #define assert_that_expression(expression) \
-		assert_that_(__FILE__, __LINE__, #expression, expression, is_true);
+        assert_that_(__FILE__, __LINE__, #expression, expression, is_true);
 
 void assert_equal_(const char *file, int line, const char *expression, intptr_t tried, intptr_t expected);
 void assert_not_equal_(const char *file, int line, const char *expression, intptr_t tried, intptr_t expected);

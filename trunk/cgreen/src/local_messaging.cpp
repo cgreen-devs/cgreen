@@ -30,7 +30,7 @@ public:
 
 class CgreenMessageQueue {
 public:
-	CgreenMessageQueue(int tag_) : messages(), owner(0), tag(tag_) {}
+    CgreenMessageQueue(int tag_) : messages(), owner(0), tag(tag_) {}
     std::stack<CgreenMessage*> messages;
     pid_t owner;
     int tag;
@@ -46,12 +46,12 @@ int start_cgreen_messaging(int tag) {
         int atexit_result = atexit(&clean_up_messaging);
 
         if (atexit_result != 0) {
-        	fprintf(stderr, "could not register clean up code\n");
-        	return -1;
+            fprintf(stderr, "could not register clean up code\n");
+            return -1;
         }
     }
-	queue_count++;
- 	queues.push_back(CgreenMessageQueue(tag));
+    queue_count++;
+    queues.push_back(CgreenMessageQueue(tag));
     return queue_count - 1;
 }
 
@@ -67,7 +67,7 @@ int receive_cgreen_message(int messaging) {
     if (queues[messaging].messages.empty()) {
        return 0;
     }
-    
+
     CgreenMessage *message;
     queues[messaging].messages.top();
     message = queues[messaging].messages.top();

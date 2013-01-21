@@ -14,6 +14,15 @@
 namespace cgreen {
 #endif
 
+
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) > (b) ? (b) : (a))
 
@@ -22,6 +31,9 @@ static double accuracy(int significant_figures, double largest);
 static int significant_figures = 8;
 
 void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint* constraint) {
+
+    char message[512] = {'\0'};
+
     if (NULL != constraint && is_not_comparing(constraint)) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
@@ -36,8 +48,6 @@ void assert_that_(const char *file, int line, const char *actual_string, intptr_
         return;
     }
 
-    char message[512] = {'\0'};
-
     if (parameters_are_not_valid_for(constraint, actual)) {
         format_validation_failure_message_for(message, sizeof(message), "", constraint, actual);
 
@@ -48,8 +58,8 @@ void assert_that_(const char *file, int line, const char *actual_string, intptr_
                                             false,
                                             message);
         return;
-	}
-    
+    }
+
     format_expectation_failure_message_for(message, sizeof(message) - 1,
                                            constraint, actual_string, actual);
 
@@ -65,6 +75,7 @@ void assert_that_(const char *file, int line, const char *actual_string, intptr_
 }
 
 void assert_that_double_(const char *file, int line, const char *expression, double actual, Constraint* constraint) {
+    BoxedDouble* boxed_actual;
     if (NULL != constraint && is_not_comparing(constraint)) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
@@ -79,12 +90,12 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
         return;
     }
 
-    BoxedDouble* boxed_actual = (BoxedDouble*)box_double(actual);
+    boxed_actual = (BoxedDouble*)box_double(actual);
 
     (*get_test_reporter()->assert_true)(get_test_reporter(), file, line, (*constraint->compare)(constraint, (intptr_t)boxed_actual),
             "Expected [%s] to [%s] [%s] within [%d] significant figures"
-    		"\t\tactual value:\t%08f\n"
-    		"\t\texpected value:\t%08f",
+            "\t\tactual value:\t%08f\n"
+            "\t\texpected value:\t%08f",
             expression,
             constraint->name,
             constraint->expected_value_name,

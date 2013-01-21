@@ -303,19 +303,19 @@ bool compare_do_not_want_contents(Constraint *constraint, intptr_t actual) {
 }
 
 static void set_contents(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
-	char message[512];
+    char message[512];
 
-	if (parameters_are_not_valid_for(constraint, actual)) {
-		format_validation_failure_message_for(message, sizeof(message), function, constraint, actual);
+    if (parameters_are_not_valid_for(constraint, actual)) {
+        format_validation_failure_message_for(message, sizeof(message), function, constraint, actual);
 
-	    (*reporter->assert_true)(
-	            reporter,
-	            test_file,
-	            test_line,
-	            false,
-	            message);
-		return;
-	}
+        (*reporter->assert_true)(
+                reporter,
+                test_file,
+                test_line,
+                false,
+                message);
+        return;
+    }
 
     memmove((void *)actual, (void *)constraint->expected_value, constraint->size_of_expected_value);
 }
@@ -323,23 +323,23 @@ static void set_contents(Constraint *constraint, const char *function, intptr_t 
 
 
 void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
-	char message[512];
+    char message[512];
+    char parameter_name_actual_string[255];
 
-	if (parameters_are_not_valid_for(constraint, actual)) {
-		format_validation_failure_message_for(message, sizeof(message), function, constraint, actual);
+    if (parameters_are_not_valid_for(constraint, actual)) {
+        format_validation_failure_message_for(message, sizeof(message), function, constraint, actual);
 
-	    (*reporter->assert_true)(
-	            reporter,
-	            test_file,
-	            test_line,
-	            false,
-	            message);
-		return;
-	}
+        (*reporter->assert_true)(
+                reporter,
+                test_file,
+                test_line,
+                false,
+                message);
+        return;
+    }
 
-	char parameter_name_actual_string[255];
-	sprintf(parameter_name_actual_string, "[%s] parameter in [%s]", constraint->parameter_name, function);
-	format_expectation_failure_message_for(message, sizeof(message), constraint, parameter_name_actual_string, actual);
+    sprintf(parameter_name_actual_string, "[%s] parameter in [%s]", constraint->parameter_name, function);
+    format_expectation_failure_message_for(message, sizeof(message), constraint, parameter_name_actual_string, actual);
 
     (*reporter->assert_true)(
             reporter,
@@ -369,16 +369,16 @@ const int NOT_FOUND = -1;
 
 static int strpos(const char *haystack, const char *needle)
 {
-	const char *offset = strstr(haystack, needle);
-	if (offset != NULL) {
-	  return offset - haystack;
-	}
+    const char *offset = strstr(haystack, needle);
+    if (offset != NULL) {
+      return offset - haystack;
+    }
 
-	return NOT_FOUND;
+    return NOT_FOUND;
 }
 
 static bool compare_want_beginning_of_string(Constraint *constraint, intptr_t actual) {
-	return strpos((const char *)actual, (const char *)constraint->expected_value) == 0;
+    return strpos((const char *)actual, (const char *)constraint->expected_value) == 0;
 }
 
 static bool compare_want_double(Constraint *constraint, intptr_t actual) {
@@ -441,42 +441,42 @@ static void test_true(Constraint *constraint, const char *function, intptr_t act
 }
 
 bool values_are_strings_in(const Constraint *constraint) {
-	return is_string_comparing(constraint);
+    return is_string_comparing(constraint);
 }
 
 bool no_expected_value_in(const Constraint *constraint) {
-	return constraint->destroy == destroy_static_constraint;
+    return constraint->destroy == destroy_static_constraint;
 }
 
 bool is_content_comparing(const Constraint *constraint) {
-	return constraint->type == CONTENT_COMPARER;
+    return constraint->type == CONTENT_COMPARER;
 }
 
 bool is_content_setting(const Constraint *constraint) {
-	return constraint->type == CONTENT_SETTER;
+    return constraint->type == CONTENT_SETTER;
 }
 
 bool is_not_content_setting(const Constraint *constraint) {
-	return !is_content_setting(constraint);
+    return !is_content_setting(constraint);
 }
 
 bool is_string_comparing(const Constraint *constraint) {
-	return constraint->type == STRING_COMPARER;
+    return constraint->type == STRING_COMPARER;
 }
 
 bool is_double_comparing(const Constraint *constraint) {
-	return constraint->type == DOUBLE_COMPARER;
+    return constraint->type == DOUBLE_COMPARER;
 }
 
 bool is_comparing(const Constraint *constraint) {
-	return is_string_comparing(constraint) ||
-			is_content_comparing(constraint) ||
-			is_double_comparing(constraint) ||
-			constraint->type == VALUE_COMPARER;
+    return is_string_comparing(constraint) ||
+            is_content_comparing(constraint) ||
+            is_double_comparing(constraint) ||
+            constraint->type == VALUE_COMPARER;
 }
 
 bool is_not_comparing(const Constraint *constraint) {
-	return !is_comparing(constraint);
+    return !is_comparing(constraint);
 }
 
 

@@ -12,9 +12,9 @@ Ensure(highly_nested_test_suite_should_still_complete) {
 }
 
 TestSuite *highly_nested_test_suite() {
+    int i;
     TestSuite *suite = create_test_suite();
     add_test(suite, highly_nested_test_suite_should_still_complete);
-    int i;
     for (i = 0; i < 1000; i++) {
         TestSuite *nesting = create_test_suite();
         add_suite(nesting, suite);

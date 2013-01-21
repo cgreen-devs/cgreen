@@ -1,6 +1,6 @@
 #include <cgreen/messaging.h>
+#include <cgreen/cgreen_pipe.h>
 #include <sys/types.h>
-#include <fcntl.h>
 #include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,32 +28,56 @@ typedef struct CgreenMessage_ {
 static CgreenMessageQueue *queues = NULL;
 static int queue_count = 0;
 
+int get_pipe_read_handle()
+{
+    if (queue_count)
+    {
+        return queues[queue_count - 1].readpipe;
+    }
+
+    return 0;
+}
+
+int get_pipe_write_handle()
+{
+    if (queue_count)
+    {
+        return queues[queue_count - 1].writepipe;
+    }
+
+    return 0;
+}
+
+
+
 static void clean_up_messaging(void);
 
 int start_cgreen_messaging(int tag) {
     CgreenMessageQueue *tmp;
     int pipes[2];
+    int pipe_result;
 
     if (queue_count == 0) {
         int atexit_result = atexit(&clean_up_messaging);
 
         if (atexit_result != 0) {
-        	fprintf(stderr, "could not register clean up code\n");
-        	return -1;
+            fprintf(stderr, "could not register clean up code\n");
+            return -1;
         }
     }
 
     tmp = (CgreenMessageQueue *) realloc(queues, sizeof(CgreenMessageQueue) * ++queue_count);
     if (tmp == NULL) {
-    	/* ignoring return value here, as the world is ending anyways */
+        /* ignoring return value here, as the world is ending anyways */
         (void)atexit(&clean_up_messaging);
         return -1;
     }
     queues = tmp;
-    int pipe_result = pipe(pipes);
+
+    pipe_result = cgreen_pipe_open(pipes);
     if (pipe_result != 0) {
-    	fprintf(stderr, "could not create pipes\n");
-    	return -1;
+        fprintf(stderr, "could not create pipes\n");
+        return -1;
     }
 
     queues[queue_count - 1].readpipe = pipes[0];
@@ -71,7 +95,7 @@ void send_cgreen_message(int messaging, int result) {
     memset(message, 0, sizeof(*message));
     message->type = queues[messaging].tag;
     message->result = result;
-    write(queues[messaging].writepipe, message, sizeof(CgreenMessage));
+    cgreen_pipe_write(queues[messaging].writepipe, message, sizeof(CgreenMessage));
     // give the parent a chance to read so that failures are more likely to be output
     // before the child crashes
     sched_yield();
@@ -80,19 +104,15 @@ void send_cgreen_message(int messaging, int result) {
 }
 
 int receive_cgreen_message(int messaging) {
+    ssize_t received;
+    int result;
     CgreenMessage *message = (CgreenMessage *) malloc(sizeof(CgreenMessage));
     if (message == NULL) {
       return -1;
     }
 
-    if (0 != fcntl(queues[messaging].readpipe, F_SETFL, O_NONBLOCK)) {
-    	fprintf(stderr, "could not set file status flag on read pipe\n");
-    	free(message);
-    	return -1;
-    }
-
-    ssize_t received = read(queues[messaging].readpipe, message, sizeof(CgreenMessage));
-    int result = (received > 0 ? message->result : 0);
+    received = cgreen_pipe_read(queues[messaging].readpipe, message, sizeof(CgreenMessage));
+    result = (received > 0 ? message->result : 0);
     free(message);
     return result;
 }
@@ -101,8 +121,8 @@ static void clean_up_messaging() {
     int i;
     for (i = 0; i < queue_count; i++) {
         if (queues[i].owner == getpid()) {
-	    close(queues[i].readpipe);
-	    close(queues[i].writepipe);
+        cgreen_pipe_close(queues[i].readpipe);
+        cgreen_pipe_close(queues[i].writepipe);
         }
     }
     free(queues);

@@ -46,6 +46,8 @@ set(cgreen_SRCS
   suite.c
   text_reporter.c
   vector.c
+  posix_cgreen_pipe.c
+  posix_runner_platform.c
 )
 
 set(CGREEN_LIBRARY_NAME cgreen)

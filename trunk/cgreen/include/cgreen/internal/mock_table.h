@@ -21,13 +21,13 @@
          _61,_62,_63,N,...) N
 
 #define PP_RSEQ_N() \
-	mock63, mock62, mock61, mock60, mock59, mock58, mock57, mock56, mock55, mock54,\
-	mock53, mock52, mock51, mock50, mock49, mock48, mock47, mock46, mock45, mock44,\
-	mock43, mock42, mock41, mock40, mock39, mock38, mock37, mock36, mock35, mock34,\
-	mock33, mock32, mock31, mock30, mock29, mock28, mock27, mock26, mock25, mock24,\
-	mock23, mock22, mock21, mock20, mock19, mock18, mock17, mock16, mock15, mock14,\
-	mock13, mock12, mock11, mock10, mock9, mock8, mock7, mock6, mock5, mock4,\
-	mock3, mock2, mock_, mock_
+    mock63, mock62, mock61, mock60, mock59, mock58, mock57, mock56, mock55, mock54,\
+    mock53, mock52, mock51, mock50, mock49, mock48, mock47, mock46, mock45, mock44,\
+    mock43, mock42, mock41, mock40, mock39, mock38, mock37, mock36, mock35, mock34,\
+    mock33, mock32, mock31, mock30, mock29, mock28, mock27, mock26, mock25, mock24,\
+    mock23, mock22, mock21, mock20, mock19, mock18, mock17, mock16, mock15, mock14,\
+    mock13, mock12, mock11, mock10, mock9, mock8, mock7, mock6, mock5, mock4,\
+    mock3, mock2, mock_, mock_
 
 #define mock2(test_reporter, function_name, arguments_string, arg0, arg1)\
   mock_(test_reporter, function_name, arguments_string, (intptr_t) arg0, (intptr_t) arg1)
