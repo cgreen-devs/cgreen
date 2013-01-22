@@ -2,7 +2,7 @@
 #include <cgreen/mocks.h>
 #include <cgreen/reporter.h>
 #include <cgreen/suite.h>
-#include <cgreen/runner_platform.h>
+#include <cgreen/internal/runner_platform.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>

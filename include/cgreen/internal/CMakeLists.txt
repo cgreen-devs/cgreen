@@ -7,6 +7,8 @@ set(cgreen_internal_HDRS
   assertions_internal.h
   c_assertions.h
   cpp_assertions.h
+  cgreen_pipe.h
+  runner_platform.h
 )
 
 install(

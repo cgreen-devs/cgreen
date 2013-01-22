@@ -1,5 +1,5 @@
 #include <cgreen/messaging.h>
-#include <cgreen/cgreen_pipe.h>
+#include <cgreen/internal/cgreen_pipe.h>
 #include <sys/types.h>
 #include <sched.h>
 #include <stdio.h>
