@@ -1,5 +1,5 @@
 #include "runner.h"
-#include "cgreen/runner_platform.h"
+#include "cgreen/internal/runner_platform.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>

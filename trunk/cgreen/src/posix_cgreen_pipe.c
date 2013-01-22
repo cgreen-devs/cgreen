@@ -1,4 +1,4 @@
-#include "cgreen/cgreen_pipe.h"
+#include "cgreen/internal/cgreen_pipe.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
