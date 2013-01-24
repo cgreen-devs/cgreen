@@ -8,6 +8,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef _MSC_VER
+#include "wincompat.h"
+#endif
+
 #ifdef __cplusplus
 namespace cgreen {
 #endif

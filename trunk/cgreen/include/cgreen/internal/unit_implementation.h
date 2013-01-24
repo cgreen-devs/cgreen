@@ -20,17 +20,20 @@ typedef struct {
 #define CGREEN_SEPARATOR "__"
 #define spec_name(contextName, specName) CgreenSpec__##contextName##__##specName
 
-#define Ensure_NARG(...) \
-         Ensure_NARG_(__VA_ARGS__,Ensure_RSEQ_N())
+//This gives better error messages at the cost of duplication
+#define ENSURE_VA_NUM_ARGS(...) ENSURE_VA_NUM_ARGS_IMPL_((__VA_ARGS__, _CALLED_WITH_TOO_MANY_ARGUMENTS,  WithContextAndSpecificationName,  WithSpecificationName))
+#define ENSURE_VA_NUM_ARGS_IMPL_(tuple) ENSURE_VA_NUM_ARGS_IMPL tuple
 
-#define Ensure_NARG_(...) \
-         Ensure_ARG_N(__VA_ARGS__)
+#define ENSURE_VA_NUM_ARGS_IMPL(_1, _2, _3, N, ...) N
 
-#define Ensure_ARG_N( \
-          _1,_2,N,...) N
+#define ENSURE_macro_dispatcher(func, ...)   ENSURE_macro_dispatcher_(func, ENSURE_VA_NUM_ARGS(__VA_ARGS__))
 
-#define Ensure_RSEQ_N() \
-        EnsureWithContextAndSpecificationName, EnsureWithSpecificationName, ENSURE_REQUIRES_NAME
+// these levels of indirecton are a work-around for variadic macro deficiencies in Visual C++ 2012 and prior
+#define ENSURE_macro_dispatcher_(func, nargs)           ENSURE_macro_dispatcher__(func, nargs)
+#define ENSURE_macro_dispatcher__(func, nargs)           ENSURE_macro_dispatcher___(func, nargs)
+#define ENSURE_macro_dispatcher___(func, nargs)          func ## nargs
+
+#define Ensure_NARG(...) ENSURE_macro_dispatcher(Ensure, __VA_ARGS__)
 
 #define EnsureWithContextAndSpecificationName(contextName, spec, ...) \
     static void contextName##_##spec (void);\

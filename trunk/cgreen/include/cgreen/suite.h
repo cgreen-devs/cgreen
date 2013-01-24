@@ -7,6 +7,10 @@
 #include <stdbool.h>
 #endif
 
+#ifdef _MSC_VER
+#include "internal/windows_headers/wincompat.h"
+#endif
+
 #ifdef __cplusplus
 namespace cgreen {
     extern "C" {
