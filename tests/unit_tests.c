@@ -2,7 +2,6 @@
 #include <cgreen/unit.h>
 
 #include <stdio.h>
-#include <strings.h>
 #include <unistd.h>
 
 #ifdef __cplusplus

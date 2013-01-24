@@ -21,7 +21,12 @@ void always_expect_(TestReporter *test_reporter, const char *function, const cha
 #define never_expect(f, ...) never_expect_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
 void never_expect_(TestReporter *test_reporter, const char *function, const char *test_file, int test_line, ...);
 
-#define mock(...) PP_NARG(__VA_ARGS__)(get_test_reporter(), __func__, #__VA_ARGS__, (intptr_t)__VA_ARGS__ +0)
+#ifdef _MSC_VER
+// another workaround for fundamental variadic macro deficiencies in Visual C++ 2012
+#define mock(...) PP_NARG(__VA_ARGS__)(get_test_reporter(), __func__, #__VA_ARGS__ "", __VA_ARGS__)
+#else
+#define mock(...) PP_NARG(__VA_ARGS__)(get_test_reporter(), __func__, #__VA_ARGS__ "", __VA_ARGS__ +0)
+#endif
 intptr_t mock_(TestReporter *test_reporter, const char *function, const char *parameters, ...);
 
 #define when(parameter, constraint) when_(#parameter, constraint)

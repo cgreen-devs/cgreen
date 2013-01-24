@@ -15,17 +15,22 @@ namespace cgreen {
     extern "C" {
 #endif
 
-#define assert_that_NARG(...) \
-         assert_that_NARG_(__VA_ARGS__,assert_that_RSEQ_N())
+//At the cost of duplication, these macros now give more descriptive error messages
+#define ASSERT_THAT_VA_NUM_ARGS(...) ASSERT_THAT_VA_NUM_ARGS_IMPL_((__VA_ARGS__, _CALLED_WITH_TOO_MANY_ARGS,  _constraint,  _expression))
+#define ASSERT_THAT_VA_NUM_ARGS_IMPL_(tuple) ASSERT_THAT_VA_NUM_ARGS_IMPL tuple
 
-#define assert_that_NARG_(...) \
-         assert_that_ARG_N(__VA_ARGS__)
+#define ASSERT_THAT_VA_NUM_ARGS_IMPL(_1, _2, _3, N, ...) N
 
-#define assert_that_ARG_N( \
-          _1,_2,N,...) N
 
-#define assert_that_RSEQ_N() \
-        assert_that_constraint, assert_that_expression, ASSERT_THAT_REQUIRES_BOOLEAN_EXPRESSION_OR_ACTUAL_VALUE_AND_CONSTRAINT
+#define ASSERT_THAT_macro_dispatcher(func, ...)   ASSERT_THAT_macro_dispatcher_(func, ASSERT_THAT_VA_NUM_ARGS(__VA_ARGS__))
+
+#define ASSERT_THAT_macro_dispatcher_(func, nargs)           ASSERT_THAT_macro_dispatcher__(func, nargs)
+#define ASSERT_THAT_macro_dispatcher__(func, nargs)           ASSERT_THAT_macro_dispatcher___(func, nargs)
+#define ASSERT_THAT_macro_dispatcher___(func, nargs)          func ## nargs
+
+
+
+#define assert_that_NARG(...) ASSERT_THAT_macro_dispatcher(assert_that, __VA_ARGS__)
 
 #define assert_that_expression(expression) \
         assert_that_(__FILE__, __LINE__, #expression, expression, is_true);

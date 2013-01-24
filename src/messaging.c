@@ -1,11 +1,19 @@
 #include <cgreen/messaging.h>
 #include <cgreen/internal/cgreen_pipe.h>
 #include <sys/types.h>
-#include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#ifdef _MSC_VER
+#include <wincompat.h>
+//disable warning on windows
+//'getpid','write': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _getpid, _write
+#pragma warning(disable:4996)
+#else
+#include <sched.h>
+#endif
 
 #ifdef __cplusplus
 namespace cgreen {

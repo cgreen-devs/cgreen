@@ -9,6 +9,10 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef _MSC_VER
+#include <wincompat.h>
+#endif
+
 #ifdef __cplusplus
 namespace cgreen {
 #endif
