@@ -1,6 +1,7 @@
 #include <cgreen/reporter.h>
 #include <cgreen/messaging.h>
 #include <cgreen/breadcrumb.h>
+#include <string.h>
 #include <stdarg.h>
 #ifndef __cplusplus
 #include <stdbool.h>
@@ -156,7 +157,8 @@ static void read_reporter_results(TestReporter *reporter, const char *filename, 
         }
     }
     if (! completed) {
-        va_list no_arguments=NULL_VA_LIST;
+        va_list no_arguments;
+        memset(&no_arguments, 0, sizeof(va_list));
         (*reporter->show_incomplete)(reporter, filename, line, NULL, no_arguments);
         reporter->exceptions++;
     }

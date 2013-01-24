@@ -134,9 +134,11 @@ static void validate_per_test_timeout_value() {
 
 static void run_setup_for(CgreenTest *spec) {
 #ifdef __cplusplus
-    va_list no_arguments=NULL_VA_LIST;
+    va_list no_arguments;
     char message[255];
     TestReporter *reporter = get_test_reporter();
+
+    memset(&no_arguments, 0, sizeof(va_list));
 
     try {
 #endif
@@ -167,9 +169,11 @@ static void run_setup_for(CgreenTest *spec) {
 
 static void run_teardown_for(CgreenTest *spec) {
 #ifdef __cplusplus
-    va_list no_arguments=NULL_VA_LIST;
+    va_list no_arguments;
     char message[255];
     TestReporter *reporter = get_test_reporter();
+
+    memset(&no_arguments, 0, sizeof(va_list));
 
     try {
 #endif
@@ -201,9 +205,11 @@ static void run_teardown_for(CgreenTest *spec) {
 
 static void run(CgreenTest *spec) {
 #ifdef __cplusplus
-    va_list no_arguments=NULL_VA_LIST;
+    va_list no_arguments;
     char message[255];
     TestReporter *reporter = get_test_reporter();
+
+    memset(&no_arguments, 0, sizeof(va_list));
 
     try {
 #endif

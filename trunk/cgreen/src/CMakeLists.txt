@@ -50,15 +50,15 @@ set(cgreen_SRCS
   posix_runner_platform.c
 )
 
-set(CGREEN_LIBRARY_NAME cgreen)
-
 if (WITH_CXX)
+  set(CGREEN_LIBRARY_NAME cgreen++)
   set(cgreen_SRCS ${cgreen_SRCS} 
     cpp_assertions.cpp
     cpp_constraint.cpp
   )
-  set(CGREEN_LIBRARY_NAME cgreen++)
   SET_SOURCE_FILES_PROPERTIES( ${cgreen_SRCS} PROPERTIES LANGUAGE CXX )
+else (WITH_CXX)
+  set(CGREEN_LIBRARY_NAME cgreen)
 endif (WITH_CXX)
  
 include_directories(

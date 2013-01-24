@@ -102,7 +102,8 @@ static bool test_name_matches(const char *test_name_pattern, TestItem test) {
 static TestSuite *suite_for_context(ContextSuite *suites, const char *context_name) {
 	ContextSuite *suite;
 
-	for (suite = suites; suite != NULL && strcmp(suite->context, context_name) != 0; suite = suite->next);   
+	for (suite = suites; suite != NULL && strcmp(suite->context, context_name) != 0; suite = suite->next)
+		;   
 	if (suite != NULL)
 		return suite->suite;
 	else
@@ -200,7 +201,8 @@ static void reflective_runner_cleanup(void *handle)
 /*----------------------------------------------------------------------*/
 static int count(TestItem test_items[]) {
     int i;
-    for (i = 0; test_items[i].symbol != NULL; i++);
+    for (i = 0; test_items[i].symbol != NULL; i++)
+	    ;
     return i;
 }
 
@@ -246,7 +248,8 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
 static void register_test(TestItem *test_items, int maximum_number_of_tests, char *symbol) {
     int number_of_tests;
 
-    for (number_of_tests = 0; test_items[number_of_tests].symbol != NULL; number_of_tests++);
+    for (number_of_tests = 0; test_items[number_of_tests].symbol != NULL; number_of_tests++)
+	    ;
     if (number_of_tests == maximum_number_of_tests) {
         fprintf(stderr, "\nERROR: Found too many tests (%d)! Giving up.\nConsider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
         exit(1);
