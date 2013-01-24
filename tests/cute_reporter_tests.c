@@ -76,14 +76,16 @@ Ensure(will_report_beginning_of_suite) {
 }
 
 Ensure(will_report_beginning_and_successful_finishing_of_test) {
-    va_list arguments=NULL_VA_LIST;
+    va_list arguments;
     const int line=666;
+
     reporter->start_test(reporter, "test_name");
     assert_that(output, begins_with_string("#starting"));
     assert_that(output, contains_string("test_name"));
 
     clear_output();
 
+    memset(&arguments, 0, sizeof(va_list));
     reporter->show_pass(reporter, "file", 2, "test_name", arguments);
     assert_no_output();
 
@@ -95,12 +97,14 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 }
 
 Ensure(will_report_failing_of_test_only_once) {
-    va_list arguments=NULL_VA_LIST;
+    va_list arguments;
     const int line = 666;
+
     reporter->start_test(reporter, "test_name");
 
     clear_output();
     reporter->failures++;   // Simulating a failed assert
+    memset(&arguments, 0, sizeof(va_list));
     reporter->show_fail(reporter, "file", 2, "test_name", arguments);
     assert_that(output, begins_with_string("#failure"));
     assert_that(output, contains_string("test_name"));

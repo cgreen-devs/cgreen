@@ -8,6 +8,9 @@ all: build
 test: build
 	cd build; make test
 
+clean: build
+	cd build; make clean
+
 build:
 	mkdir build
 	cp Makefile.build build/Makefile
