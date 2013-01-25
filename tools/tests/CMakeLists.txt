@@ -23,6 +23,6 @@ endif()
 
 add_library(${CGREEN_RUNNER_TESTS_LIBRARY} SHARED ${RUNNER_TESTS_SRCS})
 
-target_link_libraries(${CGREEN_RUNNER_TESTS_LIBRARY} ${CGREEN_SHARED_LIBRARY} dl m)
+target_link_libraries(${CGREEN_RUNNER_TESTS_LIBRARY} ${CGREEN_SHARED_LIBRARY} ${CMAKE_DL_LIBS} m)
 
-add_test(NAME cgreen_runner_unit_tests COMMAND cgreen-runner $<TARGET_FILE_NAME:cgreen_runner_tests>)
+add_test(NAME cgreen_runner_unit_tests COMMAND cgreen-runner $<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests>)
