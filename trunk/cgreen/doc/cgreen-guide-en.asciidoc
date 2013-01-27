@@ -157,7 +157,7 @@ Let's add a meaningless test or two so that you can see how it runs...
 #include <cgreen/cgreen.h>
 
 Ensure(this_test_should_pass) {
-    assert_that(1 == 1, is_true);
+    assert_that(1 == 1);
 }
 
 Ensure(this_test_should_fail) {
@@ -190,7 +190,8 @@ the simplest way to output the test results. It just streams the
 failures as text.
 
 Of course "0" would never equal "1", but this shows how *Cgreen*
-presents the expression that you want to assert.
+presents the expression that you want to assert. We can also see a
+handy short hand form for boolean expressions ('assert_that(1 == 1);').
 
 
 Five minutes doing TDD with Cgreen

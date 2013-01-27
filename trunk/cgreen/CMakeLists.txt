@@ -6,7 +6,7 @@ set(CMAKE_C_COMPLIER_INIT /usr/bin/gcc)
 
 if (APPLE)
    if (NOT ${CMAKE_C_COMPILER} MATCHES ".*gcc")
-      MESSAGE("You should use gcc as the compiler by using 'CC=gcc CXX=g++ cmake ...'")
+      MESSAGE("You should use gcc, not " ${CMAKE_C_COMPILER} ", as the compiler by using 'CC=gcc CXX=g++ cmake ...'")
    endif()
 endif ()
 
