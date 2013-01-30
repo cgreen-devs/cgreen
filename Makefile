@@ -11,9 +11,15 @@ test: build
 clean: build
 	cd build; make clean
 
+package: build
+	cd build; make package
+
+############# Internal
+
 build:
 	mkdir build
 	cp Makefile.build build/Makefile
+
 
 .SILENT:
 
