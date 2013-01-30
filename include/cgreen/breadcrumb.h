@@ -6,6 +6,12 @@ namespace cgreen {
     extern "C" {
 #endif
 
+struct CgreenBreadcrumb_ {
+    const char **trail;
+    int depth;
+    int space;
+};
+
 typedef struct CgreenBreadcrumb_ CgreenBreadcrumb;
 
 CgreenBreadcrumb *create_breadcrumb(void);

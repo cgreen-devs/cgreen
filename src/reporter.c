@@ -15,9 +15,6 @@ namespace cgreen {
 
 enum {pass = 1, fail, completion};
 
-struct TestContext_ {
-    TestReporter *reporter;
-};
 static TestContext context;
 
 static void show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);

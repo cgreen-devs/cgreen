@@ -5,12 +5,6 @@
 namespace cgreen {
 #endif
 
-struct CgreenBreadcrumb_ {
-    const char **trail;
-    int depth;
-    int space;
-};
-
 CgreenBreadcrumb *create_breadcrumb(void) {
     CgreenBreadcrumb *breadcrumb = (CgreenBreadcrumb *) malloc(sizeof(CgreenBreadcrumb));
     if (breadcrumb == NULL) {
