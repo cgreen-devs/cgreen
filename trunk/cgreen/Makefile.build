@@ -16,6 +16,12 @@ test:
 	cd build-c; make test
 	cd build-c++; make test
 
+package:
+	cd build-c; make package
+	cd build-c++; make package
+
+############ Internal
+
 build-c:
 	mkdir build-c
 	cd build-c; cmake ../..
