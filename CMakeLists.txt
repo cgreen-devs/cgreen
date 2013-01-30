@@ -2,14 +2,6 @@
 cmake_minimum_required(VERSION 2.8.1)
 set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove when CMake >= 2.8.4 is required
 
-set(CMAKE_C_COMPLIER_INIT /usr/bin/gcc)
-
-if (APPLE)
-   if (NOT ${CMAKE_C_COMPILER} MATCHES ".*gcc")
-      MESSAGE("You should use gcc, not " ${CMAKE_C_COMPILER} ", as the compiler by using 'CC=gcc CXX=g++ cmake ...'")
-   endif()
-endif ()
-
 project(cgreen C)
 
 enable_testing()
