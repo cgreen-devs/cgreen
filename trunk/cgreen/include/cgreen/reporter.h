@@ -8,8 +8,6 @@ namespace cgreen {
     extern "C" {
 #endif
 
-typedef struct TestContext_ TestContext;
-
 typedef struct TestReporter_ TestReporter;
 struct TestReporter_ {
     void (*destroy)(TestReporter *reporter);
@@ -30,6 +28,12 @@ struct TestReporter_ {
 };
 
 typedef void TestReportMemo;
+
+struct TestContext_ {
+    TestReporter *reporter;
+};
+
+typedef struct TestContext_ TestContext;
 
 TestReporter *get_test_reporter(void);
 TestReporter *create_reporter(void);
