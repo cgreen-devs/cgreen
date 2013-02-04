@@ -4,7 +4,20 @@ else()
   project(tests C)
 endif (WITH_CXX)
 
-include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${CMAKE_BINARY_DIR})
+set(CGREEN_TEST_INCLUDE_DIRS
+  ${CGREEN_PUBLIC_INCLUDE_DIRS} 
+  ${CMAKE_BINARY_DIR}
+)
+
+
+if (MSVC)
+  LIST(APPEND CGREEN_TEST_INCLUDE_DIRS
+    ${CMAKE_SOURCE_DIR}/include/cgreen/internal/windows_headers
+  )
+endif(MSVC)
+
+
+include_directories(${CGREEN_TEST_INCLUDE_DIRS})
 
 set(test_SRCS
   all_tests.c
@@ -50,17 +63,17 @@ else ()
 endif()
 
 if (WITH_CXX)
-  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} m stdc++)
-  target_link_libraries(${CGREEN_ALL_CONSTRAINTS_LIBRARY} ${CGREEN_LIBRARY} m stdc++)
+  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
+  target_link_libraries(${CGREEN_ALL_CONSTRAINTS_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
 else()
-  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} m)
-  target_link_libraries(${CGREEN_ALL_CONSTRAINTS_LIBRARY} ${CGREEN_LIBRARY} m)
+  target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY})
+  target_link_libraries(${CGREEN_ALL_CONSTRAINTS_LIBRARY} ${CGREEN_LIBRARY})
 endif (WITH_CXX)
 
 if (WITH_CXX)
-  set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY} m stdc++)
+  set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
 else()
-  set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY} m)
+  set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
 endif(WITH_CXX)
 
 macro_add_unit_test(test_cgreen "${test_SRCS}" "${TEST_TARGET_LIBRARIES}")

@@ -15,6 +15,12 @@ set(CGREEN_PRIVATE_INCLUDE_DIRS
   ${CMAKE_BINARY_DIR}
 )
 
+if (MSVC)
+  LIST(APPEND CGREEN_PRIVATE_INCLUDE_DIRS
+    ${CMAKE_SOURCE_DIR}/include/cgreen/internal/windows_headers
+  )
+endif(MSVC)
+
 set(CGREEN_SHARED_LIBRARY
   cgreen_shared
   CACHE INTERNAL "cgreen shared library"
@@ -25,8 +31,11 @@ set(CGREEN_STATIC_LIBRARY
   CACHE INTERNAL "cgreen static library"
 )
 
-set(CGREEN_LINK_LIBRARIES
-)
+if (WIN32 AND NOT CYGWIN)
+  set(CGREEN_LINK_LIBRARIES
+    winmm.lib
+  )
+endif(WIN32 AND NOT CYGWIN)
 
 set(cgreen_SRCS
   assertions.c
@@ -46,9 +55,23 @@ set(cgreen_SRCS
   suite.c
   text_reporter.c
   vector.c
-  posix_cgreen_pipe.c
-  posix_runner_platform.c
 )
+
+if (UNIX)
+  LIST(APPEND cgreen_SRCS 
+    posix_cgreen_pipe.c
+    posix_runner_platform.c
+  )
+else(UNIX)
+  if(WIN32)
+    LIST(APPEND cgreen_SRCS 
+      win32_cgreen_pipe.c
+      win32_runner_platform.c
+    )
+  else(WIN32)
+    message(FATAL_ERROR "cgreen currently only works on UNIX or Windows. Please file a bug.")
+  endif(WIN32)
+endif(UNIX)
 
 if (WITH_CXX)
   set(CGREEN_LIBRARY_NAME cgreen++)
@@ -70,9 +93,14 @@ include_directories(
 add_library(${CGREEN_SHARED_LIBRARY} SHARED ${cgreen_SRCS})
 
 if (WITH_CXX)
-   target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES} stdc++ pthread)
+    target_link_libraries(
+      ${CGREEN_SHARED_LIBRARY} 
+      ${CGREEN_LINK_LIBRARIES} 
+      ${CMAKE_THREAD_LIBS_INIT} 
+      ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
+    )
 else (WITH_CXX)
-   target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES} pthread)
+   target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 endif (WITH_CXX)
 
 set_target_properties(
@@ -88,15 +116,19 @@ set_target_properties(
 
 install(
   TARGETS ${CGREEN_SHARED_LIBRARY}
-  RUNTIME DESTINATION ${BIN_INSTALL_DIR}
   LIBRARY DESTINATION ${LIB_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+  RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+  DESTINATION ${BIN_INSTALL_DIR}
   COMPONENT libraries
 )
 
 add_library(${CGREEN_STATIC_LIBRARY} STATIC ${cgreen_SRCS})
 
-target_link_libraries(${CGREEN_STATIC_LIBRARY} ${CGREEN_LINK_LIBRARIES} stdc++)
+target_link_libraries(${CGREEN_STATIC_LIBRARY} 
+  ${CGREEN_LINK_LIBRARIES}
+  ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
+)
 
 set_target_properties(
   ${CGREEN_STATIC_LIBRARY}
@@ -110,10 +142,9 @@ set_target_properties(
 )
 
 install(
-  TARGETS
-    ${CGREEN_STATIC_LIBRARY}
-  DESTINATION
-    ${LIB_INSTALL_DIR}
-  COMPONENT
-    libraries
+  TARGETS ${CGREEN_STATIC_LIBRARY}
+  LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+  ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+  RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+  COMPONENT libraries
 )
