@@ -29,7 +29,7 @@ set(CGREEN_API_LIBRARY
 add_library(${CGREEN_API_LIBRARY} SHARED ${api_SRCS})
 
 if (WITH_CXX)
-   target_link_libraries(${CGREEN_API_LIBRARY} ${CGREEN_LIBRARY} stdc++ pthread)
+   target_link_libraries(${CGREEN_API_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
 else (WITH_CXX)
-   target_link_libraries(${CGREEN_API_LIBRARY} ${CGREEN_LIBRARY} pthread)
+   target_link_libraries(${CGREEN_API_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 endif (WITH_CXX)
