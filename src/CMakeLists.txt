@@ -4,7 +4,9 @@ else()
   project(cgreen-library C)
 endif (WITH_CXX)
 
-find_library(MATH_LIB m)
+if (UNIX)
+  find_library(MATH_LIB m)
+endif(UNIX)
 
 set(CGREEN_PUBLIC_INCLUDE_DIRS
   ${CMAKE_SOURCE_DIR}/include
