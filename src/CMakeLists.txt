@@ -4,6 +4,8 @@ else()
   project(cgreen-library C)
 endif (WITH_CXX)
 
+find_library(MATH_LIB m)
+
 set(CGREEN_PUBLIC_INCLUDE_DIRS
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}
@@ -96,11 +98,17 @@ if (WITH_CXX)
     target_link_libraries(
       ${CGREEN_SHARED_LIBRARY} 
       ${CGREEN_LINK_LIBRARIES} 
-      ${CMAKE_THREAD_LIBS_INIT} 
+      ${CMAKE_THREAD_LIBS_INIT}
+      ${MATH_LIB} 
       ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
     )
 else (WITH_CXX)
-   target_link_libraries(${CGREEN_SHARED_LIBRARY} ${CGREEN_LINK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(
+      ${CGREEN_SHARED_LIBRARY}
+      ${CGREEN_LINK_LIBRARIES}
+      ${CMAKE_THREAD_LIBS_INIT}
+      ${MATH_LIB} 
+    )
 endif (WITH_CXX)
 
 set_target_properties(
