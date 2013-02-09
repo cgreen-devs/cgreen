@@ -32,8 +32,6 @@ static int significant_figures = 8;
 
 void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint* constraint) {
 
-    char message[512] = {'\0'};
-
     if (NULL != constraint && is_not_comparing(constraint)) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
@@ -49,29 +47,32 @@ void assert_that_(const char *file, int line, const char *actual_string, intptr_
     }
 
     if (parameters_are_not_valid_for(constraint, actual)) {
-        format_validation_failure_message_for(message, sizeof(message), "", constraint, actual);
+        char *validation_message = validation_failure_message_for(constraint, actual);
 
         (*get_test_reporter()->assert_true)(
                                             get_test_reporter(),
                                             file,
                                             line,
                                             false,
-                                            message);
+                                            validation_message);
+
+        constraint->destroy(constraint);
+        free(validation_message);
         return;
     }
 
-    format_expectation_failure_message_for(message, sizeof(message) - 1,
-                                           constraint, actual_string, actual);
+    char *failure_message = constraint->failure_message(constraint, actual_string, actual);
 
     (*get_test_reporter()->assert_true)(
                                         get_test_reporter(),
                                         file,
                                         line,
                                         (*constraint->compare)(constraint, actual),
-                                        message
+                                        failure_message
                                         );
 
     constraint->destroy(constraint);
+    free(failure_message);
 }
 
 void assert_that_double_(const char *file, int line, const char *expression, double actual, Constraint* constraint) {

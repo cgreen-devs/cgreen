@@ -45,6 +45,8 @@ Constraint *create_constraint() {
     /* TODO: setting this to NULL as an implicit type check :( */
     constraint->parameter_name = NULL;
     constraint->destroy = &destroy_empty_constraint;
+    constraint->failure_message = &failure_message_for;
+
     return constraint;
 }
 
@@ -303,10 +305,11 @@ bool compare_do_not_want_contents(Constraint *constraint, intptr_t actual) {
 }
 
 static void set_contents(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
-    char message[512];
+    char *message;
+    (void)function;
 
     if (parameters_are_not_valid_for(constraint, actual)) {
-        format_validation_failure_message_for(message, sizeof(message), function, constraint, actual);
+        message = validation_failure_message_for(constraint, actual);
 
         (*reporter->assert_true)(
                 reporter,
@@ -314,6 +317,8 @@ static void set_contents(Constraint *constraint, const char *function, intptr_t 
                 test_line,
                 false,
                 message);
+
+        free(message);
         return;
     }
 
@@ -323,11 +328,11 @@ static void set_contents(Constraint *constraint, const char *function, intptr_t 
 
 
 void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
-    char message[512];
+    char *message;
     char parameter_name_actual_string[255];
 
     if (parameters_are_not_valid_for(constraint, actual)) {
-        format_validation_failure_message_for(message, sizeof(message), function, constraint, actual);
+        message = validation_failure_message_for(constraint, actual);
 
         (*reporter->assert_true)(
                 reporter,
@@ -335,11 +340,14 @@ void test_want(Constraint *constraint, const char *function, intptr_t actual, co
                 test_line,
                 false,
                 message);
+
+        free(message);
+
         return;
     }
 
     sprintf(parameter_name_actual_string, "[%s] parameter in [%s]", constraint->parameter_name, function);
-    format_expectation_failure_message_for(message, sizeof(message), constraint, parameter_name_actual_string, actual);
+    message = constraint->failure_message(constraint, parameter_name_actual_string, actual);
 
     (*reporter->assert_true)(
             reporter,
@@ -347,6 +355,8 @@ void test_want(Constraint *constraint, const char *function, intptr_t actual, co
             test_line,
             (*constraint->compare)(constraint, actual),
             message);
+
+    free(message);
 }
 
 static bool compare_want_string(Constraint *constraint, intptr_t actual) {
@@ -441,7 +451,7 @@ static void test_true(Constraint *constraint, const char *function, intptr_t act
 }
 
 bool values_are_strings_in(const Constraint *constraint) {
-    return is_string_comparing(constraint);
+    return is_string_comparing(constraint) && (constraint->expected_value != (intptr_t)NULL);
 }
 
 bool no_expected_value_in(const Constraint *constraint) {

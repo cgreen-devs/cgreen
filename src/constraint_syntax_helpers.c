@@ -1,5 +1,6 @@
 #include <cgreen/constraint_syntax_helpers.h>
 #include <cgreen/constraint.h>
+#include <cgreen/message_formatting.h>
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
@@ -15,6 +16,7 @@ Constraint static_is_non_null_constraint = {
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_do_not_want_value,
     /* .test */ test_want,
+    /* .format_failure_message_for */ failure_message_for,
     /* .stored_value */ (intptr_t)NULL,
     /* .stored_value_name */ "null",
     /* .parameter_name */ NULL,
@@ -27,6 +29,7 @@ Constraint static_is_null_constraint = {
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_want_value,
     /* .test */ test_want,
+    failure_message_for,
     /* .stored_value */ (intptr_t)NULL,
     /* .stored_value_name */ "null",
     /* .parameter_name */ NULL,
@@ -39,6 +42,7 @@ Constraint static_is_false_constraint = {
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_want_value,
     /* .test */ test_want,
+    failure_message_for,
     /* .stored_value */ false,
     /* .stored_value_name */ "false",
     /* .parameter_name */ NULL,
@@ -51,6 +55,7 @@ Constraint static_is_true_constraint = {
     /* .destroy */ destroy_static_constraint,
     /* .compare */ compare_want_value,
     /* .test */ test_want,
+    failure_message_for,
     /* .stored_value */ true,
     /* .stored_value_name */ "true",
     /* .parameter_name */ NULL,
