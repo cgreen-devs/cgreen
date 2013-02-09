@@ -18,7 +18,7 @@
 
 typedef struct test_item {
     char *symbol;
-    const char *context;
+    char *context;
     const char *name;
 } TestItem;
 
@@ -35,12 +35,12 @@ typedef struct ContextSuite {
 /*----------------------------------------------------------------------*/
 static char *mangle_test_name(const char *original_test_name) {
 
-    char *context = strdup(original_test_name);
+    char *context;
     const char *test_name = strchr(original_test_name, ':')+1;
-    if (strchr(context, ':') != NULL) {
+    if (strchr(original_test_name, ':') != NULL) {
+    	context = strdup(original_test_name);
         *strchr(context, ':') = '\0';
     } else {
-        free(context);
         context = strdup(CGREEN_DEFAULT_SUITE);
         test_name = original_test_name;
     }
@@ -55,6 +55,8 @@ static char *mangle_test_name(const char *original_test_name) {
     strcat(test_name_with_prefixes, context);
     strcat(test_name_with_prefixes, CGREEN_SEPARATOR);
     strcat(test_name_with_prefixes, test_name);
+
+    free(context);
     return test_name_with_prefixes;
 }
 
@@ -66,35 +68,43 @@ static bool is_cgreen_spec(const char* line) {
 
 
 /*----------------------------------------------------------------------*/
-static const char *context_name_of(const char* name) {
-    char *context = strdup(name);
-    char *colon = strchr(context, ':');
-    if (colon) {
-        *colon = '\0';
+static char *context_name_of(const char* symbol) {
+    char *context_name;
+
+    if (strchr(symbol, ':')) {
+    	context_name = strdup(symbol);
+    	*strchr(context_name, ':') = '\0';
     } else {
-        return CGREEN_DEFAULT_SUITE;
+        context_name = strdup(CGREEN_DEFAULT_SUITE);
     }
 
-    return context;
+    return context_name;
 }
 
 
 /*----------------------------------------------------------------------*/
-static const char *test_name_of(const char *name) {
-    char *test = strdup(name);
-    char *colon = strchr(test, ':');
+static char *test_name_of(const char *symbol) {
+    const char *colon = strchr(symbol, ':');
     if (colon) {
-        return colon+1;
+        return strdup(colon+1);
     }
 
-    return test;
+    return strdup(symbol);
 }
 
 
 /*----------------------------------------------------------------------*/
 static bool test_name_matches(const char *test_name_pattern, TestItem test) {
-    return fnmatch(context_name_of(test_name_pattern), test.context, 0) == 0 &&
-        fnmatch(test_name_of(test_name_pattern), test.name, 0) == 0;
+	char* context_name = context_name_of(test_name_pattern);
+	int context_matches_test = fnmatch(context_name, test.context, 0) == 0;
+	char* test_name = test_name_of(test_name_pattern);
+	int pattern_matches_test =
+			fnmatch(test_name, test.name, 0) == 0;
+
+	free(context_name);
+	free(test_name);
+
+	return context_matches_test	&& pattern_matches_test;
 }
 
 
@@ -102,12 +112,16 @@ static bool test_name_matches(const char *test_name_pattern, TestItem test) {
 static TestSuite *suite_for_context(ContextSuite *suites, const char *context_name) {
 	ContextSuite *suite;
 
-	for (suite = suites; suite != NULL && strcmp(suite->context, context_name) != 0; suite = suite->next)
-		;   
-	if (suite != NULL)
+	for (suite = suites; suite != NULL; suite = suite->next) {
+		if (strcmp(suite->context, context_name) == 0)
+			break;
+	}
+
+	if (suite != NULL) {
 		return suite->suite;
-	else
-		return NULL;
+	}
+
+	return NULL;
 }
 
 
@@ -137,9 +151,10 @@ static void add_test_to_context(TestSuite *parent, ContextSuite **suites, const 
 /*----------------------------------------------------------------------*/
 static int add_matching_tests_to_suite(void *handle, const char *test_name_pattern, TestItem *test_items, TestSuite *suite)
 {
-	ContextSuite *suites = NULL;
-
+	ContextSuite *context_suites = NULL;
+//	ContextSuite *context_suite;
     int count = 0;
+//    int i;
 
     for (int i = 0; test_items[i].symbol != NULL; i++) {
         if (test_name_pattern == NULL || test_name_matches(test_name_pattern, test_items[i])) {
@@ -151,33 +166,48 @@ static int add_matching_tests_to_suite(void *handle, const char *test_name_patte
                 exit(1);
             }
 
-            add_test_to_context(suite, &suites, test_items[i].context, test_items[i].name, test_function);
+            add_test_to_context(suite, &context_suites, test_items[i].context, test_items[i].name, test_function);
             count++;
         }
     }
+
+    // FIXME: context_suites are being leaked like crazy, polluting valgrind output
+//    context_suite = context_suites;
+//    for (i = 0; i < count; i++) {
+//    	free(context_suite);
+//    	context_suite += sizeof(ContextSuite);
+//    }
+
     return count;
 }
 
 
 /*----------------------------------------------------------------------*/
 static const char *start_of_context_name(const char *symbol) {
-    char *context = strdup(symbol);
-    return strstr(context, CGREEN_SPEC_PREFIX)+strlen(CGREEN_SPEC_PREFIX)+strlen(CGREEN_SEPARATOR);
+    const char *context_name = strstr(symbol, CGREEN_SPEC_PREFIX) +
+    		strlen(CGREEN_SPEC_PREFIX) +
+    		strlen(CGREEN_SEPARATOR);
+
+    return context_name;
 }
 
 
 /*----------------------------------------------------------------------*/
 static const char *test_name_of_symbol(const char *symbol) {
-    char *test_name = strdup(symbol);
-    return strstr(start_of_context_name(test_name), CGREEN_SEPARATOR) + strlen(CGREEN_SEPARATOR);
+	const char *context_name = start_of_context_name(symbol);
+    const char *test_name = strstr(context_name, CGREEN_SEPARATOR) + strlen(CGREEN_SEPARATOR);
+
+    return test_name;
 }
 
 
 /*----------------------------------------------------------------------*/
-static const char *suite_name_of_symbol(const char *symbol) {
-	char *copy = strdup(start_of_context_name(symbol));
-    *strstr(copy, CGREEN_SEPARATOR) = '\0';
-    return copy;
+static char *suite_name_of_symbol(const char *symbol) {
+	const char *context_name = start_of_context_name(symbol);
+	char *suite_name = strdup(context_name);
+    *strstr(suite_name, CGREEN_SEPARATOR) = '\0';
+
+    return suite_name;
 }
 
 
@@ -238,8 +268,11 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
 
     reflective_runner_cleanup(test_library_handle);
 
-    for (int i = 0; test_items[i].symbol != NULL; ++i)
+    for (int i = 0; test_items[i].symbol != NULL; ++i) {
         free(test_items[i].symbol);
+        free(test_items[i].context);
+    }
+
     return(status);
 }
 
@@ -292,8 +325,11 @@ static void discover_tests_in(const char* test_library, TestItem* test_items, co
         if (is_cgreen_spec(line)) {
             char *symbol = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR) + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
             symbol[strlen(symbol) - 1] = 0; /* remove newline */
-            if (verbose)
-                printf("Discovered %s:%s\n", suite_name_of_symbol(symbol), test_name_of_symbol(symbol));
+            if (verbose) {
+            	char *suite_name = suite_name_of_symbol(symbol);
+                printf("Discovered %s:%s\n", suite_name, test_name_of_symbol(symbol));
+                free(suite_name);
+            }
             register_test(test_items, maximum_number_of_test_items, symbol);
         }
     }
