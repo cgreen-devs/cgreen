@@ -4,7 +4,7 @@
 namespace cgreen {
 #endif
 
-#include "runner.c"
+#include "../runner.c"
 
 Describe(Runner);
 
@@ -15,20 +15,23 @@ AfterEach(Runner){}
 #define CONTEXT_NAME "context"
 #define TEST_NAME "test"
 
-static char FUNCTION_NAME[] = CGREEN_SPEC_PREFIX CGREEN_SEPARATOR CONTEXT_NAME CGREEN_SEPARATOR TEST_NAME;
-static char FUNCTION_NAME_WITH_DEFAULT_CONTEXT[] = CGREEN_SPEC_PREFIX CGREEN_SEPARATOR CGREEN_DEFAULT_SUITE CGREEN_SEPARATOR TEST_NAME;
+static char SPEC_NAME[] = CGREEN_SPEC_PREFIX CGREEN_SEPARATOR CONTEXT_NAME CGREEN_SEPARATOR TEST_NAME CGREEN_SEPARATOR;
+static char SPEC_NAME_WITH_DEFAULT_CONTEXT[] = CGREEN_SPEC_PREFIX CGREEN_SEPARATOR CGREEN_DEFAULT_SUITE CGREEN_SEPARATOR TEST_NAME CGREEN_SEPARATOR; 
 
-Ensure(Runner, can_get_suite_name_from_symbol) {
-    char *suite_name = suite_name_of_symbol(FUNCTION_NAME);
 
-    assert_that(suite_name, is_equal_to_string(CONTEXT_NAME));
+Ensure(Runner, can_get_context_name_from_specification_name) {
+    char *context_name = context_name_from_specname(SPEC_NAME);
 
-    free(suite_name);
+    assert_that(context_name, is_equal_to_string(CONTEXT_NAME));
+
+    free(context_name);
 }
+
 
 Ensure(Runner, can_get_test_name_from_symbol) {
-    assert_that(test_name_of_symbol(FUNCTION_NAME), is_equal_to_string(TEST_NAME));
+    assert_that(test_name_from_specname(SPEC_NAME), is_equal_to_string(TEST_NAME));
 }
+
 
 Ensure(Runner, can_get_context_name_of_name) {
     char *context_name = context_name_of("Context:Test");
@@ -40,7 +43,8 @@ Ensure(Runner, can_get_context_name_of_name) {
     free(context_name);
 }
 
-Ensure(Runner, can_get_test_name_of_name) {
+
+Ensure(Runner, can_get_test_name_of_symbolic_name) {
     char *test_name = test_name_of("Context:Test");
     assert_that(test_name, is_equal_to_string("Test"));
     free(test_name);
@@ -50,54 +54,71 @@ Ensure(Runner, can_get_test_name_of_name) {
     free(test_name);
 }
 
+
 Ensure(Runner, can_mangle_default_context_and_test_name_into_function_name) {
     char *mangled_test_name = mangle_test_name(TEST_NAME);
 
-    assert_that(mangled_test_name, is_equal_to_string(FUNCTION_NAME_WITH_DEFAULT_CONTEXT));
+    assert_that(mangled_test_name, is_equal_to_string(SPEC_NAME_WITH_DEFAULT_CONTEXT));
 
     free(mangled_test_name);
 }
+
 
 Ensure(Runner, can_mangle_explicit_context_and_test_name_into_function_name) {
     char *mangled_test_name = mangle_test_name(CONTEXT_NAME ":" TEST_NAME);
 
-    assert_that(mangled_test_name, is_equal_to_string(FUNCTION_NAME));
+    assert_that(mangled_test_name, is_equal_to_string(SPEC_NAME));
 
     free(mangled_test_name);
 }
 
+
 Ensure(Runner, can_identify_cgreen_spec) {
-    assert_that(is_cgreen_spec("_CgreenSpec__Runner__can_get_test_name_from_function"));
+    assert_that(is_cgreen_spec("_CgreenSpec__Runner__can_get_test_name_from_function__"));
 }
 
+
 Ensure(Runner, can_identify_a_cxx_mangled_cgreen_spec) {
-    assert_that(is_cgreen_spec("__ZN6cgreen51CgreenSpec__Runner__can_get_test_name_from_functionE"));
+    assert_that(is_cgreen_spec("__ZN6cgreen51CgreenSpec__Runner__can_get_test_name_from_function__E"));
 }
+
 
 Ensure(Runner, can_register_context_and_test_from_a_symbol) {
     TestItem test_items[2] = {{NULL, NULL, NULL}};
-    register_test(test_items, 2, FUNCTION_NAME);
+    register_test(test_items, 2, SPEC_NAME);
     assert_that(test_items[0].context, is_equal_to_string(CONTEXT_NAME));
     assert_that(test_items[0].name, is_equal_to_string(TEST_NAME));
 
     // TODO: make destroy_test_item(TestItem*)
     free(test_items[0].context);
     free(test_items[0].symbol);
+    free(test_items[0].name);
 }
 
 Ensure(Runner, can_ensure_test_exists_from_context_and_name) {
-    TestItem test_items[5] = {{(char *)"", "Context1", "Test1"},
-                              {(char *)"", "Context1", "Test2"},
-                              {(char *)"", "Context2", "Test1"},
-                              {(char *)"", "Context2", "Test2"},
+    TestItem test_items[5] = {{(char *)"", (char *)"Context1", (char *)"Test1"},
+                              {(char *)"", (char *)"Context1", (char *)"Test2"},
+                              {(char *)"", (char *)"Context2", (char *)"Test1"},
+                              {(char *)"", (char *)"Context2", (char *)"Test2"},
                               {NULL, NULL, NULL}};
     assert_that(matching_test_exists("Context1:Test1", test_items));
 }
 
 Ensure(Runner, can_match_test_name) {
-    TestItem test_item = {(char *)"", "Context1", "Test1"};
-    assert_that(test_name_matches("Context1:Test1", test_item));
-    assert_that(test_name_matches("Context*:Test*", test_item));
+    TestItem test_item = {(char *)"", (char *)"Context1", (char *)"Test1"};
+
+    assert_that(test_matches_pattern("Context1:Test1", test_item));
+    assert_that(test_matches_pattern("Context*:Test1", test_item));
+    assert_that(test_matches_pattern("*:Test1", test_item));
+
+    assert_that(test_matches_pattern("Context*:Test1", test_item));
+    assert_that(test_matches_pattern("*:Test1", test_item));
+
+    assert_that(test_matches_pattern("Context1:Test*", test_item));
+    assert_that(test_matches_pattern("Context*:Test*", test_item));
+    assert_that(test_matches_pattern("Context*:*", test_item));
+    assert_that(test_matches_pattern("*:Test*", test_item));
+    assert_that(test_matches_pattern("*:*", test_item));
 }
 
 Ensure(Runner, can_add_test_to_the_suite_for_its_context) {

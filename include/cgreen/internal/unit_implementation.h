@@ -18,7 +18,7 @@ typedef struct {
 
 #define CGREEN_SPEC_PREFIX "CgreenSpec"
 #define CGREEN_SEPARATOR "__"
-#define spec_name(contextName, specName) CgreenSpec__##contextName##__##specName
+#define spec_name(contextName, specName) CgreenSpec__##contextName##__##specName##__
 
 //This gives better error messages at the cost of duplication
 #define ENSURE_VA_NUM_ARGS(...) ENSURE_VA_NUM_ARGS_IMPL_((__VA_ARGS__, _CALLED_WITH_TOO_MANY_ARGUMENTS,  WithContextAndSpecificationName,  WithSpecificationName))
@@ -36,9 +36,9 @@ typedef struct {
 #define Ensure_NARG(...) ENSURE_macro_dispatcher(Ensure, __VA_ARGS__)
 
 #define EnsureWithContextAndSpecificationName(contextName, spec, ...) \
-    static void contextName##_##spec (void);\
-    CgreenTest spec_name(contextName, spec) = { &contextFor##contextName, #spec, &contextName##_##spec, __FILE__, __LINE__ };\
-    static void contextName##_##spec ()
+    static void contextName##__##spec (void);\
+    CgreenTest spec_name(contextName, spec) = { &contextFor##contextName, #spec, &contextName##__##spec, __FILE__, __LINE__ };\
+    static void contextName##__##spec ()
 
 extern CgreenContext defaultContext;
 
