@@ -114,7 +114,6 @@ char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
 
 char *failure_message_for(Constraint *constraint, const char *actual_string, intptr_t actual) {
     char actual_value_string[32];
-    snprintf(actual_value_string, sizeof(actual_value_string) - 1, "%" PRIdPTR, actual);
     const char *actual_value_constraint_name = "Expected [%s] to [%s]";
     const char *expected_value_name =  "[%s]\n";
     const char *expected_value_actual_value =
@@ -123,6 +122,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
     const char *at_offset = "\t\tat offset:\t[%d]\n";
     const char *actual_value = "\t\tactual value:\t[%" PRIdPTR "]\n";
     const char *expected_value_message = "\t\texpected value:\t[%" PRIdPTR "]\n";
+    char *message;
     size_t message_size = strlen(actual_value_constraint_name) +
     		strlen(expected_value_name) +
     		strlen(expected_value_actual_value) +
@@ -134,6 +134,8 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
     		strlen(actual_string) +
     		512; // just in case
 
+    snprintf(actual_value_string, sizeof(actual_value_string) - 1, "%" PRIdPTR, actual);
+
     if (values_are_strings_in(constraint)) {
     	message_size += strlen((char *)constraint->expected_value);
     	if (actual != (intptr_t)NULL) {
@@ -141,7 +143,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
     	}
     }
 
-    char *message = (char *)malloc(message_size);
+    message = (char *)malloc(message_size);
 
     snprintf(message, message_size - 1,
     		actual_value_constraint_name,
