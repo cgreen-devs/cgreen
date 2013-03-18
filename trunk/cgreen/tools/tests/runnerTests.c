@@ -14,9 +14,7 @@ AfterEach(Runner){}
 
 #define CONTEXT_NAME "context"
 #define TEST_NAME "test"
-
 static char SPEC_NAME[] = CGREEN_SPEC_PREFIX CGREEN_SEPARATOR CONTEXT_NAME CGREEN_SEPARATOR TEST_NAME CGREEN_SEPARATOR;
-static char SPEC_NAME_WITH_DEFAULT_CONTEXT[] = CGREEN_SPEC_PREFIX CGREEN_SEPARATOR CGREEN_DEFAULT_SUITE CGREEN_SEPARATOR TEST_NAME CGREEN_SEPARATOR; 
 
 
 Ensure(Runner, can_get_context_name_from_specification_name) {
@@ -55,24 +53,6 @@ Ensure(Runner, can_get_test_name_of_symbolic_name) {
 }
 
 
-Ensure(Runner, can_mangle_default_context_and_test_name_into_function_name) {
-    char *mangled_test_name = mangle_test_name(TEST_NAME);
-
-    assert_that(mangled_test_name, is_equal_to_string(SPEC_NAME_WITH_DEFAULT_CONTEXT));
-
-    free(mangled_test_name);
-}
-
-
-Ensure(Runner, can_mangle_explicit_context_and_test_name_into_function_name) {
-    char *mangled_test_name = mangle_test_name(CONTEXT_NAME ":" TEST_NAME);
-
-    assert_that(mangled_test_name, is_equal_to_string(SPEC_NAME));
-
-    free(mangled_test_name);
-}
-
-
 Ensure(Runner, can_identify_cgreen_spec) {
     assert_that(is_cgreen_spec("_CgreenSpec__Runner__can_get_test_name_from_function__"));
 }
@@ -91,7 +71,7 @@ Ensure(Runner, can_register_context_and_test_from_a_symbol) {
 
     // TODO: make destroy_test_item(TestItem*)
     free(test_items[0].context_name);
-    free(test_items[0].symbol);
+    free(test_items[0].specification_name);
     free(test_items[0].test_name);
 }
 
