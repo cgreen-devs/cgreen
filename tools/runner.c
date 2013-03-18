@@ -22,7 +22,7 @@
    is trying to be clear about which type of name it is. */
 
 typedef struct test_item {
-    char *symbol;
+    char *specification_name;
     char *context_name;
     char *test_name;
 } TestItem;
@@ -44,37 +44,6 @@ typedef struct ContextSuite {
 
 
 #define CGREEN_DEFAULT_SUITE "default"
-
-
-/*----------------------------------------------------------------------*/
-static char *mangle_test_name(const char *symbolic_name) {
-
-    char *context;
-    const char *test_name = strchr(symbolic_name, ':')+1;
-    if (strchr(symbolic_name, ':') != NULL) {
-    	context = strdup(symbolic_name);
-        *strchr(context, ':') = '\0';
-    } else {
-        context = strdup(CGREEN_DEFAULT_SUITE);
-        test_name = symbolic_name;
-    }
-    
-    char *test_name_with_prefixes = (char *)malloc(strlen(CGREEN_SPEC_PREFIX) +
-                                                   strlen(CGREEN_SEPARATOR) +
-                                                   strlen(context) +
-                                                   strlen(CGREEN_SEPARATOR) +
-                                                   strlen(test_name) + 
-                                                   strlen(CGREEN_SEPARATOR) + 1);
-    strcpy(test_name_with_prefixes, CGREEN_SPEC_PREFIX);
-    strcat(test_name_with_prefixes, CGREEN_SEPARATOR);
-    strcat(test_name_with_prefixes, context);
-    strcat(test_name_with_prefixes, CGREEN_SEPARATOR);
-    strcat(test_name_with_prefixes, test_name);
-    strcat(test_name_with_prefixes, CGREEN_SEPARATOR);
-
-    free(context);
-    return test_name_with_prefixes;
-}
 
 
 /*----------------------------------------------------------------------*/
@@ -171,10 +140,10 @@ static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_p
     int count = 0;
 //    int i;
 
-    for (int i = 0; test_items[i].symbol != NULL; i++) {
+    for (int i = 0; test_items[i].specification_name != NULL; i++) {
         if (symbolic_name_pattern == NULL || test_matches_pattern(symbolic_name_pattern, test_items[i])) {
             char *error;
-            CgreenTest *test_function = (CgreenTest *)(dlsym(handle, test_items[i].symbol));
+            CgreenTest *test_function = (CgreenTest *)(dlsym(handle, test_items[i].specification_name));
 
             if ((error = dlerror()) != NULL)  {
                 fprintf (stderr, "%s\n", error);
@@ -229,7 +198,7 @@ static char *context_name_from_specname(const char *symbol) {
 
 /*----------------------------------------------------------------------*/
 static bool matching_test_exists(const char *test_name, TestItem tests[]) {
-    for (int i = 0; tests[i].symbol != NULL; i++)
+    for (int i = 0; tests[i].specification_name != NULL; i++)
         if (test_matches_pattern(test_name, tests[i])) {
             return true;
         }
@@ -247,7 +216,7 @@ static void reflective_runner_cleanup(void *handle)
 /*----------------------------------------------------------------------*/
 static int count(TestItem test_items[]) {
     int i;
-    for (i = 0; test_items[i].symbol != NULL; i++)
+    for (i = 0; test_items[i].specification_name != NULL; i++)
 	    ;
     return i;
 }
@@ -262,7 +231,6 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
     int number_of_matches = add_matching_tests_to_suite(test_library_handle, symbolic_name, test_items, suite);
 
     if (symbolic_name != NULL && number_of_matches == 1) {
-        char *test_name_as_symbol = mangle_test_name(symbolic_name);
         bool found = matching_test_exists(symbolic_name, test_items);
         if (verbose)
             printf(" to only run one test: '%s' ...\n", symbolic_name);
@@ -271,7 +239,6 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
             exit(1);
         }
         status = run_single_test(suite, test_name_of(symbolic_name), reporter);
-        free(test_name_as_symbol);
     } else {
         if (verbose) {
             if (number_of_matches != count(test_items))
@@ -289,8 +256,8 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
 
     reflective_runner_cleanup(test_library_handle);
 
-    for (int i = 0; test_items[i].symbol != NULL; ++i) {
-        free(test_items[i].symbol);
+    for (int i = 0; test_items[i].specification_name != NULL; ++i) {
+        free(test_items[i].specification_name);
         free(test_items[i].context_name);
         free(test_items[i].test_name);
     }
@@ -300,20 +267,20 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
 
 
 /*----------------------------------------------------------------------*/
-static void register_test(TestItem *test_items, int maximum_number_of_tests, char *function_name) {
+static void register_test(TestItem *test_items, int maximum_number_of_tests, char *specification_name) {
     int number_of_tests;
 
-    for (number_of_tests = 0; test_items[number_of_tests].symbol != NULL; number_of_tests++)
+    for (number_of_tests = 0; test_items[number_of_tests].specification_name != NULL; number_of_tests++)
 	    ;
     if (number_of_tests == maximum_number_of_tests) {
         fprintf(stderr, "\nERROR: Found too many tests (%d)! Giving up.\nConsider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
         exit(1);
     }
 
-    test_items[number_of_tests].symbol = strdup(function_name);
-    test_items[number_of_tests].context_name = context_name_from_specname(function_name);
-    test_items[number_of_tests].test_name = test_name_from_specname(function_name);
-    test_items[number_of_tests+1].symbol = NULL;
+    test_items[number_of_tests].specification_name = strdup(specification_name);
+    test_items[number_of_tests].context_name = context_name_from_specname(specification_name);
+    test_items[number_of_tests].test_name = test_name_from_specname(specification_name);
+    test_items[number_of_tests+1].specification_name = NULL;
 }
 
 
@@ -345,16 +312,16 @@ static void discover_tests_in(const char* test_library, TestItem* test_items, co
     char line[1024];
     while (fgets(line, sizeof(line)-1, nm_output_pipe) != NULL) {
         if (is_cgreen_spec(line)) {
-            char *function_name = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR) + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
-            function_name[strlen(function_name) - 1] = 0; /* remove newline */
+            char *specification_name = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR) + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
+            specification_name[strlen(specification_name) - 1] = 0; /* remove newline */
             if (verbose) {
-	            char *suite_name = context_name_from_specname(function_name);
-                char *test_name = test_name_from_specname(function_name);
+		char *suite_name = context_name_from_specname(specification_name);
+                char *test_name = test_name_from_specname(specification_name);
                 printf("Discovered %s:%s\n", suite_name, test_name);
                 free(suite_name);
                 free(test_name);
             }
-            register_test(test_items, maximum_number_of_test_items, function_name);
+            register_test(test_items, maximum_number_of_test_items, specification_name);
         }
     }
 
