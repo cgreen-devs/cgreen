@@ -86,13 +86,13 @@ Ensure(Runner, can_identify_a_cxx_mangled_cgreen_spec) {
 Ensure(Runner, can_register_context_and_test_from_a_symbol) {
     TestItem test_items[2] = {{NULL, NULL, NULL}};
     register_test(test_items, 2, SPEC_NAME);
-    assert_that(test_items[0].context, is_equal_to_string(CONTEXT_NAME));
-    assert_that(test_items[0].name, is_equal_to_string(TEST_NAME));
+    assert_that(test_items[0].context_name, is_equal_to_string(CONTEXT_NAME));
+    assert_that(test_items[0].test_name, is_equal_to_string(TEST_NAME));
 
     // TODO: make destroy_test_item(TestItem*)
-    free(test_items[0].context);
+    free(test_items[0].context_name);
     free(test_items[0].symbol);
-    free(test_items[0].name);
+    free(test_items[0].test_name);
 }
 
 Ensure(Runner, can_ensure_test_exists_from_context_and_name) {
