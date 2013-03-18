@@ -28,7 +28,14 @@ typedef struct test_item {
 } TestItem;
 
 
-/* Datastructure created to partion the test according to the contexts */
+/* The ContextSuite is a datastructure created to partion the tests in
+   suites according to the contexts, one suite per context. It
+   consists of a list of nodes, each mapping a context name to a
+   TestSuite. If there where a public way to navigate the structure of
+   suites, we could name the TestSuites after the context and then
+   find the appropriate suite by navigating in the TestSuite
+   structure, but this seems impossible for now. */
+
 typedef struct ContextSuite {
 	const char *context;
 	TestSuite *suite;
