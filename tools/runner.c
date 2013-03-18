@@ -23,8 +23,8 @@
 
 typedef struct test_item {
     char *symbol;
-    char *context;
-    char *name;
+    char *context_name;
+    char *test_name;
 } TestItem;
 
 
@@ -112,9 +112,9 @@ static char *test_name_of(const char *symbolic_name) {
 /*----------------------------------------------------------------------*/
 static bool test_matches_pattern(const char *symbolic_name_pattern, TestItem test) {
     char* context_name = context_name_of(symbolic_name_pattern);
-    int context_name_matches_test = fnmatch(context_name, test.context, 0) == 0;
+    int context_name_matches_test = fnmatch(context_name, test.context_name, 0) == 0;
     char* test_name = test_name_of(symbolic_name_pattern);
-    int test_name_matches_test = fnmatch(test_name, test.name, 0) == 0;
+    int test_name_matches_test = fnmatch(test_name, test.test_name, 0) == 0;
 
     free(context_name);
     free(test_name);
@@ -181,7 +181,7 @@ static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_p
                 exit(1);
             }
 
-            add_test_to_context(suite, &context_suites, test_items[i].context, test_items[i].name, test_function);
+            add_test_to_context(suite, &context_suites, test_items[i].context_name, test_items[i].test_name, test_function);
             count++;
         }
     }
@@ -291,8 +291,8 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
 
     for (int i = 0; test_items[i].symbol != NULL; ++i) {
         free(test_items[i].symbol);
-        free(test_items[i].context);
-        free(test_items[i].name);
+        free(test_items[i].context_name);
+        free(test_items[i].test_name);
     }
 
     return(status);
@@ -311,8 +311,8 @@ static void register_test(TestItem *test_items, int maximum_number_of_tests, cha
     }
 
     test_items[number_of_tests].symbol = strdup(function_name);
-    test_items[number_of_tests].context = context_name_from_specname(function_name);
-    test_items[number_of_tests].name = test_name_from_specname(function_name);
+    test_items[number_of_tests].context_name = context_name_from_specname(function_name);
+    test_items[number_of_tests].test_name = test_name_from_specname(function_name);
     test_items[number_of_tests+1].symbol = NULL;
 }
 
