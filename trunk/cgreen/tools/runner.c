@@ -15,6 +15,11 @@
 #include "xml_reporter.h"
 #include "runner.h"
 
+/* The name of a test is either a named mangled from the name of the
+   context, if any, and the actual test name.  Names (or patterns) on
+   the command line is formatted as a symbolic name composed of the
+   context name, a colon and the test name. The variable naming below
+   is trying to be clear about which type of name it is. */
 
 typedef struct test_item {
     char *symbol;
@@ -22,6 +27,8 @@ typedef struct test_item {
     char *name;
 } TestItem;
 
+
+/* Datastructure created to partion the test according to the contexts */
 typedef struct ContextSuite {
 	const char *context;
 	TestSuite *suite;
@@ -33,16 +40,16 @@ typedef struct ContextSuite {
 
 
 /*----------------------------------------------------------------------*/
-static char *mangle_test_name(const char *original_test_name) {
+static char *mangle_test_name(const char *symbolic_name) {
 
     char *context;
-    const char *test_name = strchr(original_test_name, ':')+1;
-    if (strchr(original_test_name, ':') != NULL) {
-    	context = strdup(original_test_name);
+    const char *test_name = strchr(symbolic_name, ':')+1;
+    if (strchr(symbolic_name, ':') != NULL) {
+    	context = strdup(symbolic_name);
         *strchr(context, ':') = '\0';
     } else {
         context = strdup(CGREEN_DEFAULT_SUITE);
-        test_name = original_test_name;
+        test_name = symbolic_name;
     }
     
     char *test_name_with_prefixes = (char *)malloc(strlen(CGREEN_SPEC_PREFIX) +
@@ -96,16 +103,16 @@ static char *test_name_of(const char *symbolic_name) {
 
 
 /*----------------------------------------------------------------------*/
-static bool test_matches_pattern(const char *test_name_pattern, TestItem test) {
-    char* context_name = context_name_of(test_name_pattern);
-    int context_matches_test = fnmatch(context_name, test.context, 0) == 0;
-    char* test_name = test_name_of(test_name_pattern);
-    int pattern_matches_test = fnmatch(test_name, test.name, 0) == 0;
+static bool test_matches_pattern(const char *symbolic_name_pattern, TestItem test) {
+    char* context_name = context_name_of(symbolic_name_pattern);
+    int context_name_matches_test = fnmatch(context_name, test.context, 0) == 0;
+    char* test_name = test_name_of(symbolic_name_pattern);
+    int test_name_matches_test = fnmatch(test_name, test.name, 0) == 0;
 
     free(context_name);
     free(test_name);
 
-    return context_matches_test && pattern_matches_test;
+    return context_name_matches_test && test_name_matches_test;
 }
 
 
@@ -150,7 +157,7 @@ static void add_test_to_context(TestSuite *parent, ContextSuite **suites, const 
 
 
 /*----------------------------------------------------------------------*/
-static int add_matching_tests_to_suite(void *handle, const char *test_name_pattern, TestItem *test_items, TestSuite *suite)
+static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_pattern, TestItem *test_items, TestSuite *suite)
 {
 	ContextSuite *context_suites = NULL;
 //	ContextSuite *context_suite;
@@ -158,7 +165,7 @@ static int add_matching_tests_to_suite(void *handle, const char *test_name_patte
 //    int i;
 
     for (int i = 0; test_items[i].symbol != NULL; i++) {
-        if (test_name_pattern == NULL || test_matches_pattern(test_name_pattern, test_items[i])) {
+        if (symbolic_name_pattern == NULL || test_matches_pattern(symbolic_name_pattern, test_items[i])) {
             char *error;
             CgreenTest *test_function = (CgreenTest *)(dlsym(handle, test_items[i].symbol));
 
