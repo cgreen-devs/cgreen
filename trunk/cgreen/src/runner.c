@@ -39,7 +39,6 @@ int run_test_suite(TestSuite *suite, TestReporter *reporter) {
     setup_reporting(reporter);
     run_every_test(suite, reporter);
     success = (reporter->failures == 0);
-    clean_up_test_run(suite, reporter);
     return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
@@ -52,7 +51,6 @@ int run_single_test(TestSuite *suite, const char *name, TestReporter *reporter) 
     setup_reporting(reporter);
     run_named_test(suite, name, reporter);
     success = (reporter->failures == 0);
-    clean_up_test_run(suite, reporter);
     return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
