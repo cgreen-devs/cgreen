@@ -104,28 +104,28 @@ Ensure(Runner, can_match_test_name) {
 }
 
 Ensure(Runner, can_add_test_to_the_suite_for_its_context) {
-	ContextSuite *suite_list = NULL;
-	CgreenTest *test = (CgreenTest *)&test;
-	TestSuite *parent_suite = create_test_suite();
-	TestSuite *first_suite, *second_suite;
+    ContextSuite *suite_list = NULL;
+    CgreenTest *test = (CgreenTest *)&test;
+    TestSuite *parent_suite = create_test_suite();
+    TestSuite *first_suite, *second_suite;
 
     context_suites = NULL;
 
-	assert_that(suite_list, is_null);
+    assert_that(suite_list, is_null);
 
-	add_test_to_context(parent_suite, &suite_list, "TheFirstContext", "TheName", test);
-	first_suite = find_suite_for_context(suite_list, "TheFirstContext");
-	assert_that(first_suite, is_non_null);
-	assert_that(first_suite->size, is_equal_to(1));
+    add_test_to_context(parent_suite, &suite_list, "TheFirstContext", "TheName", test);
+    first_suite = find_suite_for_context(suite_list, "TheFirstContext");
+    assert_that(first_suite, is_non_null);
+    assert_that(first_suite->size, is_equal_to(1));
 
-	second_suite = find_suite_for_context(suite_list, "TheSecondContext");
-	assert_that(second_suite, is_null);
+    second_suite = find_suite_for_context(suite_list, "TheSecondContext");
+    assert_that(second_suite, is_null);
 
-	add_test_to_context(parent_suite, &suite_list, "TheSecondContext", "TheName", test);
-	assert_that(find_suite_for_context(suite_list, "TheFirstContext")->size, is_equal_to(1));
-	assert_that(find_suite_for_context(suite_list, "TheSecondContext")->size, is_equal_to(1));
+    add_test_to_context(parent_suite, &suite_list, "TheSecondContext", "TheName", test);
+    assert_that(find_suite_for_context(suite_list, "TheFirstContext")->size, is_equal_to(1));
+    assert_that(find_suite_for_context(suite_list, "TheSecondContext")->size, is_equal_to(1));
 
-	destroy_test_suite(parent_suite);
+    destroy_test_suite(parent_suite);
     destroy_context_suites(suite_list);
 }
 
