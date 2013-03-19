@@ -20,7 +20,6 @@ namespace cgreen {
 
 static const char* CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE = "CGREEN_PER_TEST_TIMEOUT";
 
-static void clean_up_test_run(TestSuite *suite, TestReporter *reporter);
 static void run_every_test(TestSuite *suite, TestReporter *reporter);
 static void run_named_test(TestSuite *suite, const char *name, TestReporter *reporter);
 
@@ -52,11 +51,6 @@ int run_single_test(TestSuite *suite, const char *name, TestReporter *reporter) 
     run_named_test(suite, name, reporter);
     success = (reporter->failures == 0);
     return success ? EXIT_SUCCESS : EXIT_FAILURE;
-}
-
-static void clean_up_test_run(TestSuite *suite, TestReporter *reporter) {
-    (*reporter->destroy)(reporter);
-    destroy_test_suite(suite);
 }
 
 static void run_every_test(TestSuite *suite, TestReporter *reporter) {

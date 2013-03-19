@@ -36,8 +36,6 @@ static void usage(const char **argv) {
 int main(int argc, const char **argv) {
     int status;
 
-    /* TODO: in addition to running only a single named test, match tests with a substring and run only those */
-
     const char *test_library;
     const char *test_name = NULL;
     const char *prefix;
@@ -88,6 +86,7 @@ int main(int argc, const char **argv) {
 
     if (gopt_arg(options, 'h', &tmp)) {
         usage(argv);
+	free(options);
         exit(0);
     }
 
@@ -99,15 +98,21 @@ int main(int argc, const char **argv) {
         break;
     default:
 	usage(argv);
+	free(options);
+	destroy_reporter(reporter);
         return(0);
     }
 
     if (!file_exists(test_library)) {
         printf("Couldn't find library: %s\n", test_library);
+	free(options);
+	destroy_reporter(reporter);
         exit(1);
     }
 
     status = runner(reporter, test_library, suite_name, test_name, verbose, no_run);
 
+    destroy_reporter(reporter);
+    free(options);
     return status;
 }
