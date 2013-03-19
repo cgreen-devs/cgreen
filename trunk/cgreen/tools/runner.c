@@ -37,11 +37,20 @@ typedef struct test_item {
    structure, but this seems impossible for now. */
 
 typedef struct ContextSuite {
-	const char *context;
-	TestSuite *suite;
-	struct ContextSuite *next;
+    char *context_name;
+    TestSuite *suite;
+    struct ContextSuite *next;
 } ContextSuite;
 
+static ContextSuite *context_suites = NULL;
+
+/*----------------------------------------------------------------------*/
+static void destroy_context_suites(ContextSuite *context_suite) {
+    if (context_suite->next != NULL)
+        destroy_context_suites(context_suite->next);
+    free(context_suite->context_name);
+    free(context_suite);
+}
 
 #define CGREEN_DEFAULT_SUITE "default"
 
@@ -93,74 +102,64 @@ static bool test_matches_pattern(const char *symbolic_name_pattern, TestItem tes
 
 
 /*----------------------------------------------------------------------*/
-static TestSuite *suite_for_context(ContextSuite *suites, const char *context_name) {
-	ContextSuite *suite;
+static TestSuite *find_suite_for_context(ContextSuite *suites, const char *context_name) {
+    ContextSuite *suite;
 
-	for (suite = suites; suite != NULL; suite = suite->next) {
-		if (strcmp(suite->context, context_name) == 0)
-			break;
-	}
+    for (suite = suites; suite != NULL; suite = suite->next) {
+        if (strcmp(suite->context_name, context_name) == 0)
+            break;
+    }
 
-	if (suite != NULL) {
-		return suite->suite;
-	}
+    if (suite != NULL) {
+        return suite->suite;
+    }
 
-	return NULL;
+    return NULL;
 }
 
 
 /*----------------------------------------------------------------------*/
 static ContextSuite *add_new_context_suite(TestSuite *parent, const char* context_name, ContextSuite *next) {
-    ContextSuite *suite = (ContextSuite *)calloc(1, sizeof(ContextSuite));
-    suite->context = context_name;
-    suite->suite = create_named_test_suite(context_name);
-    suite->next = next;
-    add_suite_(parent, context_name, suite->suite);
-    return suite;
+    ContextSuite *new_context_suite = (ContextSuite *)calloc(1, sizeof(ContextSuite));
+    new_context_suite->context_name = strdup(context_name);
+    new_context_suite->suite = create_named_test_suite(context_name);
+    new_context_suite->next = next;
+    add_suite_(parent, context_name, new_context_suite->suite);
+    return new_context_suite;
 }
 
 
 /*----------------------------------------------------------------------*/
-static void add_test_to_context(TestSuite *parent, ContextSuite **suites, const char *context_name, const char *test_name, CgreenTest *test) {
-	TestSuite *test_suite = suite_for_context(*suites, context_name);
+static void add_test_to_context(TestSuite *parent, ContextSuite **context_suites, const char *context_name, const char *test_name, CgreenTest *test) {
+    TestSuite *suite_for_context = find_suite_for_context(*context_suites, context_name);
 
-	if (test_suite == NULL) {
-		*suites = add_new_context_suite(parent, context_name, *suites);
-		test_suite = (*suites)->suite;
-	}
-	add_test_(test_suite, test_name, test);
+    if (suite_for_context == NULL) {
+	*context_suites = add_new_context_suite(parent, context_name, *context_suites);
+	suite_for_context = (*context_suites)->suite;
+    }
+    add_test_(suite_for_context, test_name, test);
 }
 
 
 /*----------------------------------------------------------------------*/
 static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_pattern, TestItem *test_items, TestSuite *suite)
 {
-	ContextSuite *context_suites = NULL;
-//	ContextSuite *context_suite;
-	int count = 0;
-//  int i;
+    int count = 0;
 
-	for (int i = 0; test_items[i].specification_name != NULL; i++) {
-		if (symbolic_name_pattern == NULL || test_matches_pattern(symbolic_name_pattern, test_items[i])) {
-			char *error;
-			CgreenTest *test_function = (CgreenTest *)(dlsym(handle, test_items[i].specification_name));
+    for (int i = 0; test_items[i].specification_name != NULL; i++) {
+        if (symbolic_name_pattern == NULL || test_matches_pattern(symbolic_name_pattern, test_items[i])) {
+            char *error;
+            CgreenTest *test_function = (CgreenTest *)(dlsym(handle, test_items[i].specification_name));
 
-			if ((error = dlerror()) != NULL)  {
-				fprintf (stderr, "%s\n", error);
-				exit(1);
-			}
+            if ((error = dlerror()) != NULL)  {
+                fprintf (stderr, "%s\n", error);
+                exit(1);
+            }
 
             add_test_to_context(suite, &context_suites, test_items[i].context_name, test_items[i].test_name, test_function);
             count++;
         }
     }
-
-    // FIXME: context_suites are being leaked like crazy, polluting valgrind output
-    //    context_suite = context_suites;
-    //    for (i = 0; i < count; i++) {
-    //    	free(context_suite);
-//    	context_suite += sizeof(ContextSuite);
-//    }
 
     return count;
 }
@@ -169,8 +168,8 @@ static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_p
 /*----------------------------------------------------------------------*/
 static const char *position_of_context_name(const char *symbol) {
     const char *context_name = strstr(symbol, CGREEN_SPEC_PREFIX) +
-    		strlen(CGREEN_SPEC_PREFIX) +
-    		strlen(CGREEN_SEPARATOR);
+        strlen(CGREEN_SPEC_PREFIX) +
+        strlen(CGREEN_SEPARATOR);
 
     return context_name;
 }
@@ -188,8 +187,8 @@ static char *test_name_from_specname(const char *spec_name) {
 
 /*----------------------------------------------------------------------*/
 static char *context_name_from_specname(const char *symbol) {
-	const char *context_name_position = position_of_context_name(symbol);
-	char *context_name = strdup(context_name_position);
+    const char *context_name_position = position_of_context_name(symbol);
+    char *context_name = strdup(context_name_position);
     *strstr(context_name, CGREEN_SEPARATOR) = '\0';
 
     return context_name;
@@ -217,14 +216,14 @@ static void reflective_runner_cleanup(void *handle)
 static int count(TestItem test_items[]) {
     int i;
     for (i = 0; test_items[i].specification_name != NULL; i++)
-	    ;
+        ;
     return i;
 }
 
 
 /*----------------------------------------------------------------------*/
 static int run_tests(TestReporter *reporter, const char *suite_name, const char *symbolic_name,
-					 void *test_library_handle, TestItem test_items[], bool verbose) {
+                     void *test_library_handle, TestItem test_items[], bool verbose) {
     int status;
     TestSuite *suite = create_named_test_suite(suite_name);
 
@@ -236,7 +235,7 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
             printf(" to only run one test: '%s' ...\n", symbolic_name);
         if (!found) {
             fprintf(stderr, "ERROR: No such test: '%s'\n", symbolic_name);
-            exit(1);
+            return EXIT_FAILURE;
         }
         status = run_single_test(suite, test_name_of(symbolic_name), reporter);
     } else {
@@ -254,14 +253,14 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
 	}
     }
 
-    reflective_runner_cleanup(test_library_handle);
-
     for (int i = 0; test_items[i].specification_name != NULL; ++i) {
         free(test_items[i].specification_name);
         free(test_items[i].context_name);
         free(test_items[i].test_name);
     }
 
+    destroy_test_suite(suite);
+    destroy_context_suites(context_suites);
     return(status);
 }
 
@@ -271,7 +270,7 @@ static void register_test(TestItem *test_items, int maximum_number_of_tests, cha
     int number_of_tests;
 
     for (number_of_tests = 0; test_items[number_of_tests].specification_name != NULL; number_of_tests++)
-	    ;
+        ;
     if (number_of_tests == maximum_number_of_tests) {
         fprintf(stderr, "\nERROR: Found too many tests (%d)! Giving up.\nConsider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
         exit(1);
@@ -346,14 +345,15 @@ int runner(TestReporter *reporter, const char *test_library_name,
         printf("Discovered %d test(s)\n", count(discovered_tests));
 
     if (!dont_run) {
-	    if (verbose)
-            printf("Opening [%s]", test_library_name);
-        test_library_handle = dlopen (test_library_name, RTLD_NOW);
-        if (test_library_handle == NULL) {
-            fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
-            exit(1);
-        }
-        status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
+        if (verbose)
+	    printf("Opening [%s]", test_library_name);
+	test_library_handle = dlopen (test_library_name, RTLD_NOW);
+	if (test_library_handle == NULL) {
+	    fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
+	    exit(1);
+	}
+	status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
+	reflective_runner_cleanup(test_library_handle);
     }
 
     return status;

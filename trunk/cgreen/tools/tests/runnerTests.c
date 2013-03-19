@@ -27,7 +27,9 @@ Ensure(Runner, can_get_context_name_from_specification_name) {
 
 
 Ensure(Runner, can_get_test_name_from_symbol) {
-    assert_that(test_name_from_specname(SPEC_NAME), is_equal_to_string(TEST_NAME));
+    char *test_name = test_name_from_specname(SPEC_NAME);
+    assert_that(test_name, is_equal_to_string(TEST_NAME));
+    free(test_name);
 }
 
 
@@ -107,21 +109,24 @@ Ensure(Runner, can_add_test_to_the_suite_for_its_context) {
 	TestSuite *parent_suite = create_test_suite();
 	TestSuite *first_suite, *second_suite;
 
+    context_suites = NULL;
+
 	assert_that(suite_list, is_null);
 
 	add_test_to_context(parent_suite, &suite_list, "TheFirstContext", "TheName", test);
-	first_suite = suite_for_context(suite_list, "TheFirstContext");
+	first_suite = find_suite_for_context(suite_list, "TheFirstContext");
 	assert_that(first_suite, is_non_null);
 	assert_that(first_suite->size, is_equal_to(1));
 
-	second_suite = suite_for_context(suite_list, "TheSecondContext");
+	second_suite = find_suite_for_context(suite_list, "TheSecondContext");
 	assert_that(second_suite, is_null);
 
 	add_test_to_context(parent_suite, &suite_list, "TheSecondContext", "TheName", test);
-	assert_that(suite_for_context(suite_list, "TheFirstContext")->size, is_equal_to(1));
-	assert_that(suite_for_context(suite_list, "TheSecondContext")->size, is_equal_to(1));
+	assert_that(find_suite_for_context(suite_list, "TheFirstContext")->size, is_equal_to(1));
+	assert_that(find_suite_for_context(suite_list, "TheSecondContext")->size, is_equal_to(1));
 
 	destroy_test_suite(parent_suite);
+    destroy_context_suites(suite_list);
 }
 
 
