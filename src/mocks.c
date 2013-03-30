@@ -141,8 +141,8 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
                 test_file,
                 test_line,
                 false,
-                "Function [%s] already has an expectation it will always be called a certain way; "
-                "any expectations declared after an always expectation are invalid", function);
+                "Function [%s] already has an expectation and will always be called a certain way; "
+                "any expectations declared after an always expectation are invalid\n", function);
 
         return;
     }
@@ -154,7 +154,7 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
                 test_line,
                 false,
                 "Function [%s] already has an expectation that it will never be called; "
-                "any expectations declared after a never call expectation are invalid", function);
+                "any expectations declared after a never call expectation are invalid\n", function);
 
         return;
     }
@@ -176,8 +176,8 @@ void always_expect_(TestReporter* test_reporter, const char *function, const cha
                 test_file,
                 test_line,
                 false,
-                "Function [%s] already has an expectation it will always be called a certain way; "
-                "any expectations declared after an always expectation are discarded", function);
+                "Function [%s] already has an expectation and will always be called a certain way; "
+                "any expectations declared after an always expectation are discarded\n", function);
 
         return;
     }
@@ -189,7 +189,7 @@ void always_expect_(TestReporter* test_reporter, const char *function, const cha
                 test_line,
                 false,
                 "Function [%s] already has an expectation that it will never be called; "
-                "any expectations declared after a never call expectation are discarded", function);
+                "any expectations declared after a never call expectation are discarded\n", function);
 
         return;
     }
@@ -210,8 +210,8 @@ void never_expect_(TestReporter* test_reporter, const char *function, const char
                 test_file,
                 test_line,
                 false,
-                "Function [%s] already has an expectation it will always be called a certain way; "
-                "declaring an expectation after an always expectation is not allowed", function);
+                "Function [%s] already has an expectation and will always be called a certain way; "
+                "declaring an expectation after an always expectation is not allowed\n", function);
 
         return;
     }
@@ -223,7 +223,7 @@ void never_expect_(TestReporter* test_reporter, const char *function, const char
                 test_line,
                 false,
                 "Function [%s] already has an expectation that it will never be called; "
-                "declaring an expectation for a function after a never call expectation is not allowed", function);
+                "declaring an expectation for a function after a never call expectation is not allowed\n", function);
 
         return;
     }

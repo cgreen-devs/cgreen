@@ -39,12 +39,12 @@ set(CGREEN_TEST_LIBRARY
   CACHE INTERNAL "cgreen tests shared library"
 )
 
-set(all_constraints_SRCS
+set(all_constraints_library_SRCS
   all_constraints_printout.c)
 
-set(CGREEN_ALL_CONSTRAINTS_LIBRARY
-  cgreen_all_constraints
-  CACHE INTERNAL "library for printing all constraints")
+set(all_constraints_SRCS
+  all_constraints_tests.c
+  ${all_constraints_library_SRCS})
 
 if (WITH_CXX)
   set(test_SRCS ${test_SRCS} cpp_assertion_tests.cpp)
@@ -54,7 +54,9 @@ endif (WITH_CXX)
 
 add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_SRCS})
 
-add_library(${CGREEN_ALL_CONSTRAINTS_LIBRARY} SHARED ${all_constraints_SRCS})
+add_library(cgreen_all_constraints_library SHARED ${all_constraints_SRCS})
+
+add_executable(test_all_constraints ${all_constraints_SRCS})
 
 if (WITH_STATIC_LIBRARY)
   set(CGREEN_LIBRARY ${CGREEN_STATIC_LIBRARY})
@@ -64,10 +66,12 @@ endif()
 
 if (WITH_CXX)
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
-  target_link_libraries(${CGREEN_ALL_CONSTRAINTS_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
+  target_link_libraries(test_all_constraints ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
+  target_link_libraries(cgreen_all_constraints_library ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
 else()
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY})
-  target_link_libraries(${CGREEN_ALL_CONSTRAINTS_LIBRARY} ${CGREEN_LIBRARY})
+  target_link_libraries(test_all_constraints ${CGREEN_LIBRARY})
+  target_link_libraries(cgreen_all_constraints_library ${CGREEN_LIBRARY})
 endif (WITH_CXX)
 
 if (WITH_CXX)

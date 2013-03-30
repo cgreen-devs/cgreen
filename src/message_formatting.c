@@ -112,23 +112,21 @@ char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
     return message;
 }
 
+
 char *failure_message_for(Constraint *constraint, const char *actual_string, intptr_t actual) {
     char actual_value_string[32];
     const char *actual_value_constraint_name = "Expected [%s] to [%s]";
     const char *expected_value_name =  "[%s]\n";
-    const char *expected_value_actual_value =
-    		"\t\tactual value:\t[\"%s\"]\n"
-            "\t\texpected value:\t[\"%s\"]\n";
-    const char *at_offset = "\t\tat offset:\t[%d]\n";
-    const char *actual_value = "\t\tactual value:\t[%" PRIdPTR "]\n";
-    const char *expected_value_message = "\t\texpected value:\t[%" PRIdPTR "]\n";
+    const char *actual_value_as_string = "\t\tactual value:\t\t\t[\"%s\"]\n";
+    const char *at_offset = "\t\tat offset:\t\t\t[%d]\n";
+    const char *actual_value_message = "\t\tactual value:\t\t\t[%" PRIdPTR "]\n";
     char *message;
     size_t message_size = strlen(actual_value_constraint_name) +
     		strlen(expected_value_name) +
-    		strlen(expected_value_actual_value) +
+    		strlen(actual_value_as_string) +
     		strlen(at_offset) +
-    		strlen(actual_value) +
-    		strlen(expected_value_message) +
+    		strlen(actual_value_message) +
+    		strlen(constraint->expected_value_message) +
     		strlen(constraint->expected_value_name) +
     		strlen(constraint->name) +
     		strlen(actual_string) +
@@ -157,8 +155,8 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
         strcat(message, " ");
 
     snprintf(message + strlen(message), message_size - strlen(message) - 1,
-            expected_value_name,
-            constraint->expected_value_name);
+             expected_value_name,
+             constraint->expected_value_name);
 
     if (actual_value_not_necessary_for(constraint, actual_string, actual_value_string)) {
         /* when the actual string and the actual value are the same, don't print both of them */
@@ -170,28 +168,33 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
     /* for string constraints, print out the strings encountered and not their pointer values */
     if (values_are_strings_in(constraint)) {
         snprintf(message + strlen(message), message_size - strlen(message) - 1,
-        			expected_value_actual_value,
-                    (const char *)actual,
-                    (const char *)constraint->expected_value);
+                 actual_value_as_string,
+                 (const char *)actual);
+        if (strstr(constraint->name, "not ") == NULL || strstr(constraint->name, "contain ") != NULL) {
+            snprintf(message + strlen(message), message_size - strlen(message) - 1,
+                     constraint->expected_value_message,
+                     (const char *)constraint->expected_value);
+        }
         return message;
     }
 
-    if(is_content_comparing(constraint)) {
-        int difference_index = find_index_of_difference((char *)constraint->expected_value, (char *)actual, constraint->size_of_expected_value);
+    if (is_content_comparing(constraint)) {
+        int difference_index = find_index_of_difference((char *)constraint->expected_value,
+                                                        (char *)actual, constraint->size_of_expected_value);
         snprintf(message + strlen(message), message_size - strlen(message) - 1,
-                at_offset,
-                difference_index);
+                 at_offset,
+                 difference_index);
         return message;
     }
 
     snprintf(message + strlen(message), message_size - strlen(message) - 1,
-         actual_value,
-         actual);
+             actual_value_message,
+             actual);
 
-    if(strstr(constraint->name, "not ") == NULL) {
-    snprintf(message + strlen(message), message_size - strlen(message) - 1,
-        expected_value_message,
-        constraint->expected_value);
+    if (strstr(constraint->name, "not ") == NULL) {
+        snprintf(message + strlen(message), message_size - strlen(message) - 1,
+                 constraint->expected_value_message,
+                 constraint->expected_value);
     }
 
     return message;

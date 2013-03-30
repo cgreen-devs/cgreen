@@ -249,12 +249,19 @@ int main(int argc, char **argv) {
 }
 -------------------------------
 
-*Cgreen* has two ways of running tests. The default is to run all tests
-in their own processes. This is what happens if you invoke
-'run_test_suite()'. This makes all the tests independent, but the
-constant 'fork()ing' can make the tests difficult to debug.  To make
-debugging simpler, *Cgreen* does not fork() when only a single test is
-run by name with 'run_single_test()'.
+*Cgreen* has two ways of running tests. The default is to run all
+tests in their own protected processes. This is what happens if you
+invoke 'run_test_suite()'. All tests then independent since they run
+in separate processes, preventing a single run-away test from bringing
+the whole program down with it.
+
+But if you want to debug any of your tests the constant 'fork()ing'
+can make that difficult or impossible.  To make debugging simpler,
+*Cgreen* does not fork() when only a single test is run by name with
+the function 'run_single_test()'. And if you want to debug, you can
+obviously set a breakpoint at that function. But since *Cgreen* does
+some book-keeping before actually getting to the test, a better
+function is the one simply called 'run()'.
 
 Building this scaffolding...
 
@@ -685,8 +692,10 @@ Here are the standard constraints...
 
 |=========================================================
 |*Constraint* |*Passes if actual value/expression...*
-|is_true |evaluates to true
-|is_false |evaluates to false
+|is_true | evaluates to true
+|is_false | evaluates to false
+|is_null | equals null
+|is_non_null | is a non null value
 |is_equal_to(value) |'== value'
 |is_not_equal_to(value) |'!= value'
 |is_greater_than(value) |'> value'
@@ -795,10 +804,10 @@ In case you have spotted that 'strlen_of_hello_is_five()' should have
 an ampersand in front of it, 'add_test()' is actually a macro. The '&'
 is added automatically. Further more, the Ensure-macro actually
 mangles the tests name, so it is not actually a function name. (This
-also might make them a bit difficult to find in the debugger....)
+might also make them a bit difficult to find in the debugger....)
 
-To run the test suite, we call 'run_test_suite()' on it. This function
-cleans up the test suite after running it, so we can just write...
+To run the test suite, we call 'run_test_suite()' on it. So we can
+just write...
 
 [source,c]
 -----------------------------
@@ -807,7 +816,7 @@ run_test_suite(our_tests(), create_text_reporter());
 
 The results of assertions are ultimately delivered as passes and
 failures to a collection of callbacks defined in a 'TestReporter'
-structure. The only predefined 'TestReporter' in *Cgreen* is the
+structure. There is a predefined 'TestReporter' in *Cgreen* called the
 'TextReporter' that delivers messages in plain text like we have
 already seen.
 
