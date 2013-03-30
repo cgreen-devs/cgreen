@@ -46,10 +46,12 @@ static ContextSuite *context_suites = NULL;
 
 /*----------------------------------------------------------------------*/
 static void destroy_context_suites(ContextSuite *context_suite) {
-    if (context_suite->next != NULL)
-        destroy_context_suites(context_suite->next);
-    free(context_suite->context_name);
-    free(context_suite);
+    if (context_suite != NULL) {
+        if (context_suite->next != NULL)
+            destroy_context_suites(context_suite->next);
+        free(context_suite->context_name);
+        free(context_suite);
+    }
 }
 
 #define CGREEN_DEFAULT_SUITE "default"
@@ -206,9 +208,14 @@ static bool matching_test_exists(const char *test_name, TestItem tests[]) {
 
 
 /*----------------------------------------------------------------------*/
-static void reflective_runner_cleanup(void *handle)
-{
+static void reflective_runner_cleanup(void *handle, TestItem test_items[]) {
     dlclose(handle);
+
+    for (int i = 0; test_items[i].specification_name != NULL; ++i) {
+        free(test_items[i].specification_name);
+        free(test_items[i].context_name);
+        free(test_items[i].test_name);
+    }
 }
 
 
@@ -245,18 +252,12 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
             else
                 printf(" to run all %d discovered tests ...\n", count(test_items));
         }
-	if (number_of_matches > 0)
-	    status = run_test_suite(suite, reporter);
-	else {
+        if (number_of_matches > 0)
+            status = run_test_suite(suite, reporter);
+        else {
             fprintf(stderr, "ERROR: No such test: '%s'\n", symbolic_name);
-	    status = EXIT_FAILURE;
-	}
-    }
-
-    for (int i = 0; test_items[i].specification_name != NULL; ++i) {
-        free(test_items[i].specification_name);
-        free(test_items[i].context_name);
-        free(test_items[i].test_name);
+            status = EXIT_FAILURE;
+        }
     }
 
     destroy_test_suite(suite);
@@ -346,15 +347,16 @@ int runner(TestReporter *reporter, const char *test_library_name,
 
     if (!dont_run) {
         if (verbose)
-	    printf("Opening [%s]", test_library_name);
-	test_library_handle = dlopen (test_library_name, RTLD_NOW);
-	if (test_library_handle == NULL) {
-	    fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
-	    exit(1);
-	}
-	status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
-	reflective_runner_cleanup(test_library_handle);
+            printf("Opening [%s]", test_library_name);
+        test_library_handle = dlopen (test_library_name, RTLD_NOW);
+        if (test_library_handle == NULL) {
+            fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
+            exit(1);
+        }
+        status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
     }
+
+    reflective_runner_cleanup(test_library_handle, discovered_tests);
 
     return status;
 }

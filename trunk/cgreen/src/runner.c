@@ -37,7 +37,7 @@ int run_test_suite(TestSuite *suite, TestReporter *reporter) {
 
     setup_reporting(reporter);
     run_every_test(suite, reporter);
-    success = (reporter->failures == 0);
+    success = (reporter->failures == 0) && (reporter->exceptions==0);
     return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
@@ -195,6 +195,13 @@ static void run_teardown_for(CgreenTest *spec) {
 }
 
 
+/**
+   run()
+   
+   N.B. Although this is neither an API or public function, it is
+   documented as a good place to put a breakpoint. Do not change the
+   name or semantics of this function, it should continue to be very
+   close to the test code. */
 static void run(CgreenTest *spec) {
 #ifdef __cplusplus
     va_list no_arguments;

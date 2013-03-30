@@ -31,6 +31,7 @@ struct Constraint_ {
     bool (*compare)(Constraint *, intptr_t);
     void(*execute)(Constraint *, const char *, intptr_t, const char *, int, TestReporter *);
     char *(*failure_message)(Constraint *, const char *, intptr_t);
+    const char *expected_value_message;
     intptr_t expected_value;
     const char *expected_value_name;
 
