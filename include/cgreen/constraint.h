@@ -47,7 +47,8 @@ void destroy_empty_constraint(Constraint *constraint);
 void destroy_static_constraint(Constraint *constraint);
 void destroy_double_constraint(Constraint *constraint);
 void destroy_constraint(Constraint *);
-
+void destroy_constraints(va_list constraints);
+ 
 bool compare_want_value(Constraint *constraint, intptr_t actual);
 bool compare_do_not_want_value(Constraint *constraint, intptr_t actual);
 void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
