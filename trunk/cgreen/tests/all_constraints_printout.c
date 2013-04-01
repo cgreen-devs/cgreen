@@ -94,7 +94,7 @@ Ensure(ConstraintPrintout, warns_for_always_followed_by_expectation) {
 }
 
 TestSuite *all_constraints_tests() {
-	TestSuite *suite = create_test_suite();
+    TestSuite *suite = create_test_suite();
 
     add_test_with_context(suite, ConstraintPrintout, failure_message_for_is_null);
     add_test_with_context(suite, ConstraintPrintout, failure_message_for_is_non_null);
@@ -112,5 +112,5 @@ TestSuite *all_constraints_tests() {
     add_test_with_context(suite, ConstraintPrintout, failure_message_for_assert_that);
     add_test_with_context(suite, ConstraintPrintout, warns_for_always_followed_by_expectation);
 
-	return suite;
+    return suite;
 }

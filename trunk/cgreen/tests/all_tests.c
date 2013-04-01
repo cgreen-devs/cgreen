@@ -19,6 +19,7 @@ TestSuite *unit_tests();
 TestSuite *collector_tests();
 
 int main(int argc, char **argv) {
+    int suite_result;
     TestSuite *suite = create_test_suite();
     add_suite(suite, messaging_tests());
     add_suite(suite, assertion_tests());
@@ -33,7 +34,11 @@ int main(int argc, char **argv) {
     add_suite(suite, cute_reporter_tests());
     add_suite(suite, unit_tests());
     if (argc > 1) {
-        return run_single_test(suite, argv[1], create_text_reporter());
+        suite_result = run_single_test(suite, argv[1], create_text_reporter());
     }
-    return run_test_suite(suite, create_text_reporter());
+    suite_result = run_test_suite(suite, create_text_reporter());
+
+    destroy_test_suite(suite);
+
+    return suite_result;
 }

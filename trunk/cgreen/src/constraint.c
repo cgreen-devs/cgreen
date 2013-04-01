@@ -74,6 +74,13 @@ void destroy_constraint(Constraint *constraint) {
     (*constraint->destroy)(constraint);
 }
 
+void destroy_constraints(va_list constraints) {
+    Constraint *constraint = NULL;
+    while ((constraint = va_arg(constraints, Constraint *)) != (Constraint *)0) {
+        destroy_constraint(constraint); 
+    }
+}
+
 bool constraint_is_not_for_parameter(const Constraint *constraint, const char *parameter) {
     if (is_not_comparing(constraint) && is_not_content_setting(constraint)) {
         return true;
