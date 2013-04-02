@@ -71,7 +71,8 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
 	walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb,
 			(void *) &i);
 	printf("\n\t");
-	vprintf((message == NULL ? "<NULL for failure message>\n" : message), arguments);
+	vprintf((message == NULL ? "<NULL for failure message>" : message), arguments);
+	printf("\n");
     fflush(NULL);
 }
 

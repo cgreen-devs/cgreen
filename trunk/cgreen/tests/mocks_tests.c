@@ -12,7 +12,8 @@ static int integer_out() {
     return (int)mock();
 }
 
-Ensure(no_errors_thrown_and_default_return_value_when_no_presets) {
+Ensure(default_return_value_when_no_presets_for_loose_mock) {
+    cgreen_mocks_are(loose_mocks);
     assert_that(integer_out(), is_equal_to(0));
 }
 
@@ -51,7 +52,8 @@ Ensure(can_stub_an_integer_return_sequence) {
     assert_that(integer_out(), is_equal_to(3));
 }
 
-Ensure(confirm_stub_is_reset_between_tests) {
+Ensure(expectations_are_reset_between_tests_with_loose_mocks) {
+    cgreen_mocks_are(loose_mocks);
     assert_that(integer_out(), is_equal_to(0));
 }
 
@@ -154,8 +156,15 @@ static void mixed_parameters(int i, const char *s) {
 }
 
 Ensure(confirming_multiple_parameters_multiple_times) {
-    expect(mixed_parameters, when(i, is_equal_to(1)), when(s, is_equal_to_string("Hello")));
-    expect(mixed_parameters, when(i, is_equal_to(2)), when(s, is_equal_to_string("Goodbye")));
+    expect(mixed_parameters, 
+        when(i, is_equal_to(1)), 
+        when(s, is_equal_to_string("Hello"))
+    );
+    expect(mixed_parameters, 
+        when(i, is_equal_to(2)), 
+        when(s, is_equal_to_string("Goodbye"))
+    );
+
     mixed_parameters(1, "Hello");
     mixed_parameters(2, "Goodbye");
 }
@@ -237,17 +246,55 @@ Ensure(can_stub_an_out_parameter) {
     assert_that(&local, is_equal_to_contents_of(&actual, sizeof(LargerThanIntptr)));
 }
 
+Ensure(none_emitted_when_learning_no_mocks) {
+    cgreen_mocks_are(learning_mocks);
+}
+
+Ensure(pastable_code_emitted_by_learning_mocks) {
+    cgreen_mocks_are(learning_mocks);
+    string_out();
+    string_out();
+    integer_out();
+    integer_out();
+    string_out();
+    integer_out();
+}
+
 /* Expected fail tests follow. */
 /* TODO: put these in a separate suite and validate all tests in said suite fail during 'make check' */
 /*
 Ensure(can_declare_function_never_called) {
-    expect_never(sample_mock);
+    never_expect(sample_mock);
 
     sample_mock(0, "");
 }
 
-Ensure(failure_reported_when_expect_after_expect_never_for_same_function) {
-    expect_never(integer_out);
+Ensure(calls_beyond_expected_sequence_fail_when_mocks_are_strict) {
+    expect(integer_out,
+        will_return(1)
+    );
+
+    expect(integer_out,
+        will_return(2)
+    );
+
+    expect(integer_out,
+        will_return(3)
+    );
+
+    assert_that(integer_out(), is_equal_to(1));
+    assert_that(integer_out(), is_equal_to(2));
+    assert_that(integer_out(), is_equal_to(3));
+    // expected fail
+    assert_that(integer_out(), is_equal_to(3));
+}
+
+Ensure(failure_when_no_presets_for_default_strict_mock) {
+    assert_that(integer_out(), is_equal_to(0));
+}
+
+Ensure(failure_reported_when_expect_after_never_expect_for_same_function) {
+    never_expect(integer_out);
 
     expect(integer_out);
 }
@@ -267,16 +314,17 @@ Ensure(single_uncalled_expectation_fails_tally) {
         when(s, is_equal_to_string("devil"))
     );
 }
-
 */
 
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, no_errors_thrown_and_default_return_value_when_no_presets);
+    add_test(suite, none_emitted_when_learning_no_mocks);
+    add_test(suite, pastable_code_emitted_by_learning_mocks);
+    add_test(suite, default_return_value_when_no_presets_for_loose_mock);
     add_test(suite, can_stub_an_integer_return);
     add_test(suite, repeats_return_value_when_set_to_always);
     add_test(suite, can_stub_an_integer_return_sequence);
-    add_test(suite, confirm_stub_is_reset_between_tests);
+    add_test(suite, expectations_are_reset_between_tests_with_loose_mocks);
     add_test(suite, can_stub_a_string_return);
     add_test(suite, can_stub_a_string_sequence);
     add_test(suite, expecting_once_with_any_parameters);
@@ -298,12 +346,12 @@ TestSuite *mock_tests() {
     add_test(suite, string_contains_expectation_is_confirmed);
 
     /* expected failures. TODO: put these in a separate suite, as per comments above. */
-    /*
-    add_test(suite, failure_reported_when_expect_after_always_expect_for_same_function);
+/*    add_test(suite, failure_reported_when_expect_after_always_expect_for_same_function);
     add_test(suite, single_uncalled_expectation_fails_tally);
     add_test(suite, can_declare_function_never_called);
-    add_test(suite, failure_reported_when_expect_after_expect_never_for_same_function);
-    */
-
+    add_test(suite, failure_reported_when_expect_after_never_expect_for_same_function);
+    add_test(suite, failure_when_no_presets_for_default_strict_mock);
+    add_test(suite, calls_beyond_expected_sequence_fail_when_mocks_are_strict);
+*/
     return suite;
 }
