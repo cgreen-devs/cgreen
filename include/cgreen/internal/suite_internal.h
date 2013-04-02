@@ -1,6 +1,8 @@
 #ifndef SUITE_INTERNAL_HEADER
 #define SUITE_INTERNAL_HEADER
 
+#include "cgreen/internal/unit_implementation.h"
+
 enum {test_function, test_suite};
 
 typedef struct TestSuite_ TestSuite;

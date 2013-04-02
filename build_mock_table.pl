@@ -40,8 +40,8 @@ print <<'EOF';
 #define PP_NARG(...) MOCK_macro_dispatcher(mock, __VA_ARGS__)
 
 //mock1 works for 1 or 0
-#define mock1(test_reporter, function_name, arguments_string, ...)\
-  mock_(test_reporter, function_name, arguments_string, __VA_ARGS__)
+#define mock1(test_reporter, function_name, mock_file, mock_line, arguments_string, ...)\
+  mock_(test_reporter, function_name, mock_file, mock_line, arguments_string, __VA_ARGS__)
 
 EOF
 
@@ -83,10 +83,10 @@ sub define_mock {
     }
 
     my $macro = sprintf("#define mock%d", $num_args);
-    $macro .= "(test_reporter, function_name, arguments_string, ";
+    $macro .= "(test_reporter, function_name, mock_file, mock_line, arguments_string, ";
     $macro .= join(", ", @args);
     $macro .= ")\\\n";
-    $macro .= "  mock_(test_reporter, function_name, arguments_string, ";
+    $macro .= "  mock_(test_reporter, function_name, mock_file, mock_line, arguments_string, ";
     $macro .= join(", ", (map "(intptr_t) $_", @args));
     $macro .= ")\n";
 
