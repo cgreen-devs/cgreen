@@ -1,3 +1,5 @@
+#ifdef WIN32
+
 #include "cgreen/internal/cgreen_pipe.h"
 #include <unistd.h>
 #include <stdio.h>
@@ -88,4 +90,5 @@ void cgreen_pipe_close(int p)
 } // namespace cgreen
 #endif
 
+#endif
 /* vim: set ts=4 sw=4 et cindent: */

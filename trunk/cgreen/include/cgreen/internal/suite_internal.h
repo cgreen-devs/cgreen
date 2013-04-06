@@ -3,6 +3,12 @@
 
 #include "cgreen/internal/unit_implementation.h"
 
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
+
+
 enum {test_function, test_suite};
 
 typedef struct TestSuite_ TestSuite;
@@ -32,6 +38,11 @@ TestSuite *create_named_test_suite_(const char *name, const char *filename, int 
 void add_test_(TestSuite *suite, const char *name, CgreenTest *test);
 void add_tests_(TestSuite *suite, const char *names, ...);
 void add_suite_(TestSuite *owner, const char *name, TestSuite *suite);
+
+#ifdef __cplusplus
+    }
+}
+#endif
 
 #endif
 
