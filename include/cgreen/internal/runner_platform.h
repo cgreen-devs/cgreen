@@ -2,6 +2,7 @@
 #define RUNNER_PLATFORM_HEADER
 
 #include <cgreen/suite.h>
+#include <cgreen/reporter.h>
 
 #ifdef __cplusplus
 namespace cgreen {

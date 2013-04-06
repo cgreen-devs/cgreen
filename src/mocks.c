@@ -76,7 +76,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
                 return 0;
             case strict_mocks:
                 memset(&no_constraints, 0, sizeof(va_list));
-                va_start(no_constraints, NULL);
+                va_start(no_constraints, parameters);
                 va_end(no_constraints);
 
                 expectation = create_recorded_expectation(function, mock_file, mock_line, no_constraints);

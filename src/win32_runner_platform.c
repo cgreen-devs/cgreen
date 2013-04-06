@@ -1,3 +1,4 @@
+#ifdef WIN32
 #include "runner.h"
 #include "cgreen/internal/runner_platform.h"
 #include "cgreen/messaging.h"
@@ -155,4 +156,5 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
 } // namespace cgreen
 #endif
 
+#endif
 /* vim: set ts=4 sw=4 et cindent: */

@@ -11,12 +11,13 @@
 #include "internal/windows_headers/wincompat.h"
 #endif
 
+#include "internal/suite_internal.h"
+
 #ifdef __cplusplus
 namespace cgreen {
     extern "C" {
 #endif
 
-#include "internal/suite_internal.h"
 
 #define create_test_suite() create_named_test_suite_(__func__, __FILE__, __LINE__)
 #define create_named_test_suite(name) create_named_test_suite_(name, __FILE__, __LINE__)
