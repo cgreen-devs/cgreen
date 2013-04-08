@@ -317,7 +317,7 @@ static void discover_tests_in(const char* test_library, TestItem* test_items, co
             if (verbose) {
 		char *suite_name = context_name_from_specname(specification_name);
                 char *test_name = test_name_from_specname(specification_name);
-                printf("Discovered %s:%s\n", suite_name, test_name);
+                printf("Discovered %s:%s (%s%s%s)\n", suite_name, test_name, suite_name, CGREEN_SEPARATOR, test_name);
                 free(suite_name);
                 free(test_name);
             }
