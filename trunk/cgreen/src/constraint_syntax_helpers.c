@@ -17,7 +17,7 @@ Constraint static_is_non_null_constraint = {
     /* .compare */ compare_do_not_want_value,
     /* .test */ test_want,
     /* .format_failure_message_for */ failure_message_for,
-    /* .expected__value_message */ "",
+    /* .expected_value_message */ "",
     /* .stored_value */ (intptr_t)NULL,
     /* .stored_value_name */ "null",
     /* .parameter_name */ NULL,

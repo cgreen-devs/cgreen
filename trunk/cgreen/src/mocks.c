@@ -13,11 +13,11 @@ namespace cgreen {
 #endif
 
 typedef struct RecordedExpectation_ {
-       const char *function;
-       const char *test_file;
-       int test_line;
-       int time_to_live;
-       CgreenVector *constraints;
+    const char *function;
+    const char *test_file;
+    int test_line;
+    int time_to_live;
+    CgreenVector *constraints;
 } RecordedExpectation;
 
 const int UNLIMITED_TIME_TO_LIVE = 0x0f314159;
