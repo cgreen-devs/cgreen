@@ -1,7 +1,7 @@
 #ifndef SUITE_INTERNAL_HEADER
 #define SUITE_INTERNAL_HEADER
 
-#include "cgreen/internal/unit_implementation.h"
+#include "cgreen/unit.h"
 
 #ifdef __cplusplus
 namespace cgreen {

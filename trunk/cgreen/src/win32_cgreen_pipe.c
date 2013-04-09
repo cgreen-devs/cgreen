@@ -40,7 +40,6 @@ int cgreen_pipe_open(int pipes[2])
     SECURITY_ATTRIBUTES saAttr = {sizeof(SECURITY_ATTRIBUTES), NULL, TRUE};
     char handleString[256];
     DWORD result;
-    const int pipeBufferSize = 256;
 
     //figure out if we are a child process, and if so, use the handle provided by our parent
     result = GetEnvironmentVariableA(CGREEN_READ_HANDLE,handleString,sizeof(handleString));
@@ -62,8 +61,9 @@ int cgreen_pipe_open(int pipes[2])
     {
         HANDLE readpipe,writepipe;
         DWORD mode = PIPE_READMODE_BYTE | PIPE_NOWAIT;
+        const DWORD DEFAULT_BUFFER_SIZE = 0;
 
-        if (!CreatePipe(&readpipe,&writepipe,&saAttr,pipeBufferSize))
+        if (!CreatePipe(&readpipe, &writepipe, &saAttr, DEFAULT_BUFFER_SIZE))
             return -1;
 
         //turn on NOWAIT

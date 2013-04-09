@@ -2,6 +2,7 @@
 #define MOCKS_HEADER
 
 #include <cgreen/internal/mock_table.h>
+#include <cgreen/internal/function_macro.h>
 #include <cgreen/constraint.h>
 #include <cgreen/reporter.h>
 #include <cgreen/vector.h>

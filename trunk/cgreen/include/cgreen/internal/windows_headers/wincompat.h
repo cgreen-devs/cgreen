@@ -11,8 +11,6 @@ typedef int pid_t;
 
 #define snprintf sprintf_s
 
-#define __func__ __FUNCTION__
-
 #define sleep(x) Sleep(x*1000)
 #define mkdir(x,y) _mkdir(x)
 #define sched_yield() SleepEx (0,0)
