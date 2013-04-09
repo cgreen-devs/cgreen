@@ -23,7 +23,7 @@ static int find_index_of_difference(char *expected, char *actual, size_t size_to
 
     while (size_to_compare--) {
         if (*expectedp++ != *actualp++) {
-            return actualp - actual;
+            return (int)(actualp - actual);
         }
     }
 
