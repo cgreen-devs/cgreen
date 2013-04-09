@@ -1,23 +1,20 @@
 #ifndef SUITE_HEADER
 #define SUITE_HEADER
 
+#include "internal/suite_internal.h"
+
 #include <cgreen/reporter.h>
 #include <cgreen/unit.h>
+#include <cgreen/internal/function_macro.h>
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
 
-#ifdef _MSC_VER
-#include "internal/windows_headers/wincompat.h"
-#endif
-
-#include "internal/suite_internal.h"
 
 #ifdef __cplusplus
 namespace cgreen {
     extern "C" {
 #endif
-
 
 #define create_test_suite() create_named_test_suite_(__func__, __FILE__, __LINE__)
 #define create_named_test_suite(name) create_named_test_suite_(name, __FILE__, __LINE__)

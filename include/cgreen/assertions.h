@@ -1,6 +1,8 @@
 #ifndef ASSERTIONS_HEADER
 #define ASSERTIONS_HEADER
 
+#include "internal/assertions_internal.h"
+
 #include <cgreen/constraint.h>
 #include <cgreen/reporter.h>
 #include <stdint.h>
@@ -8,8 +10,6 @@
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
-
-#include "internal/assertions_internal.h"
 
 #ifdef __cplusplus
 namespace cgreen {

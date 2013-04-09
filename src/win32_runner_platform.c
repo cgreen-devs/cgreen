@@ -2,6 +2,7 @@
 #include "runner.h"
 #include "cgreen/internal/runner_platform.h"
 #include "cgreen/messaging.h"
+#include "wincompat.h"
 
 #ifdef __cplusplus
 namespace cgreen {
@@ -31,7 +32,7 @@ static void run_test_in_the_current_process_child(TestSuite *suite, CgreenTest *
     (*reporter->start_test)(reporter, test->name);
     run_the_test_code(suite, test, reporter);
     send_reporter_completion_notification(reporter);
-    stop(0,0,0,0,0);
+    stop(0, 0, 0, 0, 0);
 }
 
 static void run_named_test_child(TestSuite *suite, const char *name, TestReporter *reporter) {
@@ -86,7 +87,7 @@ struct environment
 struct environment* create_environment()
 {
     struct environment* p = (struct environment*)malloc(sizeof(struct environment));
-    memset(p->env,0,sizeof(p->env));
+    memset(p->env, 0, sizeof(p->env));
     p->p_head = p->env;
     return p;
 }
@@ -95,12 +96,12 @@ static void AddEnvironmentVariable(struct environment* env,const char* varName, 
 {
     size_t len;
     size_t envSize = MAX_PATH - (env->p_head-env->env);
-    StringCbCopyA(env->p_head,envSize,varName);
-    StringCbCatA(env->p_head,envSize,"=");
-    StringCbCatA(env->p_head,envSize,valueString);
-    StringCbCatA(env->p_head,envSize,"\0");
-    len = strnlen_s(env->p_head,envSize);
-    env->p_head+=(len+1);
+    StringCbCopyA(env->p_head, envSize, varName);
+    StringCbCatA(env->p_head, envSize, "=");
+    StringCbCatA(env->p_head, envSize, valueString);
+    StringCbCatA(env->p_head, envSize, "\0");
+    len = strnlen_s(env->p_head, envSize);
+    env->p_head += (len + 1);
 }
 
 static const char* get_environment_block(const struct environment* env)
@@ -125,21 +126,21 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
     PROCESS_INFORMATION piProcessInfo;
 
     //get executable path
-    GetModuleFileNameA(NULL,fname,MAX_PATH);
+    GetModuleFileNameA(NULL, fname,MAX_PATH);
 
     //launch process
     memset(&siStartupInfo, 0, sizeof(siStartupInfo));
     memset(&piProcessInfo, 0, sizeof(piProcessInfo));
     siStartupInfo.cb = sizeof(siStartupInfo);
 
-    sprintf_s(handleString,sizeof(handleString),"%i",   get_pipe_read_handle());
-    AddEnvironmentVariable(p_environment,CGREEN_READ_HANDLE,handleString);
+    sprintf_s(handleString,sizeof(handleString), "%i", get_pipe_read_handle());
+    AddEnvironmentVariable(p_environment, CGREEN_READ_HANDLE, handleString);
 
-    sprintf_s(handleString,sizeof(handleString),"%i",   get_pipe_write_handle());
-    AddEnvironmentVariable(p_environment,CGREEN_WRITE_HANDLE,handleString);
+    sprintf_s(handleString,sizeof(handleString), "%i", get_pipe_write_handle());
+    AddEnvironmentVariable(p_environment, CGREEN_WRITE_HANDLE, handleString);
 
     //put name of test to run in environment
-    AddEnvironmentVariable(p_environment,CGREEN_TEST_TO_RUN,test->name);
+    AddEnvironmentVariable(p_environment, CGREEN_TEST_TO_RUN, test->name);
 
     (*reporter->start_test)(reporter, test->name);
     //success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW , p_environment, NULL, &siStartupInfo, &piProcessInfo);
