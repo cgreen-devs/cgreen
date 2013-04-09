@@ -400,7 +400,7 @@ static int strpos(const char *haystack, const char *needle)
 {
     const char *offset = strstr(haystack, needle);
     if (offset != NULL) {
-      return offset - haystack;
+      return (int)(offset - haystack);
     }
 
     return NOT_FOUND;

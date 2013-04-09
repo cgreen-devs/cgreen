@@ -93,7 +93,7 @@ struct environment* create_environment()
 
 static void AddEnvironmentVariable(struct environment* env,const char* varName, const char* valueString)
 {
-    int len;
+    size_t len;
     size_t envSize = MAX_PATH - (env->p_head-env->env);
     StringCbCopyA(env->p_head,envSize,varName);
     StringCbCatA(env->p_head,envSize,"=");

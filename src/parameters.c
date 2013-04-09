@@ -52,7 +52,7 @@ CgreenVector *create_vector_of_names(const char *parameters) {
 }
 
 static char *tokenise_by_commas_and_whitespace(char *list) {
-    int i, length;
+    size_t i, length;
 
     for (i = 0, length = strlen(list); i < length; i++) {
         if (isspace((int)list[i]) || list[i] == ',') {

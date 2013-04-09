@@ -16,7 +16,7 @@ ssize_t cgreen_pipe_read(int p, void *buf, size_t count)
 {
     DWORD bytesRead;
 
-    ReadFile((HANDLE)p,buf,count,&bytesRead,NULL);
+    ReadFile((HANDLE)p, buf, (DWORD)count, &bytesRead, NULL);
 
     return bytesRead;
 }
@@ -25,7 +25,7 @@ ssize_t cgreen_pipe_write(int p, const void *buf, size_t count)
 {
     DWORD bytesWritten;
 
-    WriteFile((HANDLE)p,buf,count,&bytesWritten,NULL);
+    WriteFile((HANDLE)p, buf, (DWORD)count, &bytesWritten, NULL);
 
     if (bytesWritten != count)
     {
