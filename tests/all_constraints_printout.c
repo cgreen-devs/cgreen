@@ -111,21 +111,25 @@ Ensure(FailureMessage, warns_for_always_followed_by_expectation) {
 TestSuite *all_constraints_tests() {
     TestSuite *suite = create_test_suite();
 
-    add_test_with_context(suite, FailureMessage,for_is_null);
-    add_test_with_context(suite, FailureMessage,for_is_non_null);
-    add_test_with_context(suite, FailureMessage,for_is_equal_to);
-    add_test_with_context(suite, FailureMessage,for_is_not_equal_to);
-    add_test_with_context(suite, FailureMessage,for_is_greater_than);
-    add_test_with_context(suite, FailureMessage,for_is_less_than);
-    add_test_with_context(suite, FailureMessage,for_is_equal_to_contents_of);
-    add_test_with_context(suite, FailureMessage,for_is_not_equal_to_contents_of);
-    add_test_with_context(suite, FailureMessage,for_is_equal_to_string);
-    add_test_with_context(suite, FailureMessage,for_is_not_equal_to_string);
-    add_test_with_context(suite, FailureMessage,for_contains_string);
-    add_test_with_context(suite, FailureMessage,for_does_not_contain_string);
-    add_test_with_context(suite, FailureMessage,for_begins_with_string);
-    add_test_with_context(suite, FailureMessage,for_assert_that);
+    add_test_with_context(suite, FailureMessage, for_is_null);
+    add_test_with_context(suite, FailureMessage, for_is_non_null);
+    add_test_with_context(suite, FailureMessage, for_is_equal_to);
+    add_test_with_context(suite, FailureMessage, for_is_not_equal_to);
+    add_test_with_context(suite, FailureMessage, for_is_greater_than);
+    add_test_with_context(suite, FailureMessage, for_is_less_than);
+    add_test_with_context(suite, FailureMessage, for_is_equal_to_contents_of);
+    add_test_with_context(suite, FailureMessage, for_is_not_equal_to_contents_of);
+    add_test_with_context(suite, FailureMessage, for_is_equal_to_string);
+    add_test_with_context(suite, FailureMessage, for_is_not_equal_to_string);
+    add_test_with_context(suite, FailureMessage, for_contains_string);
+    add_test_with_context(suite, FailureMessage, for_does_not_contain_string);
+    add_test_with_context(suite, FailureMessage, for_begins_with_string);
+    add_test_with_context(suite, FailureMessage, for_assert_that);
     add_test_with_context(suite, FailureMessage, warns_for_always_followed_by_expectation);
+    add_test_with_context(suite, FailureMessage, for_mock_called_with_unexpected_parameters);
+    add_test_with_context(suite, FailureMessage, for_mock_called_more_times_than_expected);
+    add_test_with_context(suite, FailureMessage, for_mock_called_without_expectation);
+
 
     return suite;
 }
