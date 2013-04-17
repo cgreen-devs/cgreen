@@ -50,13 +50,13 @@ bool parameters_are_not_valid_for(Constraint *constraint, intptr_t actual) {
 
 char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
     const char *name_has_incorrect_size_message =
-    		"\t\tWanted to compare contents with [%s], but [%lu] was given for the comparison size.\n";
+    		"\t\tWanted to compare contents with [%s], but [%lu] was given for the comparison size.";
     const char *null_used_for_compare_message =
-            "\t\tWanted to compare contents with [%s], but NULL was used for the pointer we wanted to compare to.\n"
-            "\t\tIf you want to explicitly check for null, use the is_null constraint instead.\n";
+            "\t\tWanted to compare contents with [%s], but NULL was used for the pointer we wanted to compare to."
+            "\t\tIf you want to explicitly check for null, use the is_null constraint instead.";
     const char *null_used_for_actual_message =
             "\t\tWanted to compare contents of [%s] but it had a value of NULL.\n"
-            "\t\tIf you want to explicitly check for null, use the is_null constraint instead.\n";
+            "\t\tIf you want to explicitly check for null, use the is_null constraint instead.";
 
 
 
@@ -149,7 +149,6 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
             constraint->name);
 
     if (no_expected_value_in(constraint)) {
-        strcat(message, "\n");
         return message;
     } else
         strcat(message, " ");

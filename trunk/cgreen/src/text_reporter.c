@@ -73,6 +73,7 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
 	printf("\n\t");
 	vprintf((message == NULL ? "<NULL for failure message>" : message), arguments);
 	printf("\n");
+	printf("\n");
     fflush(NULL);
 }
 
