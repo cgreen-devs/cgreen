@@ -9,6 +9,7 @@ set(cgreen_internal_HDRS
   cpp_assertions.h
   cgreen_pipe.h
   runner_platform.h
+  function_macro.h
 )
 
 install(
