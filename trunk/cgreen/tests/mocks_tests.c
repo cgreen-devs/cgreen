@@ -57,21 +57,21 @@ Ensure(expectations_are_reset_between_tests_with_loose_mocks) {
     assert_that(integer_out(), is_equal_to(0));
 }
 
-static char *string_out() {
-    return (char *)mock();
+static char *string_out(int p1) {
+    return (char *)mock(p1);
 }
 
 Ensure(can_stub_a_string_return) {
     expect(string_out, will_return("hello"));
-    assert_string_equal(string_out(), "hello");
+    assert_string_equal(string_out(1), "hello");
 }
 
 Ensure(can_stub_a_string_sequence) {
     expect(string_out, will_return("hello"));
     expect(string_out, will_return("goodbye"));
 
-    assert_string_equal(string_out(), "hello");
-    assert_string_equal(string_out(), "goodbye");
+    assert_string_equal(string_out(2), "hello");
+    assert_string_equal(string_out(3), "goodbye");
 }
 
 static void integer_in(int i) {
@@ -252,11 +252,11 @@ Ensure(none_emitted_when_learning_no_mocks) {
 
 Ensure(pastable_code_emitted_by_learning_mocks) {
     cgreen_mocks_are(learning_mocks);
-    string_out();
-    string_out();
+    string_out(1);
+    string_out(2);
     integer_out();
     integer_out();
-    string_out();
+    string_out(3);
     integer_out();
 }
 

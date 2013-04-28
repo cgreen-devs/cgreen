@@ -2,6 +2,7 @@
 #include <cgreen/breadcrumb.h>
 #include <cgreen/mocks.h>
 #include <cgreen/parameters.h>
+#include <inttypes.h>
 // TODO: report PC-Lint bug about undeserved 451
 #include <stdarg.h>
 #include <stdio.h>
@@ -26,7 +27,11 @@ static CgreenVector *learned_mock_calls = NULL;
 static CgreenVector *successfully_mocked_calls = NULL;
 static CgreenVector *global_expectation_queue = NULL;
 
-static RecordedExpectation *create_recorded_expectation(const char *function, const char *test_file, int test_line, va_list constraints);
+static CgreenVector *create_vector_of_actuals(va_list actuals, CgreenVector *parameter_names);
+static CgreenVector *create_equal_value_constraints_for(CgreenVector *parameter_names, CgreenVector *actual_values);
+static CgreenVector *create_constraints_vector(void);
+static RecordedExpectation *create_recorded_expectation(const char *function, const char *test_file, int test_line, CgreenVector *constraints);
+static CgreenVector *constraints_vector_from_va_list(va_list constraints);
 static void destroy_expectation(RecordedExpectation *expectation);
 static void ensure_expectation_queue_exists(void);
 static void ensure_learned_mock_calls_list_exists(void);
@@ -52,12 +57,13 @@ void cgreen_mocks_are(CgreenMockMode mock_mode) {
     cgreen_mocks_are_ = mock_mode;
 }
 
-intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mock_file, int mock_line, const char *parameters, ...) {
 
+intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mock_file, int mock_line, const char *parameters, ...) {
     RecordedExpectation *expectation = find_expectation(function);
     va_list actuals;
     CgreenVector *actual_values;
     CgreenVector *parameter_names;
+    CgreenVector *constraints;
     int failures_before_read_only_constraints_executed;
     int failures_after_read_only_constraints_executed;
     int i;
@@ -65,25 +71,31 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
 
 
     if (expectation == NULL) {
-        va_list no_constraints;
 
         switch (cgreen_mocks_are_) {
-            case loose_mocks:
-                return 0;
-            case learning_mocks:
-                ensure_learned_mock_calls_list_exists();
-                cgreen_vector_add(learned_mock_calls, (void*)function);
-                return 0;
-            case strict_mocks:
-                memset(&no_constraints, 0, sizeof(va_list));
-                va_start(no_constraints, parameters);
-                va_end(no_constraints);
+        case loose_mocks:
+            return 0;
+        case learning_mocks:
+            ensure_learned_mock_calls_list_exists();
+            parameter_names = create_vector_of_names(parameters);
+            actual_values = create_cgreen_vector(NULL);
 
-                expectation = create_recorded_expectation(function, mock_file, mock_line, no_constraints);
-                report_unexpected_call(test_reporter, expectation);
+            va_start(actuals, parameters);
+            actual_values = create_vector_of_actuals(actuals, parameter_names);
+            va_end(actuals);
 
-                destroy_expectation(expectation);
-                return 0;
+            constraints = create_equal_value_constraints_for(parameter_names, actual_values);
+
+            expectation = create_recorded_expectation(function, mock_file, mock_line, constraints);
+            cgreen_vector_add(learned_mock_calls, (void*)expectation);
+            return 0;
+
+        case strict_mocks:
+            expectation = create_recorded_expectation(function, mock_file, mock_line, create_constraints_vector());
+            report_unexpected_call(test_reporter, expectation);
+
+            destroy_expectation(expectation);
+            return 0;
         }
     }
 
@@ -143,6 +155,31 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     return stored_result;
 }
 
+
+static CgreenVector *create_vector_of_actuals(va_list actuals, CgreenVector *parameter_names) {
+    int i;
+    CgreenVector *actual_values = create_cgreen_vector(NULL);
+    for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
+        uintptr_t actual = va_arg(actuals, uintptr_t);
+        cgreen_vector_add(actual_values, (void*)actual);
+    }
+    return actual_values;
+}
+
+
+static CgreenVector *create_equal_value_constraints_for(CgreenVector *parameter_names, CgreenVector *actual_values) {
+    int i;
+    CgreenVector *constraints = create_constraints_vector();
+    for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
+        const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
+        uintptr_t actual = (uintptr_t)cgreen_vector_get(actual_values, i);
+        Constraint *constraint = create_equal_to_value_constraint((intptr_t)actual, parameter_name);
+        cgreen_vector_add(constraints, constraint);
+    }
+    return constraints;
+}
+
+
 Constraint *when_(const char *parameter, Constraint* constraint) {
     constraint->parameter_name = parameter;
     return constraint;
@@ -166,6 +203,7 @@ void destroy_expectation_if_time_to_die(RecordedExpectation *expectation) {
 void expect_(TestReporter* test_reporter, const char *function, const char *test_file, int test_line, ...) {
     va_list constraints;
     RecordedExpectation *expectation;
+    CgreenVector *constraints_vector;
 
     if (have_always_expectation_for(function)) {
         test_reporter->assert_true(
@@ -174,7 +212,7 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
                 test_line,
                 false,
                 "Mocked function [%s] already has an expectation and will always be called a certain way; "
-                "any expectations declared after an always expectation are invalid\n", function);
+                "any expectations declared after an always expectation are invalid", function);
         va_start(constraints, test_line);
         destroy_constraints(constraints);
         va_end(constraints);
@@ -189,7 +227,7 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
                 test_line,
                 false,
                 "Mocked function [%s] already has an expectation that it will never be called; "
-                "any expectations declared after a never call expectation are invalid\n", function);
+                "any expectations declared after a never call expectation are invalid", function);
         va_start(constraints, test_line);
         destroy_constraints(constraints);
         va_end(constraints);
@@ -199,7 +237,8 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
 
 
     va_start(constraints, test_line);
-    expectation = create_recorded_expectation(function, test_file, test_line, constraints);
+    constraints_vector = constraints_vector_from_va_list(constraints);
+    expectation = create_recorded_expectation(function, test_file, test_line, constraints_vector);
     va_end(constraints);
     expectation->time_to_live = 1;
     cgreen_vector_add(global_expectation_queue, expectation);
@@ -208,6 +247,8 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
 void always_expect_(TestReporter* test_reporter, const char *function, const char *test_file, int test_line, ...) {
     va_list constraints;
     RecordedExpectation *expectation;
+    CgreenVector *constraints_vector;
+
     if (have_always_expectation_for(function)) {
         test_reporter->assert_true(
                 test_reporter,
@@ -239,7 +280,8 @@ void always_expect_(TestReporter* test_reporter, const char *function, const cha
     }
 
     va_start(constraints, test_line);
-    expectation = create_recorded_expectation(function, test_file, test_line, constraints);
+    constraints_vector = constraints_vector_from_va_list(constraints);
+    expectation = create_recorded_expectation(function, test_file, test_line, constraints_vector);
     va_end(constraints);
     expectation->time_to_live = UNLIMITED_TIME_TO_LIVE;
     cgreen_vector_add(global_expectation_queue, expectation);
@@ -248,6 +290,8 @@ void always_expect_(TestReporter* test_reporter, const char *function, const cha
 void never_expect_(TestReporter* test_reporter, const char *function, const char *test_file, int test_line, ...) {
     va_list constraints;
     RecordedExpectation *expectation;
+    CgreenVector *constraints_vector;
+
     if (have_always_expectation_for(function)) {
         test_reporter->assert_true(
                 test_reporter,
@@ -279,10 +323,12 @@ void never_expect_(TestReporter* test_reporter, const char *function, const char
     }
 
     va_start(constraints, test_line);
-    expectation = create_recorded_expectation(function, test_file, test_line, constraints);
+    constraints_vector = constraints_vector_from_va_list(constraints);
+    expectation = create_recorded_expectation(function, test_file, test_line, constraints_vector);
     expectation->time_to_live = -UNLIMITED_TIME_TO_LIVE;
     cgreen_vector_add(global_expectation_queue, expectation);
 }
+
 
 void report_violated_never_call(TestReporter *test_reporter, RecordedExpectation* expectation) {
     test_reporter->assert_true(
@@ -293,6 +339,7 @@ void report_violated_never_call(TestReporter *test_reporter, RecordedExpectation
             "Mocked function [%s] has an expectation that it will never be called, but it was",
             expectation->function);
 }
+
 
 static bool successfully_mocked_call(const char *function_name) {
     int i;
@@ -306,6 +353,7 @@ static bool successfully_mocked_call(const char *function_name) {
 
     return false;
 }
+
 
 void report_unexpected_call(TestReporter *test_reporter, RecordedExpectation* expectation) {
     const char *message;
@@ -337,7 +385,7 @@ void clear_mocks() {
 }
 
 void print_learned_mocks(void) {
-    int i;
+    int e, c;
      // TODO shouldn't ->breadcrumb be a CgreenBreadcrumb* and not void*?
     CgreenBreadcrumb *breadcrumb = (CgreenBreadcrumb *)get_test_reporter()->breadcrumb;
     printf("%s: learned mocks:\n",
@@ -348,12 +396,16 @@ void print_learned_mocks(void) {
         return;
     }
 
-    for (i = 0; i < cgreen_vector_size(learned_mock_calls); i++) {
-        const char *function_name = (const char *)cgreen_vector_get(learned_mock_calls, i);
-        printf("\texpect(%s);\n",
-                function_name);
+    for (e = 0; e < cgreen_vector_size(learned_mock_calls); e++) {
+        RecordedExpectation *expectation = (RecordedExpectation*)cgreen_vector_get(learned_mock_calls, e);
+        const char *function_name = expectation->function;
+        printf("\texpect(%s", function_name);
+        for (c = 0; c < cgreen_vector_size(expectation->constraints); c++) {
+            Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, c);
+            printf(", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name, constraint->expected_value);
+        }
+        printf(");\n");
     }
-    printf("\n");
 }
 
 void tally_mocks(TestReporter *reporter) {
@@ -365,20 +417,31 @@ void tally_mocks(TestReporter *reporter) {
     clear_mocks();
 }
 
-static RecordedExpectation *create_recorded_expectation(const char *function, const char *test_file, int test_line, va_list constraints) {
+
+static CgreenVector *create_constraints_vector(void) {
+    return create_cgreen_vector((GenericDestructor)&destroy_constraint);
+}
+
+
+static CgreenVector *constraints_vector_from_va_list(va_list constraints) {
+    CgreenVector *vector = create_constraints_vector();
+    Constraint *constraint;
+    while ((constraint = va_arg(constraints, Constraint *)) != (Constraint *)0) {
+        cgreen_vector_add(vector, constraint);
+    }
+    return vector;
+}
+
+
+static RecordedExpectation *create_recorded_expectation(const char *function, const char *test_file, int test_line, CgreenVector *constraints) {
     RecordedExpectation *expectation;
-    Constraint* constraint;
 
     ensure_expectation_queue_exists();
     expectation = (RecordedExpectation *)malloc(sizeof(RecordedExpectation));
     expectation->function = function;
     expectation->test_file = test_file;
     expectation->test_line = test_line;
-    expectation->constraints = create_cgreen_vector((GenericDestructor)&destroy_constraint);
-
-    while ((constraint = va_arg(constraints, Constraint *)) != (Constraint *)0) {
-        cgreen_vector_add(expectation->constraints, constraint);
-    }
+    expectation->constraints = constraints;
 
     return expectation;
 }
