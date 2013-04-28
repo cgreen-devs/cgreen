@@ -118,7 +118,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
     const char *actual_value_constraint_name = "Expected [%s] to [%s]";
     const char *expected_value_name =  "[%s]\n";
     const char *actual_value_as_string = "\t\tactual value:\t\t\t[\"%s\"]\n";
-    const char *at_offset = "\t\tat offset:\t\t\t[%d]\n";
+    const char *at_offset = "\t\tat offset:\t\t\t[%d]";
     const char *actual_value_message = "\t\tactual value:\t\t\t[%" PRIdPTR "]\n";
     char *message;
     size_t message_size = strlen(actual_value_constraint_name) +

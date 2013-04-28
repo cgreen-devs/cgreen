@@ -103,9 +103,14 @@ Ensure(FailureMessage, for_mock_called_with_unexpected_parameters) {
 }
 
 /* And here are some tests that will fail with "illegal" type of messages */
-Ensure(FailureMessage, warns_for_always_followed_by_expectation) {
+Ensure(FailureMessage, for_always_followed_by_expectation) {
     always_expect(some_mock, when(parameter, is_equal_to(1)));
     expect(some_mock, when(parameter, is_equal_to(0)));
+}
+
+Ensure(FailureMessage, for_violated_never_expect) {
+    never_expect(some_mock, when(parameter, is_equal_to(1)));
+    some_mock(1);
 }
 
 TestSuite *all_constraints_tests() {
@@ -125,10 +130,11 @@ TestSuite *all_constraints_tests() {
     add_test_with_context(suite, FailureMessage, for_does_not_contain_string);
     add_test_with_context(suite, FailureMessage, for_begins_with_string);
     add_test_with_context(suite, FailureMessage, for_assert_that);
-    add_test_with_context(suite, FailureMessage, warns_for_always_followed_by_expectation);
     add_test_with_context(suite, FailureMessage, for_mock_called_with_unexpected_parameters);
     add_test_with_context(suite, FailureMessage, for_mock_called_more_times_than_expected);
     add_test_with_context(suite, FailureMessage, for_mock_called_without_expectation);
+    add_test_with_context(suite, FailureMessage, for_always_followed_by_expectation);
+    add_test_with_context(suite, FailureMessage, for_violated_never_expect);
 
 
     return suite;
