@@ -315,7 +315,7 @@ static void discover_tests_in(const char* test_library, TestItem* test_items, co
             char *specification_name = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR) + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
             specification_name[strlen(specification_name) - 1] = 0; /* remove newline */
             if (verbose) {
-		char *suite_name = context_name_from_specname(specification_name);
+                char *suite_name = context_name_from_specname(specification_name);
                 char *test_name = test_name_from_specname(specification_name);
                 printf("Discovered %s:%s (%s%s%s)\n", suite_name, test_name, suite_name, CGREEN_SEPARATOR, test_name);
                 free(suite_name);
@@ -345,18 +345,23 @@ int runner(TestReporter *reporter, const char *test_library_name,
     if (verbose)
         printf("Discovered %d test(s)\n", count(discovered_tests));
 
-    if (!dont_run) {
-        if (verbose)
-            printf("Opening [%s]", test_library_name);
-        test_library_handle = dlopen (test_library_name, RTLD_NOW);
-        if (test_library_handle == NULL) {
-            fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
-            exit(1);
+    if (count(discovered_tests) > 0) {
+        if (!dont_run) {
+            if (verbose)
+                printf("Opening [%s]", test_library_name);
+            test_library_handle = dlopen (test_library_name, RTLD_NOW);
+            if (test_library_handle == NULL) {
+                fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
+                exit(1);
+            }
+            status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
         }
-        status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
+
+        reflective_runner_cleanup(test_library_handle, discovered_tests);
+    } else {
+        printf("No tests found in '%s'.\n", test_library_name);
+        status = 1;
     }
-
-    reflective_runner_cleanup(test_library_handle, discovered_tests);
-
+    
     return status;
 }
