@@ -58,8 +58,8 @@ endif(UNIX)
 if (WITH_UNIT_TESTS)
   include(MacroAddUnitTest)
   add_subdirectory(tests)
-if (UNIX)
-  # reflective runner only supported on UNIX/binutils platforms
-  add_subdirectory(tools/tests)
-endif(UNIX)
+  if (UNIX)
+    # reflective runner only supported on UNIX/binutils platforms
+    add_subdirectory(tools/tests)
+  endif(UNIX)
 endif (WITH_UNIT_TESTS)

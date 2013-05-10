@@ -19,25 +19,23 @@ We'll walk you through these in order...
 1) So you want to write a test quickly.
 
 As a user wanting to write some quick tests, the quickest way is to
-download the latest tarball and run "make" from inside the unpacked directory.
-You can go "make test" to confirm that Cgreen is working correctly.
+download the prebuilt binaries for your platform. Just install the
+files in some private tree.
 
-You will see a cgreen.h and both a cgreen shared object or DLL, and a static
-library for your system.
-
-Note: currently the header is stored further into the tree at
-include/cgreen/cgreen.h, but we'll add a symlink soon ???.
+You will see a cgreen.h and both a cgreen shared object or DLL, and a
+static library for your system.
 
 Include the header and link the library as you normally would.
 
 2) Cgreen needs to be installed to be usable by everyone.
 
-This is the same as scenario 1, but just add a "make install" step
-once finished. The Cgreen header should just be available through...
+This is the same as scenario 1, but install the files in a public
+/usr/local (or equivalent). The Cgreen header should just be available
+through...
 
 #include <cgreen.h>
 
-...and adding -Icgreen should be enough to link under gcc.
+...and adding -lcgreen should be enough to link under gcc.
 
 3) ???
 
@@ -74,8 +72,12 @@ on Windows or ccmake on UNIX) to turn these options on or off.
 
 Note on CYGWIN: Cygwin is not a WIN32 platform, but it is a
 DLL-platform where libraries normally goes in the bin directory. I
-have yet to convince CMake to do this, so the make the above work you
-need to install before running the tests and also set PATH to include
-"/usr/local/lib" (or by setting the PATH to include the build
-directory where the libraries are you can of course run the
-tests). /Thomas 2012-08-20
+have yet to convince CMake handle this, so to make the above work you
+have two choices:
+
+1) install before running the tests and also set PATH to include
+"/usr/local/lib"
+
+2) setting the PATH to include the build directory where the libraries are
+
+/Thomas 2012-08-20
