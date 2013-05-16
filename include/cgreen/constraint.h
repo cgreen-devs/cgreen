@@ -53,7 +53,6 @@ bool compare_want_value(Constraint *constraint, intptr_t actual);
 bool compare_do_not_want_value(Constraint *constraint, intptr_t actual);
 void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
-bool constraint_is_not_for_parameter(const Constraint *, const char *);
 void test_constraint(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
 Constraint *create_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name);
@@ -82,6 +81,10 @@ bool is_string_comparing(const Constraint *constraint);
 bool is_double_comparing(const Constraint *constraint);
 bool is_comparing(const Constraint *constraint);
 bool is_not_comparing(const Constraint *constraint);
+bool is_parameter(const Constraint *);
+bool constraint_is_not_for_parameter(const Constraint *, const char *);
+bool constraint_is_for_parameter(const Constraint *, const char *);
+bool constraint_is_for_parameter_in(const Constraint *, const char *);
 
 #ifdef __cplusplus
     }

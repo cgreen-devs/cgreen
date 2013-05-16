@@ -27,7 +27,7 @@ static CgreenVector *learned_mock_calls = NULL;
 static CgreenVector *successfully_mocked_calls = NULL;
 static CgreenVector *global_expectation_queue = NULL;
 
-static CgreenVector *create_vector_of_actuals(va_list actuals, CgreenVector *parameter_names);
+static CgreenVector *create_vector_of_actuals(va_list actuals, int count);
 static CgreenVector *create_equal_value_constraints_for(CgreenVector *parameter_names, CgreenVector *actual_values);
 static CgreenVector *create_constraints_vector(void);
 static RecordedExpectation *create_recorded_expectation(const char *function, const char *test_file, int test_line, CgreenVector *constraints);
@@ -42,7 +42,8 @@ RecordedExpectation *find_expectation(const char *function);
 void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter);
 void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter);
 intptr_t stored_result_or_default_for(CgreenVector* constraints);
-
+int number_of_parameter_constraints_in(const CgreenVector* constraints);
+static int number_of_parameters_in(const char *parameter_list);
 bool is_always_call(RecordedExpectation* expectation);
 bool have_always_expectation_for(const char* function);
 
@@ -51,56 +52,97 @@ bool have_never_call_expectation_for(const char* function);
 
 void report_violated_never_call(TestReporter*, RecordedExpectation*);
 void report_unexpected_call(TestReporter*, RecordedExpectation*);
+void report_mock_parameter_name_not_found(TestReporter *test_reporter, RecordedExpectation *expectation, const char *parameter);
 void destroy_expectation_if_time_to_die(RecordedExpectation *expectation);
 
 void cgreen_mocks_are(CgreenMockMode mock_mode) {
     cgreen_mocks_are_ = mock_mode;
 }
 
+static int number_of_parameters_in(const char *parameter_list) {
+    int count = 1;
+    const char *current = parameter_list;
+    
+    if (strlen(parameter_list) == 0) return 0;
+
+    while (*current != '\0') {
+        if (*current == ' ') count++;
+        current++;
+    }
+
+    return count;
+}
+
+int number_of_parameter_constraints_in(const CgreenVector* constraints) {
+    int i, parameters = 0;
+
+    for (i = 0; i < cgreen_vector_size(constraints); i++) {
+        Constraint *constraint = (Constraint *)cgreen_vector_get(constraints, i);
+
+        if (is_comparing(constraint)) {
+           parameters++; 
+        }
+    }
+
+    return parameters;
+}
+
+void learn_mock_call_for(const char *function, const char *mock_file, int mock_line, CgreenVector *parameter_names, CgreenVector *actual_values) {
+    CgreenVector *constraints = create_equal_value_constraints_for(parameter_names, actual_values);
+
+    RecordedExpectation *expectation = create_recorded_expectation(function, mock_file, mock_line, constraints);
+    ensure_learned_mock_calls_list_exists();
+    cgreen_vector_add(learned_mock_calls, (void*)expectation);
+}
+
+void handle_missing_expectation_for(const char *function, const char *mock_file, int mock_line, CgreenVector *parameter_names, CgreenVector *actual_values, TestReporter *test_reporter) {
+    RecordedExpectation *expectation;
+    CgreenVector *no_constraints;
+
+    switch (cgreen_mocks_are_) {
+    case loose_mocks:
+        break;
+
+    case learning_mocks:
+        learn_mock_call_for(function, mock_file, mock_line, parameter_names, actual_values);
+        break;
+
+    case strict_mocks:
+        no_constraints = create_constraints_vector();
+        expectation = create_recorded_expectation(function, mock_file, mock_line, no_constraints);
+        report_unexpected_call(test_reporter, expectation);
+
+        destroy_expectation(expectation);
+        break;
+    }
+}
 
 intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mock_file, int mock_line, const char *parameters, ...) {
-    RecordedExpectation *expectation = find_expectation(function);
     va_list actuals;
     CgreenVector *actual_values;
     CgreenVector *parameter_names;
-    CgreenVector *constraints;
     int failures_before_read_only_constraints_executed;
     int failures_after_read_only_constraints_executed;
     int i;
     intptr_t stored_result;
+    RecordedExpectation *expectation = find_expectation(function);
 
+    va_start(actuals, parameters);
+    actual_values = create_vector_of_actuals(actuals, number_of_parameters_in(parameters));
+    va_end(actuals);
+    parameter_names = create_vector_of_names(parameters);
 
     if (expectation == NULL) {
-
-        switch (cgreen_mocks_are_) {
-        case loose_mocks:
-            return 0;
-        case learning_mocks:
-            ensure_learned_mock_calls_list_exists();
-            parameter_names = create_vector_of_names(parameters);
-            actual_values = create_cgreen_vector(NULL);
-
-            va_start(actuals, parameters);
-            actual_values = create_vector_of_actuals(actuals, parameter_names);
-            va_end(actuals);
-
-            constraints = create_equal_value_constraints_for(parameter_names, actual_values);
-
-            expectation = create_recorded_expectation(function, mock_file, mock_line, constraints);
-            cgreen_vector_add(learned_mock_calls, (void*)expectation);
-            return 0;
-
-        case strict_mocks:
-            expectation = create_recorded_expectation(function, mock_file, mock_line, create_constraints_vector());
-            report_unexpected_call(test_reporter, expectation);
-
-            destroy_expectation(expectation);
-            return 0;
-        }
+        handle_missing_expectation_for(function, mock_file, mock_line, parameter_names, actual_values, test_reporter);
+        destroy_cgreen_vector(actual_values);
+        destroy_cgreen_vector(parameter_names);
+        return 0;
     }
 
     if (is_never_call(expectation)) {
         report_violated_never_call(test_reporter, expectation);
+        destroy_cgreen_vector(actual_values);
+        destroy_cgreen_vector(parameter_names);
         return 0;
     }
 
@@ -109,21 +151,22 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
 
     stored_result = stored_result_or_default_for(expectation->constraints);
 
-    /* no need to parse parameters if none were provided */
-    if (strlen(parameters) == 0) {
-        destroy_expectation_if_time_to_die(expectation);
-        return stored_result;
-    }
+    for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
+        Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
-    parameter_names = create_vector_of_names(parameters);
-    actual_values = create_cgreen_vector(NULL);
+        if (!is_parameter(constraint)) continue;
 
-    va_start(actuals, parameters);
-    for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
-        uintptr_t actual = va_arg(actuals, uintptr_t);
-        cgreen_vector_add(actual_values, (void*)actual);
+        if (!constraint_is_for_parameter_in(constraint, parameters)) {
+            // if expectation parameter name isn't in parameter_names,
+            // fail test and skip applying constraints unlikely to match
+            report_mock_parameter_name_not_found(test_reporter, expectation, constraint->parameter_name);
+            destroy_expectation_if_time_to_die(expectation);
+            destroy_cgreen_vector(actual_values);
+            destroy_cgreen_vector(parameter_names);
+
+            return stored_result;
+        }
     }
-    va_end(actuals);
 
     // if read-only constraints aren't matching, content-setting ones might corrupt memory
     // apply read-only ones first, and if they don't fail, then do the deeper constraints
@@ -156,10 +199,10 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
 }
 
 
-static CgreenVector *create_vector_of_actuals(va_list actuals, CgreenVector *parameter_names) {
+static CgreenVector *create_vector_of_actuals(va_list actuals, int count) {
     int i;
     CgreenVector *actual_values = create_cgreen_vector(NULL);
-    for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
+    for (i = 0; i < count; i++) {
         uintptr_t actual = va_arg(actuals, uintptr_t);
         cgreen_vector_add(actual_values, (void*)actual);
     }
@@ -211,7 +254,7 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
                 test_file,
                 test_line,
                 false,
-                "Mocked function [%s] already has an expectation and will always be called a certain way; "
+                "Mocked function [%s] already has an expectation that it will always be called a certain way; "
                 "any expectations declared after an always expectation are invalid", function);
         va_start(constraints, test_line);
         destroy_constraints(constraints);
@@ -256,7 +299,7 @@ void always_expect_(TestReporter* test_reporter, const char *function, const cha
                 test_line,
                 false,
                 "Mocked function [%s] already has an expectation and will always be called a certain way; "
-                "any expectations declared after an always expectation are discarded\n", function);
+                "any expectations declared after an always expectation are discarded", function);
         va_start(constraints, test_line);
         destroy_constraints(constraints);
         va_end(constraints);
@@ -271,7 +314,7 @@ void always_expect_(TestReporter* test_reporter, const char *function, const cha
                 test_line,
                 false,
                 "Mocked function [%s] already has an expectation that it will never be called; "
-                "any expectations declared after a never call expectation are discarded\n", function);
+                "any expectations declared after a never call expectation are discarded", function);
         va_start(constraints, test_line);
         destroy_constraints(constraints);
         va_end(constraints);
@@ -299,7 +342,7 @@ void never_expect_(TestReporter* test_reporter, const char *function, const char
                 test_line,
                 false,
                 "Mocked function [%s] already has an expectation and will always be called a certain way; "
-                "declaring an expectation after an always expectation is not allowed\n", function);
+                "declaring an expectation after an always expectation is not allowed", function);
         va_start(constraints, test_line);
         destroy_constraints(constraints);
         va_end(constraints);
@@ -314,7 +357,7 @@ void never_expect_(TestReporter* test_reporter, const char *function, const char
                 test_line,
                 false,
                 "Mocked function [%s] already has an expectation that it will never be called; "
-                "declaring an expectation for a function after a never call expectation is not allowed\n", function);
+                "declaring an expectation for a function after a never call expectation is not allowed", function);
         va_start(constraints, test_line);
         destroy_constraints(constraints);
         va_end(constraints);
@@ -379,6 +422,12 @@ void clear_mocks() {
     }
 
     if (learned_mock_calls != NULL) {
+        int i;
+        for (i = 0; i < cgreen_vector_size(learned_mock_calls); i++) {
+            RecordedExpectation *expectation = (RecordedExpectation*)cgreen_vector_get(learned_mock_calls, i);
+            destroy_expectation(expectation);
+        }
+
         destroy_cgreen_vector(learned_mock_calls);
         learned_mock_calls = NULL;
     }
@@ -402,7 +451,9 @@ void print_learned_mocks(void) {
         printf("\texpect(%s", function_name);
         for (c = 0; c < cgreen_vector_size(expectation->constraints); c++) {
             Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, c);
-            printf(", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name, constraint->expected_value);
+            // FIXME: when properly destroying parameter_names vectors, this line induces a use-after-free
+            // figure out memory management issues and then re-enable this otherwise cool feature
+//            printf(", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name, constraint->expected_value);
         }
         printf(");\n");
     }
@@ -483,7 +534,7 @@ void remove_expectation_for(const char *function) {
         RecordedExpectation *expectation = (RecordedExpectation *)cgreen_vector_get(global_expectation_queue, i);
 
         if (NULL == expectation) {
-            printf("*** NULL expectation found -- maybe a previous incorrect removal?\n");
+            printf("*** CGREEN: NULL expectation found -- maybe a previous incorrect removal?");
             continue;
         }
 
@@ -500,7 +551,7 @@ void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestRepor
         RecordedExpectation *expectation = (RecordedExpectation *)cgreen_vector_get(expectation_queue, i);
 
         if (NULL == expectation) {
-            fprintf(stderr, "*** NULL unfulfilled cgreen expectation found -- maybe a previous incorrect removal?\n");
+            fprintf(stderr, "*** NULL unfulfilled cgreen expectation found -- maybe a previous incorrect removal?");
             continue;
         }
 
@@ -513,7 +564,7 @@ void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestRepor
                 expectation->test_file,
                 expectation->test_line,
                 0,
-                "Expected call was not made to mocked function [%s]\n", expectation->function);
+                "Expected call was not made to mocked function [%s]", expectation->function);
     }
 }
 
@@ -530,14 +581,30 @@ RecordedExpectation *find_expectation(const char *function) {
     return NULL;
 }
 
+void report_mock_parameter_name_not_found(TestReporter *test_reporter, RecordedExpectation *expectation, const char *constraint_parameter_name) {
+
+    test_reporter->assert_true(
+        test_reporter,
+        expectation->test_file,
+        expectation->test_line,
+        false,
+        "Mocked function [%s] did not define a parameter named [%s]. Did you misspell it in the expectation or forget it in the mock's argument list?",
+        expectation->function,
+        constraint_parameter_name);
+}
+
 void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter) {
     int i;
+    bool no_parameters_found = true;
+
     for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
         if (constraint_is_not_for_parameter(constraint, parameter)) {
             continue;
         }
+
+        no_parameters_found = false;
 
         if (constraint->type == CONTENT_SETTER) {
             continue;

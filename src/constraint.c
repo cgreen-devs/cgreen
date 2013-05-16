@@ -3,6 +3,8 @@
 #include <cgreen/constraint.h>
 #include <cgreen/message_formatting.h>
 #include <cgreen/string_comparison.h>
+#include <cgreen/parameters.h>
+#include <cgreen/vector.h>
 #include <inttypes.h>
 #ifndef __cplusplus
 #include <stdbool.h>
@@ -79,6 +81,10 @@ void destroy_constraints(va_list constraints) {
     while ((constraint = va_arg(constraints, Constraint *)) != (Constraint *)0) {
         destroy_constraint(constraint); 
     }
+}
+
+bool constraint_is_for_parameter(const Constraint *constraint, const char *parameter) {
+    return !constraint_is_not_for_parameter(constraint, parameter);
 }
 
 bool constraint_is_not_for_parameter(const Constraint *constraint, const char *parameter) {
@@ -506,6 +512,30 @@ bool is_comparing(const Constraint *constraint) {
 
 bool is_not_comparing(const Constraint *constraint) {
     return !is_comparing(constraint);
+}
+
+bool is_parameter(const Constraint *constraint) {
+    return is_comparing(constraint) || is_content_setting(constraint); 
+}
+
+bool constraint_is_for_parameter_in(const Constraint *constraint, const char *names) {
+    int i;
+    bool found = false;
+
+    CgreenVector *parameter_names = create_vector_of_names(names);
+    if (!is_parameter(constraint)) return false; 
+
+    for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
+        const char *mock_parameter_name = (const char *)cgreen_vector_get(parameter_names, i);
+
+        if (constraint_is_for_parameter(constraint, mock_parameter_name)) {
+            found = true;
+            break;
+        }
+    }
+
+    destroy_cgreen_vector(parameter_names);
+    return found;
 }
 
 
