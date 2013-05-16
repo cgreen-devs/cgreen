@@ -70,11 +70,11 @@ void *cgreen_vector_remove(CgreenVector *vector, int position) {
     return item;
 }
 
-void *cgreen_vector_get(CgreenVector *vector, int position) {
+void *cgreen_vector_get(const CgreenVector *vector, int position) {
     return vector->items[position];
 }
 
-int cgreen_vector_size(CgreenVector *vector) {
+int cgreen_vector_size(const CgreenVector *vector) {
     return (vector == NULL ? 0 : vector->size);
 }
 

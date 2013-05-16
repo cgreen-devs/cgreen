@@ -97,7 +97,7 @@ Ensure(FailureMessage, for_mock_called_more_times_than_expected) {
     some_mock(0);
 }
 
-Ensure(FailureMessage, for_mock_called_with_unexpected_parameters) {
+Ensure(FailureMessage, for_mock_called_with_unexpected_parameter_value) {
     expect(some_mock, when(parameter, is_equal_to(1)));
     some_mock(0);
 }
@@ -111,6 +111,21 @@ Ensure(FailureMessage, for_always_followed_by_expectation) {
 Ensure(FailureMessage, for_violated_never_expect) {
     never_expect(some_mock, when(parameter, is_equal_to(1)));
     some_mock(1);
+}
+
+Ensure(FailureMessage, for_mock_parameter_name_not_matching_constraint_parameter_name) {
+    expect(some_mock, when(PARAMETER, is_equal_to(0)));
+    some_mock(0);
+}
+
+void forgot_to_pass_parameters_mock(int x) {
+    (void)x; // to silence compiler warning
+    mock();
+}
+
+Ensure(FailureMessage, for_no_mock_parameters_with_parameter_constraint) {
+    expect(forgot_to_pass_parameters_mock, when(x, is_equal_to(0)));
+    forgot_to_pass_parameters_mock(0);
 }
 
 TestSuite *all_constraints_tests() {
@@ -130,11 +145,13 @@ TestSuite *all_constraints_tests() {
     add_test_with_context(suite, FailureMessage, for_does_not_contain_string);
     add_test_with_context(suite, FailureMessage, for_begins_with_string);
     add_test_with_context(suite, FailureMessage, for_assert_that);
-    add_test_with_context(suite, FailureMessage, for_mock_called_with_unexpected_parameters);
+    add_test_with_context(suite, FailureMessage, for_mock_called_with_unexpected_parameter_value);
     add_test_with_context(suite, FailureMessage, for_mock_called_more_times_than_expected);
     add_test_with_context(suite, FailureMessage, for_mock_called_without_expectation);
     add_test_with_context(suite, FailureMessage, for_always_followed_by_expectation);
     add_test_with_context(suite, FailureMessage, for_violated_never_expect);
+    add_test_with_context(suite, FailureMessage, for_mock_parameter_name_not_matching_constraint_parameter_name);
+    add_test_with_context(suite, FailureMessage, for_no_mock_parameters_with_parameter_constraint);
 
 
     return suite;

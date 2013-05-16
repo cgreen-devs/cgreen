@@ -13,8 +13,8 @@ CgreenVector *create_cgreen_vector(GenericDestructor destructor);
 void destroy_cgreen_vector(CgreenVector *vector);
 void cgreen_vector_add(CgreenVector *vector, void *item);
 void *cgreen_vector_remove(CgreenVector *vector, int position);
-void *cgreen_vector_get(CgreenVector *vector, int position);
-int cgreen_vector_size(CgreenVector *vector);
+void *cgreen_vector_get(const CgreenVector *vector, int position);
+int cgreen_vector_size(const CgreenVector *vector);
 
 #ifdef __cplusplus
     }
