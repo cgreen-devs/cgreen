@@ -451,9 +451,7 @@ void print_learned_mocks(void) {
         printf("\texpect(%s", function_name);
         for (c = 0; c < cgreen_vector_size(expectation->constraints); c++) {
             Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, c);
-            // FIXME: when properly destroying parameter_names vectors, this line induces a use-after-free
-            // figure out memory management issues and then re-enable this otherwise cool feature
-//            printf(", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name, constraint->expected_value);
+            printf(", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name, constraint->expected_value);
         }
         printf(");\n");
     }

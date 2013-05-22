@@ -52,7 +52,17 @@ Constraint *create_constraint() {
     constraint->parameter_name = NULL;
     constraint->destroy = &destroy_empty_constraint;
     constraint->failure_message = &failure_message_for;
+    constraint->expected_value_name = NULL;
     constraint->expected_value_message = default_expected_value_message;
+
+    return constraint;
+}
+
+static Constraint *create_constraint_expecting(intptr_t expected_value, const char *expected_value_name) {
+    Constraint *constraint = create_constraint();
+
+    constraint->expected_value = expected_value;
+    constraint->expected_value_name = strdup(expected_value_name);
 
     return constraint;
 }
@@ -63,6 +73,9 @@ void destroy_empty_constraint(Constraint *constraint) {
     constraint->compare = NULL;
     constraint->execute = NULL;
     constraint->destroy = NULL;
+
+    if (constraint->expected_value_name != NULL)
+        free((void *)constraint->expected_value_name);
 
     free(constraint);
 }
@@ -96,173 +109,158 @@ bool constraint_is_not_for_parameter(const Constraint *constraint, const char *p
 }
 
 Constraint *create_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting(expected_value, expected_value_name);
     constraint->type = VALUE_COMPARER;
 
     constraint->compare = &compare_want_value;
     constraint->execute = &test_want;
     constraint->name = "equal";
-    constraint->expected_value = expected_value;
-    constraint->expected_value_name = expected_value_name;
     constraint->size_of_expected_value = sizeof(intptr_t);
+
     return constraint;
 }
 
 Constraint *create_not_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting(expected_value, expected_value_name);
     constraint->type = VALUE_COMPARER;
 
     constraint->compare = &compare_do_not_want_value;
     constraint->execute = &test_want;
     constraint->name = "not equal";
-    constraint->expected_value = expected_value;
-    constraint->expected_value_name = expected_value_name;
     constraint->size_of_expected_value = sizeof(intptr_t);
+
     return constraint;
 }
 
 Constraint *create_less_than_value_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting(expected_value, expected_value_name);
     constraint->type = VALUE_COMPARER;
 
     constraint->compare = &compare_want_lesser_value;
     constraint->execute = &test_true;
     constraint->name = "be less than";
     constraint->expected_value_message = "\t\texpected to be less than:\t[%" PRIdPTR "]";
-    constraint->expected_value = expected_value;
-    constraint->expected_value_name = expected_value_name;
     constraint->size_of_expected_value = sizeof(intptr_t);
+
     return constraint;
 }
 
 Constraint *create_greater_than_value_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting(expected_value, expected_value_name);
     constraint->type = VALUE_COMPARER;
 
     constraint->compare = &compare_want_greater_value;
     constraint->execute = &test_true;
     constraint->name = "be greater than";
     constraint->expected_value_message = "\t\texpected to be greater than:\t[%" PRIdPTR "]";
-    constraint->expected_value = expected_value;
-    constraint->expected_value_name = expected_value_name;
     constraint->size_of_expected_value = sizeof(intptr_t);
+
     return constraint;
 }
 
 Constraint *create_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare, const char *compared_pointer_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting((intptr_t)pointer_to_compare, compared_pointer_name);
     constraint->type = CONTENT_COMPARER;
 
     constraint->compare = &compare_want_contents;
     constraint->execute = &test_want;
     constraint->name = "equal contents of";
-    constraint->expected_value = (intptr_t)pointer_to_compare;
-    constraint->expected_value_name = compared_pointer_name;
     constraint->size_of_expected_value = size_to_compare;
+
     return constraint;
 }
 
 Constraint *create_not_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare, const char *compared_pointer_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting((intptr_t)pointer_to_compare, compared_pointer_name);
     constraint->type = CONTENT_COMPARER;
 
     constraint->compare = &compare_do_not_want_contents;
     constraint->execute = &test_want;
     constraint->name = "not equal contents of";
-    constraint->expected_value = (intptr_t)pointer_to_compare;
-    constraint->expected_value_name = compared_pointer_name;
     constraint->size_of_expected_value = size_to_compare;
+
     return constraint;
 }
 
 Constraint *create_equal_to_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting((intptr_t)expected_value, expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_want_string;
     constraint->execute = &test_want;
     constraint->name = "equal string";
     constraint->expected_value_message = "\t\texpected to equal:\t\t[\"%s\"]";
-    constraint->expected_value = (intptr_t)expected_value;
-    constraint->expected_value_name = expected_value_name;
+
     return constraint;
 }
 
 Constraint *create_not_equal_to_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting((intptr_t)expected_value, expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_do_not_want_string;
     constraint->execute = &test_want;
     constraint->name = "not equal string";
     constraint->expected_value_message = "\t\texpected to not equal:\t[\"%s\"]";
-    constraint->expected_value = (intptr_t)expected_value;
-    constraint->expected_value_name = expected_value_name;
+
     return constraint;
 }
 
 Constraint *create_contains_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting((intptr_t)expected_value, expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_want_substring;
     constraint->execute = &test_want;
     constraint->name = "contain string";
     constraint->expected_value_message = "\t\texpected to contain:\t\t[\"%s\"]";
-    constraint->expected_value = (intptr_t)expected_value;
-    constraint->expected_value_name = expected_value_name;
+
     return constraint;
 }
 
 Constraint *create_begins_with_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting((intptr_t)expected_value, expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_want_beginning_of_string;
     constraint->execute = &test_want;
     constraint->name = "begin with string";
     constraint->expected_value_message = "\t\texpected to begin with:\t\t[\"%s\"]";
-    constraint->expected_value = (intptr_t)expected_value;
-    constraint->expected_value_name = expected_value_name;
+
     return constraint;
 }
 
 Constraint *create_does_not_contain_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting((intptr_t)expected_value, expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_do_not_want_substring;
     constraint->execute = &test_want;
     constraint->name = "not contain string";
     constraint->expected_value_message = "\t\texpected to not contain:\t[\"%s\"]";
-    constraint->expected_value = (intptr_t)expected_value;
-    constraint->expected_value_name = expected_value_name;
+
     return constraint;
 }
 
 Constraint *create_equal_to_double_constraint(double expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting(box_double(expected_value), expected_value_name);
     constraint->type = DOUBLE_COMPARER;
 
     constraint->compare = &compare_want_double;
     constraint->execute = &test_want_double;
     constraint->name = "equal double";
-    constraint->expected_value = box_double(expected_value);
-    constraint->expected_value_name = expected_value_name;
     constraint->destroy = &destroy_double_constraint;
 
     return constraint;
 }
 
 Constraint *create_not_equal_to_double_constraint(double expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+    Constraint *constraint = create_constraint_expecting(box_double(expected_value), expected_value_name);
     constraint->type = DOUBLE_COMPARER;
 
     constraint->compare = &compare_do_not_want_double;
     constraint->execute = &test_do_not_want_double;
     constraint->name = "not equal double";
-    constraint->expected_value = box_double(expected_value);
-    constraint->expected_value_name = expected_value_name;
     constraint->destroy = &destroy_double_constraint;
 
     return constraint;
