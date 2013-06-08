@@ -17,7 +17,7 @@ struct TestReporter_ {
     void (*show_fail)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
     void (*show_incomplete)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
     void (*assert_true)(TestReporter *reporter, const char *file, int line, int result, const char * message, ...);
-    void (*finish_test)(TestReporter *reporter, const char *file, int line);
+    void (*finish_test)(TestReporter *reporter, const char *file, int line, const char *message);
     void (*finish_suite)(TestReporter *reporter, const char *file, int line);
     int passes;
     int failures;
@@ -43,8 +43,10 @@ void destroy_memo(TestReportMemo *memo);
 void reporter_start(TestReporter *reporter, const char *name);
 void reporter_start_suite(TestReporter *reporter, const char *name,
     const int count);
-void reporter_finish(TestReporter *reporter, const char *filename, int line);
+void reporter_finish(TestReporter *reporter, const char *filename, int line, const char *message);
+void reporter_finish_suite(TestReporter *reporter, const char *filename, int line);
 void add_reporter_result(TestReporter *reporter, int result);
+void send_reporter_exception_notification(TestReporter *reporter);
 void send_reporter_completion_notification(TestReporter *reporter);
 
 #ifdef __cplusplus

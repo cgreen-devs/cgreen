@@ -12,12 +12,13 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 		const int number_of_tests);
 static void text_reporter_start_test(TestReporter *reporter, const char *name);
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
-		int line);
+		int line, const char *message);
 static void show_fail(TestReporter *reporter, const char *file, int line,
 		const char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *file, int line,
 		const char *message, va_list arguments);
 static void show_breadcrumb(const char *name, void *memo);
+static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line);
 
 TestReporter *create_text_reporter(void) {
 	TestReporter *reporter = create_reporter();
@@ -29,7 +30,7 @@ TestReporter *create_text_reporter(void) {
 	reporter->show_fail = &show_fail;
 	reporter->show_incomplete = &show_incomplete;
 	reporter->finish_test = &text_reporter_finish;
-	reporter->finish_suite = &text_reporter_finish;
+	reporter->finish_suite = &text_reporter_finish_suite;
 	return reporter;
 }
 
@@ -50,17 +51,19 @@ static void text_reporter_start_test(TestReporter *reporter, const char *name) {
 }
 
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
-		int line) {
-	const char *name = get_current_from_breadcrumb(
-			(CgreenBreadcrumb *) reporter->breadcrumb);
+		int line, const char *message) {
+	reporter_finish(reporter, filename, line, message);
+}
 
-	reporter_finish(reporter, filename, line);
-	if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0) {
-		printf("Completed \"%s\": %d pass%s, %d failure%s, %d exception%s.\n",
-				name, reporter->passes, reporter->passes == 1 ? "" : "es",
-				reporter->failures, reporter->failures == 1 ? "" : "s",
-				reporter->exceptions, reporter->exceptions == 1 ? "" : "s");
-	}
+static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line) {
+	const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb);
+
+    reporter_finish_suite(reporter, file, line);
+
+    printf("Completed \"%s\": %d pass%s, %d failure%s, %d exception%s.\n",
+           name, reporter->passes, reporter->passes == 1 ? "" : "es",
+           reporter->failures, reporter->failures == 1 ? "" : "s",
+           reporter->exceptions, reporter->exceptions == 1 ? "" : "s");
 }
 
 static void show_fail(TestReporter *reporter, const char *file, int line,
@@ -85,8 +88,9 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line,
 	walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb,
 			(void *) &i);
 
+	printf("\n\t");
+	vprintf(message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
 	printf("\n");
-	vprintf((message == NULL ? "\tTest terminated unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal" : message), arguments);
 	printf("\n");
     fflush(NULL);
 }

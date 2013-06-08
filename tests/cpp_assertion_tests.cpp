@@ -35,9 +35,10 @@ public:
 
 static std::string* bob_pointer = NULL;
 static std::string* alice_pointer = NULL;
+static std::string* exception_pointer = NULL;
 
 void setup(void) {
-	bob_pointer = alice_pointer = NULL;
+	bob_pointer = alice_pointer = exception_pointer = NULL;
 //  for testing output of exceptions during setup
 //	throw std::logic_error("this is why we fail");
 }
@@ -123,17 +124,30 @@ Ensure(std_exception_what_is_output) {
 //	throw std::logic_error("this is why we fail");
 }
 
-void teardown(void) {
-	if (NULL != bob_pointer) {
-		delete bob_pointer;
-	}
-
-	if (NULL != alice_pointer) {
-		delete alice_pointer;
-	}
+static void throwing_function(void) {
+    throw std::string("throwing_function test");
 }
 
-TestSuite *cpp_assertion_tests() {
+Ensure(assert_throws_macro_passes_basic_type) {
+    assert_throws(std::string, throwing_function());
+}
+
+static void pointer_throwing_function(void) {
+    exception_pointer = new std::string("pointer_throwing_function test");
+    throw exception_pointer;
+}
+
+Ensure(assert_throws_macro_passes_pointer_type) {
+    assert_throws(std::string, pointer_throwing_function());
+}
+
+void teardown(void) {
+    delete bob_pointer;
+    delete alice_pointer;
+    delete exception_pointer;
+}
+
+TestSuite* cpp_assertion_tests() {
     TestSuite *suite = create_test_suite();
     set_setup(suite, setup);
     set_teardown(suite, teardown);
@@ -149,5 +163,7 @@ TestSuite *cpp_assertion_tests() {
     add_test(suite, stl_string_pointer_is_null);
     add_test(suite, stl_string_length_assertion_failure_is_readable);
     add_test(suite, std_exception_what_is_output);
+    add_test(suite, assert_throws_macro_passes_basic_type);
+    add_test(suite, assert_throws_macro_passes_pointer_type);
     return suite;
 }
