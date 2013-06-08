@@ -3,6 +3,7 @@
 #include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifdef __cplusplus
 namespace cgreen {
@@ -25,7 +26,7 @@ static void assert_passed(TestReporter *reporter, const char *file, int line,
 static void testcase_failed_to_complete(TestReporter *reporter,
         const char *file, int line, const char *message, va_list arguments);
 static void cute_reporter_testcase_finished(TestReporter *reporter,
-        const char *filename, int line);
+        const char *filename, int line, const char *message);
 static void cute_reporter_suite_finished(TestReporter *reporter,
         const char *filename, int line);
 
@@ -79,12 +80,11 @@ static void cute_reporter_testcase_started(TestReporter *reporter,
     memo->printer("#starting %s\n", name);
 }
 
-static void cute_reporter_testcase_finished(TestReporter *reporter,
-        const char *filename, int line) {
+static void cute_reporter_testcase_finished(TestReporter *reporter, const char *filename, int line, const char *message) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 
-    reporter_finish(reporter, filename, line);
+    reporter_finish(reporter, filename, line, message);
     if (memo->error_count == reporter->failures + reporter->exceptions) {
         memo->printer("#success %s OK\n", name);
     }
@@ -94,7 +94,7 @@ static void cute_reporter_suite_finished(TestReporter *reporter,
         const char *filename, int line) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
-    reporter_finish(reporter, filename, line);
+    reporter_finish(reporter, filename, line, NULL);
 
     memo->printer("#ending %s", name);
     if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0) {

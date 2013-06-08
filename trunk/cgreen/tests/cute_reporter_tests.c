@@ -91,7 +91,7 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
 
     // Must indicate test case completion before calling finish_test()
     send_reporter_completion_notification(reporter);
-    reporter->finish_test(reporter, "filename", line);
+    reporter->finish_test(reporter, "filename", line, NULL);
     assert_that(output, begins_with_string("#success"));
     assert_that(output, contains_string("test_name"));
 }
@@ -116,7 +116,7 @@ Ensure(will_report_failing_of_test_only_once) {
 
     // Must indicate test case completion before calling finish_test()
     send_reporter_completion_notification(reporter);
-    reporter->finish_test(reporter, "filename", line);
+    reporter->finish_test(reporter, "filename", line, NULL);
     assert_no_output();
 }
 

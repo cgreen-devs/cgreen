@@ -1,3 +1,7 @@
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include "runner.h"
 #include "cgreen/internal/runner_platform.h"
 #include <stdio.h>
@@ -5,7 +9,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <stdlib.h>
-
+#include <string.h>
 
 #ifdef __cplusplus
 namespace cgreen {
@@ -14,7 +18,7 @@ namespace cgreen {
 typedef void (*sighandler_t)(int);
 
 static int in_child_process();
-static void wait_for_child_process();
+static int wait_for_child_process();
 static void stop();
 static void ignore_ctrl_c(void);
 static void allow_ctrl_c(void);
@@ -27,8 +31,18 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
         send_reporter_completion_notification(reporter);
         stop();
     } else {
-        wait_for_child_process();
-        (*reporter->finish_test)(reporter, test->filename, test->line);
+        const int status = wait_for_child_process();
+        if (WIFSIGNALED(status)) {
+            /* a C++ exception generates SIGABRT. Only print our special message for different signals. */
+            const int sig = WTERMSIG(status);
+            if (sig != SIGABRT) {
+                char buf[128];
+                snprintf(buf, sizeof(buf), "Test terminated with signal: %s", strsignal(sig));
+                (*reporter->finish_test)(reporter, test->filename, test->line, buf);
+                return;
+            }
+        }
+        (*reporter->finish_test)(reporter, test->filename, test->line, NULL);
     }
 }
 
@@ -41,13 +55,13 @@ static int in_child_process() {
     return ! child;
 }
 
-static void wait_for_child_process() {
+static int wait_for_child_process() {
     int status;
     ignore_ctrl_c();
     wait(&status);
     allow_ctrl_c();
+    return status;
 }
-
 
 void die_in(unsigned int seconds) {
     sighandler_t signal_result = signal(SIGALRM, (sighandler_t)&stop);

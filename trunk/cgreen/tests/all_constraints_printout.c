@@ -4,6 +4,7 @@
 
 #include <cgreen/cgreen.h>
 #include <cgreen/mocks.h>
+#include <signal.h>
 
 #ifdef __cplusplus
 using namespace cgreen;
@@ -128,9 +129,28 @@ Ensure(FailureMessage, for_no_mock_parameters_with_parameter_constraint) {
     forgot_to_pass_parameters_mock(0);
 }
 
+Ensure(FailureMessage, increments_exception_count_when_terminating_via_SIGQUIT) {
+    raise(SIGQUIT);
+}
+
+#ifdef __cplusplus
+Ensure(FailureMessage, for_incorrect_assert_throws) {
+    assert_throws(std::string, throw "something else");
+}
+
+Ensure(FailureMessage, increments_exception_count_when_throwing) {
+    throw;
+}
+#endif
+
 TestSuite *all_constraints_tests() {
     TestSuite *suite = create_test_suite();
 
+#ifdef __cplusplus
+    add_test_with_context(suite, FailureMessage, for_incorrect_assert_throws);
+    add_test_with_context(suite, FailureMessage, increments_exception_count_when_throwing);
+#endif
+    add_test_with_context(suite, FailureMessage, increments_exception_count_when_terminating_via_SIGQUIT);
     add_test_with_context(suite, FailureMessage, for_is_null);
     add_test_with_context(suite, FailureMessage, for_is_non_null);
     add_test_with_context(suite, FailureMessage, for_is_equal_to);

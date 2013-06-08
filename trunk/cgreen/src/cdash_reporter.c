@@ -43,7 +43,7 @@ static void show_failed(TestReporter *reporter, const char *file, int line, cons
 static void show_passed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 
-static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *filename, int line);
+static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *filename, int line, const char *message);
 static void cdash_reporter_suite_finished(TestReporter *reporter, const char *filename, int line);
 
 static time_t cdash_build_stamp(char *sbuildstamp, size_t sb);
@@ -256,13 +256,13 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line, 
 }
 
 
-static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line);
+static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *filename, int line, const char *message) {
+    reporter_finish(reporter, filename, line, message);
 }
 
 
 static void cdash_reporter_suite_finished(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line);
+    reporter_finish(reporter, filename, line, NULL);
 }
 
 static time_t cdash_build_stamp(char *sbuildstamp, size_t sb) {

@@ -13,7 +13,8 @@
 namespace cgreen {
 #endif
 
-enum {pass = 1, fail, completion};
+enum { pass = 1, fail, completion, exception };
+enum { FINISH_NOTIFICATION_RECEIVED = 0, FINISH_NOTIFICATION_NOT_RECEIVED };
 
 static TestContext context;
 
@@ -21,7 +22,7 @@ static void show_pass(TestReporter *reporter, const char *file, int line, const 
 static void show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void assert_true(TestReporter *reporter, const char *file, int line, int result, const char *message, ...);
-static void read_reporter_results(TestReporter *reporter, const char *filename, int line);
+static int  read_reporter_results(TestReporter *reporter);
 
 TestReporter *get_test_reporter() {
     return context.reporter;
@@ -53,7 +54,7 @@ TestReporter *create_reporter() {
     reporter->show_incomplete = &show_incomplete;
     reporter->assert_true = &assert_true;
     reporter->finish_test = &reporter_finish;
-    reporter->finish_suite = &reporter_finish;
+    reporter->finish_suite = &reporter_finish_suite;
     reporter->passes = 0;
     reporter->failures = 0;
     reporter->exceptions = 0;
@@ -89,13 +90,32 @@ void reporter_start_suite(TestReporter *reporter, const char *name, const int co
     reporter_start(reporter, name);
 }
 
-void reporter_finish(TestReporter *reporter, const char *filename, int line) {
-    read_reporter_results(reporter, filename, line);
+void reporter_finish(TestReporter *reporter, const char *filename, int line, const char *message) {
+    int status = read_reporter_results(reporter);
+
+    if (status == FINISH_NOTIFICATION_NOT_RECEIVED) {
+        va_list no_arguments;
+        memset(&no_arguments, 0, sizeof(va_list));
+        reporter->exceptions++;
+        (*reporter->show_incomplete)(reporter, filename, line, message, no_arguments);
+    }
+
+    pop_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
+}
+
+void reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
+    (void) filename;
+    (void) line;
+    read_reporter_results(reporter);
     pop_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 }
 
 void add_reporter_result(TestReporter *reporter, int result) {
     send_cgreen_message(reporter->ipc, result ? pass : fail);
+}
+
+void send_reporter_exception_notification(TestReporter *reporter) {
+    send_cgreen_message(reporter->ipc, exception);
 }
 
 void send_reporter_completion_notification(TestReporter *reporter) {
@@ -140,25 +160,22 @@ static void assert_true(TestReporter *reporter, const char *file, int line, int 
     va_end(arguments);
 }
 
-static void read_reporter_results(TestReporter *reporter, const char *filename, int line) {
-    bool completed = false;
+static int read_reporter_results(TestReporter *reporter) {
     int result;
     while ((result = receive_cgreen_message(reporter->ipc)) > 0) {
         if (result == pass) {
             reporter->passes++;
         } else if (result == fail) {
             reporter->failures++;
+        } else if (result == exception) {
+            reporter->exceptions++;
         } else if (result == completion) {
             /* TODO: this should always be the last message; if it's not, there's a bad race */
-            completed = true;
+            return FINISH_NOTIFICATION_RECEIVED;
         }
     }
-    if (! completed) {
-        va_list no_arguments;
-        memset(&no_arguments, 0, sizeof(va_list));
-        (*reporter->show_incomplete)(reporter, filename, line, NULL, no_arguments);
-        reporter->exceptions++;
-    }
+
+    return FINISH_NOTIFICATION_NOT_RECEIVED;
 }
 
 #ifdef __cplusplus

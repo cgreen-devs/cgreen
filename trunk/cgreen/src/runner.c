@@ -95,7 +95,7 @@ static void run_test_in_the_current_process(TestSuite *suite, CgreenTest *test, 
     (*reporter->start_test)(reporter, test->name);
     run_the_test_code(suite, test, reporter);
     send_reporter_completion_notification(reporter);
-    (*reporter->finish_test)(reporter, test->filename, test->line);
+    (*reporter->finish_test)(reporter, test->filename, test->line, NULL);
 }
 
 static int per_test_timeout_defined() {
@@ -126,74 +126,61 @@ static void validate_per_test_timeout_value() {
 
 static void run_setup_for(CgreenTest *spec) {
 #ifdef __cplusplus
-    va_list no_arguments;
-    char message[255];
-    TestReporter *reporter = get_test_reporter();
-
-    memset(&no_arguments, 0, sizeof(va_list));
-
+    std::string message = "an exception was thrown during setup: ";
     try {
 #endif
         spec->context->setup();
 #ifdef __cplusplus
-    } catch(std::exception& exception) {
-        snprintf(message, sizeof(message) - 1, "an exception was thrown during setup: [%s]", exception.what());
-        reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
-    } catch(std::exception* exception) {
-        snprintf(message, sizeof(message) - 1, "an exception was thrown during setup: [%s]", exception->what());
-        reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
-    } catch(std::string& exception_message) {
-            snprintf(message, sizeof(message) - 1, "an exception was thrown during setup: [%s]", exception_message.c_str());
-
-            reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
-    } catch(std::string *exception_message) {
-            snprintf(message, sizeof(message) - 1, "an exception was thrown during setup: [%s]", exception_message->c_str());
-
-            reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+        return;
+    } catch(const std::exception& exception) {
+         message += exception.what();
+    } catch(const std::exception* exception) {
+         message += exception->what();
+    } catch(const std::string& exception_message) {
+         message += exception_message;
+    } catch(const std::string *exception_message) {
+         message += *exception_message;
     } catch(const char *exception_message) {
-            snprintf(message, sizeof(message) - 1, "an exception was thrown during setup: [%s]", exception_message);
-
-            reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+         message += exception_message;
+    } catch (...) {
+         message += "[unknown exception type]";
     }
+    va_list no_arguments;
+    memset(&no_arguments, 0, sizeof(va_list));
+    TestReporter *reporter = get_test_reporter();
+    reporter->show_incomplete(reporter, spec->filename, spec->line, message.c_str(), no_arguments);
+    send_reporter_exception_notification(reporter);
 #endif
-
 }
 
 static void run_teardown_for(CgreenTest *spec) {
 #ifdef __cplusplus
-    va_list no_arguments;
-    char message[255];
-    TestReporter *reporter = get_test_reporter();
-
-    memset(&no_arguments, 0, sizeof(va_list));
-
+    std::string message = "an exception was thrown during teardown: ";
     try {
 #endif
         spec->context->teardown();
 #ifdef __cplusplus
-    } catch(std::exception& exception) {
-        snprintf(message, sizeof(message) - 1, "an exception was thrown during teardown: [%s]", exception.what());
-        reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
-    } catch(std::exception* exception) {
-        snprintf(message, sizeof(message) - 1, "an exception was thrown during teardown: [%s]", exception->what());
-        reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
-    } catch(std::string& exception_message) {
-            snprintf(message, sizeof(message) - 1, "an exception was thrown during teardown: [%s]", exception_message.c_str());
-
-            reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
-    } catch(std::string *exception_message) {
-            snprintf(message, sizeof(message) - 1, "an exception was thrown during teardown: [%s]", exception_message->c_str());
-
-            reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+        return;
+    } catch(const std::exception& exception) {
+         message += exception.what();
+    } catch(const std::exception* exception) {
+         message += exception->what();
+    } catch(const std::string& exception_message) {
+         message += exception_message;
+    } catch(const std::string *exception_message) {
+         message += *exception_message;
     } catch(const char *exception_message) {
-            snprintf(message, sizeof(message) - 1, "an exception was thrown during teardown: [%s]", exception_message);
-
-            reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+         message += exception_message;
+    } catch (...) {
+         message += "[unknown exception type]";
     }
+    va_list no_arguments;
+    memset(&no_arguments, 0, sizeof(va_list));
+    TestReporter *reporter = get_test_reporter();
+    reporter->show_incomplete(reporter, spec->filename, spec->line, message.c_str(), no_arguments);
+    send_reporter_exception_notification(reporter);
 #endif
-
 }
-
 
 /**
    run()
@@ -204,37 +191,31 @@ static void run_teardown_for(CgreenTest *spec) {
    close to the test code. */
 static void run(CgreenTest *spec) {
 #ifdef __cplusplus
-    va_list no_arguments;
-    char message[255];
-    TestReporter *reporter = get_test_reporter();
-
-    memset(&no_arguments, 0, sizeof(va_list));
-
+    std::string message = "an exception was thrown during test: ";
     try {
 #endif
         spec->run();
 #ifdef __cplusplus
-    } catch(std::exception& exception) {
-        snprintf(message, sizeof(message) - 1, "an exception was thrown during test: [%s]", exception.what());
-        reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
-    } catch(std::exception* exception) {
-        snprintf(message, sizeof(message) - 1, "an exception was thrown during test: [%s]", exception->what());
-        reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
-    } catch(std::string& exception_message) {
-            snprintf(message, sizeof(message) - 1, "an exception was thrown during test: [%s]", exception_message.c_str());
-
-            reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
-    } catch(std::string *exception_message) {
-            snprintf(message, sizeof(message) - 1, "an exception was thrown during test: [%s]", exception_message->c_str());
-
-            reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+        return;
+    } catch(const std::exception& exception) {
+         message += exception.what();
+    } catch(const std::exception* exception) {
+         message += exception->what();
+    } catch(const std::string& exception_message) {
+         message += exception_message;
+    } catch(const std::string *exception_message) {
+         message += *exception_message;
     } catch(const char *exception_message) {
-            snprintf(message, sizeof(message) - 1, "an exception was thrown during test: [%s]", exception_message);
-
-            reporter->show_fail(reporter, spec->filename, spec->line, message, no_arguments);
+         message += exception_message;
+    } catch (...) {
+         message += "[unknown exception type]";
     }
+    va_list no_arguments;
+    memset(&no_arguments, 0, sizeof(va_list));
+    TestReporter *reporter = get_test_reporter();
+    reporter->show_incomplete(reporter, spec->filename, spec->line, message.c_str(), no_arguments);
+    send_reporter_exception_notification(reporter);
 #endif
-
 }
 
 void run_the_test_code(TestSuite *suite, CgreenTest *spec, TestReporter *reporter) {
@@ -277,8 +258,6 @@ void die(const char *message, ...) {
     va_end(arguments);
     exit(EXIT_FAILURE);
 }
-
-
 
 #ifdef __cplusplus
 } // namespace cgreen
