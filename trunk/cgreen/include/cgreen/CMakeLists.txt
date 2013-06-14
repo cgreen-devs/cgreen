@@ -2,7 +2,6 @@ project(cgreen-headers C)
 
 set(cgreen_HDRS
   assertions.h
-  assertions.h
   breadcrumb.h
   cdash_reporter.h
   cgreen.h
