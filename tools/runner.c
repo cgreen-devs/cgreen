@@ -188,12 +188,22 @@ static char *test_name_from_specname(const char *spec_name) {
 
 
 /*----------------------------------------------------------------------*/
-static char *context_name_from_specname(const char *symbol) {
-    const char *context_name_position = position_of_context_name(symbol);
+static char *context_name_from_specname(const char *spec_name) {
+    const char *context_name_position = position_of_context_name(spec_name);
     char *context_name = strdup(context_name_position);
     *strstr(context_name, CGREEN_SEPARATOR) = '\0';
 
     return context_name;
+}
+
+
+/*----------------------------------------------------------------------*/
+static char *function_name_from_specname(const char *spec_name) {
+    const char *context_name_position = position_of_context_name(spec_name);
+    char *function_name_position = strdup(context_name_position);
+    *(function_name_position+strlen(function_name_position)-strlen(CGREEN_SEPARATOR)) = '\0';
+
+    return function_name_position;
 }
 
 
@@ -209,7 +219,7 @@ static bool matching_test_exists(const char *test_name, TestItem tests[]) {
 
 /*----------------------------------------------------------------------*/
 static void reflective_runner_cleanup(void *handle, TestItem test_items[]) {
-    dlclose(handle);
+    if (handle != NULL) dlclose(handle);
 
     for (int i = 0; test_items[i].specification_name != NULL; ++i) {
         free(test_items[i].specification_name);
@@ -317,7 +327,8 @@ static void discover_tests_in(const char* test_library, TestItem* test_items, co
             if (verbose) {
                 char *suite_name = context_name_from_specname(specification_name);
                 char *test_name = test_name_from_specname(specification_name);
-                printf("Discovered %s:%s (%s%s%s)\n", suite_name, test_name, suite_name, CGREEN_SEPARATOR, test_name);
+                char *function_name = function_name_from_specname(specification_name);
+                printf("Discovered %s:%s (%s)\n", suite_name, test_name, function_name);
                 free(suite_name);
                 free(test_name);
             }
@@ -334,7 +345,7 @@ int runner(TestReporter *reporter, const char *test_library_name,
            const char *suite_name, const char *test_name,
            bool verbose, bool dont_run) {
     int status = 0;
-    void *test_library_handle;
+    void *test_library_handle = NULL;
 
     const uint32_t MAXIMUM_NUMBER_OF_TESTS = 2000; /* Some arbitrarily large number */
     TestItem discovered_tests[MAXIMUM_NUMBER_OF_TESTS];

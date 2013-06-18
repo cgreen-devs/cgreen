@@ -16,6 +16,15 @@ AfterEach(Runner){}
 #define TEST_NAME "test"
 static char SPEC_NAME[] = CGREEN_SPEC_PREFIX CGREEN_SEPARATOR CONTEXT_NAME CGREEN_SEPARATOR TEST_NAME CGREEN_SEPARATOR;
 
+#define STRINGIFY_X(x) #x
+#define STRINGIFY(x) STRINGIFY_X(x)
+
+Ensure(Runner, can_demangle_specification_to_function_name) {
+    // NOTE: Must have the test name duplicated in the assert to compare to the actual function name
+    assert_that(function_name_from_specname(STRINGIFY(spec_name(Runner, can_demangle_specification_to_function_name))),
+                is_equal_to_string(__FUNCTION__));
+}
+
 
 Ensure(Runner, can_get_context_name_from_specification_name) {
     char *context_name = context_name_from_specname(SPEC_NAME);

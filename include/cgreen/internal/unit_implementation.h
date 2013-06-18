@@ -18,7 +18,7 @@ typedef struct {
 
 #define CGREEN_SPEC_PREFIX "CgreenSpec"
 #define CGREEN_SEPARATOR "__"
-#define spec_name(contextName, specName) CgreenSpec__##contextName##__##specName##__
+#define spec_name(contextName, testName) CgreenSpec__##contextName##__##testName##__
 
 //This gives better error messages at the cost of duplication
 #define ENSURE_VA_NUM_ARGS(...) ENSURE_VA_NUM_ARGS_IMPL_((__VA_ARGS__, _CALLED_WITH_TOO_MANY_ARGUMENTS,  WithContextAndSpecificationName,  WithSpecificationName))
