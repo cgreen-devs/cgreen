@@ -19,8 +19,7 @@ endif(MSVC)
 
 include_directories(${CGREEN_TEST_INCLUDE_DIRS})
 
-set(test_SRCS
-  all_tests.c
+set(test_library_SRCS
   assertion_tests.c
   breadcrumb_tests.c
   constraint_tests.c
@@ -32,6 +31,15 @@ set(test_SRCS
   reflective_runner_no_teardown_tests.c
   unit_tests.c
   vector_tests.c
+)
+
+if (WITH_CXX)
+  set(test_library_SRCS ${test_library_SRCS} cpp_assertion_tests.cpp)
+endif(WITH_CXX)
+
+set(test_SRCS
+  all_tests.c
+  ${test_library_SRCS}
 )
 
 set(CGREEN_TEST_LIBRARY
@@ -47,14 +55,13 @@ set(all_constraints_SRCS
   ${all_constraints_library_SRCS})
 
 if (WITH_CXX)
-  set(test_SRCS ${test_SRCS} cpp_assertion_tests.cpp)
   SET_SOURCE_FILES_PROPERTIES( ${test_SRCS} PROPERTIES LANGUAGE CXX )
   SET_SOURCE_FILES_PROPERTIES( ${all_constraints_SRCS} PROPERTIES LANGUAGE CXX )
 endif (WITH_CXX)
 
-add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_SRCS})
+add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_library_SRCS})
 
-add_library(cgreen_all_constraints_library SHARED ${all_constraints_SRCS})
+add_library(cgreen_all_constraints_library SHARED ${all_constraints_library_SRCS})
 
 add_executable(test_all_constraints ${all_constraints_SRCS})
 
