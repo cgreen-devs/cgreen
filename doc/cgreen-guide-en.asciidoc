@@ -2118,18 +2118,24 @@ change them over to BDD style. Here are the steps required
 * Add 'Describe(SUT);'
 
 * Turn your current setup function into a 'BeforeEach()' definition by
-changing is signature to match the macro. If you don't have any setup
-function you need to define an empty 'BeforeEach()'.
+changing is signature to match the macro, or simply call the existing
+setup function from the BeforeEach(). If you don't have any setup function
+you still need to define an empty 'BeforeEach()'.
 
 * Ditto for 'AfterEach()'.
 
-* Remove any 'set_setup()' and 'set_teardown()'
+* Add the SUT to each 'Ensure()' as the first parameter.
 
-* Add the SUT to each 'Ensure()' as the first parameter
+* Change the call to add the tests to 'add_test_with_context()' by
+  adding a third parameter, the name of the SUT.
 
-* Change the call to add the tests to 'add_test_with_context()'
+* Optionally remove the calls to 'set_setup()' and 'set_teardown()'.
 
 Done.
+
+If you want to continue to run the tests using a hand-coded runner,
+you can do that by keeping the setup and teardown functions and their
+corresponding set_-calls.
 
 It is good that this is a simple process, because you can change over
 from TDD style to BDD style in small steps. You can convert one source
@@ -2147,8 +2153,7 @@ Changing Cgreen Reporting
 Replacing the reporter
 ~~~~~~~~~~~~~~~~~~~~~~
             
-In every test suite so far, we have run the tests
-with this line...
+In every test suite so far, we have run the tests with this line...
 
 [source,c]
 -----------------------
@@ -2176,22 +2181,20 @@ TestReporter *create_text_reporter(void) {
 }
 -----------------------
 
-The 'TestReporter' structure contains function
-pointers that control the reporting.
-When called from 'create_reporter()' constructor, these
-pointers are set up with functions that display nothing.
-The text reporter code replaces these with something more
-dramatic, and then returns a pointer to this new object.
-Thus the 'create_text_reporter()' function effectively
-extends the object from 'create_reporter()'.
+The 'TestReporter' structure contains function pointers that control
+the reporting.  When called from 'create_reporter()' constructor,
+these pointers are set up with functions that display nothing.  The
+text reporter code replaces these with something more dramatic, and
+then returns a pointer to this new object.  Thus the
+'create_text_reporter()' function effectively extends the object from
+'create_reporter()'.
              
             
 The text reporter only outputs content at the start of the first test,
 at the end of the test run to display the results, when a failure
-occours, and when a test fails to complete.
-A quick look at the +text_reporter.c+ file in *Cgreen*
-reveals that the overrides just output a message and
-chain to the versions in +reporter.h+.
+occurs, and when a test fails to complete.  A quick look at the
++text_reporter.c+ file in *Cgreen* reveals that the overrides just
+output a message and chain to the versions in +reporter.h+.
 
 
 To change the reporting mechanism ourselves, we just have to know a little
