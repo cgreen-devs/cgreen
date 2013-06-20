@@ -7,7 +7,7 @@ Cgreen Quickstart Guide
 What is Cgreen?
 ~~~~~~~~~~~~~~~
 
-*Cgreen* is a unit tester for the C software developer, a test
+*Cgreen* is a unit tester for the C and C++ software developer, a test
 automation and software quality assurance tool for development
 teams. The tool is completely open source published under the
 http://www.gnu.org/licenses/lgpl.html[LGPL]
@@ -20,7 +20,7 @@ this way, the practice is known as Test Driven Development. *Cgreen*
 was designed to support this style of development.
 
 Unit tests are written in the same language as the code, in our case
-C. This avoids the mental overhead of constantly switching language,
+C or C++. This avoids the mental overhead of constantly switching language,
 and also allows you to use any application code in your tests.
 
 Here are some of its features:
@@ -2076,7 +2076,7 @@ with the SUT being the shopping basket ''class''.
 
 We have added two ''functions'' which are exactly what they say they
 are. Before each ''test'' (or behaviour specification) the customer
-record will always be create and the customer logged in, exactly like
+record will always be created and the customer logged in, exactly like
 we could do with the 'setUp()' function in TDD style. In the same
 manner, after each ''test'' the customer will be logged out and the
 record destroyed.
@@ -2086,8 +2086,8 @@ you need to write all three of the new ''functions'' (of course you
 can see that they are CPP macros, right?), to make that work.
 
 And there is one more thing. To run this using the same kind of main
-program that we saw earlier, we need must add the SUT when we add the
-test to suite:
+program that we saw earlier, we need to name the SUT or context when
+we add the test to a suite:
 
 [source, c]
 ----------------------
@@ -2105,7 +2105,7 @@ to the suite. That's already taken care of by the 'BeforeEach()' and
 'AfterEach()' definitions.
 
 Now we are ready to run the tests by compiling and linking as
-always.
+always. And then running the tests through our main program.
 
 [[changing_style, Changing Style]]
 

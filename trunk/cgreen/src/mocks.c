@@ -435,8 +435,7 @@ void clear_mocks() {
 
 void print_learned_mocks(void) {
     int e, c;
-     // TODO shouldn't ->breadcrumb be a CgreenBreadcrumb* and not void*?
-    CgreenBreadcrumb *breadcrumb = (CgreenBreadcrumb *)get_test_reporter()->breadcrumb;
+    CgreenBreadcrumb *breadcrumb = get_test_reporter()->breadcrumb;
     printf("%s: learned mocks:\n",
         get_current_from_breadcrumb(breadcrumb));
 
