@@ -32,14 +32,22 @@ static int file_stack_p = 0;
 static FILE *file_stack[100];
 
 static void indent(FILE *out, TestReporter *reporter) {
-    int depth = get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb);
+    int depth = get_breadcrumb_depth(reporter->breadcrumb);
     while (depth-- > 0) {
         fprintf(out, "\t");
     }
 }
 
-static void pathprinter(const char *trail, void *memo) {
-    fprintf((FILE *)memo, "%s/", trail);
+static void print_separator_if_needed(int *more_segments) {
+    if (*more_segments > 0) {
+        fprintf(file_stack[file_stack_p-1], "/");
+        (*more_segments)--;
+    }
+}
+
+static void pathprinter(const char *segment, void *more_segments) {
+    fprintf(file_stack[file_stack_p-1], "%s", segment);
+	print_separator_if_needed((int*)more_segments);
 }
 
 static void xml_reporter_start_suite(TestReporter *reporter, const char *suitename, int count __attribute__((unused))) {
@@ -50,7 +58,8 @@ static void xml_reporter_start_suite(TestReporter *reporter, const char *suitena
     fprintf(out, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n");
     indent(out, reporter);
     fprintf(out, "<testsuite name=\"");
-    walk_breadcrumb(reporter->breadcrumb, pathprinter, out);
+    int segment_count = reporter->breadcrumb->depth;
+    walk_breadcrumb(reporter->breadcrumb, pathprinter, &segment_count);
     fprintf(out, "%s\">\n", suitename);
     reporter_start(reporter, suitename);
 }
@@ -59,7 +68,8 @@ static void xml_reporter_start_test(TestReporter *reporter, const char *testname
     FILE *out = file_stack[file_stack_p-1];
     indent(out, reporter);
     fprintf(out, "<testcase classname=\"");
-    walk_breadcrumb(reporter->breadcrumb, pathprinter, out);
+    int segment_count = reporter->breadcrumb->depth - 1;
+    walk_breadcrumb(reporter->breadcrumb, pathprinter, &segment_count);
     fprintf(out, "\" name=\"%s\">\n", testname);
     reporter_start(reporter, testname);
 }

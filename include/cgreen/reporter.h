@@ -2,6 +2,7 @@
 #define REPORTER_HEADER
 
 #include <stdarg.h>
+#include <cgreen/breadcrumb.h>
 
 #ifdef __cplusplus
 namespace cgreen {
@@ -22,7 +23,7 @@ struct TestReporter_ {
     int passes;
     int failures;
     int exceptions;
-    void *breadcrumb;
+    CgreenBreadcrumb *breadcrumb;
     int ipc;
     void *memo;
 };

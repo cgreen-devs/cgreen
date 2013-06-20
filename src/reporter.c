@@ -77,7 +77,7 @@ void destroy_reporter(TestReporter *reporter) {
 
 void destroy_memo(TestReportMemo *memo) {
     if (NULL != memo) {
-    free(memo);
+        free(memo);
     }
 }
 
