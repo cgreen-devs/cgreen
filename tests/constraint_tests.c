@@ -9,7 +9,11 @@ using namespace cgreen;
 
 #define compare_constraint(c, x) (*c->compare)(c, (intptr_t)x)
 
-Ensure(default_destroy_clears_state) {
+Describe(Constraint);
+BeforeEach(Constraint) {}
+AfterEach(Constraint) {}
+
+Ensure(Constraint, default_destroy_clears_state) {
     Constraint *constraint =
     		create_constraint();
     destroy_constraint(constraint);
@@ -26,7 +30,7 @@ Ensure(default_destroy_clears_state) {
  */
 }
 
-Ensure(parameter_name_matches_correctly) {
+Ensure(Constraint, parameter_name_matches_correctly) {
     Constraint *constraint =
     		create_constraint();
     constraint->type = VALUE_COMPARER;
@@ -38,20 +42,20 @@ Ensure(parameter_name_matches_correctly) {
     destroy_constraint(constraint);
 }
 
-Ensure(compare_contents_is_correct_on_larger_than_intptr_array) {
+Ensure(Constraint, compare_contents_is_correct_on_larger_than_intptr_array) {
     int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10, 11, 12, 13, 14, 15 };
     int also_content[] = { 0, 1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10, 11, 12, 13, 14, 15 };
-    Constraint *is_equal_to_contents =
+    Constraint *is_equal_to_contents_constraint =
     		create_equal_to_contents_constraint(content, sizeof(content), "content");
 
     int not_content[] = { 0, 1, 2, 3, 4, 5, 6, 7, 108, 109, 110, 111, 112, 113, 114, 115 };
-    assert_that(compare_constraint(is_equal_to_contents, also_content), is_true);
-    assert_that(compare_constraint(is_equal_to_contents, not_content), is_false);
+    assert_that(compare_constraint(is_equal_to_contents_constraint, also_content), is_true);
+    assert_that(compare_constraint(is_equal_to_contents_constraint, not_content), is_false);
 
-    destroy_constraint(is_equal_to_contents);
+    destroy_constraint(is_equal_to_contents_constraint);
 }
 
-Ensure(compare_is_correct_when_using_integers) {
+Ensure(Constraint, compare_is_correct_when_using_integers) {
     Constraint *is_equal_to_37 = create_equal_to_value_constraint(37, "37");
 
     assert_that(compare_constraint(is_equal_to_37, 37), is_true);
@@ -60,7 +64,7 @@ Ensure(compare_is_correct_when_using_integers) {
     destroy_constraint(is_equal_to_37);
 }
 
-Ensure(string_constraint_destroy_clears_state) {
+Ensure(Constraint, string_constraint_destroy_clears_state) {
     Constraint *string_constraint =
     		create_equal_to_string_constraint("Hello", "user_greeting");
     destroy_constraint(string_constraint);
@@ -77,7 +81,7 @@ Ensure(string_constraint_destroy_clears_state) {
  */
 }
 
-Ensure(matching_strings_as_equal) {
+Ensure(Constraint, matching_strings_as_equal) {
     Constraint *equals_string_hello_constraint =
     		create_equal_to_string_constraint("Hello", "user_greeting");
 
@@ -87,7 +91,7 @@ Ensure(matching_strings_as_equal) {
     destroy_constraint(equals_string_hello_constraint);
 }
 
-Ensure(matching_null_string_against_non_null_string) {
+Ensure(Constraint, matching_null_string_against_non_null_string) {
     Constraint *equals_string_hello_constraint =
     		create_equal_to_string_constraint("Hello", "user_greeting");
 
@@ -96,7 +100,7 @@ Ensure(matching_null_string_against_non_null_string) {
     destroy_constraint(equals_string_hello_constraint);
 }
 
-Ensure(matching_against_null_string) {
+Ensure(Constraint, matching_against_null_string) {
     Constraint *equals_null_string_constraint =
     		create_equal_to_string_constraint((const char *)NULL, "user_greeting");
 
@@ -106,7 +110,7 @@ Ensure(matching_against_null_string) {
     destroy_constraint(equals_null_string_constraint);
 }
 
-Ensure(matching_doubles_as_equal_with_default_significance) {
+Ensure(Constraint, matching_doubles_as_equal_with_default_significance) {
     Constraint *equal_to_double_37 = create_equal_to_double_constraint(37.0, "height");
 
     intptr_t boxed_37 = box_double(37.0);
@@ -119,7 +123,7 @@ Ensure(matching_doubles_as_equal_with_default_significance) {
     (void)unbox_double(boxed_36);
 }
 
-Ensure(matching_doubles_respects_significant_figure_setting) {
+Ensure(Constraint, matching_doubles_respects_significant_figure_setting) {
     Constraint *want_337 = create_equal_to_double_constraint(337.0, "height");
     intptr_t boxed_339 = box_double(339.0);
 
@@ -144,7 +148,7 @@ Ensure(matching_doubles_respects_significant_figure_setting) {
 //	return our->length != 0;
 //}
 //
-//Ensure(unequal_structs_with_same_value_for_specific_field_compare_true) {
+//Ensure(Constraint, unequal_structs_with_same_value_for_specific_field_compare_true) {
 //    String name;
 //    name.value = "bob";
 //    name.length = 3;
@@ -166,35 +170,35 @@ Ensure(matching_doubles_respects_significant_figure_setting) {
 
 
 /* these misuse scenarios should be prevented by checks in higher-level constructs */
-Ensure(cannot_create_contents_constraint_with_zero_size) {
+Ensure(Constraint, cannot_create_contents_constraint_with_null_content) {
     const size_t NON_ZERO = !0;
-    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(NULL, NON_ZERO, "NULL");
+    Constraint *is_equal_to_contents_constraint = create_equal_to_contents_constraint(NULL, NON_ZERO, "NULL");
 
-    assert_that(is_equal_to_contents, is_null);
+    assert_that(is_equal_to_contents_constraint, is_null);
 }
 
-Ensure(cannot_create_contents_constraint_with_null) {
+Ensure(Constraint, cannot_create_contents_constraint_with_zero_size) {
     int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    Constraint *is_equal_to_contents = create_equal_to_contents_constraint(content, 0, "content");
+    Constraint *is_equal_to_contents_constraint = create_equal_to_contents_constraint(content, 0, "content");
 
-    assert_that(is_equal_to_contents, is_null);
+    assert_that(is_equal_to_contents_constraint, is_null);
 }
 
 
-Ensure(compare_equal_to_contents_is_false_on_null) {
+Ensure(Constraint, compare_equal_to_contents_is_false_on_null) {
     int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    Constraint *is_equal_to_contents =
-    		create_equal_to_contents_constraint(content, sizeof(content), "content");
+    Constraint *is_equal_to_contents_constraint =
+        create_equal_to_contents_constraint(content, sizeof(content), "content");
 
-    assert_that(compare_constraint(is_equal_to_contents, NULL), is_false);
+    assert_that(compare_constraint(is_equal_to_contents_constraint, NULL), is_false);
 
-    destroy_constraint(is_equal_to_contents);
+    destroy_constraint(is_equal_to_contents_constraint);
 }
 
-Ensure(compare_not_equal_to_contents_is_false_on_null) {
+Ensure(Constraint, compare_not_equal_to_contents_is_false_on_null) {
     int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
     Constraint *is_not_equal_to_contents =
-    		create_not_equal_to_contents_constraint(content, sizeof(content), "content");
+        create_not_equal_to_contents_constraint(content, sizeof(content), "content");
 
     assert_that(compare_constraint(is_not_equal_to_contents, NULL), is_false);
 
@@ -203,19 +207,19 @@ Ensure(compare_not_equal_to_contents_is_false_on_null) {
 
 TestSuite *constraint_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, default_destroy_clears_state);
-    add_test(suite, parameter_name_matches_correctly);
-    add_test(suite, compare_is_correct_when_using_integers);
-    add_test(suite, string_constraint_destroy_clears_state);
-    add_test(suite, matching_strings_as_equal);
-    add_test(suite, matching_null_string_against_non_null_string);
-    add_test(suite, matching_against_null_string);
-    add_test(suite, matching_doubles_as_equal_with_default_significance);
-    add_test(suite, matching_doubles_respects_significant_figure_setting);
-    add_test(suite, compare_contents_is_correct_on_larger_than_intptr_array);
-    add_test(suite, compare_equal_to_contents_is_false_on_null);
-    add_test(suite, compare_not_equal_to_contents_is_false_on_null);
-//    add_test(suite, unequal_structs_with_same_value_for_specific_field_compare_true);
+    add_test_with_context(suite, Constraint, default_destroy_clears_state);
+    add_test_with_context(suite, Constraint, parameter_name_matches_correctly);
+    add_test_with_context(suite, Constraint, compare_is_correct_when_using_integers);
+    add_test_with_context(suite, Constraint, string_constraint_destroy_clears_state);
+    add_test_with_context(suite, Constraint, matching_strings_as_equal);
+    add_test_with_context(suite, Constraint, matching_null_string_against_non_null_string);
+    add_test_with_context(suite, Constraint, matching_against_null_string);
+    add_test_with_context(suite, Constraint, matching_doubles_as_equal_with_default_significance);
+    add_test_with_context(suite, Constraint, matching_doubles_respects_significant_figure_setting);
+    add_test_with_context(suite, Constraint, compare_contents_is_correct_on_larger_than_intptr_array);
+    add_test_with_context(suite, Constraint, compare_equal_to_contents_is_false_on_null);
+    add_test_with_context(suite, Constraint, compare_not_equal_to_contents_is_false_on_null);
+//    add_test_with_context(suite, Constraint, unequal_structs_with_same_value_for_specific_field_compare_true);
 
     return suite;
 }
