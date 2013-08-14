@@ -133,17 +133,27 @@ static void run_setup_for(CgreenTest *spec) {
 #ifdef __cplusplus
         return;
     } catch(const std::exception& exception) {
-         message += exception.what();
+	message += '[';
+	message += exception.what();
+	message += ']';
     } catch(const std::exception* exception) {
-         message += exception->what();
+	message += '[';
+	message += exception->what();
+	message += ']';
     } catch(const std::string& exception_message) {
-         message += exception_message;
+	message += '[';
+	message += exception_message;
+	message += ']';
     } catch(const std::string *exception_message) {
-         message += *exception_message;
+	message += '[';
+	message += *exception_message;
+	message += ']';
     } catch(const char *exception_message) {
-         message += exception_message;
+	message += '[';
+	message += exception_message;
+	message += ']';
     } catch (...) {
-         message += "[unknown exception type]";
+         message += "unknown exception type";
     }
     va_list no_arguments;
     memset(&no_arguments, 0, sizeof(va_list));
@@ -162,17 +172,27 @@ static void run_teardown_for(CgreenTest *spec) {
 #ifdef __cplusplus
         return;
     } catch(const std::exception& exception) {
-         message += exception.what();
+	message += '[';
+	message += exception.what();
+	message += ']';
     } catch(const std::exception* exception) {
-         message += exception->what();
+	message += '[';
+	message += exception->what();
+	message += ']';
     } catch(const std::string& exception_message) {
-         message += exception_message;
+	message += '[';
+	message += exception_message;
+	message += ']';
     } catch(const std::string *exception_message) {
-         message += *exception_message;
+	message += '[';
+	message += *exception_message;
+	message += ']';
     } catch(const char *exception_message) {
-         message += exception_message;
+	message += '[';
+	message += exception_message;
+	message += ']';
     } catch (...) {
-         message += "[unknown exception type]";
+         message += "unknown exception type";
     }
     va_list no_arguments;
     memset(&no_arguments, 0, sizeof(va_list));
@@ -198,17 +218,27 @@ static void run(CgreenTest *spec) {
 #ifdef __cplusplus
         return;
     } catch(const std::exception& exception) {
-         message += exception.what();
+	message += '[';
+	message += exception.what();
+	message += ']';
     } catch(const std::exception* exception) {
-         message += exception->what();
+	message += '[';
+	message += exception->what();
+	message += ']';
     } catch(const std::string& exception_message) {
-         message += exception_message;
+	message += '[';
+	message += exception_message;
+	message += ']';
     } catch(const std::string *exception_message) {
-         message += *exception_message;
+	message += '[';
+	message += *exception_message;
+	message += ']';
     } catch(const char *exception_message) {
-         message += exception_message;
+	message += '[';
+	message += exception_message;
+	message += ']';
     } catch (...) {
-         message += "[unknown exception type]";
+         message += "unknown exception type";
     }
     va_list no_arguments;
     memset(&no_arguments, 0, sizeof(va_list));

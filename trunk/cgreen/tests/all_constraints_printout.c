@@ -138,6 +138,10 @@ Ensure(FailureMessage, for_incorrect_assert_throws) {
     assert_throws(std::string, throw "something else");
 }
 
+Ensure(FailureMessage, if_exception_was_expected_but_nothing_thrown) {
+    assert_throws(std::string, (void)5);
+}
+
 Ensure(FailureMessage, increments_exception_count_when_throwing) {
     throw;
 }
@@ -148,6 +152,7 @@ TestSuite *all_constraints_tests() {
 
 #ifdef __cplusplus
     add_test_with_context(suite, FailureMessage, for_incorrect_assert_throws);
+    add_test_with_context(suite, FailureMessage, if_exception_was_expected_but_nothing_thrown);
     add_test_with_context(suite, FailureMessage, increments_exception_count_when_throwing);
 #endif
     add_test_with_context(suite, FailureMessage, increments_exception_count_when_terminating_via_SIGQUIT);
