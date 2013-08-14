@@ -69,13 +69,21 @@ static void assert_no_output() {
     assert_that(strlen(output), is_equal_to(0));
 }
 
-Ensure(will_report_beginning_of_suite) {
+Describe(CuteReporter);
+BeforeEach(CuteReporter) {
+    setup_cute_reporter_tests();
+}
+AfterEach(CuteReporter) {
+    cute_reporter_tests_teardown();
+}
+
+Ensure(CuteReporter, will_report_beginning_of_suite) {
     reporter->start_suite(reporter, "suite_name", 2);
     assert_that(output, begins_with_string("#beginning"));
     assert_that(output, contains_string("suite_name"));
 }
 
-Ensure(will_report_beginning_and_successful_finishing_of_test) {
+Ensure(CuteReporter, will_report_beginning_and_successful_finishing_of_test) {
     va_list arguments;
     const int line=666;
 
@@ -96,7 +104,7 @@ Ensure(will_report_beginning_and_successful_finishing_of_test) {
     assert_that(output, contains_string("test_name"));
 }
 
-Ensure(will_report_failing_of_test_only_once) {
+Ensure(CuteReporter, will_report_failing_of_test_only_once) {
     va_list arguments;
     const int line = 666;
 
@@ -120,7 +128,7 @@ Ensure(will_report_failing_of_test_only_once) {
     assert_no_output();
 }
 
-Ensure(will_report_finishing_of_suite) {
+Ensure(CuteReporter, will_report_finishing_of_suite) {
     // Must indicate test suite completion before calling finish_suite()
     const int line = 666;
     reporter_start(reporter, "suite_name");
@@ -135,10 +143,10 @@ TestSuite *cute_reporter_tests() {
     TestSuite *suite = create_test_suite();
     set_setup(suite, setup_cute_reporter_tests);
 
-    add_test(suite, will_report_beginning_of_suite);
-    add_test(suite, will_report_beginning_and_successful_finishing_of_test);
-    add_test(suite, will_report_failing_of_test_only_once);
-    add_test(suite, will_report_finishing_of_suite);
+    add_test_with_context(suite, CuteReporter, will_report_beginning_of_suite);
+    add_test_with_context(suite, CuteReporter, will_report_beginning_and_successful_finishing_of_test);
+    add_test_with_context(suite, CuteReporter, will_report_failing_of_test_only_once);
+    add_test_with_context(suite, CuteReporter, will_report_finishing_of_suite);
 
     set_teardown(suite, cute_reporter_tests_teardown);
     return suite;
