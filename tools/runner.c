@@ -42,8 +42,6 @@ typedef struct ContextSuite {
     struct ContextSuite *next;
 } ContextSuite;
 
-static ContextSuite *context_suites = NULL;
-
 /*----------------------------------------------------------------------*/
 static void destroy_context_suites(ContextSuite *context_suite) {
     if (context_suite != NULL) {
@@ -144,7 +142,7 @@ static void add_test_to_context(TestSuite *parent, ContextSuite **context_suites
 
 
 /*----------------------------------------------------------------------*/
-static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_pattern, TestItem *test_items, TestSuite *suite)
+static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_pattern, TestItem *test_items, TestSuite *suite, ContextSuite **context_suites)
 {
     int count = 0;
 
@@ -155,10 +153,10 @@ static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_p
 
             if ((error = dlerror()) != NULL)  {
                 fprintf (stderr, "%s\n", error);
-                exit(1);
+                return -1;
             }
 
-            add_test_to_context(suite, &context_suites, test_items[i].context_name, test_items[i].test_name, test_function);
+            add_test_to_context(suite, context_suites, test_items[i].context_name, test_items[i].test_name, test_function);
             count++;
         }
     }
@@ -218,9 +216,7 @@ static bool matching_test_exists(const char *test_name, TestItem tests[]) {
 
 
 /*----------------------------------------------------------------------*/
-static void reflective_runner_cleanup(void *handle, TestItem test_items[]) {
-    if (handle != NULL) dlclose(handle);
-
+static void reflective_runner_cleanup(TestItem test_items[]) {
     for (int i = 0; test_items[i].specification_name != NULL; ++i) {
         free(test_items[i].specification_name);
         free(test_items[i].context_name);
@@ -242,9 +238,12 @@ static int count(TestItem test_items[]) {
 static int run_tests(TestReporter *reporter, const char *suite_name, const char *symbolic_name,
                      void *test_library_handle, TestItem test_items[], bool verbose) {
     int status;
+    ContextSuite *context_suites = NULL;
     TestSuite *suite = create_named_test_suite(suite_name);
 
-    int number_of_matches = add_matching_tests_to_suite(test_library_handle, symbolic_name, test_items, suite);
+    const int number_of_matches = add_matching_tests_to_suite(test_library_handle, symbolic_name, test_items, suite, &context_suites);
+    if (number_of_matches < 0)
+	return EXIT_FAILURE;
 
     if (symbolic_name != NULL && number_of_matches == 1) {
         bool found = matching_test_exists(symbolic_name, test_items);
@@ -277,20 +276,22 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
 
 
 /*----------------------------------------------------------------------*/
-static void register_test(TestItem *test_items, int maximum_number_of_tests, char *specification_name) {
+static int register_test(TestItem *test_items, int maximum_number_of_tests, char *specification_name) {
     int number_of_tests;
 
     for (number_of_tests = 0; test_items[number_of_tests].specification_name != NULL; number_of_tests++)
         ;
     if (number_of_tests == maximum_number_of_tests) {
         fprintf(stderr, "\nERROR: Found too many tests (%d)! Giving up.\nConsider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
-        exit(1);
+        return -1;
     }
 
     test_items[number_of_tests].specification_name = strdup(specification_name);
     test_items[number_of_tests].context_name = context_name_from_specname(specification_name);
     test_items[number_of_tests].test_name = test_name_from_specname(specification_name);
     test_items[number_of_tests+1].specification_name = NULL;
+
+    return 0;
 }
 
 
@@ -306,8 +307,10 @@ static void register_test(TestItem *test_items, int maximum_number_of_tests, cha
 /*----------------------------------------------------------------------*/
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
 // XXX: but nm is more portable across object formats...
-static void discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items, bool verbose)
+static int discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items, bool verbose)
 {
+    int ret = 0;
+
     char cmd[2048];
     strcpy(cmd, "/usr/bin/nm ");
     strcat(cmd, test_library);
@@ -316,7 +319,7 @@ static void discover_tests_in(const char* test_library, TestItem* test_items, co
     FILE *nm_output_pipe = popen(cmd, "r");
     if (nm_output_pipe == NULL) {
         printf("\nERROR: Failed to run command ('/usr/bin/nm')\n" );
-        return;
+        return -1;
     }
 
     char line[1024];
@@ -332,11 +335,15 @@ static void discover_tests_in(const char* test_library, TestItem* test_items, co
                 free(suite_name);
                 free(test_name);
             }
-            register_test(test_items, maximum_number_of_test_items, specification_name);
+            if (register_test(test_items, maximum_number_of_test_items, specification_name) < 0) {
+		ret = -1;
+		break;
+	    }
         }
     }
 
     pclose(nm_output_pipe);
+    return ret;
 }
 
 
@@ -351,28 +358,30 @@ int runner(TestReporter *reporter, const char *test_library_name,
     TestItem discovered_tests[MAXIMUM_NUMBER_OF_TESTS];
     memset(discovered_tests, 0, sizeof(discovered_tests));
 
-    discover_tests_in(test_library_name, discovered_tests, MAXIMUM_NUMBER_OF_TESTS, verbose);
+    if (discover_tests_in(test_library_name, discovered_tests, MAXIMUM_NUMBER_OF_TESTS, verbose) < 0)
+	return 3;
+
+    if (count(discovered_tests) == 0) {
+        printf("No tests found in '%s'.\n", test_library_name);
+	return 1;
+    }
 
     if (verbose)
         printf("Discovered %d test(s)\n", count(discovered_tests));
 
-    if (count(discovered_tests) > 0) {
-        if (!dont_run) {
-            if (verbose)
-                printf("Opening [%s]", test_library_name);
-            test_library_handle = dlopen (test_library_name, RTLD_NOW);
-            if (test_library_handle == NULL) {
-                fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
-                exit(1);
-            }
-            status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
-        }
-
-        reflective_runner_cleanup(test_library_handle, discovered_tests);
-    } else {
-        printf("No tests found in '%s'.\n", test_library_name);
-        status = 1;
+    if (!dont_run) {
+	if (verbose)
+	    printf("Opening [%s]", test_library_name);
+	test_library_handle = dlopen(test_library_name, RTLD_NOW);
+	if (test_library_handle == NULL) {
+	    fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
+	    status = 2;
+	} else {
+	    status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
+	}
+	dlclose(test_library_handle);
     }
-    
+
+    reflective_runner_cleanup(discovered_tests);
     return status;
 }
