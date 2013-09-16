@@ -18,30 +18,41 @@ static int file_exists(const char *filename)
 
 /*----------------------------------------------------------------------*/
 static void usage(const char **argv) {
-    printf("Usage: %s [--xml <prefix>] <library> [<test>]\n\n", argv[0]);
-    printf("Discover and run all or a single named cgreen test(s) from a dynamically\n");
-    printf("loadable library.\n\n");
+    printf("Usage: %s [--xml <prefix>] [--suite <name>] [--verbose] [--no-run] [--help] (<library> [<test>])+\n\n", argv[0]);
+    printf("Discover and run all or a single named cgreen test(s) from one or multiple\n");
+    printf("dynamically loadable library.\n\n");
     printf("A single test can be run using the form [<context>:]<name> where <context> can\n");
     printf("be omitted if there is no context.\n\n");
     printf("--xml <prefix>\tInstead of messages on stdout, write results into one XML-file\n");
     printf("\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
     printf("\t\twill be '<prefix>-<suite>.xml'\n");
-	printf("--suite <name>\tName the top level suite\n");
+    printf("--suite <name>\tName the top level suite\n");
     printf("--no-run\tDon't run the tests\n");
     printf("--verbose\tShow progress information\n");
 }
 
 
 /*======================================================================*/
-int main(int argc, const char **argv) {
-    int status;
 
-    const char *test_library;
-    const char *test_name = NULL;
+static void *options = NULL;
+static TestReporter *reporter = NULL;
+
+static void cleanup()
+{
+    if (reporter) destroy_reporter(reporter);
+    if (options) free(options);
+}
+
+int main(int argc, const char **argv) {
+    int status, i;
+
     const char *prefix;
-	const char *suite_name = "main";
+    const char *suite_name = NULL;
     const char *tmp;
-    void *options = gopt_sort(&argc, argv, gopt_start(
+
+    atexit(cleanup);
+
+    options = gopt_sort(&argc, argv, gopt_start(
                                                       gopt_option('x', 
                                                                   GOPT_ARG, 
                                                                   gopt_shorts('x'), 
@@ -69,7 +80,6 @@ int main(int argc, const char **argv) {
                                                                   )
                                                       )
                               );
-    TestReporter *reporter;
 
     if (gopt_arg(options, 'x', &prefix))
         reporter = create_xml_reporter(prefix);
@@ -86,33 +96,39 @@ int main(int argc, const char **argv) {
 
     if (gopt_arg(options, 'h', &tmp)) {
         usage(argv);
-	free(options);
-        exit(0);
+	return EXIT_SUCCESS;
     }
 
-    switch (argc) {
-    case 3:
-        test_name = argv[2];
-    case 2:
-        test_library = argv[1];
-        break;
-    default:
+    if (argc < 2) {
 	usage(argv);
-	free(options);
-	destroy_reporter(reporter);
-        return(0);
+        return EXIT_FAILURE;
     }
 
-    if (!file_exists(test_library)) {
-        printf("Couldn't find library: %s\n", test_library);
-	free(options);
-	destroy_reporter(reporter);
-        exit(1);
+    i = 1;
+    while(i < argc) {
+	const char *my_suite_name = suite_name;
+	const char *test_name = NULL;
+	const char *test_library = argv[i++];
+
+	if (!file_exists(test_library)) {
+	    printf("Couldn't find library: %s\n", test_library);
+	    return EXIT_FAILURE;
+	}
+
+	if (my_suite_name == NULL)
+	    my_suite_name = test_library;
+
+	/* check if the next argument is not a filename, thus a test name */
+	if (!file_exists(argv[i])) {
+	    test_name = argv[i++];
+	}
+
+	status = runner(reporter, test_library, my_suite_name, test_name, verbose, no_run);
+	if (status != 0) {
+	    printf("library %s resulted in error status: %i\n", test_library, status);
+	    return status;
+	}
     }
 
-    status = runner(reporter, test_library, suite_name, test_name, verbose, no_run);
-
-    destroy_reporter(reporter);
-    free(options);
-    return status;
+    return EXIT_SUCCESS;
 }

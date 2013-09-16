@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <errno.h>
 
 static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count);
 static void xml_reporter_start_test(TestReporter *reporter, const char *name);
@@ -51,9 +51,16 @@ static void pathprinter(const char *segment, void *more_segments) {
 }
 
 static void xml_reporter_start_suite(TestReporter *reporter, const char *suitename, int count __attribute__((unused))) {
-    char filename[80];
-    sprintf(filename, "%s-%s.xml", file_prefix, suitename);
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+    char filename[PATH_MAX];
+    snprintf(filename, sizeof(filename), "%s-%s.xml", file_prefix, suitename);
     FILE *out = fopen(filename, "w");
+    if (!out) {
+        fprintf(stderr, "could not open %s: %s\r\n", filename, strerror(errno));
+        exit(EXIT_FAILURE);
+    }
     file_stack[file_stack_p++] = out;
     fprintf(out, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n");
     indent(out, reporter);

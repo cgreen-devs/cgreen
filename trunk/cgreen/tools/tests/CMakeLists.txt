@@ -31,4 +31,4 @@ add_test(NAME cgreen_runner_patternmatched_testnames COMMAND cgreen-runner $<TAR
 add_test(NAME cgreen_runner_patternmatched_testnames_in_patternmatched_context COMMAND cgreen-runner $<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests> Run*:can*)
 add_test(NAME cgreen_runner_wildcarded_tests_in_named_context COMMAND cgreen-runner $<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests> Runner:*)
 add_test(NAME cgreen_runner_wildcarded_tests_in_wildcarded_context COMMAND cgreen-runner $<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests> *:*)
-add_test(NAME cgreen_runner_with_xml_reporter COMMAND cgreen-runner --xml TEST $<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests>)
+add_test(NAME cgreen_runner_with_xml_reporter COMMAND cgreen-runner --xml TEST --suite cgreen-runner-tests $<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests>)

@@ -118,8 +118,6 @@ Ensure(Runner, can_add_test_to_the_suite_for_its_context) {
     TestSuite *parent_suite = create_test_suite();
     TestSuite *first_suite, *second_suite;
 
-    context_suites = NULL;
-
     assert_that(suite_list, is_null);
 
     add_test_to_context(parent_suite, &suite_list, "TheFirstContext", "TheName", test);
