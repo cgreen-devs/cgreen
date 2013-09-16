@@ -592,7 +592,6 @@ void report_mock_parameter_name_not_found(TestReporter *test_reporter, RecordedE
 
 void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter) {
     int i;
-    bool no_parameters_found = true;
 
     for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
@@ -600,8 +599,6 @@ void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation,
         if (constraint_is_not_for_parameter(constraint, parameter)) {
             continue;
         }
-
-        no_parameters_found = false;
 
         if (constraint->type == CONTENT_SETTER) {
             continue;
