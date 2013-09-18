@@ -33,6 +33,12 @@ void setup_reporting(TestReporter *reporter) {
     context.reporter = reporter;
 }
 
+void set_reporter_options(TestReporter *reporter, void *options) {
+    if (reporter->options != NULL)
+        free(reporter->options);
+    reporter->options = options;
+}
+
 TestReporter *create_reporter() {
     CgreenBreadcrumb *breadcrumb;
     TestReporter *reporter = (TestReporter *) malloc(sizeof(TestReporter));
