@@ -3,10 +3,18 @@
 
 #include <cgreen/reporter.h>
 
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
+
 #ifdef __cplusplus
 namespace cgreen {
     extern "C" {
 #endif
+
+typedef struct text_reporter_options {
+    bool use_colours;
+} TextReporterOptions;
 
 TestReporter *create_text_reporter(void);
 

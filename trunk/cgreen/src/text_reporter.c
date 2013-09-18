@@ -3,6 +3,15 @@
 #include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 #include <stdio.h>
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
+
+#define GREEN "\e[32m"
+#define RED "\e[31m"
+#define MAGENTA "\e[35m"
+#define RESET "\e[0m"
+
 
 #ifdef __cplusplus
 namespace cgreen {
@@ -60,10 +69,17 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
 
     reporter_finish_suite(reporter, file, line);
 
-    printf("Completed \"%s\": %d pass%s, %d failure%s, %d exception%s.\n",
-           name, reporter->passes, reporter->passes == 1 ? "" : "es",
-           reporter->failures, reporter->failures == 1 ? "" : "s",
-           reporter->exceptions, reporter->exceptions == 1 ? "" : "s");
+    if (reporter->options && ((TextReporterOptions *)reporter->options)->use_colours)
+        printf("Completed \"%s\": %s%d pass%s%s, %s%d failure%s%s, %s%d exception%s%s.\n",
+               name,
+               reporter->passes>0?GREEN:"", reporter->passes, reporter->passes == 1 ? "" : "es", RESET, 
+               reporter->failures>0?RED:"", reporter->failures, reporter->failures == 1 ? "" : "s", RESET,
+               reporter->exceptions>0?MAGENTA:"", reporter->exceptions, reporter->exceptions == 1 ? "" : "s", RESET);
+    else
+        printf("Completed \"%s\": %d pass%s, %d failure%s, %d exception%s.\n",
+               name, reporter->passes, reporter->passes == 1 ? "" : "es",
+               reporter->failures, reporter->failures == 1 ? "" : "s",
+               reporter->exceptions, reporter->exceptions == 1 ? "" : "s");
 }
 
 static void show_fail(TestReporter *reporter, const char *file, int line,

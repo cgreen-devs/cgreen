@@ -7,8 +7,6 @@
 
 #include "runner.h"
 
-static bool verbose = false;
-static bool no_run = false;
 
 /*----------------------------------------------------------------------*/
 static int file_exists(const char *filename)
@@ -29,6 +27,7 @@ static void usage(const char **argv) {
     printf("--suite <name>\tName the top level suite\n");
     printf("--no-run\tDon't run the tests\n");
     printf("--verbose\tShow progress information\n");
+    printf("--colours/colors\tUse colours to emphasis result (requires ANSI-capable terminal)\n");
 }
 
 
@@ -36,6 +35,7 @@ static void usage(const char **argv) {
 
 static void *options = NULL;
 static TestReporter *reporter = NULL;
+static TextReporterOptions reporter_options;
 
 static void cleanup()
 {
@@ -45,6 +45,9 @@ static void cleanup()
 
 int main(int argc, const char **argv) {
     int status, i;
+
+    bool verbose = false;
+    bool no_run = false;
 
     const char *prefix;
     const char *suite_name = NULL;
@@ -67,6 +70,16 @@ int main(int argc, const char **argv) {
                                                                   GOPT_NOARG,
                                                                   gopt_shorts('v'),
                                                                   gopt_longs("verbose")
+                                                                  ),
+                                                      gopt_option('c',
+                                                                  GOPT_NOARG,
+                                                                  gopt_shorts('c'),
+                                                                  gopt_longs("colours")
+                                                                  ),
+                                                      gopt_option('c',
+                                                                  GOPT_NOARG,
+                                                                  gopt_shorts('c'),
+                                                                  gopt_longs("colors")
                                                                   ),
                                                       gopt_option('n',
                                                                   GOPT_NOARG,
@@ -94,41 +107,49 @@ int main(int argc, const char **argv) {
     if (gopt_arg(options, 'n', &tmp))
         no_run = true;
 
+    if (gopt_arg(options, 'c', &tmp))
+        reporter_options.use_colours = true;
+    else
+        reporter_options.use_colours = false;
+
     if (gopt_arg(options, 'h', &tmp)) {
         usage(argv);
-	return EXIT_SUCCESS;
+        return EXIT_SUCCESS;
     }
 
     if (argc < 2) {
-	usage(argv);
+        usage(argv);
         return EXIT_FAILURE;
     }
 
+
+    set_reporter_options(reporter, &reporter_options);
+
     i = 1;
     while(i < argc) {
-	const char *my_suite_name = suite_name;
-	const char *test_name = NULL;
-	const char *test_library = argv[i++];
+        const char *my_suite_name = suite_name;
+        const char *test_name = NULL;
+        const char *test_library = argv[i++];
 
-	if (!file_exists(test_library)) {
-	    printf("Couldn't find library: %s\n", test_library);
-	    return EXIT_FAILURE;
-	}
+        if (!file_exists(test_library)) {
+            printf("Couldn't find library: %s\n", test_library);
+            return EXIT_FAILURE;
+        }
 
-	if (my_suite_name == NULL)
-	    my_suite_name = test_library;
+        if (my_suite_name == NULL)
+            my_suite_name = test_library;
 
-	/* check if the next argument is not a filename, thus a test name */
-	if (!file_exists(argv[i])) {
-	    test_name = argv[i++];
-	}
+        /* Check if the next argument is not a filename, thus a test name */
+        if (!file_exists(argv[i])) {
+            test_name = argv[i++];
+        }
 
-	status = runner(reporter, test_library, my_suite_name, test_name, verbose, no_run);
-	if (status != 0) {
-	    printf("library %s resulted in error status: %i\n", test_library, status);
-	    return status;
-	}
+        status = runner(reporter, test_library, my_suite_name, test_name, verbose, no_run);
+        if (status != 0) {
+            printf("Library %s resulted in error status: %i\n", test_library, status);
+            return status;
+        }
     }
-
+    
     return EXIT_SUCCESS;
 }

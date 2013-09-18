@@ -26,6 +26,7 @@ struct TestReporter_ {
     CgreenBreadcrumb *breadcrumb;
     int ipc;
     void *memo;
+    void *options;
 };
 
 typedef void TestReportMemo;
@@ -36,8 +37,9 @@ struct TestContext_ {
 
 typedef struct TestContext_ TestContext;
 
-TestReporter *get_test_reporter(void);
 TestReporter *create_reporter(void);
+TestReporter *get_test_reporter(void);
+void set_reporter_options(TestReporter *reporter, void *options);
 void setup_reporting(TestReporter *reporter);
 void destroy_reporter(TestReporter *reporter);
 void destroy_memo(TestReportMemo *memo);
