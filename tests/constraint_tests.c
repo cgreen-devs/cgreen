@@ -14,8 +14,7 @@ BeforeEach(Constraint) {}
 AfterEach(Constraint) {}
 
 Ensure(Constraint, default_destroy_clears_state) {
-    Constraint *constraint =
-    		create_constraint();
+    Constraint *constraint = create_constraint();
     destroy_constraint(constraint);
 
 /* these tests correctly trip valgrind's use-after-free check, so
@@ -170,6 +169,7 @@ Ensure(Constraint, matching_doubles_respects_significant_figure_setting) {
 
 
 /* these misuse scenarios should be prevented by checks in higher-level constructs */
+#ifdef CANNOT_CREATE_NULL_CONSTRAINTS
 Ensure(Constraint, cannot_create_contents_constraint_with_null_content) {
     const size_t NON_ZERO = !0;
     Constraint *is_equal_to_contents_constraint = create_equal_to_contents_constraint(NULL, NON_ZERO, "NULL");
@@ -183,7 +183,7 @@ Ensure(Constraint, cannot_create_contents_constraint_with_zero_size) {
 
     assert_that(is_equal_to_contents_constraint, is_null);
 }
-
+#endif
 
 Ensure(Constraint, compare_equal_to_contents_is_false_on_null) {
     int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 };

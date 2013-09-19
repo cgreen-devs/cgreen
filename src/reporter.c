@@ -66,6 +66,7 @@ TestReporter *create_reporter() {
     reporter->exceptions = 0;
     reporter->breadcrumb = breadcrumb;
     reporter->memo = NULL;
+    reporter->options = NULL;
     return reporter;
 }
 
