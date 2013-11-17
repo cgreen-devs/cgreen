@@ -15,14 +15,18 @@ if (UNIX)
     CACHE PATH "The ${APPLICATION_NAME} sbin install dir (default <prefix>/sbin)"
   )
 
+  IF (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    # Suffix for Linux
+    IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+      SET(LIB_SUFFIX "64"
+        CACHE STRING "Define suffix of directory for libraries (32/64)"
+      )
+    ENDIF ()
+  ENDIF ()
+
   SET(LIB_INSTALL_DIR
     "lib${LIB_SUFFIX}"
     CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is <prefix>/lib)"
-  )
-
-  # Suffix for Linux
-  SET(LIB_SUFFIX
-    CACHE STRING "Define suffix of directory for libraries (32/64)"
   )
 
   SET(LIBEXEC_INSTALL_DIR
