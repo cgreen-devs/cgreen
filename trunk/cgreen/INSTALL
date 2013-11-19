@@ -72,8 +72,8 @@ on Windows or ccmake on UNIX) to turn these options on or off.
 
 Note on CYGWIN: Cygwin is not a WIN32 platform, but it is a
 DLL-platform where libraries normally goes in the bin directory. I
-have yet to convince CMake handle this, so to make the above work you
-have two choices:
+have yet to convince CMake to handle this automatically, so to make
+the above work you have two choices:
 
 1) install before running the tests and also set PATH to include
 "/usr/local/lib"

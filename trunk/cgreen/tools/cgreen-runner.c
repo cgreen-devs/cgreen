@@ -2,6 +2,7 @@
 #include "xml_reporter.h"
 
 #include <unistd.h>
+#include <libgen.h>
 
 #include "gopt.h"
 
@@ -43,14 +44,26 @@ static void cleanup()
     if (options) free(options);
 }
 
+static const char *get_a_suite_name(const char *suite_option, const char *test_library_name) {
+    const char *suite_name;
+    if (suite_option == NULL) {
+        suite_name = basename(strdup(test_library_name));
+        if (strchr(suite_name, '.'))
+            *strchr(suite_name, '.') = '\0';
+        return suite_name;
+    } else
+        return suite_option;
+}
+
+
 int main(int argc, const char **argv) {
     int status, i;
 
     bool verbose = false;
     bool no_run = false;
 
-    const char *prefix;
-    const char *suite_name = NULL;
+    const char *prefix_option;
+    const char *suite_option = NULL;
     const char *tmp;
 
     atexit(cleanup);
@@ -94,12 +107,12 @@ int main(int argc, const char **argv) {
                                                       )
                               );
 
-    if (gopt_arg(options, 'x', &prefix))
-        reporter = create_xml_reporter(prefix);
+    if (gopt_arg(options, 'x', &prefix_option))
+        reporter = create_xml_reporter(prefix_option);
     else
         reporter = create_text_reporter();
     
-    gopt_arg(options, 's', &suite_name);
+    gopt_arg(options, 's', &suite_option);
 
     if (gopt_arg(options, 'v', &tmp))
         verbose = true;
@@ -127,7 +140,7 @@ int main(int argc, const char **argv) {
 
     i = 1;
     while(i < argc) {
-        const char *my_suite_name = suite_name;
+        const char *suite_name = suite_option;
         const char *test_name = NULL;
         const char *test_library = argv[i++];
 
@@ -136,15 +149,14 @@ int main(int argc, const char **argv) {
             return EXIT_FAILURE;
         }
 
-        if (my_suite_name == NULL)
-            my_suite_name = test_library;
+        suite_name = get_a_suite_name(suite_option, test_library);
 
         /* Check if the next argument is not a filename, thus a test name */
         if (!file_exists(argv[i])) {
             test_name = argv[i++];
         }
 
-        status = runner(reporter, test_library, my_suite_name, test_name, verbose, no_run);
+        status = runner(reporter, test_library, suite_name, test_name, verbose, no_run);
         if (status != 0) {
             printf("Library %s resulted in error status: %i\n", test_library, status);
             return status;
