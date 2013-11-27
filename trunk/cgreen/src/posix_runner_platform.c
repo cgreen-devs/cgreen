@@ -56,7 +56,7 @@ static int in_child_process() {
 }
 
 static int wait_for_child_process() {
-    int status;
+    int status = 0;
     ignore_ctrl_c();
     wait(&status);
     allow_ctrl_c();
