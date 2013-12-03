@@ -370,16 +370,16 @@ int runner(TestReporter *reporter, const char *test_library_name,
         printf("Discovered %d test(s)\n", count(discovered_tests));
 
     if (!dont_run) {
-	if (verbose)
-	    printf("Opening [%s]", test_library_name);
-	test_library_handle = dlopen(test_library_name, RTLD_NOW);
-	if (test_library_handle == NULL) {
-	    fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
-	    status = 2;
-	} else {
-	    status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
-	}
-	dlclose(test_library_handle);
+        if (verbose)
+            printf("Opening [%s]", test_library_name);
+        test_library_handle = dlopen(test_library_name, RTLD_NOW);
+        if (test_library_handle == NULL) {
+            fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
+            status = 2;
+        } else {
+            status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
+            dlclose(test_library_handle);
+        }
     }
 
     reflective_runner_cleanup(discovered_tests);
