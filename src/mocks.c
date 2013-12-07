@@ -437,7 +437,7 @@ void print_learned_mocks(void) {
     int e, c;
     CgreenBreadcrumb *breadcrumb = get_test_reporter()->breadcrumb;
     printf("%s: learned mocks:\n",
-        get_current_from_breadcrumb(breadcrumb));
+           get_current_from_breadcrumb(breadcrumb));
 
     if (cgreen_vector_size(learned_mock_calls) == 0) {
         printf("\t<none>\n");

@@ -56,7 +56,7 @@ int run_single_test(TestSuite *suite, const char *name, TestReporter *reporter) 
 static void run_every_test(TestSuite *suite, TestReporter *reporter) {
     int i;
 
-    run_specified_test_if_child(suite,reporter);
+    run_specified_test_if_child(suite, reporter);
 
     (*reporter->start_suite)(reporter, suite->name, count_tests(suite));
     for (i = 0; i < suite->size; i++) {
@@ -133,27 +133,27 @@ static void run_setup_for(CgreenTest *spec) {
 #ifdef __cplusplus
         return;
     } catch(const std::exception& exception) {
-	message += '[';
-	message += exception.what();
-	message += ']';
+        message += '[';
+        message += exception.what();
+        message += ']';
     } catch(const std::exception* exception) {
-	message += '[';
-	message += exception->what();
-	message += ']';
+        message += '[';
+        message += exception->what();
+        message += ']';
     } catch(const std::string& exception_message) {
-	message += '[';
-	message += exception_message;
-	message += ']';
+        message += '[';
+        message += exception_message;
+        message += ']';
     } catch(const std::string *exception_message) {
-	message += '[';
-	message += *exception_message;
-	message += ']';
+        message += '[';
+        message += *exception_message;
+        message += ']';
     } catch(const char *exception_message) {
-	message += '[';
-	message += exception_message;
-	message += ']';
+        message += '[';
+        message += exception_message;
+        message += ']';
     } catch (...) {
-         message += "unknown exception type";
+        message += "unknown exception type";
     }
     va_list no_arguments;
     memset(&no_arguments, 0, sizeof(va_list));
@@ -172,27 +172,27 @@ static void run_teardown_for(CgreenTest *spec) {
 #ifdef __cplusplus
         return;
     } catch(const std::exception& exception) {
-	message += '[';
-	message += exception.what();
-	message += ']';
+        message += '[';
+        message += exception.what();
+        message += ']';
     } catch(const std::exception* exception) {
-	message += '[';
-	message += exception->what();
-	message += ']';
+        message += '[';
+        message += exception->what();
+        message += ']';
     } catch(const std::string& exception_message) {
-	message += '[';
-	message += exception_message;
-	message += ']';
+        message += '[';
+        message += exception_message;
+        message += ']';
     } catch(const std::string *exception_message) {
-	message += '[';
-	message += *exception_message;
-	message += ']';
+        message += '[';
+        message += *exception_message;
+        message += ']';
     } catch(const char *exception_message) {
-	message += '[';
-	message += exception_message;
-	message += ']';
+        message += '[';
+        message += exception_message;
+        message += ']';
     } catch (...) {
-         message += "unknown exception type";
+        message += "unknown exception type";
     }
     va_list no_arguments;
     memset(&no_arguments, 0, sizeof(va_list));
@@ -218,27 +218,27 @@ static void run(CgreenTest *spec) {
 #ifdef __cplusplus
         return;
     } catch(const std::exception& exception) {
-	message += '[';
-	message += exception.what();
-	message += ']';
+        message += '[';
+        message += exception.what();
+        message += ']';
     } catch(const std::exception* exception) {
-	message += '[';
-	message += exception->what();
-	message += ']';
+        message += '[';
+        message += exception->what();
+        message += ']';
     } catch(const std::string& exception_message) {
-	message += '[';
-	message += exception_message;
-	message += ']';
+        message += '[';
+        message += exception_message;
+        message += ']';
     } catch(const std::string *exception_message) {
-	message += '[';
-	message += *exception_message;
-	message += ']';
+        message += '[';
+        message += *exception_message;
+        message += ']';
     } catch(const char *exception_message) {
-	message += '[';
-	message += exception_message;
-	message += ']';
+        message += '[';
+        message += exception_message;
+        message += ']';
     } catch (...) {
-         message += "unknown exception type";
+        message += "unknown exception type";
     }
     va_list no_arguments;
     memset(&no_arguments, 0, sizeof(va_list));
@@ -268,7 +268,6 @@ void run_the_test_code(TestSuite *suite, CgreenTest *spec, TestReporter *reporte
     }
 
     run(spec);
-
     // for historical reasons the suite can have a teardown
     if (suite->teardown != &do_nothing) {
         (*suite->teardown)();
