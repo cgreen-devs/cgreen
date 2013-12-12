@@ -46,6 +46,7 @@ extern "C" {
  */
 extern Constraint static_non_null_constraint;
 extern Constraint *is_non_null;
+#define is_not_null (is_non_null)
 
 extern Constraint static_null_constraint;
 extern Constraint *is_null;
