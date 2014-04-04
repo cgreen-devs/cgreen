@@ -66,7 +66,7 @@ static int number_of_parameters_in(const char *parameter_list) {
     if (strlen(parameter_list) == 0) return 0;
 
     while (*current != '\0') {
-        if (*current == ' ') count++;
+        if (*current == ',') count++;
         current++;
     }
 

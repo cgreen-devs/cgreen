@@ -224,6 +224,19 @@ Ensure(Mocks, can_always_mock_full_function_call) {
     assert_that(sample_mock(666, "devil"), is_equal_to(5));
 }
 
+static void sample_mock_with_parameters_without_space_between_them(int i, const char *s) {
+    mock(i,s);
+}
+
+Ensure(Mocks, can_mock_full_function_call_when_there_is_no_space_between_parameters) {
+    expect(sample_mock_with_parameters_without_space_between_them,
+        when(i, is_equal_to(666)),
+        when(s, is_equal_to_string("devil"))
+    );
+
+    sample_mock_with_parameters_without_space_between_them(666, "devil");
+}
+
 typedef struct {
     double a;
     double b;
@@ -360,6 +373,7 @@ TestSuite *mock_tests() {
     add_test_with_context(suite, Mocks, when_called_with_always_should_not_tally_counts);
     add_test_with_context(suite, Mocks, can_mock_full_sequence);
     add_test_with_context(suite, Mocks, can_always_mock_full_function_call);
+    add_test_with_context(suite, Mocks, can_mock_full_function_call_when_there_is_no_space_between_parameters);
     add_test_with_context(suite, Mocks, can_stub_an_out_parameter);
     add_test_with_context(suite, Mocks, string_contains_expectation_is_confirmed);
 

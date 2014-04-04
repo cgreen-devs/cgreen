@@ -36,7 +36,7 @@ else()
   set(CPACK_GENERATOR "TGZ")
   set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
   set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local")
-  set(CPACK_PACKAGE_CONTACT "cgreen@cgreen.org")
+  set(CPACK_PACKAGE_CONTACT "Cgreen Team <cgreen@cgreen.org>")
 endif(WIN32)
 
 set(CPACK_COMPONENTS_ALL_IN_ONE_PACKAGE 1)
