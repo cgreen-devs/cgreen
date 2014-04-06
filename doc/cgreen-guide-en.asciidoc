@@ -1,4 +1,4 @@
-Cgreen Unit Test for C language
+Cgreen - Unit Tests for C and C++
 ===============================
 
 Cgreen Quickstart Guide
@@ -125,8 +125,9 @@ int main(int argc, char **argv) {
 This is a very unexciting test. It just creates an empty test suite
 and runs it.  It's usually easier to proceed in small steps, though,
 and this is the smallest one I could think of. The only complication
-is the +cgreen.h+ header file.  Here I am assuming we have the *Cgreen*
-folder in the path to ensure compilation works.
+is the +cgreen.h+ header file.  Here I am assuming we have the
+*Cgreen* folder in the include search path to ensure compilation
+works, otherwise you'll need to add that in the compilation command.
 
 Building this test is, of course, trivial...
 
@@ -251,17 +252,20 @@ int main(int argc, char **argv) {
 
 *Cgreen* has two ways of running tests. The default is to run all
 tests in their own protected processes. This is what happens if you
-invoke 'run_test_suite()'. All tests then independent since they run
-in separate processes, preventing a single run-away test from bringing
-the whole program down with it.
+invoke 'run_test_suite()'. All tests are then completely independent
+since they run in separate processes, preventing a single run-away
+test from bringing the whole program down with it. It also ensures
+that one test cannot leave any state to the next, thus forcing you to
+setup the prerequisites for each test correctly and clearly.
 
 But if you want to debug any of your tests the constant 'fork()ing'
 can make that difficult or impossible.  To make debugging simpler,
 *Cgreen* does not fork() when only a single test is run by name with
 the function 'run_single_test()'. And if you want to debug, you can
-obviously set a breakpoint at that function. But since *Cgreen* does
-some book-keeping before actually getting to the test, a better
-function is the one simply called 'run()'.
+obviously set a breakpoint at that test (but note that its actual name
+might have been mangled) . But since *Cgreen* does some book-keeping
+before actually getting to the test, a better function is the one
+simply called 'run()'.
 
 Building this scaffolding...
 
@@ -650,6 +654,7 @@ to swap 'sentence' for 'word' in the '(*walker)()' call, and finally
 third time lucky. Of course running the tests each time made these
 mistakes very obvious. It's taken me far longer to write these
 paragraphs than it has to write the code.
+
 
 Building Cgreen test suites
 ---------------------------
@@ -1976,6 +1981,108 @@ Completed "stream_tests": 14 passes, 0 failures, 0 exceptions.
 
 All done.
 
+=== Mocks Are...
+
+Using mocks is a very handy way to isolate a unit and catch and
+control calls to external units. Depending on your style of coding two
+schools of thinking have emerged. And of course *Cgreen* supports
+both!
+
+
+==== Strict or Loose Mocks ====
+
+The two schools are thinking a bit differently about what mock
+expectations means. Does it mean that all external calls must be
+declared and expected? What happens if a call was made to a mock that
+wasn't expected? And vice versa, if an expected call was not made?
+
+Actually, the thinking is not only a school of thought, but you might
+want to switch from one to the other. So *Cgreen* allows for that too.
+
+By default *Cgreen* mocks are ''strict'', which means that a call to
+an non-expected mock will be considered a failure. So will an expected
+call that was not fullfilled. You might consider this a way to define
+a unit through all its exact behaviours towards its neighbours.
+
+On the other hand, ''loose'' mocks are looser. They allow both
+unfullfilled expectations and try to handle unexpected calls in a
+reasonable way.
+
+You can use both with in the same suite of tests using the call
+'cgreen_mocks_are(strict_mocks);' and 'cgreen_mocks_are(loose_mocks);'
+respectively.
+
+
+==== Learning Mocks ====
+
+Working with legacy code and trying to apply TDD, BDD or even simply
+add some unit tests is not easy. You're working with unknown code that
+does unknown things with unknown counterparts.
+
+So the first step would be to isolate the unit. We won't go into
+details on how to do that here, but basically you would replace the
+interface to other units with mocks. This is a somewhat tedious manual
+labor, but will result in an isolated unit where you can start
+applying your unit tests.
+
+Once you have your unit isolated in a harness of mocks, we need to
+figure out which calls it does to other units, now replaced by mocks,
+in the specific case we are trying to test.
+
+This might be complicated, so *Cgreen* makes that a bit simpler. There
+is a third ''mode'' of the *Cgreen* mocks, the learning mocks.
+
+If you temporarily add the call 'cgreen_mocks_are(learning_mocks);' at
+the beginning of your unit test, the mocks will record all calls and
+present a list of those calls in order, including the actual parameter
+values, on the standard output.
+
+So let's look at the following example from the *Cgreen* unit
+tests. It's a bit contorted since the test actually call the mocked
+functions directly, but I believe it will serve as an example.
+
+[source,c]
+-----
+static char *string_out(int p1) {
+    return (char *)mock(p1);
+}
+
+static int integer_out() {
+    return (int)mock();
+}
+
+Ensure(Mocks, learning_mocks_emit_pastable_code) {
+    cgreen_mocks_are(learning_mocks);
+    string_out(1);
+    string_out(2);
+    integer_out();
+    integer_out();
+    string_out(3);
+    integer_out();
+}
+-----
+
+We can see the call to 'cgreen_mocks_are()' starting the test and
+setting the mocks into learning mode.
+
+If we run this, just as we usually run tests, the following will show
+up in our terminal:
+
+[source,c]
+----
+learning_mocks_emit_pastable_code: learned mocks:
+        expect(string_out, when(p1, is_equal_to(1)));
+        expect(string_out, when(p1, is_equal_to(2)));
+        expect(integer_out);
+        expect(integer_out);
+        expect(string_out, when(p1, is_equal_to(3)));
+        expect(integer_out);
+----
+
+If this were a real test we could just copy this and paste it in place
+of the call to 'cgreen_mocks_are()' and we're done.
+
+
 BDD Style Cgreen
 ----------------
 
@@ -2748,7 +2855,7 @@ trying to write. And writing tests are no trivial matter so this might
 well take a lot of brain power.
 
 So, it comes as no big surprise, that sometimes you write your test
-you forget to add it to the suite. When we run it it appears that it
+and then forget to add it to the suite. When we run it it appears that it
 passed on the first try! Although this *should* really make you
 suspicious, sometimes you get so happy that you just continue with
 churning out more tests and more code. It's not until some (possibly
@@ -2859,16 +2966,6 @@ previous chapter.
 In both these cases you need to resort to the standard, programatic,
 way of invoking your tests. But, who knows...
 
-[appendix]
-Revision History
-----------------
-
-.Revisions
-[options="header"]
-|=======================
-|Revision|Description      |Responsible
-|1      |Initial         |JF
-|=======================
 
 [appendix]
 GNU Free Documentation License

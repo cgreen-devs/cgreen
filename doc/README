@@ -1,10 +1,13 @@
 HOW-TO:  Compiling the Cgreen Guide
 ======================================
 
-The Cgreen Guide Book is written using Asciidoc tool.
-
-Please visit http://www.methods.co.nz/asciidoc/.
-
-Asciidoc is a wonderful way to write textual docs using Docbook as backend.
+The Cgreen Guide Book is written using Asciidoc tool. Asciidoc is a
+wonderful way to write textual docs using Docbook as backend. Please
+visit http://www.asciidoc.org for more information.
 
 You also need source-highlight (http://www.gnu.org/software/src-highlite/source-highlight.html).
+
+NOTE that on cygwin the PDF generation does not work due to some error
+in the cygwin port of 'fop' (Apache's Formatting Object
+Processor). You can use Apache's binary distribution and use the
+Windows fop.bat for the fop-step manually. thoni56/2014-04-06
