@@ -71,7 +71,7 @@ void run_specified_test_if_child(TestSuite *suite, TestReporter *reporter){
         //best solution for this.
         reporter_start(reporter, testName);  //add breadcrumb without triggering output to console
         run_named_test_child(suite, testName, reporter);
-        reporter_finish(reporter, suite->filename, suite->line);
+        reporter_finish(reporter, suite->filename, suite->line, NULL);
 
         return; //never happens because we call stop inside run_named_test_child
     }
@@ -147,7 +147,7 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
     success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS , p_environment, NULL, &siStartupInfo, &piProcessInfo);
     dispose_environment(p_environment);
     WaitForSingleObject(piProcessInfo.hProcess,INFINITE);
-    (*reporter->finish_test)(reporter, test->filename, test->line);
+    (*reporter->finish_test)(reporter, test->filename, test->line, NULL);
 
     return;
 }

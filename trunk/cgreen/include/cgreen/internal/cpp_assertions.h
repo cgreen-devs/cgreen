@@ -1,5 +1,5 @@
-#ifndef CPP_ASSERTIONS_HEADER
-#define CPP_ASSERTIONS_HEADER
+#ifndef INTERNAL_CPP_ASSERTIONS_HEADER
+#define INTERNAL_CPP_ASSERTIONS_HEADER
 
 #include <cgreen/constraint.h>
 #include <stdint.h>

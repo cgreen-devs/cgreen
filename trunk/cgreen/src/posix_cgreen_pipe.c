@@ -3,6 +3,12 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#ifndef O_ASYNC
+#  define O_ASYNC FASYNC
+#  ifndef FASYNC
+#    error "Your POSIX platform does not support ASYNC pipe reads. Please report a bug to cgreen-devel@lists.sf.net"
+#  endif
+#endif
 
 #ifdef __cplusplus
 namespace cgreen {
@@ -21,7 +27,7 @@ void cgreen_pipe_close(int p)
 
 ssize_t cgreen_pipe_read(int p, void *buf, size_t count)
 {
-    if (0 != fcntl(p, F_SETFL, O_NONBLOCK)) {
+    if (0 != fcntl(p, F_SETFL, O_ASYNC)) {
         fprintf(stderr, "could not set file status flag on read pipe\n");
         return -1;
     }

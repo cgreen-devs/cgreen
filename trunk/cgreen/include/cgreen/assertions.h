@@ -15,6 +15,8 @@
 #endif
 
 #ifdef __cplusplus
+#include <cgreen/cpp_assertions.h>
+
 namespace cgreen {
     extern "C" {
 #endif

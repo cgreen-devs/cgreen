@@ -1,6 +1,7 @@
 #include <cgreen/reporter.h>
 #include <cgreen/messaging.h>
 #include <cgreen/breadcrumb.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #ifndef __cplusplus
@@ -153,10 +154,13 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line, 
     (void)arguments;
 }
 
+static const unsigned int MAX_ASSERTIONS_PER_TEST = 8100;
+
 static void assert_true(TestReporter *reporter, const char *file, int line, int result, const char *message, ...) {
     va_list arguments;
-    va_start(arguments, message);
+    memset(&arguments, 0, sizeof(va_list));
 
+    va_start(arguments, message);
     if (result) {
             (*reporter->show_pass)(reporter, file, line, message, arguments);
     } else {

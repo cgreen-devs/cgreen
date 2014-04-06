@@ -60,3 +60,10 @@ if (UNIX)
     endif (WITH_FORTIFY_SOURCE)
   endif (CMAKE_COMPILER_IS_GNUCC OR COMPILER_IS_CLANG)
 endif (UNIX)
+
+if (WIN32)
+    if (MSVC)
+        add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)
+    endif (MSVC)
+endif (WIN32)
+
