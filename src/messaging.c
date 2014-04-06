@@ -96,7 +96,9 @@ int start_cgreen_messaging(int tag) {
 }
 
 void send_cgreen_message(int messaging, int result) {
-    CgreenMessage *message = (CgreenMessage *) malloc(sizeof(CgreenMessage));
+    CgreenMessage *message;
+    
+    message = (CgreenMessage *) malloc(sizeof(CgreenMessage));
     if (message == NULL) {
       return;
     }
@@ -129,8 +131,8 @@ static void clean_up_messaging() {
     int i;
     for (i = 0; i < queue_count; i++) {
         if (queues[i].owner == getpid()) {
-        cgreen_pipe_close(queues[i].readpipe);
-        cgreen_pipe_close(queues[i].writepipe);
+            cgreen_pipe_close(queues[i].readpipe);
+            cgreen_pipe_close(queues[i].writepipe);
         }
     }
     free(queues);

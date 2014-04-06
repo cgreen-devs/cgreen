@@ -13,6 +13,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _MSC_VER
+#include "wincompat.h"
+#endif
+
 #ifdef __cplusplus
 namespace cgreen {
 #endif
@@ -369,7 +373,7 @@ void test_want(Constraint *constraint, const char *function, intptr_t actual, co
         return;
     }
 
-    sprintf(parameter_name_actual_string, "[%s] parameter in [%s]", constraint->parameter_name, function);
+    snprintf(parameter_name_actual_string, sizeof(parameter_name_actual_string) - 1, "[%s] parameter in [%s]", constraint->parameter_name, function);
     message = constraint->failure_message(constraint, parameter_name_actual_string, actual);
 
     (*reporter->assert_true)(

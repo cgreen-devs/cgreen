@@ -96,7 +96,7 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
 
     fclose(fd);
 
-    strsize = snprintf(reporter_path, 255, "./Testing/%s", sbuildstamp);
+    strsize = snprintf(reporter_path, sizeof(reporter_path) - 1, "./Testing/%s", sbuildstamp);
 
     rep_dir = mkdir(reporter_path, S_IXUSR|S_IRUSR|S_IWUSR|S_IXGRP|S_IRGRP|S_IXOTH);
 
