@@ -415,7 +415,7 @@ void report_unexpected_call(TestReporter *test_reporter, RecordedExpectation* ex
         expectation->function);
 }
 
-void clear_mocks() {
+void clear_mocks(void) {
     if (global_expectation_queue != NULL) {
         destroy_cgreen_vector(global_expectation_queue);
         global_expectation_queue = NULL;
@@ -505,21 +505,21 @@ static void destroy_expectation(RecordedExpectation *expectation) {
     free(expectation);
 }
 
-static void ensure_successfully_mocked_calls_list_exists() {
+static void ensure_successfully_mocked_calls_list_exists(void) {
     if (successfully_mocked_calls == NULL) {
         // successfully_mocked_calls are __func__, so there's nothing to destroy
         successfully_mocked_calls = create_cgreen_vector(NULL);
     }
 }
 
-static void ensure_learned_mock_calls_list_exists() {
+static void ensure_learned_mock_calls_list_exists(void) {
     if (learned_mock_calls == NULL) {
         // learned_mock_calls are __func__, so there's nothing to destroy
         learned_mock_calls = create_cgreen_vector(NULL);
     }
 }
 
-static void ensure_expectation_queue_exists() {
+static void ensure_expectation_queue_exists(void) {
     if (global_expectation_queue == NULL) {
         global_expectation_queue = create_cgreen_vector((GenericDestructor)&destroy_expectation);
     }

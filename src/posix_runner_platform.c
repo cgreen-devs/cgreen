@@ -17,9 +17,9 @@ namespace cgreen {
 
 typedef void (*sighandler_t)(int);
 
-static int in_child_process();
-static int wait_for_child_process();
-static void stop();
+static int in_child_process(void);
+static int wait_for_child_process(void);
+static void stop(void);
 static void ignore_ctrl_c(void);
 static void allow_ctrl_c(void);
 
@@ -37,7 +37,7 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
             const int sig = WTERMSIG(status);
             if (sig != SIGABRT) {
                 char buf[128];
-                snprintf(buf, sizeof(buf), "Test terminated with signal: %s", strsignal(sig));
+                snprintf(buf, sizeof(buf), "Test terminated with signal: %s", (const char *)strsignal(sig));
                 (*reporter->finish_test)(reporter, test->filename, test->line, buf);
                 return;
             }
@@ -46,7 +46,7 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
     }
 }
 
-static int in_child_process() {
+static int in_child_process(void) {
     fflush(NULL);               /* Flush all buffers before forking */
     pid_t child = fork();
     if (child < 0) {
@@ -55,7 +55,7 @@ static int in_child_process() {
     return ! child;
 }
 
-static int wait_for_child_process() {
+static int wait_for_child_process(void) {
     int status = 0;
     ignore_ctrl_c();
     wait(&status);
@@ -79,15 +79,15 @@ void run_specified_test_if_child(TestSuite *suite, TestReporter *reporter){
     (void)reporter;
 }
 
-static void stop() {
+static void stop(void) {
     _exit(EXIT_SUCCESS);
 }
 
-static void ignore_ctrl_c() {
+static void ignore_ctrl_c(void) {
     signal(SIGINT, SIG_IGN);
 }
 
-static void allow_ctrl_c() {
+static void allow_ctrl_c(void) {
     signal(SIGINT, SIG_DFL);
 }
 

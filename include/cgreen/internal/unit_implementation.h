@@ -38,14 +38,14 @@ typedef struct {
 #define EnsureWithContextAndSpecificationName(contextName, spec, ...) \
     static void contextName##__##spec (void);\
     CgreenTest spec_name(contextName, spec) = { &contextFor##contextName, #spec, &contextName##__##spec, __FILE__, __LINE__ };\
-    static void contextName##__##spec ()
+    static void contextName##__##spec (void)
 
 extern CgreenContext defaultContext;
 
 #define EnsureWithSpecificationName(spec, ...) \
     static void spec (void);\
     CgreenTest spec_name(default, spec) = { &defaultContext, #spec, &spec, __FILE__, __LINE__ };\
-    static void spec ()
+    static void spec (void)
 
 #define DescribeImplementation(subject) \
         static void setup(void);                \
