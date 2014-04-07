@@ -36,7 +36,7 @@ typedef struct CgreenMessage_ {
 static CgreenMessageQueue *queues = NULL;
 static int queue_count = 0;
 
-int get_pipe_read_handle()
+int get_pipe_read_handle(void)
 {
     if (queue_count)
     {
@@ -46,7 +46,7 @@ int get_pipe_read_handle()
     return 0;
 }
 
-int get_pipe_write_handle()
+int get_pipe_write_handle(void)
 {
     if (queue_count)
     {
@@ -127,7 +127,7 @@ int receive_cgreen_message(int messaging) {
     return result;
 }
 
-static void clean_up_messaging() {
+static void clean_up_messaging(void) {
     int i;
     for (i = 0; i < queue_count; i++) {
         if (queues[i].owner == getpid()) {

@@ -27,8 +27,8 @@ struct TestSuite_ {
 	const char* filename;
 	int line;
 	UnitTest *tests;
-	void (*setup)();
-	void (*teardown)();
+	void (*setup)(void);
+	void (*teardown)(void);
 	int size;
 };
 

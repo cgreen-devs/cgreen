@@ -23,8 +23,8 @@ namespace cgreen {
 #define add_tests(suite, ...) add_tests_(suite, #__VA_ARGS__, (CgreenTest *)__VA_ARGS__)
 #define add_suite(owner, suite) add_suite_(owner, #suite, suite)
 
-void set_setup(TestSuite *suite, void (*set_up)());
-void set_teardown(TestSuite *suite, void (*tear_down)());
+void set_setup(TestSuite *suite, void (*set_up)(void));
+void set_teardown(TestSuite *suite, void (*tear_down)(void));
 int count_tests(TestSuite *suite);
 bool has_test(TestSuite *suite, const char *name);
 bool has_setup(TestSuite *suite);
