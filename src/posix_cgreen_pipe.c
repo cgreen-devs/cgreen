@@ -44,7 +44,7 @@ void cgreen_pipe_close(int p)
 
 ssize_t cgreen_pipe_read(int p, void *buf, size_t count)
 {
-    if (0 != fcntl(p, F_SETFL, O_ASYNC)) {
+    if (0 != fcntl(p, F_SETFL, O_NONBLOCK)) {
         fprintf(stderr, "could not set file status flag on read pipe\n");
         return -1;
     }
