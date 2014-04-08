@@ -9,8 +9,9 @@ namespace cgreen {
 
 template<typename T>
 class CppConstraint : public Constraint {
-  T expected_real_value;
-  bool (*compare)(CppConstraint *, T);
+ public:
+    T expected_real_value;
+    bool (*compare)(CppConstraint *, T);
 };
 
 Constraint *create_equal_to_string_constraint(const std::string& expected_value, const char *expected_value_name);
@@ -48,7 +49,7 @@ CppConstraint<T> *create_equal_to_value_constraint(T expected_value, const char 
     constraint->expected_value = expected_value;
     constraint->expected_value_name = expected_value_name;
     constraint->size_of_expected_value = sizeof(intptr_t);
-    constraint->real_expected_value = expected_value;
+    constraint->expected_real_value = expected_value;
     return constraint;
 }
 
