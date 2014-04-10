@@ -117,9 +117,9 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
     char actual_value_string[32];
     const char *actual_value_constraint_name = "Expected [%s] to [%s]";
     const char *expected_value_name =  "[%s]\n";
-    const char *actual_value_as_string = "\t\tactual value:\t\t\t[\"%s\"]\n";
+    const char *actual_value_as_string = "\t\tactual value:\t\t\t[\"%s\"]";
     const char *at_offset = "\t\tat offset:\t\t\t[%d]";
-    const char *actual_value_message = "\t\tactual value:\t\t\t[%" PRIdPTR "]\n";
+    const char *actual_value_message = "\t\tactual value:\t\t\t[%" PRIdPTR "]";
     char *message;
     size_t message_size = strlen(actual_value_constraint_name) +
     		strlen(expected_value_name) +
@@ -170,6 +170,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
                  actual_value_as_string,
                  (const char *)actual);
         if (strstr(constraint->name, "not ") == NULL || strstr(constraint->name, "contain ") != NULL) {
+            strcat(message, "\n");
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
                      constraint->expected_value_message,
                      (const char *)constraint->expected_value);
@@ -191,6 +192,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
              actual);
 
     if (strstr(constraint->name, "not ") == NULL) {
+        strcat(message, "\n");
         snprintf(message + strlen(message), message_size - strlen(message) - 1,
                  constraint->expected_value_message,
                  constraint->expected_value);
