@@ -4,6 +4,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 #ifndef O_ASYNC
 #  define O_ASYNC FASYNC
@@ -55,19 +56,18 @@ ssize_t cgreen_pipe_read(int p, void *buf, size_t count)
 ssize_t cgreen_pipe_write(int p, const void *buf, size_t count)
 {
     int pipe_write_result = write(p, buf, count);
+    int status;
     if (pipe_write_result < 0) {
         if (errno == EWOULDBLOCK) {
             fprintf(stderr, "\tCGREEN EXCEPTION: Too many assertions within a single test.\n");
         } else if (errno != EPIPE) {
             fprintf(stderr, "\tCGREEN EXCEPTION: Error when reporting from test case process to reporter\n");
         }
-        kill(getpid(), SIGPIPE);
         raise(SIGPIPE);
+        wait(&status); /* Safe-guarding against a signalhandler for SIGPIPE, which
+                          incidentaly the test case for pipe block need to have... */
     }
-
-    return write(p, buf, count);
-
-    //   return pipe_write_result;
+    return pipe_write_result;
 }
 
 
