@@ -34,7 +34,6 @@ Ensure(can_send_message) {
 static int signal_received = 0;
 static void catch_signal(int s) {
     (void)s;
-    fprintf(stderr, "CAUGHT"); fflush(NULL);
     signal_received = 1;
     signal(SIGPIPE, SIG_DFL);
 }
