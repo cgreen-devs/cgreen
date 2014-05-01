@@ -29,14 +29,28 @@ Ensure(can_send_message) {
     assert_equal(receive_cgreen_message(messaging), 99);
 }
 
-Ensure(failure_reported_when_messaging_would_block) {
+static int signal_received = 0;
+static void catch_signal(int s) {
+    fprintf(stderr, "CAUGHT"); fflush(NULL);
+    signal_received = 1;
+    signal(SIGPIPE, SIG_DFL);
+}
+
+Ensure(failure_reported_and_exception_thrown_when_messaging_would_block) {
+    const int LOOPS = 65536;
     int messaging = start_cgreen_messaging(33);
     int loop;
-    for (loop = 0; loop < 65536; loop++) {
+
+    signal_received = 0;
+    signal(SIGPIPE, catch_signal);
+    for (loop = 0; loop < LOOPS; loop++) {
         send_cgreen_message(messaging, 99);
+        if (signal_received == 1)
+            break;
     }
 
-    fail_test("This test should be killed due to too many messages before it gets here");
+    assert_that(signal_received, is_equal_to(1));
+    assert_that(loop, is_less_than(LOOPS));
 }
 
 TestSuite *messaging_tests() {
@@ -44,7 +58,7 @@ TestSuite *messaging_tests() {
     add_suite(suite, highly_nested_test_suite());
     add_test(suite, can_send_message);
 #ifndef WIN32 // TODO: win32 needs non-blocking pipes like posix for this to pass
-    add_test(suite, failure_reported_when_messaging_would_block);
+    add_test(suite, failure_reported_and_exception_thrown_when_messaging_would_block);
 #endif
     return suite;
 }

@@ -56,16 +56,18 @@ ssize_t cgreen_pipe_write(int p, const void *buf, size_t count)
 {
     int pipe_write_result = write(p, buf, count);
     if (pipe_write_result < 0) {
-       if (errno == EWOULDBLOCK) {
-           fprintf(stderr, "\tToo many assertions (> 8192) within a single test.\n");
+        if (errno == EWOULDBLOCK) {
+            fprintf(stderr, "\tCGREEN EXCEPTION: Too many assertions within a single test.\n");
         } else if (errno != EPIPE) {
-           fprintf(stderr, "\tError reporting from test case process to reporter\n");
+            fprintf(stderr, "\tCGREEN EXCEPTION: Error when reporting from test case process to reporter\n");
         }
-
         kill(getpid(), SIGPIPE);
+        raise(SIGPIPE);
     }
 
-    return write(p,buf,count);
+    return write(p, buf, count);
+
+    //   return pipe_write_result;
 }
 
 
