@@ -90,7 +90,8 @@ void destroy_static_constraint(Constraint *constraint) {
 }
 
 void destroy_constraint(Constraint *constraint) {
-    (*constraint->destroy)(constraint);
+    if (constraint->destroy != NULL)
+        (*constraint->destroy)(constraint);
 }
 
 void destroy_constraints(va_list constraints) {
