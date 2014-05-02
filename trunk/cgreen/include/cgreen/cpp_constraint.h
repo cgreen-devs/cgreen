@@ -45,7 +45,7 @@ CppConstraint<T> *create_equal_to_value_constraint(T expected_value, const char 
     constraint = new CppConstraint<T>();
     constraint->type = VALUE_COMPARER;
 
-    constraint->compare = &compare_want_value;
+    constraint->Constraint::compare = &compare_want_value;
     constraint->execute = &test_want;
     constraint->name = "equal";
     constraint->expected_value = expected_value;
