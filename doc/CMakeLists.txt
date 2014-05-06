@@ -45,7 +45,7 @@ IF(A2X_FOUND AND WITH_PDF)
     IF (NOT "${_in}" STREQUAL "CMakeLists")
       ADD_CUSTOM_COMMAND(
         OUTPUT "${_out}-pdf"
-        COMMAND ${A2X_EXECUTABLE} -L -f pdf -a toc --fop -d book
+        COMMAND ${A2X_EXECUTABLE} -L -f pdf -a toc -d book --fop
           --icons-dir ${A2X_ICONS_DIR}
           -a lang=${LANG}
           -a docinfo

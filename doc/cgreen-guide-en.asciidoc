@@ -57,7 +57,7 @@ much the same, the shift in focus by changing wording from 'tests' to
 
 This document will present TDD-style Cgreen first and then go on to
 describe the minor differences that will allow you to think, drive and
-test in BDD fashion.
+test in a BDD-ish fashion.
 
 Installing Cgreen
 ~~~~~~~~~~~~~~~~~
@@ -2083,8 +2083,8 @@ If this were a real test we could just copy this and paste it in place
 of the call to 'cgreen_mocks_are()' and we're done.
 
 
-BDD Style Cgreen
-----------------
+BDD-ish Style Cgreen
+--------------------
 
 As mentioned earlier, *Cgreen* also supports the behaviour driven
 style of test driving code. The thinking behind BDD is that we don't
@@ -2104,7 +2104,7 @@ The SUT - Subject Under Test
 
 Since BDD talks about behaviour, there has to be something that we can
 talk about as having the wanted behaviour. This is usually called the
-SUT, the Subject Under Test. *Cgreen* in BDD mode requires that you
+SUT, the Subject Under Test. *Cgreen* in BDD-ish mode requires that you
 define a name for it.
 
 [source, c]
@@ -2113,7 +2113,7 @@ define a name for it.
 Describe(SUT);
 -----------------------
 
-Since *CGreen* supports C++ there you naturally have the objects and
+Since *Cgreen* supports C++ there you naturally have the objects and
 also the Class Under Test. But in plain C you will have to think about
 what is actually the "class" under test. E.g. in 'sort.c' you might
 see
@@ -2124,15 +2124,15 @@ see
 Describe(Sorter);
 
 Ensure(Sorter, can_sort_an_empty_list) {
-  ensure_that(sorter(NULL), is_null);
+  assert_that(sorter(NULL), is_null);
 }
 ---------------------
 
-In this example you can clearly see what difference BDD style makes
-when it comes to naming. Convention, and natural language, dictates
-that typical names for what TDD would call tests, now starts with
-'can' or 'finds' or other verbs, which makes the specification so much
-easier to read.
+In this example you can clearly see what difference the BDD-ish style
+makes when it comes to naming. Convention, and natural language,
+dictates that typical names for what TDD would call tests, now starts
+with 'can' or 'finds' or other verbs, which makes the specification so
+much easier to read.
 
 Yes, I wrote 'specification'. Because that is how BDD views what TDD
 basically calls a test suite. The suite specifies the behaviour of a
@@ -2152,7 +2152,7 @@ and require various forms of setup. When using TDD style you
 would probably break this up into multiple suites having their own
 'setup()' and 'teardown()'.
 
-With BDD style we could consider the suite as a behaviour
+With BDD-ish style we could consider the suite as a behaviour
 specification for our SUT 'in a particular context'. E.g.
 
 [source, c]
@@ -2219,22 +2219,22 @@ always. And then running the tests through our main program.
 Changing Style
 ~~~~~~~~~~~~~~
 
-If you have some TDD style *Cgreen* test suites, it is quite easy to
-change them over to BDD style. Here are the steps required
+If you already have some TDD style *Cgreen* test suites, it is quite
+easy to change them over to BDD-ish style. Here are the steps required
 
 * Add 'Describe(SUT);'
 
 * Turn your current setup function into a 'BeforeEach()' definition by
-changing is signature to match the macro, or simply call the existing
+changing its signature to match the macro, or simply call the existing
 setup function from the BeforeEach(). If you don't have any setup function
 you still need to define an empty 'BeforeEach()'.
 
 * Ditto for 'AfterEach()'.
 
-* Add the SUT to each 'Ensure()' as the first parameter.
+* Add the SUT to each 'Ensure()' by inserting it as a first parameter.
 
 * Change the call to add the tests to 'add_test_with_context()' by
-  adding a third parameter, the name of the SUT.
+  adding the name of the SUT as the second parameter.
 
 * Optionally remove the calls to 'set_setup()' and 'set_teardown()'.
 
@@ -2244,8 +2244,8 @@ If you want to continue to run the tests using a hand-coded runner,
 you can do that by keeping the setup and teardown functions and their
 corresponding set_-calls.
 
-It is good that this is a simple process, because you can change over
-from TDD style to BDD style in small steps. You can convert one source
+It's nice that this is a simple process, because you can change over
+from TDD style to BDD-ish style in small steps. You can convert one source
 file at a time, by just following the recipe above. Everything will
 still work as before but your tests and code will likely improve.
 
@@ -2269,6 +2269,7 @@ return run_test_suite(our_tests(), create_text_reporter());
 
 We can change the reporting mechanism just by changing this
 method.
+
 Here is the code for 'create_text_reporter()'...
 
 [source,c]
@@ -2290,19 +2291,17 @@ TestReporter *create_text_reporter(void) {
 
 The 'TestReporter' structure contains function pointers that control
 the reporting.  When called from 'create_reporter()' constructor,
-these pointers are set up with functions that display nothing.  The
+these pointers are set up with functions that display nothing. The
 text reporter code replaces these with something more dramatic, and
-then returns a pointer to this new object.  Thus the
+then returns a pointer to this new object. Thus the
 'create_text_reporter()' function effectively extends the object from
 'create_reporter()'.
              
-            
 The text reporter only outputs content at the start of the first test,
 at the end of the test run to display the results, when a failure
 occurs, and when a test fails to complete.  A quick look at the
 +text_reporter.c+ file in *Cgreen* reveals that the overrides just
 output a message and chain to the versions in +reporter.h+.
-
 
 To change the reporting mechanism ourselves, we just have to know a little
 about the methods in the 'TestReporter' structure.
@@ -2419,7 +2418,7 @@ name is popped off.
 There are a bunch of utility functions in +cgreen/breadcrumb.h+ that
 can read the state of this stack.  Most useful are
 'get_current_from_breadcrumb()' which takes the breadcrumb pointer and
-returns the curent test name, and 'get_breadcrumb_depth()' which gives
+returns the current test name, and 'get_breadcrumb_depth()' which gives
 the current depth of the stack.  A depth of zero means that the test
 run has finished.
 
@@ -2897,10 +2896,9 @@ Using the runner
 Assuming your tests are in +first_test.c+ the typical command to
 build your library using gcc would be
 
-[code, c]
+[source, c]
 --------------------------
-$ gcc -o first_test.o -fPIC first_test.c
-$ gcc -shared -o first_test.so first_test.o -lcgreen
+$ gcc -shared -o first_test.so -fPIC first_test.c -lcgreen
 --------------------------
 
 The '-fPIC' means to generate +position independent code+ which is
@@ -2911,11 +2909,11 @@ depending on your platform. Can't really help you there, sorry!
 
 Now we can run the tests using the 'cgreen-runner':
 
-[code, c]
+[source, c]
 -------------------------
-$ cgreen-runner first_test.dll
+$ cgreen-runner first_test.so
 Discovered: 2 tests
-Opening [first_test.dll] to run all discovered tests ...
+Opening [first_test.so] to run all discovered tests ...
 Running "main" (2 tests)...
 first_test.c:8: Test Failure: -> this_test_should_fail
         Expected [0] to be true
@@ -2928,7 +2926,7 @@ the beginning of this quickstart tutorial.
 Now we can actually delete the main function in our source code. We
 don't need all this:
 
-[source, c]
+[source,c]
 ------------------------
 int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
@@ -2942,26 +2940,42 @@ It always feel good to delete code, right?
 
 We can also select which test to run:
 
-[code, c]
+[source, c]
 -------------------------
-$ cgreen-runner.exe first_test.dll this_test_should_fail
+$ cgreen-runner first_test.so this_test_should_fail
 Discovered: 2 tests
-Opening [first_test.dll] to only run test 'this_test_should_fail' ...
+Opening [first_test.so] to only run test 'this_test_should_fail' ...
 Running "main" (2 tests)...
 first_test.c:8: Test Failure: -> this_test_should_fail
         [0] should be true
 Completed "main": 0 passes, 1 failure, 0 exceptions.
 -------------------------
 
+Cgreen Runner Options
+~~~~~~~~~~~~~~~~~~~~~
+
+Once you get the build set up right for the cgreen-runner everything
+is fairly straight-forward. But you have a few options:
+
+[horizontal]
+--xml <prefix>:: Instead of messages on stdout, write results into one XML-file
+                 per suite, compatible with Hudson/Jenkins CI. The filename(s)
+                 will be '<prefix>-<suite>.xml'
+--suite <name>:: Name the top level suite
+--no-run::       Don't run the tests
+--verbose::      Show progress information and list discovered tests
+--colours::      Use colours (or colors) to emphasis result (requires ANSI-capable terminal)
+
+
 Setup, Teardown and custom reporters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you need setup and teardown functions with the runner you need to
-go to the BDD style using 'BeforeEach()' and 'AfterEach()' as
-described in <<changing_style, Changing Style>> above.
+The cgreen-runner will only run setup and teardown functions if you use
+the BDD-ish style with 'BeforeEach()' and 'AfterEach()' as described in
+<<changing_style, Changing Style>> above.
 
 Neither is it possible to use custom reporters as outlined in the
-previous chapter.
+previous chapter. (Except for the built-in JUnit compatible XML-reporter.)
 
 In both these cases you need to resort to the standard, programatic,
 way of invoking your tests. But, who knows...
