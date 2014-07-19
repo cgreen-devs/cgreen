@@ -27,7 +27,7 @@ Here are some of its features:
 
 - Fully composable test suites
 - 'setup()' and 'teardown()' for tests and test suites
-- Each test runs in it's own process
+- Each test runs in its own process
 - An isolated test can be run in a single process for debugging
 - Ability to mock functions
 - The reporting mechanism can be easily extended
@@ -965,7 +965,7 @@ int main(int argc, char **argv) {
 }
 --------------------------
 
-We have already factored out the duplicate code into it's own
+We have already factored out the duplicate code into its own
 functions 'create_scheme()' and 'drop_schema()', so things are not so
 bad. At least not yet. What happens when we get dozens of tests? For a
 test subject as complicated as a database
@@ -1030,7 +1030,7 @@ in each 'TestSuite' as indicated by the names 'set_setup()' and
 the test crashes, causing some test interference. This brings us
 nicely onto the next section...
 
-Each test in it's own process
+Each test in its own process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Consider this test method...
@@ -1048,10 +1048,10 @@ run. Not least because it will stop you receiving the very test output
 you need to tackle the problem.
 
 To prevent segmentation faults and other problems bringing down the
-test suites, *Cgreen* runs every test in it's own process.
+test suites, *Cgreen* runs every test in its own process.
 
 Just before calling the 'setup' function, *Cgreen* 'fork()''s. The main
-process wait's for the test to complete normally or die. This includes
+process waits for the test to complete normally or die. This includes
 the calling the 'teardown' function, if any. If the test process dies,
 an exception is reported and the main test process carries on.
 
@@ -1217,7 +1217,7 @@ command line, so we added a simple 'if' block to take the test name as
 an optional argument.  The entire test suite will be searched for the
 named test.  This trick also saves us a recompile when we debug.
 
-We've placed each test suite in it's own file, but that is not
+We've placed each test suite in its own file, but that is not
 necessary.  We could build several test suites in the same file, even
 nesting them.  We can even add mixtures of test functions and test
 suites to the same parent test suite.  Loops will give trouble,
@@ -1301,7 +1301,7 @@ We also have the schema fixture, the 'create_schema()' and
 still attached to the inner 'suite'.
 
 In the real world we would probably place the connection
-fixture in it's own file...
+fixture in its own file...
 
 [source,c]
 -----------------------
@@ -1566,7 +1566,7 @@ Ensure(one_word_stream_gives_one_word_line) {
 }
 -----------------------
 
-I've been a bit naughty.  As each test runs in it's own process, I
+I've been a bit naughty.  As each test runs in its own process, I
 haven't bothered to free the pointers to the paragraphs.  I've just
 let the operating system do it.  Purists may want to add the extra
 clean up code.
@@ -1577,7 +1577,7 @@ throw a test failure.  This is overly restrictive, as our
 'read_paragraph()' function could quite legitimately call the stream
 after it had run off of the end.  OK, that would be odd behaviour, but
 that's not what we are testing here.  If we were, it would be placed
-in a test of it's own.  The 'always_expect()' call tells *Cgreen* to
+in a test of its own.  The 'always_expect()' call tells *Cgreen* to
 keep going after the first three letters, allowing extra calls.
 
 As we build more and more tests, they start to look like a
@@ -1783,8 +1783,8 @@ Ensure(one_character_is_made_into_a_one_letter_paragraph) {
 
 Where are the assertions?
 
-Unlike our earlier stub, 'reader()' can now check it's parameters.  In
-object oriented circles, an object that checks it's parameters as well
+Unlike our earlier stub, 'reader()' can now check its parameters.  In
+object oriented circles, an object that checks its parameters as well
 as simulating behaviour is called a mock object.  By analogy
 'reader()' is a mock function, or mock callback.
 
@@ -2623,7 +2623,7 @@ Although chaining to the underlying 'reporter_start()'
 and 'reporter_finish()' functions is optional, I want to
 make use of some of the facilities later.
 
-Our output meanwhile, is making it's first tentative steps...
+Our output meanwhile, is making its first tentative steps...
 
 [source,xml]
 -----------------------
