@@ -334,6 +334,7 @@ static int discover_tests_in(const char* test_library, TestItem* test_items, con
                 printf("Discovered %s:%s (%s)\n", suite_name, test_name, function_name);
                 free(suite_name);
                 free(test_name);
+                free(function_name);
             }
             if (register_test(test_items, maximum_number_of_test_items, specification_name) < 0) {
 		ret = -1;
