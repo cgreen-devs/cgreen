@@ -135,9 +135,15 @@ install(
 
 add_library(${CGREEN_STATIC_LIBRARY} STATIC ${cgreen_SRCS})
 
-target_link_libraries(${CGREEN_STATIC_LIBRARY} 
+if (WITH_CXX)
+  target_link_libraries(${CGREEN_STATIC_LIBRARY} 
+    ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
+  )    
+endif (WITH_CXX)
+
+target_link_libraries(${CGREEN_STATIC_LIBRARY}
   ${CGREEN_LINK_LIBRARIES}
-  ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
+  ${MATH_LIB}
 )
 
 set_target_properties(
