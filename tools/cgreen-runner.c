@@ -12,6 +12,7 @@
 /*----------------------------------------------------------------------*/
 static int file_exists(const char *filename)
 {
+    if (! filename) return 0;
     return (access(filename, F_OK) == 0);
 }
 
@@ -44,15 +45,21 @@ static void cleanup()
     if (options) free(options);
 }
 
-static const char *get_a_suite_name(const char *suite_option, const char *test_library_name) {
-    const char *suite_name;
+static char* get_a_suite_name(const char *suite_option, const char *test_library_name) {
     if (suite_option == NULL) {
-        suite_name = basename(strdup(test_library_name));
-        if (strchr(suite_name, '.'))
-            *strchr(suite_name, '.') = '\0';
+        char *suite_name;
+        char *s;
+        /* basename can return the parameter or an internal static string. Work around this. */
+        s = strdup(test_library_name);
+        suite_name = strdup(basename(s));
+        free(s);
+        if ((s = strchr(suite_name, '.'))) {
+            *s = '\0';
+        }
         return suite_name;
-    } else
-        return suite_option;
+    } else {
+        return strdup(suite_option);
+    }
 }
 
 
@@ -158,9 +165,11 @@ int main(int argc, const char **argv) {
 
         status = runner(reporter, test_library, suite_name, test_name, verbose, no_run);
         if (status != 0) {
-            printf("Library %s resulted in error status: %i\n", test_library, status);
+            printf("Library %s with test %s/%s resulted in error status: %i\n", test_library, suite_name, test_name, status);
             return status;
         }
+
+        free((void*)suite_name);
     }
     
     return EXIT_SUCCESS;

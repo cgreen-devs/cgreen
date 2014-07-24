@@ -21,8 +21,9 @@ static char SPEC_NAME[] = CGREEN_SPEC_PREFIX CGREEN_SEPARATOR CONTEXT_NAME CGREE
 
 Ensure(Runner, can_demangle_specification_to_function_name) {
     // NOTE: Must have the test name duplicated in the assert to compare to the actual function name
-    assert_that(function_name_from_specname(STRINGIFY(spec_name(Runner, can_demangle_specification_to_function_name))),
-                is_equal_to_string(__FUNCTION__));
+    char *function_name = function_name_from_specname(STRINGIFY(spec_name(Runner, can_demangle_specification_to_function_name)));
+    assert_that(function_name, is_equal_to_string(__FUNCTION__));
+    free(function_name);
 }
 
 
