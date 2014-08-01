@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<page title="Cgreen" file="index.html">
-	<page title="Cgreen test suites" file="cgreen_suites.html"/>
-	<page title="Mocking functions" file="mock_callbacks.html"/>
-	<page title="Cgreen reporting" file="cgreen_reporter.html"/>
-</page>
