@@ -17,6 +17,8 @@
 #include "wincompat.h"
 #endif
 
+#include "utils.h"
+
 #ifdef __cplusplus
 namespace cgreen {
 #endif
@@ -66,7 +68,7 @@ static Constraint *create_constraint_expecting(intptr_t expected_value, const ch
     Constraint *constraint = create_constraint();
 
     constraint->expected_value = expected_value;
-    constraint->expected_value_name = strdup(expected_value_name);
+    constraint->expected_value_name = string_dup(expected_value_name);
 
     return constraint;
 }

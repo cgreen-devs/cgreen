@@ -25,6 +25,7 @@ set(test_library_SRCS
   constraint_tests.c
   cute_reporter_tests.c
   messaging_tests.c
+  message_formatting_tests.c
   mocks_tests.c
   parameters_test.c
   reflective_tests.c

@@ -58,6 +58,7 @@ set(cgreen_SRCS
   string_comparison.c
   suite.c
   text_reporter.c
+  utils.c
   vector.c
 )
 

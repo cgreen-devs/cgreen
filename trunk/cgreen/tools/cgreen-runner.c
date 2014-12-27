@@ -1,5 +1,6 @@
 #include <cgreen/cgreen.h>
 #include "xml_reporter.h"
+#include "utils.h"
 
 #include <unistd.h>
 #include <libgen.h>
@@ -50,15 +51,15 @@ static char* get_a_suite_name(const char *suite_option, const char *test_library
         char *suite_name;
         char *s;
         /* basename can return the parameter or an internal static string. Work around this. */
-        s = strdup(test_library_name);
-        suite_name = strdup(basename(s));
+        s = string_dup(test_library_name);
+        suite_name = string_dup(basename(s));
         free(s);
         if ((s = strchr(suite_name, '.'))) {
             *s = '\0';
         }
         return suite_name;
     } else {
-        return strdup(suite_option);
+        return string_dup(suite_option);
     }
 }
 
