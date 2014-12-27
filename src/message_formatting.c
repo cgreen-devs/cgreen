@@ -113,6 +113,56 @@ char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
 }
 
 
+static char *next_percent_sign(const char *s) {
+    return strchr(s, '%');
+}
+
+size_t count_percent_signs(char const *s)
+{
+    size_t count = 0;
+    char const *p = next_percent_sign(s);
+    while (p != NULL) {
+        count++;
+        p = next_percent_sign(p+1);
+    }
+    return count;
+}
+
+
+char *copy_while_doubling_percent_signs(char *string, char const *original)
+{
+    char *destination = string;
+    const char *source = original;
+    const char *next = next_percent_sign(source);
+    for (; next != NULL; next = next_percent_sign(next+1)) {
+        size_t len = next - source + 1;
+        memcpy(destination, source, len);
+        destination += len;
+        *destination++ = '%';
+        source = next+1;
+    }
+    strcpy(destination, source);
+
+    return string;
+}
+
+
+void double_all_percent_signs_in(char **original)
+{
+    size_t percent_count = count_percent_signs(*original);
+    if (percent_count == 0) {
+        return;
+    }
+    char *new_string = (char *)malloc(strlen(*original) + percent_count + 1);
+    if (new_string == NULL) {
+        return;
+    }
+    copy_while_doubling_percent_signs(new_string, *original);
+    free(*original);
+    *original = new_string;
+}
+
+
 char *failure_message_for(Constraint *constraint, const char *actual_string, intptr_t actual) {
     char actual_value_string[32];
     const char *actual_value_constraint_name = "Expected [%s] to [%s]";
@@ -175,6 +225,10 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
                      constraint->expected_value_message,
                      (const char *)constraint->expected_value);
         }
+        /* The final string may have percent characters, so, since it is
+           later used in a (v)printf, we have to double them
+        */
+        double_all_percent_signs_in(&message);
         return message;
     }
 

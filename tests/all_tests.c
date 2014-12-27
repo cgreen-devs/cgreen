@@ -16,6 +16,7 @@ TestSuite *mock_tests();
 TestSuite *breadcrumb_tests();
 TestSuite *cute_reporter_tests();
 TestSuite *unit_tests();
+TestSuite *message_formatting_tests();
 TestSuite *collector_tests();
 
 int main(int argc, char **argv) {
@@ -23,6 +24,7 @@ int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
     TestReporter *reporter = create_text_reporter(); 
     add_suite(suite, messaging_tests());
+    add_suite(suite, message_formatting_tests());
     add_suite(suite, assertion_tests());
 #ifdef __cplusplus
     add_suite(suite, cpp_assertion_tests());
