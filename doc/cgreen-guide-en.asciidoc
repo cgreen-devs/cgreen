@@ -259,13 +259,15 @@ that one test cannot leave any state to the next, thus forcing you to
 setup the prerequisites for each test correctly and clearly.
 
 But if you want to debug any of your tests the constant 'fork()ing'
-can make that difficult or impossible.  To make debugging simpler,
-*Cgreen* does not fork() when only a single test is run by name with
-the function 'run_single_test()'. And if you want to debug, you can
-obviously set a breakpoint at that test (but note that its actual name
-might have been mangled) . But since *Cgreen* does some book-keeping
-before actually getting to the test, a better function is the one
-simply called 'run()'.
+can make that difficult or impossible. Cygwin is one example of an
+environment where debugging forks just doesn't work.
+
+To make debugging simpler, *Cgreen* does not fork() when only a single
+test is run by name with the function 'run_single_test()'. And if you
+want to debug, you can obviously set a breakpoint at that test (but
+note that its actual name might have been mangled) . But since
+*Cgreen* does some book-keeping before actually getting to the test, a
+better function is the one simply called 'run()'.
 
 Building this scaffolding...
 

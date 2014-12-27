@@ -1,5 +1,7 @@
 #include <cgreen/cgreen.h>
 
+#include "utils.h"
+
 #ifdef __cplusplus
 namespace cgreen {
 #endif

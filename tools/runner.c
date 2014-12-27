@@ -12,7 +12,9 @@
 #include <stdbool.h>
 #endif
 
+#include "utils.h"
 #include "xml_reporter.h"
+
 #include "runner.h"
 
 /* The name of a test is either a named mangled from the name of the
@@ -66,10 +68,10 @@ static char *context_name_of(const char* symbolic_name) {
     char *context_name;
 
     if (strchr(symbolic_name, ':')) {
-    	context_name = strdup(symbolic_name);
+    	context_name = string_dup(symbolic_name);
     	*strchr(context_name, ':') = '\0';
     } else {
-        context_name = strdup(CGREEN_DEFAULT_SUITE);
+        context_name = string_dup(CGREEN_DEFAULT_SUITE);
     }
 
     return context_name;
@@ -80,10 +82,10 @@ static char *context_name_of(const char* symbolic_name) {
 static char *test_name_of(const char *symbolic_name) {
     const char *colon = strchr(symbolic_name, ':');
     if (colon) {
-        return strdup(colon+1);
+        return string_dup(colon+1);
     }
 
-    return strdup(symbolic_name);
+    return string_dup(symbolic_name);
 }
 
 
@@ -121,7 +123,7 @@ static TestSuite *find_suite_for_context(ContextSuite *suites, const char *conte
 /*----------------------------------------------------------------------*/
 static ContextSuite *add_new_context_suite(TestSuite *parent, const char* context_name, ContextSuite *next) {
     ContextSuite *new_context_suite = (ContextSuite *)calloc(1, sizeof(ContextSuite));
-    new_context_suite->context_name = strdup(context_name);
+    new_context_suite->context_name = string_dup(context_name);
     new_context_suite->suite = create_named_test_suite(context_name);
     new_context_suite->next = next;
     add_suite_(parent, context_name, new_context_suite->suite);
@@ -178,7 +180,7 @@ static const char *position_of_context_name(const char *symbol) {
 /*----------------------------------------------------------------------*/
 static char *test_name_from_specname(const char *spec_name) {
     const char *context_name_position = position_of_context_name(spec_name);
-    char *test_name_position = strdup(strstr(context_name_position, CGREEN_SEPARATOR) + strlen(CGREEN_SEPARATOR));
+    char *test_name_position = string_dup(strstr(context_name_position, CGREEN_SEPARATOR) + strlen(CGREEN_SEPARATOR));
 
     *strstr(test_name_position, CGREEN_SEPARATOR) = '\0';
     return test_name_position;
@@ -188,7 +190,7 @@ static char *test_name_from_specname(const char *spec_name) {
 /*----------------------------------------------------------------------*/
 static char *context_name_from_specname(const char *spec_name) {
     const char *context_name_position = position_of_context_name(spec_name);
-    char *context_name = strdup(context_name_position);
+    char *context_name = string_dup(context_name_position);
     *strstr(context_name, CGREEN_SEPARATOR) = '\0';
 
     return context_name;
@@ -198,7 +200,7 @@ static char *context_name_from_specname(const char *spec_name) {
 /*----------------------------------------------------------------------*/
 static char *function_name_from_specname(const char *spec_name) {
     const char *context_name_position = position_of_context_name(spec_name);
-    char *function_name_position = strdup(context_name_position);
+    char *function_name_position = string_dup(context_name_position);
     *(function_name_position+strlen(function_name_position)-strlen(CGREEN_SEPARATOR)) = '\0';
 
     return function_name_position;
@@ -286,7 +288,7 @@ static int register_test(TestItem *test_items, int maximum_number_of_tests, char
         return -1;
     }
 
-    test_items[number_of_tests].specification_name = strdup(specification_name);
+    test_items[number_of_tests].specification_name = string_dup(specification_name);
     test_items[number_of_tests].context_name = context_name_from_specname(specification_name);
     test_items[number_of_tests].test_name = test_name_from_specname(specification_name);
     test_items[number_of_tests+1].specification_name = NULL;
@@ -360,11 +362,11 @@ int runner(TestReporter *reporter, const char *test_library_name,
     memset(discovered_tests, 0, sizeof(discovered_tests));
 
     if (discover_tests_in(test_library_name, discovered_tests, MAXIMUM_NUMBER_OF_TESTS, verbose) < 0)
-	return 3;
+        return 3;
 
     if (count(discovered_tests) == 0) {
         printf("No tests found in '%s'.\n", test_library_name);
-	return 1;
+        return 1;
     }
 
     if (verbose)
