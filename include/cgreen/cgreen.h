@@ -7,3 +7,4 @@
 #include <cgreen/assertions.h>
 #include <cgreen/constraint_syntax_helpers.h>
 #include <cgreen/runner.h>
+#include <cgreen/boxed_double.h>
