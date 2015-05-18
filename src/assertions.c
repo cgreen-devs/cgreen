@@ -95,7 +95,7 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
     boxed_actual = (BoxedDouble*)box_double(actual);
 
     (*get_test_reporter()->assert_true)(get_test_reporter(), file, line, (*constraint->compare)(constraint, (intptr_t)boxed_actual),
-            "Expected [%s] to [%s] [%s] within [%d] significant figures"
+            "Expected [%s] to [%s] [%s] within [%d] significant figures\n"
             "\t\tactual value:\t%08f\n"
             "\t\texpected value:\t%08f",
             expression,
