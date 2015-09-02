@@ -1,4 +1,5 @@
 #ifdef WIN32
+#include "config.h"
 #include "runner.h"
 #include "cgreen/internal/runner_platform.h"
 #include "cgreen/messaging.h"
@@ -17,7 +18,11 @@ static void run_test_in_its_own_process_child(TestSuite *suite, CgreenTest *test
 
 static void CALLBACK stop(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
+#ifdef INTERNAL_WITH_GCOV
+    exit(EXIT_SUCCESS);
+#else
     _exit(EXIT_SUCCESS);
+#endif
 }
 
 void die_in(unsigned int seconds) {

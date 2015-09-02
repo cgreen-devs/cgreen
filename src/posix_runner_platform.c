@@ -2,6 +2,7 @@
 #define _GNU_SOURCE
 #endif
 
+#include "config.h"
 #include "runner.h"
 #include "cgreen/internal/runner_platform.h"
 #include <stdio.h>
@@ -80,7 +81,11 @@ void run_specified_test_if_child(TestSuite *suite, TestReporter *reporter){
 }
 
 static void stop(void) {
+#ifdef INTERNAL_WITH_GCOV
+    exit(EXIT_SUCCESS);
+#else
     _exit(EXIT_SUCCESS);
+#endif
 }
 
 static void ignore_ctrl_c(void) {
