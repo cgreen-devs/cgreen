@@ -1,7 +1,5 @@
 sudo: false
 language: c
-virtualenv:
-  system_site_packages: true
 
 # Build matrix
 compiler:
@@ -10,7 +8,6 @@ compiler:
 env:
   - BUILD_SHARED_LIBS="ON"
   - BUILD_SHARED_LIBS="OFF"
-lang:
   - WITH_CXX="ON"
   - WITH_CXX="OFF"
 
