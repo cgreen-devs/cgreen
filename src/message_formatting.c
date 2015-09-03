@@ -113,7 +113,7 @@ char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
 }
 
 
-static char *next_percent_sign(const char *s) {
+static const char *next_percent_sign(const char *s) {
     return strchr(s, '%');
 }
 

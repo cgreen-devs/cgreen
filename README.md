@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/cgreen-devs/cgreen.svg?branch=master)](https://travis-ci.org/cgreen-devs/cgreen)
+Linux: [![Build Status](https://travis-ci.org/cgreen-devs/cgreen.svg?branch=master)](https://travis-ci.org/cgreen-devs/cgreen)
+Cygwin: [![Build Status](http://ci.alanif.se:8080/buildStatus/icon?job=Cgreen)](http://ci.alanif.se:8080/job/Cgreen/)
 
 Cgreen
 ======
