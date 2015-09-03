@@ -1,5 +1,8 @@
+[![Build Status](https://travis-ci.org/cgreen-devs/cgreen.svg?branch=master)](https://travis-ci.org/cgreen-devs/cgreen)
+
 Cgreen
 ======
+
 You probably got this package from...
 http://cgreen.sourceforge.net/projects/cgreen/
 

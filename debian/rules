@@ -18,7 +18,8 @@ configure-stamp:
 	[ -d $(BUILD) ] || mkdir $(BUILD)
 	cd $(BUILD) && cmake $(CURDIR) -DCMAKE_INSTALL_PREFIX="/usr" \
 		-DCMAKE_SKIP_RPATH=ON \
-		-DCMAKE_VERBOSE_MAKEFILE=ON
+		-DCMAKE_VERBOSE_MAKEFILE=ON \
+		-DLIB_INSTALL_DIR=/usr/lib
 	touch configure-stamp
 
 build: configure build-stamp
