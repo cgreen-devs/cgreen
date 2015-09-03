@@ -25,16 +25,23 @@ and also allows you to use any application code in your tests.
 
 Here are some of its features:
 
+- Fluent API resulting in very readable tests
+- Expressive and clear output using the default reporter
+- Extensible reporting mechanism
+- Extensive and expressive constraints for many datatypes
 - Fully composable test suites
-- 'setup()' and 'teardown()' for tests and test suites
-- Each test runs in its own process
+- BDD-flavoured test declarations with Before and After declarations
+- Each test runs in its own process for test suite robustness
 - An isolated test can be run in a single process for debugging
-- Ability to mock functions
-- The reporting mechanism can be easily extended
-- Automatic discovery of tests
+- Fully functional mocks, both strict and loose
+- Automatic discovery and running of tests using dynamic library inspection
+
+*Cgreen* also supports the classic xUnit-style assertions for easy
+ porting from other frameworks.
         
-*Cgreen* was primarily developed to support C programming, but there
-is also support for C++.
+*Cgreen* was initially developed to support C programming, but there
+is also excellent support for C++. It was initially a spinoff from a
+research project at Wordtracker and created by Marcus Baker.
 
 
 Cgreen - Vanilla or Chocolate?
@@ -46,18 +53,17 @@ tools. *Cgreen* was born in this wave and have many similarities to
 the xUnit family.
 
 But TDD evolved over time and modern thinking and practice is more
-along the lines of BDD, an abbreviation of Behaviour Driven
-Development, made popular by people like Dan North and frameworks like
-JBehave, RSpec, Cucumber and Jasmine.
+along the lines of BDD, an acronym for Behaviour Driven Development,
+made popular by people like Dan North and frameworks like JBehave,
+RSpec, Cucumber and Jasmine.
 
-*Cgreen* follows this trend and has evolved to embrace BDD-style
-testing. Although the fundamental mechanisms in TDD and BDD are
-much the same, the shift in focus by changing wording from 'tests' to
-'behaviour specifications' is significant.
+*Cgreen* follows this trend and has evolved to embrace a BDD-flavoured
+style of testing. Although the fundamental mechanisms in TDD and BDD
+are much the same, the shift in focus by changing wording from 'tests'
+to 'behaviour specifications' is very significant.
 
-This document will present TDD-style Cgreen first and then go on to
-describe the minor differences that will allow you to think, drive and
-test in a BDD-ish fashion.
+This document will present *Cgreen* using the more modern and better
+BDD-style. In a later section the classic TDD API will be listed.
 
 Installing Cgreen
 ~~~~~~~~~~~~~~~~~
@@ -75,7 +81,7 @@ for your system.
 Installing from source
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The second way is indicated for developers and advanced
+The second way is available for developers and advanced
 users. Basically this consists of fetching the sources of the project
 and compiling them. To do this you need the http://www.cmake.org[CMake]
 build system.
@@ -84,52 +90,76 @@ When you have the CMake tool, the steps are:
 
 -----------------------------------------
 tar -zxpvf cgreen.tar.gz
-mkdir cgreen-build
-cd cgreen-build
-cmake ../cgreen
 make
 make test    
 make install
 -----------------------------------------
 
-(On cygwin you need to install before the tests can be run.)
+(FIXME: On cygwin you need to install before running the tests, since
+the freshly built DLL:s are not automatically used when running the
+tests. See https://github.com/cgreen-devs/cgreen/issues/8[GitHub issue
+#8].)
 
-As you can see, we create a separate build directory before going
-there and building. This is called an 'out of source build'. It
-compiles *Cgreen* from outside the sources directory. This helps the
-overall file organization and enables multi-target builds from the
-same sources by leaving the complete source tree untouched.
+The initial 'make' command will configure the build process and create
+a separate +build+ directory before going there and building using
+*CMake*. This is called an 'out of source build'. It compiles *Cgreen*
+from outside the sources directory. This helps the overall file
+organization and enables multi-target builds from the same sources by
+leaving the complete source tree untouched. The top level +Makefile+
+will create +build/build-c+ and +build/build-c+++ which houses the C
+and $$C++$$ builds respectively.
 
-Is possible to use the +Makefile+. This file is used to compile and
-test *Cgreen* without the need of CMake tool. However it does not
-contain the rules to install on your system.
+NOTE: Experienced users may tweak the build configurations by going to
+the appropriate build subdirectory and use 'ccmake ../..' to modify
+the build configuration in that subtree. Creating an extra build
+subdirectory with a name starting with +build-+ is also possible. The
++Makefile+ will automatically pick that up and build there too.
 
-Both methods will create a library (on unix called +libcgreen.so+)
-which can be used in conjunction with the +cgreen.h+ header file to
-compile test code. The created library is installed in the system, by
-default in the +/usr/local/lib/+.
+The build process will create a library (on unix called
++libcgreen.so+) which can be used in conjunction with the +cgreen.h+
+header file to compile test code. The created library is installed in
+the system, by default in the +/usr/local/lib/+.
 
-We'll first write a test to confirm everything is working. Let's start
-with a simple test module with no tests, called +first_test.c+...
+We will demonstrate the use of *CGreen* by first writing a test to
+confirm everything is working. Let's start with a simple test module
+with no tests, called +first_test.c+...
 
 [source,c]
 ---------------------------------------
 #include <cgreen/cgreen.h>
 
+Describe(Cgreen);
+
+BeforeEach(Cgreen) {}
+AfterEach(Cgreen) {}
+
 int main(int argc, char **argv) {
-  TestSuite *suite = create_test_suite();
-  return run_test_suite(suite, create_text_reporter());
+    TestSuite *suite = create_test_suite();
+    return run_test_suite(suite, create_text_reporter());
 }
 ---------------------------------------
 
 This is a very unexciting test. It just creates an empty test suite
 and runs it.  It's usually easier to proceed in small steps, though,
 and this is the smallest one I could think of. The only complication
-is the +cgreen.h+ header file.  Here I am assuming we have the
-*Cgreen* folder in the include search path to ensure compilation
-works, otherwise you'll need to add that in the compilation command.
+is the +cgreen.h+ header file and the mysterious looking
+"declarations" at the beginning of the file.
 
-Building this test is, of course, trivial...
+The BDD flavoured *Cgreen* notation calls for an Subject Under Test
+(SUT), or a 'context'. This gives a context to the tests and it also
+makes it more natural to talk about which module or class is actually
+responsible for the functionality we are expressing. In one way we are
+'describing', or spec'ing, the functionality of the SUT. That's what
+the 'Describe();' does. And for technical reasons (actually
+requirements of the C language), you must declare the 'BeforeEach()'
+and 'AfterEach()' functions even if they are empty. (You will get
+strange errors if you don't!)
+
+I am assuming we have the *Cgreen* folder in the include search
+path to ensure compilation works, otherwise you'll need to add that in
+the compilation command.
+
+Then, building this test is, of course, trivial...
 
 -----------------------------
 gcc -c first_test.c
@@ -157,38 +187,46 @@ Let's add a meaningless test or two so that you can see how it runs...
 -----------------------------
 #include <cgreen/cgreen.h>
 
-Ensure(this_test_should_pass) {
-    assert_that(1 == 1);
+Describe(Cgreen);
+
+BeforeEach(Cgreen) {}
+AfterEach(Cgreen) {}
+
+Ensure(Cgreen, passes_this_test) {
+    assert_that(1, is_equal_to(1));
 }
 
-Ensure(this_test_should_fail) {
+Ensure(Cgreen, fails_this_test) {
     assert_that(0, is_equal_to(1));
 }
 
 int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
-    add_test(suite, this_test_should_pass);
-    add_test(suite, this_test_should_fail);
-    return run_test_suite(suite, create_text_reporter());
+    add_test_with_context(suite, Cgreen, passes_this_test);
+    add_test_with_context(suite, Cgreen, fails_this_test);
+    if (argc > 1)
+        return run_single_test(suite, argv[1], create_text_reporter());
+    else
+        return run_test_suite(suite, create_text_reporter());
 }
 -----------------------------
 
 A test is denoted by the macro *Ensure*. You can think of a test as
 having a 'void (void)' signature. You add the test to your suite using
-'add_test()'.
+'add_test_with_context()'.
 
 On compiling and running, we now get the output...
 
 -----------------------------
 Running "main" (2 tests)...
-first_test.c:8: Test Failure: -> this_test_should_fail
-    Expected [0] to [equal] [1]
+first_test.c:13: Failure: fails_this_test
+        Expected [0] to [equal] [1]
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 -----------------------------
 
 The 'TextReporter', created by the 'create_text_reporter()' call, is
-the simplest way to output the test results. It just streams the
-failures as text.
+the easiest way to output the test results. It just streams the
+failures as intelligent and expressive text messages.
 
 Of course "0" would never equal "1", but this shows how *Cgreen*
 presents the expression that you want to assert. We can also see a
@@ -218,7 +256,7 @@ This time around we'll add a little more structure to our
 tests. Rather than having the test as a stand alone program, we'll
 separate the runner from the test cases.  That way, multiple test
 suites of test cases can be included in the 'main()' runner file.
-This makes it less work to add more tests.
+This makes it less work to add more tests later.
 
 Here is the, so far empty, test case in +words_test.c+...
 
@@ -227,7 +265,7 @@ Here is the, so far empty, test case in +words_test.c+...
 #include <cgreen/cgreen.h>
 
 TestSuite *words_tests() {
-TestSuite *suite = create_test_suite();
+  TestSuite *suite = create_test_suite();
   return suite;
 }
 -------------------------------
@@ -260,7 +298,7 @@ setup the prerequisites for each test correctly and clearly.
 
 But if you want to debug any of your tests the constant 'fork()ing'
 can make that difficult or impossible. Cygwin is one example of an
-environment where debugging forks just doesn't work.
+environment where debugging forks might be very hard.
 
 To make debugging simpler, *Cgreen* does not fork() when only a single
 test is run by name with the function 'run_single_test()'. And if you
@@ -281,31 +319,39 @@ gcc words_test.o all_tests.o -lcgreen -o all_tests
 
 -------------------------------
 Running "main" (0 tests)...
+Completed "words_tests": 0 passes, 0 failures, 0 exceptions.
 Completed "main": 0 passes, 0 failures, 0 exceptions.
 -------------------------------
 
-All this scaffolding is pure overhead, but from now on adding tests
-will be a lot easier.
+Note that we get an extra level of output here, we have both 'main'
+and 'words_tests'. That's because +all_tests.c+ adds the words test
+suite to its own (named 'main'). All this scaffolding is pure
+overhead, but from now on adding tests will be a lot easier.
 
 Here is a first test of 'split_words()' in +words_test.c+...
 
 [source,c]
 -------------------------------
-#include <cgreen/cgreen.h>;
-#include "words.h";
-#include <string.h>;
+#include <cgreen/cgreen.h>
+#include "words.h"
+#include <string.h>
 
-Ensure(word_count_returned_from_split) {
-  char *sentence = strdup("Birds of a feather");
-  int word_count = split_words(sentence);
-  assert_that(word_count, is_equal_to(4));
-  free(sentence);
+Describe(WordSplitter);
+
+BeforeEach(WordSplitter) {}
+AfterEach(WordSplitter) {}
+
+Ensure(WordSplitter, counts_words_correctly) {
+    char *sentence = strdup("Birds of a feather");
+    int word_count = split_words(sentence);
+    assert_that(word_count, is_equal_to(4));
+    free(sentence);
 }
 
 TestSuite *words_tests() {
-  TestSuite *suite = create_test_suite();
-  add_test(suite, word_count_returned_from_split);
-  return suite;
+    TestSuite *suite = create_test_suite();
+    add_test_with_context(suite, WordSplitter, counts_words_correctly);
+    return suite;
 }
 -------------------------------
 
@@ -344,10 +390,11 @@ gcc all_tests.o words_test.o words.o -lcgreen -o all_tests
 
 -------------------------------
 Running "main" (1 tests)...
-words_test.c:10: Failure: -> words_tests -> word_count_returned_from_split 
-	Expected [word_count] to [equal] [4]
-		actual value:	[0]
-		expected value:	[4]
+words_tests_2.c:15: Failure: words_tests -> counts_words_correctly
+        Expected [word_count] to [equal] [4]
+                actual value:                   [0]
+                expected value:                 [4]
+Completed "words_tests": 0 passes, 1 failure, 0 exceptions.
 Completed "main": 0 passes, 1 failure, 0 exceptions.
 -------------------------------
 
@@ -384,6 +431,7 @@ pretend we didn't notice.
 [source,c]
 ---------------------------------
 Running "main" (1 tests)...
+Completed "words_tests": 1 pass, 0 failures, 0 exceptions.
 Completed "main": 1 pass, 0 failures, 0 exceptions.
 ---------------------------------
 
@@ -394,11 +442,16 @@ into separate words...
 ---------------------------------
 #include <cgreen/cgreen.h>
 #include "words.h"
-#include <string.h>;
+#include <string.h>
 
-Ensure(word_count_returned_from_split) { ... }
+Describe(WordSplitter);
 
-Ensure(spaces_should_be_converted_to_zeroes) {
+BeforeEach(WordSplitter) {}
+AfterEach(WordSplitter) {}
+
+Ensure(WordSplitter, counts_words_correctly)...
+
+Ensure(WordSplitter, converts_spaces_to_zeroes) {
   char *sentence = strdup("Birds of a feather");
   split_words(sentence);
   int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
@@ -406,11 +459,12 @@ Ensure(spaces_should_be_converted_to_zeroes) {
   free(sentence); 
 }
 
+
 TestSuite *words_tests() {
-  TestSuite *suite = create_test_suite();
-  add_test(suite, word_count_returned_from_split);
-  add_test(suite, spaces_should_be_converted_to_zeroes);
-  return suite;
+    TestSuite *suite = create_test_suite();
+    add_test_with_context(suite, WordSplitter, counts_words_correctly);
+    add_test_with_context(suite, WordSplitter, converts_spaces_to_zeroes);
+    return suite;
 }
 ----------------------------------
 
@@ -418,10 +472,11 @@ Sure enough, we get a failure...
 
 ----------------------------------
 Running "main" (2 tests)...
-words_test.c:18: Failure: -> words_tests -> spaces_should_be_converted_to_zeroes 
-	Expected [comparison] to [equal] [0]
-		actual value:	[-32]
-		expected value:	[0]
+words_tests.c:21: Failure: words_tests -> converts_spaces_to_zeroes
+        Expected [comparison] to [equal] [0]
+                actual value:                   [-32]
+                expected value:                 [0]
+Completed "words_tests": 1 pass, 1 failure, 0 exceptions.
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ----------------------------------
 
@@ -447,10 +502,11 @@ int split_words(char *sentence) {
 
 ----------------------------------
 Running "main" (2 tests)...
-words_test.c:10: Failure: -> words_tests -> word_count_returned_from_split 
-	Expected [word_count] to [equal] [4]
-		actual value:	[2]
-		expected value:	[4]
+words_tests_5.c:13: Failure: words_tests -> counts_words_correctly
+        Expected [word_count] to [equal] [4]
+                actual value:                   [2]
+                expected value:                 [4]
+Completed "words_tests": 1 pass, 1 failure, 0 exceptions.
 Completed "main": 1 pass, 1 failure, 0 exceptions.
 ----------------------------------
 
