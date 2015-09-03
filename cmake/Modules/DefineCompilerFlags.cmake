@@ -3,10 +3,10 @@
 include(CheckCCompilerFlag)
 
 set (COMPILER_IS_CLANG FALSE) 
-if (CMAKE_CC_COMPILER_ID MATCHES "clang") 
+if (${CMAKE_C_COMPILER_ID} MATCHES "Clang") 
   set (COMPILER_IS_CLANG TRUE)
   message(CLANG)
-endif (CMAKE_CC_COMPILER_ID MATCHES "clang") 
+endif (${CMAKE_C_COMPILER_ID} MATCHES "Clang") 
 
 if (UNIX)
   if (CMAKE_COMPILER_IS_GNUCC OR COMPILER_IS_CLANG)
