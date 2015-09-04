@@ -126,17 +126,7 @@ with no tests, called +first_test.c+...
 
 [source,c]
 ---------------------------------------
-#include <cgreen/cgreen.h>
-
-Describe(Cgreen);
-
-BeforeEach(Cgreen) {}
-AfterEach(Cgreen) {}
-
-int main(int argc, char **argv) {
-    TestSuite *suite = create_test_suite();
-    return run_test_suite(suite, create_text_reporter());
-}
+include::tutorial_test/first_test0.c[]
 ---------------------------------------
 
 This is a very unexciting test. It just creates an empty test suite
@@ -170,8 +160,7 @@ gcc first_test.o -lcgreen -o first_test
 Invoking the executable should give...
 
 -----------------------------
-Running "main" (0 tests)...
-Completed "main": 0 passes, 0 failures, 0 exceptions.
+include::tutorial_test/first0.out[]
 -----------------------------
 
 All of the above rather assumes you are working in a Unix like
@@ -185,30 +174,7 @@ Let's add a meaningless test or two so that you can see how it runs...
 
 [source,c]
 -----------------------------
-#include <cgreen/cgreen.h>
-
-Describe(Cgreen);
-
-BeforeEach(Cgreen) {}
-AfterEach(Cgreen) {}
-
-Ensure(Cgreen, passes_this_test) {
-    assert_that(1, is_equal_to(1));
-}
-
-Ensure(Cgreen, fails_this_test) {
-    assert_that(0, is_equal_to(1));
-}
-
-int main(int argc, char **argv) {
-    TestSuite *suite = create_test_suite();
-    add_test_with_context(suite, Cgreen, passes_this_test);
-    add_test_with_context(suite, Cgreen, fails_this_test);
-    if (argc > 1)
-        return run_single_test(suite, argv[1], create_text_reporter());
-    else
-        return run_test_suite(suite, create_text_reporter());
-}
+include::tutorial_test/first_test1.c[]
 -----------------------------
 
 A test is denoted by the macro *Ensure*. You can think of a test as
@@ -218,15 +184,12 @@ having a 'void (void)' signature. You add the test to your suite using
 On compiling and running, we now get the output...
 
 -----------------------------
-Running "main" (2 tests)...
-first_test.c:13: Failure: fails_this_test
-        Expected [0] to [equal] [1]
-Completed "main": 1 pass, 1 failure, 0 exceptions.
+include::tutorial_test/first1.out[]
 -----------------------------
 
 The 'TextReporter', created by the 'create_text_reporter()' call, is
-the easiest way to output the test results. It just streams the
-failures as intelligent and expressive text messages.
+the easiest way to output the test results. It prints the failures as
+intelligent and expressive text messages to your console.
 
 Of course "0" would never equal "1", but this shows how *Cgreen*
 presents the expression that you want to assert. We can also see a
@@ -262,30 +225,14 @@ Here is the, so far empty, test case in +words_test.c+...
 
 [source,c]
 -------------------------------
-#include <cgreen/cgreen.h>
-
-TestSuite *words_tests() {
-  TestSuite *suite = create_test_suite();
-  return suite;
-}
+include::tutorial_test/words_test0.c[]
 -------------------------------
 
 Here is the +all_tests.c+ test runner...
 
 [source,c]
 -------------------------------
-#include <cgreen/cgreen.h>
-
-TestSuite *words_tests();
-
-int main(int argc, char **argv) {
-  TestSuite *suite = create_test_suite();
-  add_suite(suite, words_tests());
-  if (argc > 1) {
-    return run_single_test(suite, argv[1], create_text_reporter());
-  }
-  return run_test_suite(suite, create_text_reporter());
-}
+include::tutorial_test/all_tests.c[]
 -------------------------------
 
 *Cgreen* has two ways of running tests. The default is to run all
@@ -303,7 +250,7 @@ environment where debugging forks might be very hard.
 To make debugging simpler, *Cgreen* does not fork() when only a single
 test is run by name with the function 'run_single_test()'. And if you
 want to debug, you can obviously set a breakpoint at that test (but
-note that its actual name might have been mangled) . But since
+note that its actual name probably have been mangled). But since
 *Cgreen* does some book-keeping before actually getting to the test, a
 better function is the one simply called 'run()'.
 
@@ -318,9 +265,7 @@ gcc words_test.o all_tests.o -lcgreen -o all_tests
 ...and executing the result gives the familiar...
 
 -------------------------------
-Running "main" (0 tests)...
-Completed "words_tests": 0 passes, 0 failures, 0 exceptions.
-Completed "main": 0 passes, 0 failures, 0 exceptions.
+include::tutorial_test/words0.out[]
 -------------------------------
 
 Note that we get an extra level of output here, we have both 'main'
@@ -332,27 +277,7 @@ Here is a first test of 'split_words()' in +words_test.c+...
 
 [source,c]
 -------------------------------
-#include <cgreen/cgreen.h>
-#include "words.h"
-#include <string.h>
-
-Describe(WordSplitter);
-
-BeforeEach(WordSplitter) {}
-AfterEach(WordSplitter) {}
-
-Ensure(WordSplitter, counts_words_correctly) {
-    char *sentence = strdup("Birds of a feather");
-    int word_count = split_words(sentence);
-    assert_that(word_count, is_equal_to(4));
-    free(sentence);
-}
-
-TestSuite *words_tests() {
-    TestSuite *suite = create_test_suite();
-    add_test_with_context(suite, WordSplitter, counts_words_correctly);
-    return suite;
-}
+include::tutorial_test/words_test1.c[]
 -------------------------------
 
 The 'assert_that()' macro takes two parameters, the value to assert
@@ -371,9 +296,7 @@ int split_words(char *sentence);
 
 [source,c]
 -------------------------------
-int split_words(char *sentence) {
-  return 0;
-}
+include::tutorial_test/words1.c[lines=3..5]
 -------------------------------
 
 A full build later...
@@ -389,13 +312,7 @@ gcc all_tests.o words_test.o words.o -lcgreen -o all_tests
 ...and we get the more useful response...
 
 -------------------------------
-Running "main" (1 tests)...
-words_tests_2.c:15: Failure: words_tests -> counts_words_correctly
-        Expected [word_count] to [equal] [4]
-                actual value:                   [0]
-                expected value:                 [4]
-Completed "words_tests": 0 passes, 1 failure, 0 exceptions.
-Completed "main": 0 passes, 1 failure, 0 exceptions.
+include::tutorial_test/words1.out[]
 -------------------------------
 
 The breadcrumb trail following the "Failure" text is the nesting of
@@ -412,17 +329,7 @@ implementation...
 
 [source,c]
 --------------------------------
-#include <string.h>;
-
-int split_words(char *sentence) {
-  int i, count = 1;
-  for (i = 0; i < strlen(sentence); i++) {
-    if (sentence[i] == ' ') {
-      count++;
-    }
-  }
-  return count;
-}
+include::tutorial_test/words2.c[]
 ---------------------------------
 
 There is a hidden problem here, but our tests still passed so we'll
@@ -430,9 +337,7 @@ pretend we didn't notice.
 
 [source,c]
 ---------------------------------
-Running "main" (1 tests)...
-Completed "words_tests": 1 pass, 0 failures, 0 exceptions.
-Completed "main": 1 pass, 0 failures, 0 exceptions.
+include::tutorial_test/words2.out[]
 ---------------------------------
 
 Time to add another test. We want to confirm that the string is broken
@@ -440,7 +345,7 @@ into separate words...
 
 [source,c]
 ---------------------------------
-#include <cgreen/cgreen.h>
+include::tutorial_test/words_test#include <cgreen/cgreen.h>
 #include "words.h"
 #include <string.h>
 
