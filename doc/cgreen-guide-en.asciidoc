@@ -1,5 +1,5 @@
-Cgreen - Unit Tests for C and C++
-===============================
+= Cgreen - Unit Tests for C and C++
+
 
 Cgreen Quickstart Guide
 -----------------------
@@ -126,7 +126,7 @@ with no tests, called +first_test.c+...
 
 [source,c]
 ---------------------------------------
-include::tutorial_test/first_test0.c[]
+include::tutorial_src/first_test0.c[]
 ---------------------------------------
 
 This is a very unexciting test. It just creates an empty test suite
@@ -160,7 +160,7 @@ gcc first_test.o -lcgreen -o first_test
 Invoking the executable should give...
 
 -----------------------------
-include::tutorial_test/first0.out[]
+include::tutorial_src/first0.out[]
 -----------------------------
 
 All of the above rather assumes you are working in a Unix like
@@ -174,7 +174,7 @@ Let's add a meaningless test or two so that you can see how it runs...
 
 [source,c]
 -----------------------------
-include::tutorial_test/first_test1.c[]
+include::tutorial_src/first_test1.c[]
 -----------------------------
 
 A test is denoted by the macro *Ensure*. You can think of a test as
@@ -184,7 +184,7 @@ having a 'void (void)' signature. You add the test to your suite using
 On compiling and running, we now get the output...
 
 -----------------------------
-include::tutorial_test/first1.out[]
+include::tutorial_src/first1.out[]
 -----------------------------
 
 The 'TextReporter', created by the 'create_text_reporter()' call, is
@@ -225,14 +225,14 @@ Here is the, so far empty, test case in +words_test.c+...
 
 [source,c]
 -------------------------------
-include::tutorial_test/words_test0.c[]
+include::tutorial_src/words_test0.c[]
 -------------------------------
 
 Here is the +all_tests.c+ test runner...
 
 [source,c]
 -------------------------------
-include::tutorial_test/all_tests.c[]
+include::tutorial_src/all_tests.c[]
 -------------------------------
 
 *Cgreen* has two ways of running tests. The default is to run all
@@ -265,19 +265,20 @@ gcc words_test.o all_tests.o -lcgreen -o all_tests
 ...and executing the result gives the familiar...
 
 -------------------------------
-include::tutorial_test/words0.out[]
+include::tutorial_src/words0.out[]
 -------------------------------
 
 Note that we get an extra level of output here, we have both 'main'
 and 'words_tests'. That's because +all_tests.c+ adds the words test
-suite to its own (named 'main'). All this scaffolding is pure
-overhead, but from now on adding tests will be a lot easier.
+suite to its own (named 'main' since it was created in the function
+'main()'). All this scaffolding is pure overhead, but from now on
+adding tests will be a lot easier.
 
-Here is a first test of 'split_words()' in +words_test.c+...
+Here is a first test for 'split_words()' in +words_test.c+...
 
 [source,c]
 -------------------------------
-include::tutorial_test/words_test1.c[]
+include::tutorial_src/words_test1.c[]
 -------------------------------
 
 The 'assert_that()' macro takes two parameters, the value to assert
@@ -296,7 +297,7 @@ int split_words(char *sentence);
 
 [source,c]
 -------------------------------
-include::tutorial_test/words1.c[lines=3..5]
+include::tutorial_src/words1.c[lines=3..5]
 -------------------------------
 
 A full build later...
@@ -312,7 +313,7 @@ gcc all_tests.o words_test.o words.o -lcgreen -o all_tests
 ...and we get the more useful response...
 
 -------------------------------
-include::tutorial_test/words1.out[]
+include::tutorial_src/words1.out[]
 -------------------------------
 
 The breadcrumb trail following the "Failure" text is the nesting of
@@ -329,60 +330,32 @@ implementation...
 
 [source,c]
 --------------------------------
-include::tutorial_test/words2.c[]
+include::tutorial_src/words2.c[]
+--------------------------------
+
+Running it gives...
+
+---------------------------------
+include::tutorial_src/words2.out[]
 ---------------------------------
 
-There is a hidden problem here, but our tests still passed so we'll
-pretend we didn't notice.
+There is actually a hidden problem here, but our tests still passed so
+we'll pretend we didn't notice.
+
+So it's time to add another test. We want to confirm that the string
+is broken into separate words...
 
 [source,c]
 ---------------------------------
-include::tutorial_test/words2.out[]
+include::tutorial_src/words_test2.c[lines=1..11]
+...
+include::tutorial_src/words_test2.c[lines=16..24]
 ---------------------------------
-
-Time to add another test. We want to confirm that the string is broken
-into separate words...
-
-[source,c]
----------------------------------
-include::tutorial_test/words_test#include <cgreen/cgreen.h>
-#include "words.h"
-#include <string.h>
-
-Describe(WordSplitter);
-
-BeforeEach(WordSplitter) {}
-AfterEach(WordSplitter) {}
-
-Ensure(WordSplitter, counts_words_correctly)...
-
-Ensure(WordSplitter, converts_spaces_to_zeroes) {
-  char *sentence = strdup("Birds of a feather");
-  split_words(sentence);
-  int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
-  assert_that(comparison, is_equal_to(0));
-  free(sentence); 
-}
-
-
-TestSuite *words_tests() {
-    TestSuite *suite = create_test_suite();
-    add_test_with_context(suite, WordSplitter, counts_words_correctly);
-    add_test_with_context(suite, WordSplitter, converts_spaces_to_zeroes);
-    return suite;
-}
-----------------------------------
 
 Sure enough, we get a failure...
 
 ----------------------------------
-Running "main" (2 tests)...
-words_tests.c:21: Failure: words_tests -> converts_spaces_to_zeroes
-        Expected [comparison] to [equal] [0]
-                actual value:                   [-32]
-                expected value:                 [0]
-Completed "words_tests": 1 pass, 1 failure, 0 exceptions.
-Completed "main": 1 pass, 1 failure, 0 exceptions.
+include::tutorial_src/words3.out[]
 ----------------------------------
 
 Not surprising given that we haven't written the code yet.
@@ -406,13 +379,7 @@ int split_words(char *sentence) {
 ...reveals our previous hack...
 
 ----------------------------------
-Running "main" (2 tests)...
-words_tests_5.c:13: Failure: words_tests -> counts_words_correctly
-        Expected [word_count] to [equal] [4]
-                actual value:                   [2]
-                expected value:                 [4]
-Completed "words_tests": 1 pass, 1 failure, 0 exceptions.
-Completed "main": 1 pass, 1 failure, 0 exceptions.
+include::tutorial_src/words4.out[]
 ----------------------------------
 
 Our earlier test now fails, because we have affected the 'strlen()'
@@ -432,8 +399,7 @@ int split_words(char *sentence) {
 ...restores order...
 		  
 ----------------------------------
-Running "main" (2 tests)...
-Completed "main": 2 passes, 0 failures, 0 exceptions.
+include::tutorial_src/words5.out[]
 ----------------------------------
 
 It's nice to keep the code under control while we are actually writing
@@ -445,8 +411,8 @@ What are mock functions?
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 The next example is more realistic. Still in our +words.h+ file, we
-want to write a function that invokes a callback on each word in a
-sentence. Something like...
+want to write a function that invokes a callback for each word found
+in a sentence. Something like...
 
 [source,c]
 ----------------------------------
@@ -455,7 +421,7 @@ words("This is a sentence", &act_on_word, &memo);
 ----------------------------------
 
 Here the 'memo' pointer is just some accumulated data that the
-'act_on_word()' callback is working with. Other people will write the
+'act_on_word()' callback might work with. Other people will write the
 'act_on_word()' function and probably many other functions like
 it. The callback is actually a flex point, and not of interest right
 now.
@@ -580,11 +546,11 @@ words_test.c:34: Test Failure: -> words_tests -> phrase_invokes_callback_for_eac
 words_test.c:35: Test Failure: -> words_tests -> phrase_invokes_callback_for_each_word
         Expected call was not made to function [mocked_callback]
 Completed "main": 4 passes, 4 failures, 0 exceptions.
------------------------------
+----------------------------
 
 The first failure tells the story. Our little 'words()' function
 called the mock callback with the entire sentence. This makes sense,
-because that was the hack to get to the next test.
+because that was the hack we did to get to the next test.
 
 Although not relevant to this guide, I cannot resist getting these
 tests to pass.  Besides, we get to use the function we created
@@ -602,7 +568,7 @@ void words(const char *sentence, void (*walker)(const char *, void *), void *mem
   }
   free(words);
 }
-------------------------------
+-----------------------------
 
 And with some work we are rewarded with...
 
