@@ -1,5 +1,5 @@
 = Cgreen - Unit Tests for C and C++
-
+Marcus Baker <marcus@lastcraft.com>, Thomas Nilsson <thomas@junovagen.se>, João Fretias <joaohf@gmail.com>
 
 Cgreen Quickstart Guide
 -----------------------
@@ -290,7 +290,7 @@ To get this to compile we need to create the +words.h+ header file...
 
 [source,c]
 -------------------------------
-int split_words(char *sentence);
+include::tutorial_src/words.h[lines=1]
 -------------------------------
 
 ...and to get the code to link we need a stub function in +words.c+...
@@ -347,9 +347,7 @@ is broken into separate words...
 
 [source,c]
 ---------------------------------
-include::tutorial_src/words_test2.c[lines=1..11]
-...
-include::tutorial_src/words_test2.c[lines=16..24]
+include::tutorial_src/words_test2.c[lines=1..11]...include::tutorial_src/words_test2.c[lines=16..24]
 ---------------------------------
 
 Sure enough, we get a failure...
@@ -364,16 +362,7 @@ The fix...
 
 [source,c]
 ----------------------------------
-int split_words(char *sentence) {
-  int i, count = 1;
-  for (i = 0; i < strlen(sentence); i++) {
-    if (sentence[i] == ' ') {
-      sentence[i] = '\0';
-      count++;
-    }
-  }
-  return count;
-}
+include::tutorial_src/words3.c[]
 ----------------------------------
 
 ...reveals our previous hack...
@@ -387,13 +376,9 @@ call in our loop.  Moving the length calculation out of the loop...
 
 [source,c]
 ----------------------------------
-int split_words(char *sentence) {
-  int i, count = 1, length = strlen(sentence);
-  for (i = 0; i < length; i++) {
+include::tutorial_src/words4.c[lines=3..5]
     ...
-  }
-  return count;
-}
+include::tutorial_src/words4.c[lines=10..-1]
 ----------------------------------
 
 ...restores order...
