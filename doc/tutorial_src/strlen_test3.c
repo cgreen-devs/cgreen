@@ -7,7 +7,7 @@ Ensure(strlen_returns_five_for_hello) {                        // <2>
 
 TestSuite *our_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, returns_five_for_hello);                   // <3>
+    add_test(suite, strlen_returns_five_for_hello);                   // <3>
     return suite;
 }
 

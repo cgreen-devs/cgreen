@@ -3,7 +3,7 @@
 
 CC = gcc -c -Wall
 LINK = gcc
-LIBDIRS = -L../build/build-c/src
+LIBDIRS = -L../../build/build-c/src
 #LIBDIRS = -L/usr/local/lib
 
 all: first0 first1 words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 schema1 crash1 crash2 stream1 stream2 stream3 stream4 stream5 stream6
@@ -69,8 +69,8 @@ strlen6: strlen_test6.o
 strlen7: strlen_test7.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
-schema1: schema_test1.o
-	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+schema1: schema_test1.o person.h
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen -lmysqlclient
 
 crash1: crash_test1.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
