@@ -826,7 +826,7 @@ especially when setting up similar tests. Take this database code for
 example...
 
 [source,c]
------------------------------
+--------------------------
 #include <cgreen/cgreen.h>
 #include <stdlib.h>
 #include <mysql/mysql.h>
@@ -892,7 +892,7 @@ methods as 'setup' and 'teardown' functions in the test suite.
 Here is the new version...
 
 [source,c]
------------------------------
+---------------------------
 ...
 static void create_schema() { ... }
 
@@ -988,7 +988,6 @@ int main(int argc, char **argv) {
 }
 -----------------------------
 
-
 When built and run, this gives...
 
 -----------------------------
@@ -1036,7 +1035,7 @@ function to help us out.
 Here is an example of time limiting a test...
 
 [source,c]
------------------------------
+---------------------------
 ...
 Ensure(will_seg_fault) { ... }
 
@@ -1083,7 +1082,7 @@ Let's combine the 'strlen()' tests with the 'Person' tests above.
 Firstly we need to remove the 'main()' calls.  E.g...
 
 [source,c]
------------------------------
+----------------------------
 #include <cgreen/cgreen.h>
 #include <string.h>
 
@@ -1102,7 +1101,7 @@ Then we can write a small runner script with a new
 'main()' function...
 
 [source,c]
------------------------------
+-----------------------
 #include "strlen_tests.c"
 #include "person_tests.c"
 
@@ -2090,7 +2089,7 @@ AfterEach(shopping_basket_for_returning_customer) {
 Ensure(shopping_basket_for_returning_customer, can_use_discounts) {
   ...
 }
------------------------------------------------
+------------------------
 
 The ''context'' would then be 'shopping_basket_for_returning_customer',
 with the SUT being the shopping basket ''class''.
@@ -2119,7 +2118,7 @@ TestSuite *shopping_basket_tests()
   add_test_with_context(suite, shopping_basket_for_returning_customer, can_use_discounts);
   return suite;
 }
------------------------
+----------------------
 
 Note that you don't need to (and shouldn't) add any setup or teardown
 to the suite. That's already taken care of by the 'BeforeEach()' and
