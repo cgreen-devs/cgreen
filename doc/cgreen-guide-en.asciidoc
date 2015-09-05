@@ -645,7 +645,7 @@ include::tutorial_src/strlen_test2.c[lines=4..16]
 
 CAUTION: You can only have tests for a single SUT in the same source file.
 
-If you use the older TDD style you skip the `Describe` macro, the
+If you use the older pure-TDD style you skip the `Describe` macro, the
 `BeforeEach` and `AfterEach` functions. You don't need a SUT in the
 `Ensure()` macro or when you add the test to the suite.
 
@@ -668,10 +668,11 @@ Legacy style assertions
 Cgreen have been around for a while, developed and matured. There is
 another style of assertions that was the initial version, a style that
 we now call the 'legacy style', because it is more aligned with the
-original, no old, unit test frameworks. If you are not interested in
+original, now old, unit test frameworks. If you are not interested in
 historical artifacts, I recommend that you skip this section.
 
-But for completeness, here are the legacy style assertion macros:
+But for completeness of documentation, here are the legacy style
+assertion macros:
 
 |=========================================================
 |*Assertion* |*Description*
@@ -719,13 +720,14 @@ are encouraged to skip the legacy style and go for the more modern
 constraints style assertions. Particularly in conjuction with the BDD
 style test notation.
 
-IMPORTANT: We strongly recommend BDD Style notation with constraints based assertions.
+IMPORTANT: We strongly recommend the use of BDD Style notation with
+constraints based assertions.
 
 A runner
 ~~~~~~~~
 
-For the tests to actually be run there needs to be a running test
-suite. We can create one especially for this test like so... (But see
+The tests are only run through running a test suite in some form. We
+can create and run one especially for this test like so... (But see
 also <<runner, Automatic Test Discovery>>.)
 
 [source,c]
@@ -773,7 +775,9 @@ gcc strlen_test.o -lcgreen -o strlen_test
 include::tutorial_src/strlen2.out[]
 -----------------------------
 
-The test messages are only shown on failure. If we break our test to see it...
+We can see that the outer test suite is called `our_tests` since it
+was in `our_tests()` we created the test suite. There are no messages shown unless there are
+failures. So, let's break our test to see it...
 
 [source,c]
 -----------------------------
