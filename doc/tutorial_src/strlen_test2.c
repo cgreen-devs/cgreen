@@ -1,13 +1,17 @@
 #include <cgreen/cgreen.h>
 #include <string.h>
 
-Ensure(strlen_of_hello_is_five) {
+Describe(Strlen);                                                 // <1>
+BeforeEach(Strlen) {}                                             // <2>
+AfterEach(Strlen) {}                                              // <3>
+
+Ensure(Strlen, returns_five_for_hello) {                          // <4>
     assert_that(strlen("Hello"), is_equal_to(5));
 }
 
 TestSuite *our_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, strlen_of_hello_is_five);
+    add_test_with_context(suite, Strlen, returns_five_for_hello); // <5>
     return suite;
 }
 
