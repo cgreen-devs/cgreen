@@ -1,5 +1,6 @@
 = Cgreen - Unit Tests for C and C++
 Marcus Baker <marcus@lastcraft.com>, Thomas Nilsson <thomas@junovagen.se>, João Fretias <joaohf@gmail.com>
+:source-highlighter: coderay
 
 Cgreen Quickstart Guide
 -----------------------
@@ -421,26 +422,11 @@ test for that...
 
 [source,c]
 ---------------------------------
+include::tutorial_src/words_test3.c[lines=1..2]
 ...
-#include <cgreen/mocks.h>
-#include <stdlib.h>
-...
-void mocked_callback(const char *word, void *memo) {
-  mock(word, memo);
-}
-
-Ensure(single_word_sentence_invokes_callback_once) {
-  expect(mocked_callback,
-    when(word, is_equal_to_string("Word")), when(memo, is_equal_to(NULL)));
-  words("Word", &mocked_callback, NULL);
-}
-
-TestSuite *words_tests() {
-  TestSuite *suite = create_test_suite();
-  ...
-  add_test(suite, single_word_sentence_invokes_callback_once);
-  return suite;
-}
+include::tutorial_src/words_test3.c[lines=27..38]
+    ...
+include::tutorial_src/words_test3.c[lines=41..-1]
 ---------------------------------
 
 What is the funny looking 'mock()' function?
@@ -452,37 +438,32 @@ to the test suite if there is a mismatch. It also returns any values
 that have been preprogrammed in the test.
  
 The test function is
-'single_word_sentence_invokes_callback_once()'. Using the 'expect()'
-macro it programs the mock function to expect a single call. That call
-will have parameters "Word" and 'NULL'. If they don't match later, we
-will get a test failure.
+'invokes_callback_once_for_single_word_sentence()'. It programs the
+mock function using the 'expect()' macro. It expects a single call,
+and that single call should use the parameters "Word" and 'NULL'. If
+they don't match, we will get a test failure.
 
-Only the test method, not the mock callback, should be added to the
+Of course, we only add the test method, not the mock callback, to the
 test suite.
 
 For a successful compile and link, the +words.h+ file must now look like...
 
 [source,c]
 ----------------------------
-int split_words(char *sentence);
-void words(const char *sentence, void (*walker)(const char *, void *), void *memo);
+include::tutorial_src/words.h[]
 ----------------------------
 
 ...and the +words.c+ file should have the stub...
 
 [source,c]
 ----------------------------
-void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
-}
+include::tutorial_src/words5.c[lines=14..15]
 ----------------------------
 
-This gives us the expected failing tests...
+This gives us the expected failing test...
 
 ----------------------------
-Running "main" (3 tests)...
-words_test.c:27: Test Failure: -> words_tests -> single_word_sentence_invokes_callback_once 
-	Expected call was not made to function [mocked_callback]
-Completed "main": 2 passes, 1 failure, 0 exceptions.
+include::tutorial_src/words6.out[]
 ----------------------------
 
 *Cgreen* reports that the callback was never invoked. We can easily get
@@ -490,14 +471,16 @@ the test to pass by filling out the implementation with...
 
 [source,c]
 ----------------------------
-void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
-  (*walker)(sentence, memo);
-}
+include::tutorial_src/words6.c[lines=14..16]
 ----------------------------
 
 That is, we just invoke it once with the whole string. This is a
-temporary measure to get us moving. Now everything should pass,
-although it's not much of a test yet.
+temporary measure to get us moving. For now everything should pass,
+although it doesn't drive much functionality yet.
+
+----------------------------
+include::tutorial_src/words7.out[]
+----------------------------
 
 That was all pretty conventional, but let's tackle the trickier case
 of actually splitting the sentence. Here is the test function we will
@@ -505,32 +488,15 @@ add to +words_test.c+...
 
 [source,c]
 ----------------------------
-Ensure(phrase_invokes_callback_for_each_word) {
-  expect(mocked_callback, when(word, is_equal_to_string("Birds")));
-  expect(mocked_callback, when(word, is_equal_to_string("of")));
-  expect(mocked_callback, when(word, is_equal_to_string("a")));
-  expect(mocked_callback, when(word, is_equal_to_string("feather")));
-  words("Birds of a feather", &mocked_callback, NULL);
-}
+include::tutorial_src/words_test4.c[lines=37..43]
 ----------------------------
 
-Each call is expected in sequence. Any failures, or left over calls,
+Each call is expected in sequence. Any failures, or left-over calls,
 or extra calls, and we get failures. We can see all this when we run
 the tests...
 
 ----------------------------
-Running "main" (4 tests)...
-words_test.c:32: Test Failure: -> words_tests -> phrase_invokes_callback_for_each_word
-        Expected [[word] parameter in [mocked_callback]] to [equal string] ["Birds"]
-                actual value:   ["Birds of a feather"]
-                expected value: ["Birds"]
-words_test.c:33: Test Failure: -> words_tests -> phrase_invokes_callback_for_each_word
-        Expected call was not made to function [mocked_callback]
-words_test.c:34: Test Failure: -> words_tests -> phrase_invokes_callback_for_each_word
-        Expected call was not made to function [mocked_callback]
-words_test.c:35: Test Failure: -> words_tests -> phrase_invokes_callback_for_each_word
-        Expected call was not made to function [mocked_callback]
-Completed "main": 4 passes, 4 failures, 0 exceptions.
+include::tutorial_src/words8.out[]
 ----------------------------
 
 The first failure tells the story. Our little 'words()' function
