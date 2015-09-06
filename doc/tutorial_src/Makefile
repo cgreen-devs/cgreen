@@ -1,16 +1,16 @@
 .IGNORE :
 .SILENT :
 
-CC = gcc -c -Wall
-LINK = gcc
+CC = gcc -c -g -Wall
+LINK = gcc -g
 LIBDIRS = -L../../build/build-c/src
 #LIBDIRS = -L/usr/local/lib
 
-all: first0 first1 words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 schema1 crash1 crash2 stream1 stream2 stream3 stream4 stream5 stream6
+all: first0 first1 words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 schema1 schema2 crash1 crash2 crash3 stream1 stream2 stream3 stream4 stream5 stream6
 	for f in $^ ; do echo $$f; ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
 
 clean:
-	rm *.o
+	rm *.o *.out
 
 first0: first_test0.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
@@ -72,10 +72,16 @@ strlen7: strlen_test7.o
 schema1: schema_test1.o person.h
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen -lmysqlclient
 
+schema2: schema_test2.o person.h
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen -lmysqlclient
+
 crash1: crash_test1.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
 crash2: crash_test2.o
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+
+crash3: crash_test3.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
 stream1: stream_test1.o stream1.o

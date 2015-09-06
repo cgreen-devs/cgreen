@@ -791,7 +791,7 @@ include::tutorial_src/strlen6.out[]
 -----------------------------
                 
 *Cgreen* starts every message with the location of the test failure so
-that the usual error message identifying tools (like emacs
+that the usual error message identifying tools (like Emacs's
 `next-error`) will work out of the box.
 
 Once we have a basic test scaffold up, it's pretty easy to add more
@@ -807,61 +807,37 @@ include::tutorial_src/strlen_test7.c[lines=12..21]
 And so on.
 
 BeforeEach and AfterEach
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 It's common for test suites to have a lot of duplicate code,
 especially when setting up similar tests. Take this database code for
 example...
 
 [source,c]
---------------------------
-include::tutorial_src/schema_test1.c
---------------------------
+------------------------------
+include::tutorial_src/schema_test1.c[]
+------------------------------
 
-We have already factored out the duplicate code into its own
-functions `create_scheme()` and `drop_schema()`, so things are not so
-bad. At least not yet. What happens when we get dozens of tests? For a
+We have already factored out the duplicate code into its own functions
+`create_scheme()` and `drop_schema()`, so things are not so bad. At
+least not yet. But what happens when we get dozens of tests? For a
 test subject as complicated as a database
 http://www.martinfowler.com/eaaCatalog/activeRecord.html[ActiveRecord],
 having dozens of tests is very likely.
 
-We can get *Cgreen* to do some of the work for us by declaring these
-methods as `setup` and `teardown` functions in the test suite.
+We can get *Cgreen* to do some of the work for us by calling these
+methods before and after each test in the test suite.
  
 Here is the new version...
 
 [source,c]
 ---------------------------
 ...
-static void create_schema() { ... }
-
-static void drop_schema() { ... }
-
-Ensure(can_add_person_to_database) {
-    Person *person = create_person();
-    set_person_name(person, "Fred");
-    save_person(person);
-    Person *found = find_person_by_name("Fred");
-    assert_that(get_person_name(person), is_equal_to_string("Fred"));
-}
-
-Ensure(cannot_add_duplicate_person) {
-    Person *person = create_person();
-    set_person_name(person, "Fred");
-    assert_that(save_person(person), is_true);
-    Person *duplicate = create_person();
-    set_person_name(duplicate, "Fred");
-    assert_that(save_person(duplicate), is_false);
-}
-
-TestSuite *person_tests() {
-    TestSuite *suite = create_test_suite();
-    set_setup(suite, create_schema);
-    set_teardown(suite, drop_schema);
-    add_test(suite, can_add_person_to_database);
-    add_test(suite, cannot_add_duplicate_person);
-    return suite;
-}
+include::tutorial_src/schema_test2.c[lines=6] 
+    ...
+include::tutorial_src/schema_test2.c[lines=11..13]
+    ...
+include::tutorial_src/schema_test2.c[lines=18..41]
 ...
 ---------------------------
 
@@ -877,11 +853,33 @@ of name property, and that this value must be unique. For the tests to
 act like a readable specification we have to remove as much mechanical
 clutter as we can.
 
-A couple of details. You can have only one `setup` and one `teardown`
-in each `TestSuite` as indicated by the names `set_setup()` and
-`set_teardown()`. Also the `teardown` function may not be run if
-the test crashes, causing some test interference. This brings us
-nicely onto the next section...
+In this particular case there are more lines that we could move from
+the tests to `BeforeEach()`:
+
+[source,c]
+---------------------------
+include::tutorial_src/schema_test2.c[lines=25..26] 
+---------------------------
+
+Of course that would require an extra variable, and it might make the
+tests less clear. And as we add more tests, it might turn out to not
+be common to all tests. This is a typical judgement call that you
+often get to make with `BeforeEach()` and `AfterEach()`.
+
+NOTE: if you use the pure-TDD notation, Not having the test subject
+named by the `Describe` macro, you can't have the `BeforeEach()` and
+`AfterEach()` either. In this case you can still run a function before
+and after every test. Just nominate any `void(void)` function by
+calling the function `set_setup()` and/or `set_teardown()` with the
+suite and the function that you want to run before/after each test,
+e.g. in the example above `set_setup(suite, create_schema);` and
+`set_teardown(suite, drop_schema);`.
+
+A couple of details. There is only one `BeforeEach()` and one
+`AfterEach()` allowed in each `TestSuite`. Also, the `AfterEach()`
+function may not be run if the test crashes, causing some test
+interference. This brings us nicely onto the next section...
+
 
 Each test in its own process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -890,10 +888,7 @@ Consider this test method...
 
 [source,c]
 -----------------------------
-Ensure(will_seg_fault) {
-    int *p = NULL;
-    (*p)++;
-}
+include::tutorial_src/crash_test1.c[lines=8..11]
 -----------------------------
 
 Crashes are not something you would normally want to have in a test
@@ -903,41 +898,27 @@ you need to tackle the problem.
 To prevent segmentation faults and other problems bringing down the
 test suites, *Cgreen* runs every test in its own process.
 
-Just before calling the `setup` function, *Cgreen* `fork()`'s. The main
-process waits for the test to complete normally or die. This includes
-the calling the `teardown` function, if any. If the test process dies,
-an exception is reported and the main test process carries on.
+Just before calling the `BeforeEach()` (or `setup`) function, *Cgreen*
+`fork()`:s. The main process waits for the test to complete normally
+or die. This includes the calling the `AfterEach()`(or `teardown`)
+function, if any. If the test process dies, an exception is reported
+and the main test process carries on.
 
 For example...
 
 [source,c]
 -----------------------------
-#include <cgreen/cgreen.h>
-#include <stdlib.h>
-
-Ensure(will_seg_fault) {
-    int *p = NULL;
-    (*p)++;
-}
-
-int main(int argc, char **argv) {
-    TestSuite *suite = create_test_suite();
-    add_test(suite, will_seg_fault);
-    run_test_suite(suite, create_text_reporter());
-}
+include::tutorial_src/crash_test1.c[]
 -----------------------------
 
 When built and run, this gives...
 
 -----------------------------
-Running "main" (1 tests)...
-crash_test.c:4: Exception: -> will_seg_fault
-        Test exited unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal
-Completed "main": 0 passes, 0 failures, 1 exception.
+include::tutorial_src/crash1.out[]
 -----------------------------
 
 The obvious thing to do now is to fire up the debugger. Unfortunately,
-the constant `fork()`'ing of *Cgreen* can be an extra complication too
+the constant `fork()`:ing of *Cgreen* can be an extra complication too
 many when debugging. It's enough of a problem to find the bug.
 
 To get around this, and also to allow the running of one test at a
@@ -954,6 +935,7 @@ crashing test...
 
 [source,c]
 -----------------------------
+include::tutorial_src/crash_test2.c[lines=13..17]
 int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
     add_test(suite, will_seg_fault);
@@ -963,43 +945,66 @@ int main(int argc, char **argv) {
 
 When run in this way, *Cgreen* will not `fork()`.
 
-This deals with the segmentation fault case, but what about a process
-that fails to complete by getting stuck in a loop?
+TIP: The function `run()` is a good place to place a breakpoint.
 
-Well, *Cgreen* will wait forever too. Using the C signal handlers, we
-can place a time limit on the process by sending it an interrupt. To
-save us writing this ourselves, *Cgreen* includes the `die_in()`
-function to help us out.
+The following is a typical session:
+
+-----------------------------------
+$ gdb crash2
+...
+(gdb) break main
+(gdb) run
+...
+(gdb) break run
+(gdb) continue
+...
+Running "main" (1 tests)...
+
+Breakpoint 2, run_the_test_code (suite=suite@entry=0x2003abb0,
+    spec=spec@entry=0x402020 <CgreenSpec__CrashExample__seg_faults_for_null_dereference__>,
+    reporter=reporter@entry=0x2003abe0) at /cygdrive/c/Users/Thomas/Utveckling/Cgreen/cgreen/src/runner.c:270
+270         run(spec);
+(gdb) step
+run (spec=0x402020 <CgreenSpec__CrashExample__seg_faults_for_null_dereference__>)
+    at /cygdrive/c/Users/Thomas/Utveckling/Cgreen/cgreen/src/runner.c:217
+217             spec->run();
+(gdb) step
+CrashExample__seg_faults_for_null_dereference () at crash_test2.c:9
+9           int *p = NULL;
+(gdb) step
+10          (*p)++;
+(gdb) step
+
+Program received signal SIGSEGV, Segmentation fault.
+0x004011ea in CrashExample__seg_faults_for_null_dereference () at crash_test2.c:10
+10          (*p)++;
+-----------------------------------
+
+Which shows exactly where the problem is.
+
+This deals with the case where your code throws an exception like
+segmentation fault, but what about a process that fails to complete by
+getting stuck in a loop?
+
+Well, *Cgreen* will wait forever too. But, using the C signal
+handlers, we can place a time limit on the process by sending it an
+interrupt. To save us writing this ourselves, *Cgreen* includes the
+`die_in()` function to help us out.
 
 Here is an example of time limiting a test...
 
 [source,c]
 ---------------------------
 ...
-Ensure(will_seg_fault) { ... }
-
-Ensure(this_would_stall) {
-    die_in(1);
-    while(0 == 0) { }
-}
-
-int main(int argc, char **argv) {
-    TestSuite *suite = create_test_suite();
-    add_test(suite, will_seg_fault);
-    add_test(suite, this_would_stall);
-    run_test_suite(suite, create_text_reporter());
-}
+include::tutorial_src/crash_test3.c[lines=8]
+    ...
+include::tutorial_src/crash_test3.c[lines=11..23]
 ---------------------------
                 
 When executed, the code will slow for a second, and then finish with...
 
 ---------------------------
-Running "main" (2 tests)...
-crash_test.c:4: Exception: -> will_seg_fault
-        Test exited in unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal
-crash_test.c:9: Exception: -> will_stall
-        Test exited in unexpectedly, likely from a non-standard exception, SIGSEGV, or other signal
-Completed "main": 0 passes, 0 failures, 2 exceptions.
+include::tutorial_src/crash3.out[]
 ---------------------------
 
 Note that you see the test results as they come in. *Cgreen* streams the
@@ -1007,8 +1012,9 @@ results as they happen, making it easier to figure out where the test
 suite has problems.
 
 Of course, if you want to set a general time limit on all your tests,
-then you can add a `die_in()` to a `setup()` function. *Cgreen* will
-then apply the limit to all of them.
+then you can add a `die_in()` to a `BeforeEach()` (or `setup()`)
+function. *Cgreen* will then apply the limit to each of the tests, of
+course.
 
 Building composite test suites
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
