@@ -12,9 +12,9 @@ clean:
 	cd build-c; make clean
 	cd build-c++; make clean
 
-test:
-	cd build-c; make test
-	cd build-c++; make test
+check test:
+	cd build-c; make check
+	cd build-c++; make check
 
 package:
 	cd build-c; make package
