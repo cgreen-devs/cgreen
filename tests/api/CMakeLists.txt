@@ -1,5 +1,5 @@
 # This subdirectory verifies that the whole user level api compiles
-# using only the publiced includes by only compiling a test file
+# using only the publiciced includes by only compiling a test file
 # containing use of the whole api
 
 if (WITH_CXX)

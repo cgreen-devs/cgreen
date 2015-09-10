@@ -5,7 +5,6 @@ include(CheckCCompilerFlag)
 set (COMPILER_IS_CLANG FALSE) 
 if (${CMAKE_C_COMPILER_ID} MATCHES "Clang") 
   set (COMPILER_IS_CLANG TRUE)
-  message(CLANG)
 endif (${CMAKE_C_COMPILER_ID} MATCHES "Clang") 
 
 if (UNIX)

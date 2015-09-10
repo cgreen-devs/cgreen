@@ -64,65 +64,89 @@ static char* get_a_suite_name(const char *suite_option, const char *test_library
 }
 
 
+/*----------------------------------------------------------------------*/
+static int initialize_option_handling(int argc, const char **argv) {
+    options = gopt_sort(&argc, argv, gopt_start(
+                                                gopt_option('x', 
+                                                            GOPT_ARG, 
+                                                            gopt_shorts('x'), 
+                                                            gopt_longs("xml")
+                                                            ),
+                                                gopt_option('s', 
+                                                            GOPT_ARG, 
+                                                            gopt_shorts('s'), 
+                                                            gopt_longs("suite")
+                                                            ),
+                                                gopt_option('v',
+                                                            GOPT_NOARG,
+                                                            gopt_shorts('v'),
+                                                            gopt_longs("verbose")
+                                                            ),
+                                                gopt_option('c',
+                                                            GOPT_NOARG,
+                                                            gopt_shorts('c'),
+                                                            gopt_longs("colours")
+                                                            ),
+                                                gopt_option('c',
+                                                            GOPT_NOARG,
+                                                            gopt_shorts('c'),
+                                                            gopt_longs("colors")
+                                                            ),
+                                                gopt_option('n',
+                                                            GOPT_NOARG,
+                                                            gopt_shorts('n'),
+                                                            gopt_longs("no-run")
+                                                            ),
+                                                gopt_option('h',
+                                                            GOPT_NOARG,
+                                                            gopt_shorts('h'),
+                                                            gopt_longs("help")
+                                                            )
+                                                )
+                        );
+	return(argc);
+}
+
+
+/*----------------------------------------------------------------------*/
+static bool run_tests_in_library(const char *suite_name_option, const char *test_name, const char *test_library, bool verbose, bool no_run) {
+	int status;
+	char *suite_name;
+
+    suite_name = get_a_suite_name(suite_name_option, test_library);
+
+    status = runner(reporter, test_library, suite_name, test_name, verbose, no_run);
+    free((void*)suite_name);
+
+    return status != 0;
+}
+
+
+
+
+/*======================================================================*/
 int main(int argc, const char **argv) {
-    int status, i;
+    int i;
 
     bool verbose = false;
     bool no_run = false;
 
     const char *prefix_option;
-    const char *suite_option = NULL;
+    const char *suite_name_option = NULL;
     const char *tmp;
 
-    bool fail = false;
+    bool any_fail = false;
 
     atexit(cleanup);
 
-    options = gopt_sort(&argc, argv, gopt_start(
-                                                      gopt_option('x', 
-                                                                  GOPT_ARG, 
-                                                                  gopt_shorts('x'), 
-                                                                  gopt_longs("xml")
-                                                                  ),
-                                                      gopt_option('s', 
-                                                                  GOPT_ARG, 
-                                                                  gopt_shorts('s'), 
-                                                                  gopt_longs("suite")
-                                                                  ),
-                                                      gopt_option('v',
-                                                                  GOPT_NOARG,
-                                                                  gopt_shorts('v'),
-                                                                  gopt_longs("verbose")
-                                                                  ),
-                                                      gopt_option('c',
-                                                                  GOPT_NOARG,
-                                                                  gopt_shorts('c'),
-                                                                  gopt_longs("colours")
-                                                                  ),
-                                                      gopt_option('c',
-                                                                  GOPT_NOARG,
-                                                                  gopt_shorts('c'),
-                                                                  gopt_longs("colors")
-                                                                  ),
-                                                      gopt_option('n',
-                                                                  GOPT_NOARG,
-                                                                  gopt_shorts('n'),
-                                                                  gopt_longs("no-run")
-                                                                  ),
-                                                      gopt_option('h',
-                                                                  GOPT_NOARG,
-                                                                  gopt_shorts('h'),
-                                                                  gopt_longs("help")
-                                                                  )
-                                                      )
-                              );
+	argc = initialize_option_handling(argc, argv);
 
     if (gopt_arg(options, 'x', &prefix_option))
         reporter = create_xml_reporter(prefix_option);
     else
         reporter = create_text_reporter();
     
-    gopt_arg(options, 's', &suite_option);
+    gopt_arg(options, 's', &suite_name_option);
 
     if (gopt_arg(options, 'v', &tmp))
         verbose = true;
@@ -150,28 +174,24 @@ int main(int argc, const char **argv) {
 
     i = 1;
     while(i < argc) {
-        const char *suite_name = suite_option;
         const char *test_name = NULL;
         const char *test_library = argv[i++];
+
+        bool fail;
 
         if (!file_exists(test_library)) {
             printf("Couldn't find library: %s\n", test_library);
             return EXIT_FAILURE;
         }
 
-        suite_name = get_a_suite_name(suite_option, test_library);
-
-        /* Check if the next argument is not a filename, thus a test name */
+        /* Check if the next argument is not a filename, thus a test name, remember and move past it */
         if (!file_exists(argv[i])) {
             test_name = argv[i++];
         }
 
-        status = runner(reporter, test_library, suite_name, test_name, verbose, no_run);
-        if (status != 0)
-            fail = true;
-
-        free((void*)suite_name);
+        fail = run_tests_in_library(suite_name_option, test_name, test_library, verbose, no_run);
+        if (fail) any_fail = true;
     }
     
-    return fail?EXIT_FAILURE:EXIT_SUCCESS;
+    return any_fail?EXIT_FAILURE:EXIT_SUCCESS;
 }
