@@ -74,6 +74,8 @@ int main(int argc, const char **argv) {
     const char *suite_option = NULL;
     const char *tmp;
 
+    bool fail = false;
+
     atexit(cleanup);
 
     options = gopt_sort(&argc, argv, gopt_start(
@@ -165,13 +167,11 @@ int main(int argc, const char **argv) {
         }
 
         status = runner(reporter, test_library, suite_name, test_name, verbose, no_run);
-        if (status != 0) {
-            printf("Library %s with test %s/%s resulted in error status: %i\n", test_library, suite_name, test_name, status);
-            return status;
-        }
+        if (status != 0)
+            fail = true;
 
         free((void*)suite_name);
     }
     
-    return EXIT_SUCCESS;
+    return fail?EXIT_FAILURE:EXIT_SUCCESS;
 }

@@ -252,7 +252,7 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
         if (verbose)
             printf(" to only run one test: '%s' ...\n", symbolic_name);
         if (!found) {
-            fprintf(stderr, "ERROR: No such test: '%s'\n", symbolic_name);
+            fprintf(stderr, "ERROR: No such test: '%s' in '%s'\n", symbolic_name, suite_name);
             return EXIT_FAILURE;
         }
         status = run_single_test(suite, test_name_of(symbolic_name), reporter);
@@ -266,7 +266,7 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
         if (number_of_matches > 0)
             status = run_test_suite(suite, reporter);
         else {
-            fprintf(stderr, "ERROR: No such test: '%s'\n", symbolic_name);
+            fprintf(stderr, "ERROR: No such test: '%s' in '%s'\n", symbolic_name, suite_name);
             status = EXIT_FAILURE;
         }
     }
