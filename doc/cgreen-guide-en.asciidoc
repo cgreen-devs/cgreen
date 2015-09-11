@@ -1,6 +1,6 @@
 = Cgreen - Unit Tests for C and C++
 Marcus Baker <marcus@lastcraft.com>, Thomas Nilsson <thomas@junovagen.se>, João Freitas <joaohf@gmail.com>
-:source-highlighter: coderay
+:source-highlighter: highlightjs
 :icons: font
 
 Cgreen Quickstart Guide
@@ -502,6 +502,7 @@ Each call is expected in sequence. Any failures, or left-over calls,
 or extra calls, and we get failures. We can see all this when we run
 the tests...
 
+[source,c]
 ----------------------------
 include::tutorial_src/words8.out[]
 ----------------------------
@@ -1028,18 +1029,7 @@ Firstly we need to remove the `main()` calls.  E.g...
 
 [source,c]
 ----------------------------
-#include <cgreen/cgreen.h>
-#include <string.h>
-
-Ensure(strlen_of_hello_is_five) { ... }
-Ensure(strlen_of_empty_string_is_zero) { ... }
-
-TestSuite *our_tests() {
-    TestSuite *suite = create_test_suite();
-    add_test(suite, strlen_of_hello_is_five);
-    add_test(suite, strlen_of_empty_string_is_zero);
-    return suite;
-}
+include::tutorial_src/suite_strlen_test.c[lines=7..8;11..12;15..-1]
 ----------------------------
 
 Then we can write a small runner script with a new
@@ -1047,21 +1037,7 @@ Then we can write a small runner script with a new
 
 [source,c]
 -----------------------
-#include "strlen_tests.c"
-#include "person_tests.c"
-
-TestSuite *our_tests();
-TestSuite *person_tests();
-
-int main(int argc, char **argv) {
-    TestSuite *suite = create_test_suite();
-    add_suite(suite, our_tests());
-    add_suite(suite, person_tests());
-    if (argc > 1) {
-        return run_single_test(suite, argv[1], create_text_reporter());
-    }
-    return run_test_suite(suite, create_text_reporter());
-}
+include::tutorial_src/suite1.c[]
 -----------------------
 
 It's usually easier to place the `TestSuite` prototypes in the runner
@@ -1070,18 +1046,30 @@ reasoning that let us drop the prototypes for the test functions in
 the actual test scripts.  We can get away with this, because the tests
 are more about documentation than encapsulation.
 
-It's sometimes handy to be able to run just a single test from the
-command line, so we added a simple `if` block to take the test name as
-an optional argument.  The entire test suite will be searched for the
-named test.  This trick also saves us a recompile when we debug.
+As we saw above, we can run a single test using the
+`run_single_test()` function, and we'd like to be able to do that from
+the command line. So we added a simple `if` block to take the test
+name as an optional argument.  The entire test suite will be searched
+for the named test.  This trick also saves us a recompile when we
+debug.
 
-We've placed each test suite in its own file, but that is not
-necessary.  We could build several test suites in the same file, even
-nesting them.  We can even add mixtures of test functions and test
-suites to the same parent test suite.  Loops will give trouble,
-however.
+When you use the BDD notation you can only have a single test subject
+(which is actually equivalent of a suite) in a single file because you
+can only have one `Describe()` macro in each file. But using this
+strategy you can create composite suites that takes all your tests and
+run them in one go.
 
-If we do place several suites in the same file, then all the suites
+CAUTION: Rewrite pending. The next couple section does not reflect the
+current best thinking. They are remnants of the TDD notation. Using
+BDD notation you would create separate contexts, each in its own file,
+with separate names, for each of the fixture cases.
+
+NOTE: If you use the TDD (non-BDD) notation you can build several test
+suites in the same file, even nesting them.  We can even add mixtures
+of test functions and test suites to the same parent test suite.
+Loops will give trouble, however.
+
+NOTE: If we do place several suites in the same file, then all the suites
 will be named the same in the breadcrumb trail in the test message.
 They will all be named after the function the create call sits in.  If
 you want to get around this, or you just like to name your test
@@ -1189,6 +1177,158 @@ TestSuite *connection_fixture(TestSuite *suite) {
 
 This allows the reuse of common fixtures across projects.
              
+[[runner, Automatic Test Discovery]]
+
+Automatic Test Discovery
+------------------------
+
+Forgot to add your test?
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+When we write a new test we focus on the details about the test we are
+trying to write. And writing tests are no trivial matter so this might
+well take a lot of brain power.
+
+So, it comes as no big surprise, that sometimes you write your test
+and then forget to add it to the suite. When we run it it appears that it
+passed on the first try! Although this *should* really make you
+suspicious, sometimes you get so happy that you just continue with
+churning out more tests and more code. It's not until some (possibly
+looong) time later that you realize, after much headache and
+debugging, that the test did not actually pass. It was never even run!
+
+There are practices to minimize the risk of this happening, such as
+always running the test as soon as you can set up the test. This way
+you will see it fail before trying to get it to pass.
+
+But it is still a practice, something we, as humans, might fail to do
+at some point. Usually this happens when we are most stressed and in
+need of certainty.
+
+The solution - the 'cgreen-runner'
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Cgreen* gives you a tool to avoid not only the risk of this
+happening, but also the extra work and extra code. It is called the
+'cgreen-runner'.
+
+The 'cgreen-runner' should come with your *Cgreen* installation if
+your platform supports the technique that is required, which is
+'programatic access to dynamic loading of libraries'. This means
+that a program can load an external library of code into memory and
+inspect it. Kind of self-inspection, or reflexion.
+
+So all you have to do is to build a dynamically loadable library of
+all tests (and of course your objects under test and other necessary
+code). Then you can run the 'cgreen-runner' and point it to the
+library. The runner will then load the library, enumerate all tests in
+it, and run every test.
+
+It's automatic, and there is nothing to forget.
+
+Using the runner
+~~~~~~~~~~~~~~~~
+
+Assuming your tests are in `first_test.c` the typical command to
+build your library using `gcc` would be
+
+--------------------------
+$ gcc -shared -o first_test.so -fPIC first_test.c -lcgreen
+--------------------------
+
+The '-fPIC' means to generate +position independent code+ which is
+required if you want to load the library dynamically.
+
+How to build a dynamically loadable shared library might vary a lot
+depending on your platform. Can't really help you there, sorry!
+
+As soon as we have linked it we can run the tests using the
+'cgreen-runner' by just giving it the shared, dynamic loadable, object
+library as an argument:
+
+-------------------------
+$ cgreen-runner first_test.so
+Discovered: 2 tests
+Opening [first_test.so] to run all discovered tests ...
+Running "main" (2 tests)...
+first_test.c:8: Test Failure: -> this_test_should_fail
+        Expected [0] to be true
+Completed "main": 1 pass, 1 failure, 0 exceptions.
+-------------------------
+
+More or less exactly the same output as when we ran our first test in
+the beginning of this quickstart tutorial.
+
+Now we can actually delete the main function in our source code. We
+don't need all this:
+
+[source,c]
+------------------------
+int main(int argc, char **argv) {
+    TestSuite *suite = create_test_suite();
+    add_test(suite, this_test_should_pass);
+    add_test(suite, this_test_should_fail);
+    return run_test_suite(suite, create_text_reporter());
+}
+------------------------
+
+It always feel good to delete code, right?
+
+We can also select which test to run:
+
+-------------------------
+$ cgreen-runner first_test.so this_test_should_fail
+Discovered: 2 tests
+Opening [first_test.so] to only run test 'this_test_should_fail' ...
+Running "main" (2 tests)...
+first_test.c:8: Test Failure: -> this_test_should_fail
+        [0] should be true
+Completed "main": 0 passes, 1 failure, 0 exceptions.
+-------------------------
+
+Cgreen Runner Options
+~~~~~~~~~~~~~~~~~~~~~
+
+Once you get the build set up right for the cgreen-runner everything
+is fairly straight-forward. But you have a few options:
+
+[horizontal]
+--xml <prefix>:: Instead of messages on stdout with the TextReporter,
+      		 write results into one XML-file per suite or context,
+		 compatible with Hudson/Jenkins CI. The filename(s)
+		 will be '<prefix>-<suite>.xml'
+--suite <name>:: Name the top level suite
+--no-run::       Don't run the tests
+--verbose::      Show progress information and list discovered tests
+--colours::      Use colours (or colors) to emphasis result (requires ANSI-capable terminal)
+
+
+Setup, Teardown and custom reporters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The cgreen-runner will only run setup and teardown functions if you
+use the BDD-ish style with `BeforeEach()` and `AfterEach()` as
+described above. The runner does not pickup `setup()` and `teardown()`
+added to suites, because it actually doesn't run suites. It discovers
+all tests and runs them one by one. The macros required by the BDD-ish
+style ensures that that also implies running the corresponding
+`BeforeEach()` and `AfterEach()` before and after each test.
+
+So, the runner requires you to use the BDD notation. But since we
+recommend that you do anyway, that's no extra problem if you are
+starting out from scratch. But see <<changing_style, Changing Style>>
+for some easy tips on how to get you there if you already have non-BDD
+tests.
+
+Further more, it is not possible to use custom reporters as outlined
+in <<reporter, Changing Cgreen Reporting>> with the runner. You
+__can__ choose between the TextReporter, which we have been seeing so
+far, and the built-in JUnit/Ant compatible XML-reporter, though.
+
+If you require another custom reporter you need to resort to the
+standard, programatic, way of invoking your tests. But, who knows...
+
+
 Mocking functions with Cgreen
 -----------------------------
         
@@ -1221,22 +1361,7 @@ How do we test this code...?
 
 [source,c]
 -----------------------
-char *read_paragraph(int (*read)(void *), void *stream) {
-    int buffer_size = 0, length = 0;
-    char *buffer = NULL;
-    int ch;
-    while ((ch = (*read)(stream)) != EOF) {
-        if (++length > buffer_size) {
-            buffer_size += 100;
-            buffer = (char *)realloc(buffer, buffer_size + 1);
-        }
-        if ((buffer[length] = ch) == '\n') {
-            break;
-        }
-        buffer[length + 1] = '\0';
-    }
-    return buffer;
-}
+include::tutorial_src/stream1.c[lines=4..-1]
 -----------------------
 
 This is a fairly generic stream filter that turns the incoming
@@ -1244,7 +1369,7 @@ characters into C string paragraphs.  Each call creates one paragraph,
 returning a pointer to it or returning 'NULL' if there is no
 paragraph.  The paragraph has memory allocated to it and the stream is
 advanced ready for the next call.  That's quite a bit of
-functionality, and there are plenty of nasty boundary conditions.  I
+functionality, and there are plenty of nasty boundary conditions. I
 really want this code tested before I deploy it.
 
 The problem is the stream dependency.  We could use a real stream, but
@@ -1958,7 +2083,7 @@ that´, makes a huge difference in thinking, and also very often in quality
 of the resulting code.
 
 The SUT - Subject Under Test
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Since BDD talks about behaviour, there has to be something that we can
 talk about as having the wanted behaviour. This is usually called the
@@ -2064,9 +2189,9 @@ TestSuite *shopping_basket_tests()
 }
 ----------------------
 
-Note that you don't need to (and shouldn't) add any setup or teardown
-to the suite. That's already taken care of by the 'BeforeEach()' and
-'AfterEach()' definitions.
+Note that you don't need to (and shouldn't) add any `setup()` or `teardown()`
+to the suite. That's already taken care of by the `BeforeEach()` and
+`AfterEach()` definitions.
 
 Now we are ready to run the tests by compiling and linking as
 always. And then running the tests through our main program.
@@ -2099,7 +2224,7 @@ Done.
 
 If you want to continue to run the tests using a hand-coded runner,
 you can do that by keeping the setup and teardown functions and their
-corresponding set_-calls.
+corresponding `set_`-calls.
 
 It's nice that this is a simple process, because you can change over
 from TDD style to BDD-ish style in small steps. You can convert one source
@@ -2110,6 +2235,9 @@ And once you have changed style you can fully benefit from the
 automatic discovery of tests as described in <<runner, Automatic Test
 Discovery>>.
 
+
+
+[[reporter, Changing Cgreen Reporting]]
 
 Changing Cgreen Reporting
 -------------------------
@@ -2698,144 +2826,21 @@ Possible other extensions include reporters that write to 'syslog',
 talk to IDE plug-ins, paint pretty printed documents or just return a boolean
 for monitoring purposes.
 
-[[runner, Automatic Test Discovery]]
+Hints and Tips
+--------------
 
-Automatic Test Discovery
-------------------------
+CAUTION: This chapter is in its infancy. It will contain some tips for
+situations that you need some help to get out of, typically strange
+error messages from the compiler. Since *Cgreen* uses some C/C++ macro
+magic this can happen and the error messages might not be straight
+forward to interpret.
 
-Forgot to add your test?
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-When we write a new test we focus on the details about the test we are
-trying to write. And writing tests are no trivial matter so this might
-well take a lot of brain power.
-
-So, it comes as no big surprise, that sometimes you write your test
-and then forget to add it to the suite. When we run it it appears that it
-passed on the first try! Although this *should* really make you
-suspicious, sometimes you get so happy that you just continue with
-churning out more tests and more code. It's not until some (possibly
-looong) time later that you realize, after much headache and
-debugging, that the test did not actually pass. It was never even run!
-
-There are practices to minimize the risk of this happening, such as
-always running the test as soon as you can set up the test. This way
-you will see it fail before trying to get it to pass.
-
-But it is still a practice, something we, as humans, might fail to do
-at some point. Usually this happens when we are most stressed and in
-need of certainty.
-
-The solution - the 'cgreen-runner'
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-*Cgreen* gives you a tool to avoid not only the risk of this
-happening, but also the extra work and extra code. It is called the
-'cgreen-runner'.
-
-The 'cgreen-runner' should come with your *Cgreen* installation if
-your platform supports the technique that is required, which is
-'programatic access to dynamic loading of libraries'. This means
-that a program can load an external library of code into memory and
-inspect it. Kind of self-inspection, or reflexion.
-
-So all you have to do is to build a dynamically loadable library of
-all tests (and of course your objects under test and other necessary
-code). Then you can run the 'cgreen-runner' and point it to the
-library. The runner will then load the library, enumerate all tests in
-it, and run every test.
-
-It's automatic, and there is nothing to forget.
-
-Using the runner
-~~~~~~~~~~~~~~~~
-
-Assuming your tests are in `first_test.c` the typical command to
-build your library using gcc would be
-
-[source, c]
---------------------------
-$ gcc -shared -o first_test.so -fPIC first_test.c -lcgreen
---------------------------
-
-The '-fPIC' means to generate +position independent code+ which is
-required if you want to load the library dynamically.
-
-How to build a dynamically loadable shared library might vary a lot
-depending on your platform. Can't really help you there, sorry!
-
-Now we can run the tests using the 'cgreen-runner':
-
-[source, c]
--------------------------
-$ cgreen-runner first_test.so
-Discovered: 2 tests
-Opening [first_test.so] to run all discovered tests ...
-Running "main" (2 tests)...
-first_test.c:8: Test Failure: -> this_test_should_fail
-        Expected [0] to be true
-Completed "main": 1 pass, 1 failure, 0 exceptions.
--------------------------
-
-More or less exactly the same output as when we ran our first test in
-the beginning of this quickstart tutorial.
-
-Now we can actually delete the main function in our source code. We
-don't need all this:
-
-[source,c]
-------------------------
-int main(int argc, char **argv) {
-    TestSuite *suite = create_test_suite();
-    add_test(suite, this_test_should_pass);
-    add_test(suite, this_test_should_fail);
-    return run_test_suite(suite, create_text_reporter());
-}
-------------------------
-
-It always feel good to delete code, right?
-
-We can also select which test to run:
-
-[source, c]
--------------------------
-$ cgreen-runner first_test.so this_test_should_fail
-Discovered: 2 tests
-Opening [first_test.so] to only run test 'this_test_should_fail' ...
-Running "main" (2 tests)...
-first_test.c:8: Test Failure: -> this_test_should_fail
-        [0] should be true
-Completed "main": 0 passes, 1 failure, 0 exceptions.
--------------------------
-
-Cgreen Runner Options
-~~~~~~~~~~~~~~~~~~~~~
-
-Once you get the build set up right for the cgreen-runner everything
-is fairly straight-forward. But you have a few options:
-
-[horizontal]
---xml <prefix>:: Instead of messages on stdout, write results into one XML-file
-                 per suite, compatible with Hudson/Jenkins CI. The filename(s)
-                 will be '<prefix>-<suite>.xml'
---suite <name>:: Name the top level suite
---no-run::       Don't run the tests
---verbose::      Show progress information and list discovered tests
---colours::      Use colours (or colors) to emphasis result (requires ANSI-capable terminal)
-
-
-Setup, Teardown and custom reporters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The cgreen-runner will only run setup and teardown functions if you use
-the BDD-ish style with 'BeforeEach()' and 'AfterEach()' as described in
-<<changing_style, Changing Style>> above.
-
-Neither is it possible to use custom reporters as outlined in the
-previous chapter. (Except for the built-in JUnit compatible XML-reporter.)
-
-In both these cases you need to resort to the standard, programatic,
-way of invoking your tests. But, who knows...
+|=========================================================
+|*Compiler error message* |*Probable cause...*
+|`"contextFor<X>" is undeclared here`|You forgot the `BeforeEach()` function
+|`undefined reference to 'AfterEach_For_<X>'`|You forgot the `AfterEach()` function
+|`CgreenSpec__<X>__<Y>__ is undeclared`|You forgot to specify the test subject/context in a BDD style test
+|=========================================================
 
 
 [appendix]

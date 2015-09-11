@@ -7,14 +7,18 @@ static int stub_stream(void *stream) {
     return (int)mock(stream);
 }
 
-Ensure(reading_lines_from_empty_stream_gives_null) {
+Describe(ParagraphReader);
+BeforeEach(ParagraphReader) {}
+AfterEach(ParagraphReader) {}
+
+Ensure(ParagraphReader, gives_null_when_reading_empty_stream) {
     always_expect(stub_stream, will_return(EOF));
     assert_that(read_paragraph(&stub_stream, NULL), is_null);
 }
 
 TestSuite *stream_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, reading_lines_from_empty_stream_gives_null);
+    add_test_with_context(suite, ParagraphReader, gives_null_when_reading_empty_stream);
     return suite;
 }
 

@@ -6,8 +6,13 @@ LINK = gcc -g
 LIBDIRS = -L../../build/build-c/src
 #LIBDIRS = -L/usr/local/lib
 
-all: first0 first1 words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 schema1 schema2 crash1 crash2 crash3 stream1 stream2 stream3 stream4 stream5 stream6
+all: with_main with_runner
+
+with_main: first0 first1 words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 schema1 schema2 crash1 crash2 crash3 suite1 stream1 stream2 stream3 stream4 stream5 stream6
 	for f in $^ ; do echo $$f; ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
+
+with_runner: runner1
+
 
 clean:
 	rm *.o *.out
@@ -84,6 +89,9 @@ crash2: crash_test2.o
 crash3: crash_test3.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
+suite1: suite1.o suite_person_test.o suite_strlen_test.o 
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen -lmysqlclient
+
 stream1: stream_test1.o stream1.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
@@ -101,4 +109,9 @@ stream5: stream_test4.o stream2.o
 
 stream6: stream_test4.o stream3.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+
+.PHONY: runner1
+runner1: first_test2.o
+	$(LINK) -shared -o first_test.so $^ $(LIBDIRS) -lcgreen
+	cgreen-runner first_test.so > $@.out
 
