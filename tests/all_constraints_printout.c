@@ -80,6 +80,14 @@ Ensure(FailureMessage,for_begins_with_string) {
     assert_that(does_not_begin_with_fourty_five, begins_with_string(fourty_five));
 }
 
+Ensure(FailureMessage,for_equal_to_double) {
+  assert_that_double(0, is_equal_to_double(1));
+}
+
+Ensure(FailureMessage,for_not_equal_to_double) {
+  assert_that_double(0, is_not_equal_to_double(0));
+}
+
 Ensure(FailureMessage,for_assert_that) {
     assert_that(0 == 1);
 }
@@ -169,6 +177,8 @@ TestSuite *all_constraints_tests() {
     add_test_with_context(suite, FailureMessage, for_contains_string);
     add_test_with_context(suite, FailureMessage, for_does_not_contain_string);
     add_test_with_context(suite, FailureMessage, for_begins_with_string);
+    add_test_with_context(suite, FailureMessage, for_equal_to_double);
+    add_test_with_context(suite, FailureMessage, for_not_equal_to_double);
     add_test_with_context(suite, FailureMessage, for_assert_that);
     add_test_with_context(suite, FailureMessage, for_mock_called_with_unexpected_parameter_value);
     add_test_with_context(suite, FailureMessage, for_mock_called_more_times_than_expected);
