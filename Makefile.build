@@ -5,16 +5,20 @@
 # Once created you can always tweak the cmake setup as with any cmake build directory
 
 all: build-c build-c++
-	for f in build-*; do cd $$f; make; cd ..; done
+	cd build-c; make
+	cd build-c++; make
 
 clean:
-	for f in build-*; do cd $$f; make clean; cd ..; done
+	cd build-c; make clean
+	cd build-c++; make clean
 
-test:
-	for f in build-*; do cd $$f; make test; cd ..; done
+check test:
+	cd build-c; make check
+	cd build-c++; make check
 
 package:
-	for f in build-*; do cd $$f; make package; cd ..; done
+	cd build-c; make package
+	cd build-c++; make package
 
 ############ Internal
 

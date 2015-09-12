@@ -1,0 +1,29 @@
+sudo: false
+language: c
+
+# Build matrix
+compiler:
+  - gcc
+  - clang
+env:
+  - BUILD_SHARED_LIBS="ON"
+  - BUILD_SHARED_LIBS="OFF"
+  - WITH_CXX="ON"
+  - WITH_CXX="OFF"
+
+addons:
+  apt:
+    packages:
+    - cmake
+
+before_install:
+  - echo `$CC --version`
+
+script:
+  - mkdir -p build
+  - cd build
+  - cmake -DWITH_CXX:BOOL=$WITH_CXX -DWITH_UNIT_TESTS:BOOL=ON -DBUILD_SHARED_LIBS:BOOL=$BUILD_SHARED_LIBS ..
+  - make -j2
+  - ctest --output-on-failure
+
+after_success:
