@@ -3,24 +3,28 @@
 
 char *read_paragraph(int (*read)(void *), void *stream);
 
-static int stub_stream(void *stream) {
+static int stream_stub(void *stream) {
     return (int)mock(stream);
 }
 
-Ensure(reading_lines_from_empty_stream_gives_null) {
-    always_expect(stub_stream, will_return(EOF));
-    assert_that(read_paragraph(&stub_stream, NULL), is_null);
+Describe(ParagraphReader);
+BeforeEach(ParagraphReader) {}
+AfterEach(ParagraphReader) {}
+
+Ensure(ParagraphReader, gives_null_when_reading_empty_stream) {
+    always_expect(stream_stub, will_return(EOF));                                 // <1>
+    assert_that(read_paragraph(&stream_stub, NULL), is_null);
 }
 
-Ensure(one_character_stream_gives_one_character_line) {
-    expect(stub_stream, will_return('a'));
-    expect(stub_stream, will_return(EOF));
-    char *line = read_paragraph(&stub_stream, NULL);
+Ensure(ParagraphReader, gives_one_character_line_for_one_character_stream) {
+    expect(stream_stub, will_return('a'));
+    expect(stream_stub, will_return(EOF));
+    char *line = read_paragraph(&stream_stub, NULL);
     assert_that(line, is_equal_to_string("a"));
     free(line);
 }
 
-Ensure(one_word_stream_gives_one_word_line) {
+Ensure(ParagraphReader, gives_one_word_line_for_one_word_stream) {
     expect(stub_stream, will_return('t'));
     expect(stub_stream, will_return('h'));
     expect(stub_stream, will_return('e'));
@@ -28,7 +32,7 @@ Ensure(one_word_stream_gives_one_word_line) {
     assert_that(read_paragraph(&stub_stream, NULL), is_equal_to_string("the"));
 }
 
-Ensure(drops_line_ending_from_word_and_stops) {
+Ensure(ParagraphReader, drops_line_ending_from_word_and_stops) {
     expect(stub_stream, will_return('t'));
     expect(stub_stream, will_return('h'));
     expect(stub_stream, will_return('e'));
@@ -36,25 +40,7 @@ Ensure(drops_line_ending_from_word_and_stops) {
     assert_that(read_paragraph(&stub_stream, NULL), is_equal_to_string("the"));
 }
 
-Ensure(single_line_ending_gives_empty_line) {
+Ensure(ParagraphReader, gives_empty_line_for_single_line_ending) {
     expect(stub_stream, will_return('\n'));
     assert_that(read_paragraph(&stub_stream, NULL), is_equal_to_string(""));
-}
-
-TestSuite *stream_tests() {
-    TestSuite *suite = create_test_suite();
-    add_test(suite, reading_lines_from_empty_stream_gives_null);
-    add_test(suite, one_character_stream_gives_one_character_line);
-    add_test(suite, one_word_stream_gives_one_word_line);
-    add_test(suite, drops_line_ending_from_word_and_stops);
-    add_test(suite, single_line_ending_gives_empty_line);
-    return suite;
-}
-
-int main(int argc, char **argv) {
-    TestSuite *suite = stream_tests();
-    if (argc > 1) {
-        return run_single_test(suite, argv[1], create_text_reporter());
-    }
-    return run_test_suite(suite, create_text_reporter());
 }
