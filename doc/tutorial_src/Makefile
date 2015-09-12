@@ -8,10 +8,10 @@ LIBDIRS = -L../../build/build-c/src
 
 all: with_main with_runner
 
-with_main: first0 first1 words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 schema1 schema2 crash1 crash2 crash3 suite1 stream1 stream2 stream3 stream4 stream5 stream6
+with_main: first0 first1 words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 schema1 schema2 crash1 crash2 crash3 suite1
 	for f in $^ ; do echo $$f; ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
 
-with_runner: runner1
+with_runner: runner1 runner2 stream0 stream1 stream2
 
 
 clean:
@@ -92,26 +92,45 @@ crash3: crash_test3.o
 suite1: suite1.o suite_person_test.o suite_strlen_test.o 
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen -lmysqlclient
 
+stream0: stream_test0.o stream1.o
+	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
+
 stream1: stream_test1.o stream1.o
-	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
+	cgreen-runner stream_tests.so > $@.out
 
 stream2: stream_test2.o stream1.o
-	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
+	cgreen-runner stream_tests.so > $@.out
 
 stream3: stream_test2.o stream2.o
-	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
+	cgreen-runner stream_tests.so > $@.out
 
 stream4: stream_test3.o stream2.o
-	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
+	cgreen-runner stream_tests.so > $@.out
 
 stream5: stream_test4.o stream2.o
-	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
+	cgreen-runner stream_tests.so > $@.out
 
 stream6: stream_test4.o stream3.o
-	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
+	cgreen-runner stream_tests.so > $@.out
 
 .PHONY: runner1
 runner1: first_test2.o
 	$(LINK) -shared -o first_test.so $^ $(LIBDIRS) -lcgreen
 	cgreen-runner first_test.so > $@.out
+
+.PHONY: runner2
+runner2: first_test2.o
+	$(LINK) -shared -o first_test.so $^ $(LIBDIRS) -lcgreen
+	cgreen-runner first_test.so Cgreen:fails_this_test > $@.out
+
+.PHONY: runner3
+runner3: first_test2.o
+	$(LINK) -shared -o first_test.so $^ $(LIBDIRS) -lcgreen
+	cgreen-runner -v first_test.so Cgreen:fails_this_test > $@.out
 
