@@ -25,22 +25,22 @@ Ensure(ParagraphReader, gives_one_character_line_for_one_character_stream) {
 }
 
 Ensure(ParagraphReader, gives_one_word_line_for_one_word_stream) {
-    expect(stub_stream, will_return('t'));
-    expect(stub_stream, will_return('h'));
-    expect(stub_stream, will_return('e'));
-    always_expect(stub_stream, will_return(EOF));
-    assert_that(read_paragraph(&stub_stream, NULL), is_equal_to_string("the"));
+    expect(stream_stub, will_return('t'));
+    expect(stream_stub, will_return('h'));
+    expect(stream_stub, will_return('e'));
+    always_expect(stream_stub, will_return(EOF));
+    assert_that(read_paragraph(&stream_stub, NULL), is_equal_to_string("the"));
 }
 
 Ensure(ParagraphReader, drops_line_ending_from_word_and_stops) {
-    expect(stub_stream, will_return('t'));
-    expect(stub_stream, will_return('h'));
-    expect(stub_stream, will_return('e'));
-    expect(stub_stream, will_return('\n'));
-    assert_that(read_paragraph(&stub_stream, NULL), is_equal_to_string("the"));
+    expect(stream_stub, will_return('t'));
+    expect(stream_stub, will_return('h'));
+    expect(stream_stub, will_return('e'));
+    expect(stream_stub, will_return('\n'));
+    assert_that(read_paragraph(&stream_stub, NULL), is_equal_to_string("the"));
 }
 
 Ensure(ParagraphReader, gives_empty_line_for_single_line_ending) {
-    expect(stub_stream, will_return('\n'));
-    assert_that(read_paragraph(&stub_stream, NULL), is_equal_to_string(""));
+    expect(stream_stub, will_return('\n'));
+    assert_that(read_paragraph(&stream_stub, NULL), is_equal_to_string(""));
 }
