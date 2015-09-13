@@ -1377,7 +1377,7 @@ How would we test this code...?
 
 [source,c]
 -----------------------
-include::tutorial_src/stream1.c[lines=4..-1]
+include::tutorial_src/read_paragraph1.c[lines=4..-1]
 -----------------------
 
 This is a fairly generic stream filter that turns the incoming
@@ -1484,7 +1484,7 @@ Oops. Our code under test doesn't work. Already we need a fix...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream2.c[lines=4..19]
+include::tutorial_src/read_paragraph2.c[lines=4..19]
 -----------------------
 
 After which everything is fine...
@@ -1554,7 +1554,7 @@ Another fix later...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream3.c[lines=4..20]
+include::tutorial_src/read_paragraph3.c[lines=4..20]
 -----------------------
 
 And we are passing again...
@@ -1564,38 +1564,27 @@ include::tutorial_src/stream6.out[]
 -----------------------
              
 There are no limits to the number of stubbed methods within a test,
-only that two stubs cannot have the same name.  So the following will
+only that two stubs cannot have the same name. The following will
 cause problems...
 
 [source,c]
 -----------------------
-static int stub_stream(void *stream) {
-    return (int)mock();
-}
-
-Ensure(bad_test) {
-    expect(stub_stream, will_return('a'));
-    do_stuff(&stub_stream, &stub_stream);
-}
+include::tutorial_src/multiple_streams1.c[lines=10..-1]
 -----------------------
 
-It will be necessary to have two stubs to make this test behave...
+You __could__ program the same stub to return values for the two
+streams, but that would make a very brittle test. Since we'd be making
+it heavily dependent on the exact internal behaviour that we are
+trying to test, or test drive, it will break as soon as we change that
+implementation. The test will also become very much harder to read and
+understand. And we really don't want that.
+
+So, it will be necessary to have two stubs to make this test behave,
+but that's not a problem...
 
 [source,c]
 -----------------------
-static int first_stream(void *stream) {
-    return (int)mock();
-}
-
-static int second_stream(void *stream) {
-    return (int)mock();
-}
-
-Ensure(good_test) {
-    expect(first_stream, will_return('a'));
-    expect(second_stream, will_return('a');
-    do_stuff(&first_stream, &second_stream);
-}
+include::tutorial_src/multiple_streams2.c[lines=10..-1]
 -----------------------
 
 We now have a way of writing fast, clear tests with no external

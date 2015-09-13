@@ -11,7 +11,7 @@ all: with_main with_runner
 with_main: first0 first1 words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 schema1 schema2 crash1 crash2 crash3 suite1
 	for f in $^ ; do echo $$f; ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
 
-with_runner: runner1 runner2 stream0 stream1 stream2
+with_runner: runner1 runner2 stream0 stream1 stream2 stream4 stream5 stream6 multiple_streams1 multiple_streams2
 
 
 clean:
@@ -92,32 +92,47 @@ crash3: crash_test3.o
 suite1: suite1.o suite_person_test.o suite_strlen_test.o 
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen -lmysqlclient
 
-stream0: stream_test0.o stream1.o
+.PHONY: stream0
+stream0: stream_test0.o read_paragraph1.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
-stream1: stream_test1.o stream1.o
+.PHONY: stream1
+stream1: stream_test1.o read_paragraph1.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
 	cgreen-runner stream_tests.so > $@.out
 
-stream2: stream_test2.o stream1.o
+.PHONY: stream2
+stream2: stream_test2.o read_paragraph1.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
 	cgreen-runner stream_tests.so > $@.out
 
-stream3: stream_test2.o stream2.o
+.PHONY: stream3
+stream3: stream_test2.o read_paragraph2.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
 	cgreen-runner stream_tests.so > $@.out
 
-stream4: stream_test3.o stream2.o
+.PHONY: stream4
+stream4: stream_test3.o read_paragraph2.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
 	cgreen-runner stream_tests.so > $@.out
 
-stream5: stream_test4.o stream2.o
+.PHONY: stream5
+stream5: stream_test4.o read_paragraph2.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
 	cgreen-runner stream_tests.so > $@.out
 
-stream6: stream_test4.o stream3.o
+.PHONY: stream6
+stream6: stream_test4.o read_paragraph3.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
 	cgreen-runner stream_tests.so > $@.out
+
+.PHONY: multiple_streams1
+multiple_streams1: multiple_streams1.c
+	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
+
+.PHONY: multiple_streams2
+multiple_streams2: multiple_streams2.c
+	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
 .PHONY: runner1
 runner1: first_test2.o
