@@ -7,7 +7,7 @@ Ensure(strlen_of_hello_is_five) {
     assert_equal_with_message(length, 5, "[%s] should be 5, but was %d", greeting, length);
 }
 
-TestSuite *our_tests() {
+ TestSuite *our_tests() {
     TestSuite *suite = create_test_suite();
     add_test(suite, strlen_of_hello_is_five);
     return suite;

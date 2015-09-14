@@ -11,6 +11,6 @@ int split_words(char *sentence) {
   return count;
 }
 
-void words(const char *sentence, void (*walker)(const char *, void *), void *memo) {
-  (*walker)(sentence, memo);
+void words(const char *sentence, void (*callback)(const char *, void *), void *memo) {
+  (*callback)(sentence, memo);
 }

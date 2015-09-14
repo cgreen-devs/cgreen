@@ -1,19 +1,17 @@
 #include <cgreen/cgreen.h>
 #include <stdlib.h>
 
-Ensure(will_seg_fault) {
+Describe(CrashExample);
+BeforeEach(CrashExample) {}
+AfterEach(CrashExample) {}
+
+Ensure(CrashExample, seg_faults_for_null_dereference) {
     int *p = NULL;
     (*p)++;
 }
 
-Ensure(will_stall) {
-    die_in(1);
-    while(1) { }
-}
-
 int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
-    add_test(suite, will_seg_fault);
-    add_test(suite, will_stall);
+    add_test_with_context(suite, CrashExample, seg_faults_for_null_dereference);
     return run_test_suite(suite, create_text_reporter());
 }

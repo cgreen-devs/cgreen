@@ -4,14 +4,18 @@
 #include "words.h"
 #include <string.h>
 
-Ensure(word_count_is_returned_from_split) {
+Describe(Words);
+BeforeEach(Words) {}
+AfterEach(Words) {}
+
+Ensure(Words, returns_word_count) {
     char *sentence = strdup("Birds of a feather");
     int word_count = split_words(sentence);
     assert_that(word_count, is_equal_to(4));
     free(sentence);
 }
 
-Ensure(spaces_are_converted_to_zeroes) {
+Ensure(Words, converts_spaces_to_zeroes) {
     char *sentence = strdup("Birds of a feather");
     split_words(sentence);
     int comparison = memcmp("Birds\0of\0a\0feather", sentence, strlen(sentence));
@@ -19,17 +23,18 @@ Ensure(spaces_are_converted_to_zeroes) {
     free(sentence); 
 }
 
+
 void mocked_callback(const char *word, void *memo) {
     mock(word, memo);
 }
 
-Ensure(single_word_sentence_invokes_callback_once) {
+Ensure(Words, invokes_callback_once_for_single_word_sentence) {
     expect(mocked_callback,
            when(word, is_equal_to_string("Word")), when(memo, is_null));
     words("Word", &mocked_callback, NULL);
 }
 
-Ensure(phrase_invokes_callback_for_each_word) {
+Ensure(Words, invokes_callback_for_each_word_in_a_phrase) {
     expect(mocked_callback, when(word, is_equal_to_string("Birds")));
     expect(mocked_callback, when(word, is_equal_to_string("of")));
     expect(mocked_callback, when(word, is_equal_to_string("a")));
@@ -39,9 +44,9 @@ Ensure(phrase_invokes_callback_for_each_word) {
 
 TestSuite *words_tests() {
     TestSuite *suite = create_test_suite();
-    add_test(suite, word_count_is_returned_from_split);
-    add_test(suite, spaces_are_converted_to_zeroes);
-    add_test(suite, single_word_sentence_invokes_callback_once);
-    add_test(suite, phrase_invokes_callback_for_each_word);
+    add_test_with_context(suite, Words, returns_word_count);
+    add_test_with_context(suite, Words, converts_spaces_to_zeroes);
+    add_test_with_context(suite, Words, invokes_callback_once_for_single_word_sentence);
+    add_test_with_context(suite, Words, invokes_callback_for_each_word_in_a_phrase);    
     return suite;
 }
