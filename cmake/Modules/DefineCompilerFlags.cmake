@@ -15,6 +15,12 @@ if (UNIX)
        add_definitions(-g -std=c99 -Wall -Wextra -Wunused)
     endif (WITH_CXX)
 
+    if (INTERNAL_WITH_GCOV)
+      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
+      set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
+      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
+    endif (INTERNAL_WITH_GCOV)
+
     add_definitions(-D_REENTRANT)           # for gmtime_r()
     add_definitions(-D_XOPEN_SOURCE)        # for popen() and pclose()
     add_definitions(-D_XOPEN_SOURCE_EXTENDED) # for strdup(), which isn't part of C99

@@ -15,15 +15,25 @@ addons:
   apt:
     packages:
     - cmake
+    - lcov
 
 before_install:
   - echo `$CC --version`
+  - gem install coveralls-lcov
+  - if [ "$CC" = "gcc" ]; then export WITH_GCOV=ON; else WITH_GCOV=OFF; fi
 
 script:
   - mkdir -p build
   - cd build
-  - cmake -DWITH_CXX:BOOL=$WITH_CXX -DWITH_UNIT_TESTS:BOOL=ON -DBUILD_SHARED_LIBS:BOOL=$BUILD_SHARED_LIBS ..
+  - cmake -DWITH_CXX:BOOL=$WITH_CXX -DWITH_UNIT_TESTS:BOOL=ON -DBUILD_SHARED_LIBS:BOOL=$BUILD_SHARED_LIBS -DINTERNAL_WITH_GCOV:BOOL=$WITH_GCOV ..
   - make -j2
   - ctest --output-on-failure
 
 after_success:
+  - if [ "$CC" = "gcc" ];
+    then
+      lcov -d tests -d src -base-directory .. -c -o coverage.info;
+      lcov --remove coverage.info '/usr/*' -o coverage.info;
+      cd ..;
+      coveralls-lcov build/coverage.info;
+    fi
