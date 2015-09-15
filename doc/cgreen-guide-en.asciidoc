@@ -727,7 +727,7 @@ constraints based assertions.
 A runner
 ~~~~~~~~
 
-The tests are only run through running a test suite in some form. We
+The tests can be run by running a test suite in some form. We
 can create and run one especially for this test like so... (But see
 also <<runner, Automatic Test Discovery>>.)
 
@@ -1029,7 +1029,11 @@ Firstly we need to remove the `main()` calls.  E.g...
 
 [source,c]
 ----------------------------
-include::tutorial_src/suite_strlen_test.c[lines=7..8;11..12;15..-1]
+include::tutorial_src/suite_strlen_test.c[lines=8]
+    ...
+include::tutorial_src/suite_strlen_test.c[lines=10..12]
+    ...
+include::tutorial_src/suite_strlen_test.c[lines=14..-1]
 ----------------------------
 
 Then we can write a small runner script with a new
@@ -1176,7 +1180,7 @@ TestSuite *connection_fixture(TestSuite *suite) {
 -----------------------
 
 This allows the reuse of common fixtures across projects.
-             
+
 [[runner, Automatic Test Discovery]]
 
 Automatic Test Discovery
