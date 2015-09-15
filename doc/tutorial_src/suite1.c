@@ -1,11 +1,11 @@
 #include <cgreen/cgreen.h>
 
-TestSuite *strlen_tests();
+TestSuite *our_tests();
 TestSuite *person_tests();
 
 int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
-    add_suite(suite, strlen_tests());
+    add_suite(suite, our_tests());
     add_suite(suite, person_tests());
     if (argc > 1) {
         return run_single_test(suite, argv[1], create_text_reporter());
