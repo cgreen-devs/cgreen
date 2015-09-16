@@ -2,15 +2,13 @@
 #
 # Will run cgreen-runner in directory $1
 # on the library $2,
-# store the output in $3.output,
-# compare it with $3.expected,
-# which can be found in directory $4
-echo $*
-ls $1/cgreen-runner $2 $3.output
-echo $1/cgreen-runner $2  $3.output
-$1/cgreen-runner $2 > $3.output
-echo cmp --silent $3.output $4/$3.expected
-ls $3.output $4/$3.expected
-#cmp --silent $3.output $4/$3.expected
-diff $3.output $4/$3.expected
-exit 1
+# remove $3 from the output and then
+# store the output in $4.output,
+# compare it with $4.expected,
+# which can be found in directory $5
+
+# Run runner on library, strip absolute file path from output and store it
+$1/cgreen-runner $2 | sed -e s#$3/##g > $4.output
+# Compare output from expected in some dir ($5)
+cmp --silent $4.output $5/$4.expected
+
