@@ -1,0 +1,11 @@
+#! /bin/sh
+#
+# Will cgreen-runner on the library $1,
+# store the output in $2.output,
+# compare it with $2.expected,
+# which can be found in $3
+echo ../../tools/cgreen-runner $1  $2.output
+../../tools/cgreen-runner $1 > $2.output
+echo cmp --silent $2.output $3/$2.expected
+cmp --silent $2.output $3/$2.expected
+
