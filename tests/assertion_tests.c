@@ -182,6 +182,7 @@ Ensure(double_differences_matter_past_significant_figures) {
     significant_figures_for_assert_double_are(4);
     assert_that_double(1.113, is_not_equal_to_double(1.115));
     assert_that_double(1.113, is_less_than_double(1.115));
+    assert_that_double(1.115, is_greater_than_double(1.113));
     assert_that_double(1113, is_not_equal_to_double(1115));
     assert_that_double(1113000, is_not_equal_to_double(1115000));
 }
