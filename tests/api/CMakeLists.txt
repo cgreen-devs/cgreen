@@ -36,4 +36,4 @@ else (WITH_CXX)
    target_link_libraries(${CGREEN_API_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 endif (WITH_CXX)
 
-add_test(NAME api_compilation_test COMMAND ${CMAKE_SOURCE_DIR}/tools/compare_test_output_to_expected $<TARGET_FILE_NAME:${CGREEN_API_TEST_LIBRARY}> ${CGREEN_API_TEST_LIBRARY} ${CMAKE_CURRENT_SOURCE_DIR})
+add_test(NAME api_compilation_test COMMAND ${CMAKE_SOURCE_DIR}/tools/compare_test_output_to_expected ${CMAKE_BINARY_DIR}/tools $<TARGET_FILE_NAME:${CGREEN_API_TEST_LIBRARY}> ${CGREEN_API_TEST_LIBRARY} ${CMAKE_CURRENT_SOURCE_DIR})
