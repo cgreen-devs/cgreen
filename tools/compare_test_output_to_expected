@@ -11,4 +11,7 @@
 $1/cgreen-runner $2 | sed -e s#$3/##g > $4.output
 # Compare output from expected in some dir ($5)
 cmp --silent $4.output $5/$4.expected
-diff $4.output $5/$4.expected
+# If not the same show diff
+rc=$?; if [[ $rc != 0 ]]; then diff -c $4.output $5/$4.expected ; fi
+
+                 

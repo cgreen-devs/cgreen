@@ -1,3 +1,4 @@
+aldfj
 Running "libcgreen_api" (6 tests)...
 tests/api/suites_with_context_api.c:12: Exception: context_api -> compiles_suite_api 
 	Test terminated with signal: Segmentation fault: 11
