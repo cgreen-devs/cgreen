@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
 
 #ifdef __cplusplus
 namespace cgreen {
@@ -97,7 +98,7 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
     (*get_test_reporter()->assert_true)(get_test_reporter(), file, line, (*constraint->compare)(constraint, (intptr_t)boxed_actual),
             "Expected [%s] to [%s] [%s] within [%d] significant figures\n"
             "\t\tactual value:\t%08f\n"
-            "\t\texpected value:\t%08f",
+            "\t\texpected value:\t%08f\n",
             expression,
             constraint->name,
             constraint->expected_value_name,
@@ -171,9 +172,22 @@ const char *show_null_as_the_string_null(const char *string) {
     return (string == NULL ? "NULL" : string);
 }
 
+
+/* TODO: these double comparison functions should move into constraints.c/h */
 bool doubles_are_equal(double tried, double expected) {
     return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(tried, expected));
 }
+
+/* there are almost certainly wrong, but can't get the neurons firing to make it right */
+/* "double" tests in all_constraints_printout and constraint_tests should all pass/fail appropriately */
+bool double_is_lesser(double actual, double expected) {
+    return actual - expected > accuracy(significant_figures, max(actual, expected));
+}
+
+bool double_is_greater(double actual, double expected) {
+    return expected - actual > accuracy(significant_figures, max(actual, expected));
+}
+/* end wrong implementations */
 
 static double accuracy(int figures, double largest) {
     return pow(10, 1 + (int)log10(largest) - figures);

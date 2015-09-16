@@ -181,6 +181,7 @@ Ensure(double_differences_do_not_matter_past_significant_figures) {
 Ensure(double_differences_matter_past_significant_figures) {
     significant_figures_for_assert_double_are(4);
     assert_that_double(1.113, is_not_equal_to_double(1.115));
+    assert_that_double(1.113, is_less_than_double(1.115));
     assert_that_double(1113, is_not_equal_to_double(1115));
     assert_that_double(1113000, is_not_equal_to_double(1115000));
 }
@@ -188,7 +189,7 @@ Ensure(double_differences_matter_past_significant_figures) {
 Ensure(double_assertions_can_have_custom_messages) {
     significant_figures_for_assert_double_are(3);
 
-    /* this passes because the difference is below the set signifigant figure */
+    /* this passes because the difference is below the set significant figure */
     assert_that_double(1.113, is_equal_to_double(1.115));
 }
 

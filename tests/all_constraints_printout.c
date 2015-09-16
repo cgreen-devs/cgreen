@@ -45,6 +45,26 @@ Ensure(FailureMessage,for_is_less_than) {
     assert_that(fourty_five, is_less_than(thirty_three));
 }
 
+Ensure(FailureMessage,for_is_equal_to_double) {
+    double four_point_five = 4.5f, three_point_three = 3.3f;
+    assert_that_double(four_point_five, is_equal_to_double(three_point_three));
+}
+
+Ensure(FailureMessage,for_is_not_equal_to_double) {
+    double should_not_be_four_point_five = 4.5f, forty_five = 45;
+    assert_that_double(should_not_be_four_point_five, is_not_equal_to_double(forty_five));
+}
+
+Ensure(FailureMessage,for_is_greater_than_double) {
+    double four_point_five = 4.5f, three_point_three = 3.3f;
+    assert_that_double(three_point_three, is_greater_than_double(four_point_five));
+}
+
+Ensure(FailureMessage,for_is_less_than_double) {
+    double four_point_five = 4.5f, three_point_three = 3.3f;
+    assert_that_double(four_point_five, is_less_than_double(three_point_three));
+}
+
 Ensure(FailureMessage,for_is_equal_to_contents_of) {
     int fourty_five[45] = {45, 44, 43}, thirty_three[33] = {45, 44, 33};
     assert_that(thirty_three, is_equal_to_contents_of(fourty_five, 55));
@@ -170,6 +190,10 @@ TestSuite *all_constraints_tests() {
     add_test_with_context(suite, FailureMessage, for_is_not_equal_to);
     add_test_with_context(suite, FailureMessage, for_is_greater_than);
     add_test_with_context(suite, FailureMessage, for_is_less_than);
+    add_test_with_context(suite, FailureMessage, for_is_equal_to_double);
+    add_test_with_context(suite, FailureMessage, for_is_not_equal_to_double);
+    add_test_with_context(suite, FailureMessage, for_is_greater_than_double);
+    add_test_with_context(suite, FailureMessage, for_is_less_than_double);
     add_test_with_context(suite, FailureMessage, for_is_equal_to_contents_of);
     add_test_with_context(suite, FailureMessage, for_is_not_equal_to_contents_of);
     add_test_with_context(suite, FailureMessage, for_is_equal_to_string);
