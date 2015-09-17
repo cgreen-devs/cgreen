@@ -2,6 +2,7 @@
 Marcus Baker <marcus@lastcraft.com>, Thomas Nilsson <thomas@junovagen.se>, João Freitas <joaohf@gmail.com>
 :source-highlighter: highlightjs
 :icons: font
+:numbered:
 
 Cgreen Quickstart Guide
 -----------------------
@@ -86,8 +87,9 @@ Installing from source
 
 The second way is available for developers and advanced
 users. Basically this consists of fetching the sources of the project
-and compiling them. To do this you need the http://www.cmake.org[CMake]
-build system.
+on https://github.com/cgreen-devs/cgreen[GitHub] and compiling
+them. To do this you need the http://www.cmake.org[CMake] build
+system.
 
 When you have the CMake tool, the steps are:
 
@@ -97,11 +99,6 @@ make
 make test    
 make install
 -----------------------------------------
-
-WARNING: On cygwin you need to install before running the tests for
-now. The freshly built DLL:s are not automatically used when running
-the tests. (See https://github.com/cgreen-devs/cgreen/issues/8[GitHub
-issue #8].)
 
 The initial __make__ command will configure the build process and
 create a separate `build` directory before going there and building
@@ -597,15 +594,15 @@ Here are the standard constraints...
 | `is_not_equal_to(value)` |'!= value'
 | `is_greater_than(value)` |'> value'
 | `is_less_than(value)` |'< value'
-| `is_equal_to_contents_of(pointer, size)` |matches the data pointed to by 'pointer' to a size of 'size' bytes
-| `is_not_equal_to_contents_of(pointer, size)` |does not match the data pointed to by 'pointer' to a size of 'size' bytes
-| `is_equal_to_string(value)` |are equal when compared using 'strcmp()'
-| `is_not_equal_to_string(value)` |are not equal when compared using 'strcmp()'
-| `contains_string(value)` |contains 'value' when evaluated using 'strstr()'
-| `does_contain_string(value)` |does not contain 'value' when evaluated using 'strstr()'
-| `begins_with_string(value)` |starts with the string 'value'
-| `is_equal_to_double(value)` |are equal to 'value' within the number of significant digits (you can set 'significant_figures_for_assert_double_are(int figures)')
-| `is_not_equal_to_double(value)` |are not equal to 'value' within the number of significant digits
+| `is_equal_to_contents_of(pointer, size)` |matches the data pointed to by `pointer` to a size of `size` bytes
+| `is_not_equal_to_contents_of(pointer, size)` |does not match the data pointed to by `pointer` to a size of `size` bytes
+| `is_equal_to_string(value)` |are equal when compared using `strcmp()`
+| `is_not_equal_to_string(value)` |are not equal when compared using `strcmp()`
+| `contains_string(value)` |contains `value` when evaluated using `strstr()`
+| `does_contain_string(value)` |does not contain `value` when evaluated using `strstr()`
+| `begins_with_string(value)` |starts with the string `value`
+| `is_equal_to_double(value)` |are equal to `value` within the number of significant digits (you can set `significant_figures_for_assert_double_are(int figures)`)
+| `is_not_equal_to_double(value)` |are not equal to `value` within the number of significant digits
 |=========================================================
 
 The boolean assertion macros accept an `int` value. The equality
@@ -687,7 +684,7 @@ assertion macros:
 
 Each assertion has a default message comparing the two values. If you
 want to substitute your own failure messages, then you must use the
-'*_with_message()' counterparts...
+`*_with_message()` counterparts...
 
 |=========================================================
 |*Assertion*
@@ -699,15 +696,15 @@ want to substitute your own failure messages, then you must use the
 | `assert_string_not_equal_with_message(char *, char *, message, ...)`
 |=========================================================
 
-All these assertions have an additional 'char *' message parameter,
+All these assertions have an additional `char *` message parameter,
 which is the message you wished to display on failure. If this is set
-to 'NULL', then the default message is shown instead. The most useful
-assertion from this group is 'assert_true_with_message()' as you can
+to `NULL`, then the default message is shown instead. The most useful
+assertion from this group is `assert_true_with_message()` as you can
 use that to create your own assertion functions with your own
 messages.
 
 Actually the assertion macros have variable argument lists. The
-failure message acts like the template in 'printf()'. We could change
+failure message acts like the template in `printf()`. We could change
 the test above to be...
 
 [source,c]
@@ -1210,9 +1207,9 @@ The solution - the 'cgreen-runner'
 
 *Cgreen* gives you a tool to avoid not only the risk of this
 happening, but also the extra work and extra code. It is called the
-'cgreen-runner'.
+`cgreen-runner`.
 
-The 'cgreen-runner' should come with your *Cgreen* installation if
+The `cgreen-runner` should come with your *Cgreen* installation if
 your platform supports the technique that is required, which is
 'programatic access to dynamic loading of libraries'. This means
 that a program can load an external library of code into memory and
@@ -1220,7 +1217,7 @@ inspect it. Kind of self-inspection, or reflexion.
 
 So all you have to do is to build a dynamically loadable library of
 all tests (and of course your objects under test and other necessary
-code). Then you can run the 'cgreen-runner' and point it to the
+code). Then you can run the `cgreen-runner` and point it to the
 library. The runner will then load the library, enumerate all tests in
 it, and run every test.
 
@@ -1236,14 +1233,14 @@ build your library using `gcc` would be
 $ gcc -shared -o first_test.so -fPIC first_test.c -lcgreen
 --------------------------
 
-The '-fPIC' means to generate +position independent code+ which is
+The `-fPIC` means to generate +position independent code+ which is
 required if you want to load the library dynamically.
 
 How to build a dynamically loadable shared library might vary a lot
 depending on your platform. Can't really help you there, sorry!
 
 As soon as we have linked it we can run the tests using the
-'cgreen-runner' by just giving it the shared, dynamic loadable, object
+`cgreen-runner` by just giving it the shared, dynamic loadable, object
 library as an argument:
 
 -------------------------
@@ -2036,7 +2033,7 @@ basically calls a test suite. The suite specifies the behaviour of a
 *RSpec*.)
 
 As you can see in the short example above, you have to give the SUT in
-the 'Ensure()' declaration too. If you don't, *Cgreen* will get
+the `Ensure()` declaration too. If you don't, *Cgreen* will get
 confused about which style you are using and your source won't
 compile.
 
@@ -2080,7 +2077,7 @@ with the SUT being the shopping basket 'class'.
 We have added two 'functions' which are exactly what they say they
 are. Before each 'test' (or behaviour specification) the customer
 record will always be created and the customer logged in, exactly like
-we could do with the 'setUp()' function in TDD style. In the same
+we could do with the `setUp()` function in TDD style. In the same
 manner, after each 'test' the customer will be logged out and the
 record destroyed.
 
@@ -2117,21 +2114,21 @@ Changing Style
 If you already have some TDD style *Cgreen* test suites, it is quite
 easy to change them over to BDD-ish style. Here are the steps required
 
-* Add 'Describe(SUT);'
+* Add `Describe(SUT);`
 
-* Turn your current setup function into a 'BeforeEach()' definition by
+* Turn your current setup function into a `BeforeEach()` definition by
 changing its signature to match the macro, or simply call the existing
 setup function from the BeforeEach(). If you don't have any setup function
-you still need to define an empty 'BeforeEach()'.
+you still need to define an empty `BeforeEach()`.
 
-* Ditto for 'AfterEach()'.
+* Ditto for `AfterEach()`.
 
-* Add the SUT to each 'Ensure()' by inserting it as a first parameter.
+* Add the SUT to each `Ensure()` by inserting it as a first parameter.
 
-* Change the call to add the tests to 'add_test_with_context()' by
+* Change the call to add the tests to `add_test_with_context()` by
   adding the name of the SUT as the second parameter.
 
-* Optionally remove the calls to 'set_setup()' and 'set_teardown()'.
+* Optionally remove the calls to `set_setup()` and `set_teardown()`.
 
 Done.
 
@@ -2168,7 +2165,7 @@ return run_test_suite(our_tests(), create_text_reporter());
 We can change the reporting mechanism just by changing this
 method.
 
-Here is the code for 'create_text_reporter()'...
+Here is the code for `create_text_reporter()`...
 
 [source,c]
 -----------------------
@@ -2187,13 +2184,13 @@ TestReporter *create_text_reporter(void) {
 }
 -----------------------
 
-The 'TestReporter' structure contains function pointers that control
-the reporting.  When called from 'create_reporter()' constructor,
+The `TestReporter` structure contains function pointers that control
+the reporting.  When called from `create_reporter()` constructor,
 these pointers are set up with functions that display nothing. The
 text reporter code replaces these with something more dramatic, and
 then returns a pointer to this new object. Thus the
-'create_text_reporter()' function effectively extends the object from
-'create_reporter()'.
+`create_text_reporter()` function effectively extends the object from
+`create_reporter()`.
              
 The text reporter only outputs content at the start of the first test,
 at the end of the test run to display the results, when a failure
@@ -2202,12 +2199,12 @@ occurs, and when a test fails to complete.  A quick look at the
 output a message and chain to the versions in `reporter.h`.
 
 To change the reporting mechanism ourselves, we just have to know a little
-about the methods in the 'TestReporter' structure.
+about the methods in the `TestReporter` structure.
              
 The TestReporter structure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The *Cgreen* 'TestReporter' is a pseudo class that looks
+The *Cgreen* `TestReporter` is a pseudo class that looks
 something like...
 
 [source,c]
@@ -2238,63 +2235,63 @@ struct _TestReporter {
 
 The first block are the methods that can be overridden.
 
-'void (*destroy)(TestReporter *reporter)'::
+void (*destroy)(TestReporter *reporter)::
 This is the destructor for the default 
 structure. If this is overridden, then the overriding function must call 
-'destroy_reporter(TestReporter *reporter)' to finish the clean up. 
+`destroy_reporter(TestReporter *reporter)` to finish the clean up. 
 
-'void (*start_suite)(TestReporter *reporter, const char *name, const int count)'::
+void (*start_suite)(TestReporter *reporter, const char *name, const int count)::
 This is the first of the callbacks. At the start of
 each test suite *Cgreen* will call this method on the reporter with
 the name of the suite being entered and the number of tests in that
 suite. The default version keeps track of the stack of tests in the
-'breadcrumb' pointer of 'TestReporter'. If you make use of the
+`breadcrumb` pointer of `TestReporter`. If you make use of the
 breadcrumb functions, as the defaults do, then you will need to call
-'reporter_start()' to keep the book keeping in sync.
+`reporter_start()` to keep the book keeping in sync.
 
-'void (*start_test)(TestReporter *reporter, const char *name)'::
+void (*start_test)(TestReporter *reporter, const char *name)::
 At the start of each test *Cgreen* will call this method on the
 reporter with the name of the test being entered. Again, the default
-version keeps track of the stack of tests in the 'breadcrumb' pointer
-of 'TestReporter'. If you make use of the breadcrumb functions, as the
-defaults do, then you will need to call 'reporter_start()' to keep the
+version keeps track of the stack of tests in the `breadcrumb` pointer
+of `TestReporter`. If you make use of the breadcrumb functions, as the
+defaults do, then you will need to call `reporter_start()` to keep the
 book keeping in sync.
 
-'void (*show_pass)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)'::
+void (*show_pass)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)::
 This method is initially empty as there most reporters see little
 point in reporting passing tests (but you might do), so there is no
 need to chain the call to any other function. Besides the pointer to
 the reporter structure, *Cgreen* also passes the file name of the
 test, the line number of failed assertion, the message to show and any
 additional parameters to substitute into the message. The message
-comes in as 'printf()' style format string, and so the variable
+comes in as `printf()` style format string, and so the variable
 argument list should match the substitutions.
 
-'void (*show_fail)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)'::
-The partner of 'show_pass()', and the one you'll likely overload first.
+void (*show_fail)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)::
+The partner of `show_pass()`, and the one you'll likely overload first.
 
-'void (*show_incomplete)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)'::
+void (*show_incomplete)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)::
 When a test fails to complete, this is the handler that is called. As it's an unexpected
 outcome, no message is received, but we do get the name of the
 test. The text reporter combines this with the breadcrumb to produce
 the exception report.
 
-'void (*assert_true)(TestReporter *reporter, const char *file, int line, int result, const char * message, ...)'::
+void (*assert_true)(TestReporter *reporter, const char *file, int line, int result, const char * message, ...)::
 This is not normally
 overridden and is really internal. It is the raw entry point for the
 test messages from the test suite. By default it dispatches the call
-to either 'show_pass()' or 'show_fail()'.
+to either `show_pass()` or `show_fail()`.
 
-'void (*finish_test)(TestReporter *reporter, const char *file, int line)'::
-The counterpart to the '(*start_test)()' call. It is called
+void (*finish_test)(TestReporter *reporter, const char *file, int line)::
+The counterpart to the `(*start_test)()` call. It is called
 on leaving the test. It needs to be chained to the
-'reporter_finish()' to keep track of the breadcrumb book keeping.
+`reporter_finish()` to keep track of the breadcrumb book keeping.
 
-'void (*finish_suite)(TestReporter *reporter, const char *file, int line)'::
-The counterpart to the '(*start_suite)()' call called on
-leaving the test suite, and similar to the '(*finish_test)()' if your
+void (*finish_suite)(TestReporter *reporter, const char *file, int line)::
+The counterpart to the `(*start_suite)()` call called on
+leaving the test suite, and similar to the `(*finish_test)()` if your
 reporter needs a handle on that event too. The default text reporter
-chains both this and '(*finish_test)()' to the same function where it
+chains both this and `(*finish_test)()` to the same function where it
 figures out if it is the end of the top level suite. If so, it prints
 the familiar summary of passes and fails.
 
@@ -2302,49 +2299,50 @@ The second block is simply resources and book keeping that the reporter
 can use to liven up the messages...
 
 [horizontal]
-'passes':: The number of passes so far.
-'failures'::  The number of failures generated so far.
-'exceptions':: The number of test functions that have failed to complete so far. 
-'breadcrumb':: This is a pointer to the list of test names in the stack.
+passes:: The number of passes so far.
+failures::  The number of failures generated so far.
+exceptions:: The number of test functions that have failed to complete so far. 
+breadcrumb:: This is a pointer to the list of test names in the stack.
 				
-The 'breadcrumb' pointer is different and needs a little explanation.
+The `breadcrumb` pointer is different and needs a little explanation.
 Basically it is a stack, analogous to the breadcrumb trail you see on
-websites.  Everytime a 'start()' handler is invoked, the name is
-placed in this stack.  When a 'finish()' message handler is invoked, a
+websites.  Everytime a `start()` handler is invoked, the name is
+placed in this stack.  When a `finish()` message handler is invoked, a
 name is popped off.
 
 There are a bunch of utility functions in `cgreen/breadcrumb.h` that
 can read the state of this stack.  Most useful are
-'get_current_from_breadcrumb()' which takes the breadcrumb pointer and
-returns the current test name, and 'get_breadcrumb_depth()' which gives
+`get_current_from_breadcrumb()` which takes the breadcrumb pointer and
+returns the current test name, and `get_breadcrumb_depth()` which gives
 the current depth of the stack.  A depth of zero means that the test
 run has finished.
 
 If you need to traverse all the names in the breadcrumb, then you can
-call 'walk_breadcrumb()'.  Here is the full signature...
+call `walk_breadcrumb()`.  Here is the full signature...
 
 [source,c]
 -----------------------
 void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *), void *memo);
 -----------------------
 
-The 'void (\*walker)(const char \*, void \*)' is a callback
+The `void (\*walker)(const char \*, void \*) is a callback
 that will be passed the name of the test suite for each
 level of nesting.
-It is also passed the 'memo' pointer that was
-passed to the 'walk_breadcrumb()' call.
+
+It is also passed the `memo pointer that was
+passed to the `walk_breadcrumb()` call.
 You can use this pointer for anything you want, as
 all *Cgreen* does is pass it from call to call.
 This is so aggregate information can be kept track of whilst
 still being reentrant.
 
 
-The last parts of the 'TestReporter' structure are...
+The last parts of the `TestReporter` structure are...
 
 [horizontal]
-'ipc':: This is an internal structure for handling the messaging between reporter
+ipc:: This is an internal structure for handling the messaging between reporter
 and test suite. You shouldn't touch this.
-'memo':: By contrast, this is a spare pointer for your own expansion.
+memo:: By contrast, this is a spare pointer for your own expansion.
              
 An example XML reporter
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -2517,8 +2515,8 @@ static void xml_reporter_finish_suite(TestReporter *reporter, const char *filena
 }
 -----------------------
 
-Although chaining to the underlying 'reporter_start()'
-and 'reporter_finish()' functions is optional, I want to
+Although chaining to the underlying `reporter_start()`
+and `reporter_finish()` functions is optional, I want to
 make use of some of the facilities later.
 
 Our output meanwhile, is making its first tentative steps...
@@ -2535,7 +2533,7 @@ Our output meanwhile, is making its first tentative steps...
 </suite>
 -----------------------
 
-We don't want a passing message, so the 'show_fail()' function is all we
+We don't want a passing message, so the `show_fail()` function is all we
 need...
 
 [source,c]
@@ -2565,7 +2563,7 @@ static void xml_show_fail(TestReporter *reporter, const char *file, int line, co
 }
 -----------------------
 
-We have to use 'vprintf()' to handle the variable argument
+We have to use `vprintf()` to handle the variable argument
 list passed to us.
 This will probably mean including the `stdarg.h` header
 as well as `stdio.h`.
@@ -2612,8 +2610,8 @@ All that's left then is the XML declaration and the thorny issue of
 indenting.  Although the indenting is not strictly necessary, it would
 make the output a lot more readable.
 
-The test depth is kept track of for us with the 'breadcrumb' object in
-the 'TestReporter' structure.  We'll add an 'indent()' function that
+The test depth is kept track of for us with the `breadcrumb` object in
+the `TestReporter` structure.  We'll add an `indent()` function that
 outputs the correct number of tabs...
 
 [source,c]
@@ -2626,7 +2624,7 @@ static indent(TestReporter *reporter) {
 }
 -----------------------
 
-The 'get_breadcrumb_depth()' function just gives the current test
+The `get_breadcrumb_depth()` function just gives the current test
 depth as recorded in the reporters breadcrumb (from
 `cgreen/breadcrumb.h`).  As that is just the number of tabs to output,
 the implementation is trivial.
@@ -2735,7 +2733,7 @@ And finally the desired output...
 
 Job done.
 
-Possible other extensions include reporters that write to 'syslog',
+Possible other extensions include reporters that write to `syslog`,
 talk to IDE plug-ins, paint pretty printed documents or just return a boolean
 for monitoring purposes.
 

@@ -3,7 +3,9 @@
 
 CC = gcc -c -g -Wall
 LINK = gcc -g
-LIBDIRS = -L../../build/build-c/src
+CGREEN_ROOT=../../build/build-c
+LIBDIRS = -L$(CGREEN_ROOT)/src
+RUNNER = $(CGREEN_ROOT)/tools/cgreen-runner
 #LIBDIRS = -L/usr/local/lib
 
 all: with_main with_runner
@@ -99,32 +101,32 @@ stream0: stream_test0.o read_paragraph1.o
 .PHONY: stream1
 stream1: stream_test1.o read_paragraph1.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner stream_tests.so > $@.out
+	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' > $@.out
 
 .PHONY: stream2
 stream2: stream_test2.o read_paragraph1.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner stream_tests.so > $@.out
+	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' > $@.out
 
 .PHONY: stream3
 stream3: stream_test2.o read_paragraph2.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner stream_tests.so > $@.out
+	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' > $@.out
 
 .PHONY: stream4
 stream4: stream_test3.o read_paragraph2.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner stream_tests.so > $@.out
+	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' > $@.out
 
 .PHONY: stream5
 stream5: stream_test4.o read_paragraph2.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner stream_tests.so > $@.out
+	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' | sed -e '/\"the$$/{ n; s/.*//; s//\"]/ }' > $@.out
 
 .PHONY: stream6
 stream6: stream_test4.o read_paragraph3.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner stream_tests.so > $@.out
+	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' > $@.out
 
 .PHONY: multiple_streams1
 multiple_streams1: multiple_streams1.c
@@ -137,15 +139,15 @@ multiple_streams2: multiple_streams2.c
 .PHONY: runner1
 runner1: first_test2.o
 	$(LINK) -shared -o first_test.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner first_test.so > $@.out
+	$(RUNNER) first_test.so > $@.out
 
 .PHONY: runner2
 runner2: first_test2.o
 	$(LINK) -shared -o first_test.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner first_test.so Cgreen:fails_this_test > $@.out
+	$(RUNNER) first_test.so Cgreen:fails_this_test > $@.out
 
 .PHONY: runner3
 runner3: first_test2.o
 	$(LINK) -shared -o first_test.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner -v first_test.so Cgreen:fails_this_test > $@.out
+	$(RUNNER) -v first_test.so Cgreen:fails_this_test > $@.out
 
