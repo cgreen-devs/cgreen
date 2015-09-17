@@ -82,10 +82,13 @@ void run_specified_test_if_child(TestSuite *suite, TestReporter *reporter){
 
 static void stop(void) {
 #ifdef INTERNAL_WITH_GCOV
-    exit(EXIT_SUCCESS);
+    if (1)
 #else
-    _exit(EXIT_SUCCESS);
+    if (NULL != getenv("CGREEN_CHILD_EXIT_WITH_FLUSH"))
 #endif
+        exit(EXIT_SUCCESS);
+    else
+        _exit(EXIT_SUCCESS);
 }
 
 static void ignore_ctrl_c(void) {
