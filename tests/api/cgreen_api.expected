@@ -1,0 +1,47 @@
+Running "libcgreen_api" (6 tests)...
+/Users/thomas/Utveckling/Cgreen/cgreen/tests/api/suites_with_context_api.c:12: Exception: context_api -> compiles_suite_api 
+	Test terminated with signal: Segmentation fault: 11
+
+Completed "context_api": 0 passes, 0 failures, 1 exception.
+/Users/thomas/Utveckling/Cgreen/cgreen/tests/api/core_api.c:15: Exception: default -> assert_that_compiles 
+	Test terminated with signal: Segmentation fault: 11
+
+/Users/thomas/Utveckling/Cgreen/cgreen/tests/api/core_api.c:28: Failure: default -> constraints_compiles 
+	Expected [1] to [not equal] [1]
+
+
+/Users/thomas/Utveckling/Cgreen/cgreen/tests/api/core_api.c:29: Failure: default -> constraints_compiles 
+	Expected [1] to [be greater than] [1]
+
+
+/Users/thomas/Utveckling/Cgreen/cgreen/tests/api/core_api.c:30: Failure: default -> constraints_compiles 
+	Expected [1] to [be less than] [1]
+
+
+/Users/thomas/Utveckling/Cgreen/cgreen/tests/api/core_api.c:33: Failure: default -> constraints_compiles 
+	Expected [array] to [not equal contents of] [array]
+		at offset:			[-1]
+
+/Users/thomas/Utveckling/Cgreen/cgreen/tests/api/core_api.c:36: Failure: default -> constraints_compiles 
+	Expected [string] to [not equal string] [string]
+		actual value:			["some string"]
+
+/Users/thomas/Utveckling/Cgreen/cgreen/tests/api/core_api.c:38: Failure: default -> constraints_compiles 
+	Expected [string] to [not contain string] [string]
+		actual value:			["some string"]
+		expected to not contain:	["some string"]
+
+/Users/thomas/Utveckling/Cgreen/cgreen/tests/api/core_api.c:49: Failure: default -> mocks_compiles 
+	Mocked function [int_stub] already has an expectation and will always be called a certain way; any expectations declared after an always expectation are discarded
+
+/Users/thomas/Utveckling/Cgreen/cgreen/tests/api/core_api.c:50: Failure: default -> mocks_compiles 
+	Mocked function [int_stub] already has an expectation and will always be called a certain way; declaring an expectation after an always expectation is not allowed
+
+/Users/thomas/Utveckling/Cgreen/cgreen/tests/api/core_api.c:51: Failure: default -> mocks_compiles 
+	Mocked function [int_stub] already has an expectation that it will always be called a certain way; any expectations declared after an always expectation are invalid
+
+/Users/thomas/Utveckling/Cgreen/cgreen/tests/api/suites_without_context_api.c:10: Exception: default -> suites_compiles 
+	Test terminated with signal: Segmentation fault: 11
+
+Completed "default": 7 passes, 9 failures, 3 exceptions.
+Completed "libcgreen_api": 7 passes, 9 failures, 3 exceptions.

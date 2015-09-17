@@ -18,6 +18,8 @@ TestSuite *cute_reporter_tests();
 TestSuite *unit_tests();
 TestSuite *message_formatting_tests();
 TestSuite *collector_tests();
+TestSuite *reflective_tests();
+TestSuite *reflective_no_teardown_tests();
 
 int main(int argc, char **argv) {
     int suite_result;
@@ -36,6 +38,8 @@ int main(int argc, char **argv) {
     add_suite(suite, breadcrumb_tests());
     add_suite(suite, cute_reporter_tests());
     add_suite(suite, unit_tests());
+    add_suite(suite, reflective_tests());
+    add_suite(suite, reflective_no_teardown_tests());
     if (argc > 1) {
         suite_result = run_single_test(suite, argv[1], reporter);
     } else {
