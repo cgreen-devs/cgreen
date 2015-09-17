@@ -3,15 +3,87 @@ Cygwin: [![Build Status](http://ci.alanif.se:8080/buildStatus/icon?job=Cgreen)](
 
 [![Coverage Status](https://coveralls.io/repos/cgreen-devs/cgreen/badge.svg?branch=master&service=github)](https://coveralls.io/github/cgreen-devs/cgreen?branch=master)
 
-Cgreen
-======
+Cgreen - Modern Unit Test and Mocking Framework for C and C++
+=============================================================
 
-You probably got this package from...
-http://cgreen.sourceforge.net/projects/cgreen/
+Do you TDD? In C? Maybe you want to have your tests read out in a
+fluent fashion? Like this
+
+    Ensure(Converter, converts_XIV_to_14) {
+        assert_that(convert_roman_to_decimal("XIV"), is_equal_to(14));
+    }
+
+And you want output like this
+
+    roman_test.c:12: Failure: Converter -> converts_XIV_to_14
+            Expected [convert_roman_to_decimal("XIV")] to [equal] [14]
+                    actual value:                   [0]
+                    expected value:                 [14]
+
+Then *Cgreen* is the thing for you!
+
+
+## What It Is
+
+Cgreen is a modern unit test and mocking framework for C and C++. Here
+are some of Cgreens unique selling points:
+
+  - fast build, clean code, highly portable
+  - auto-discovery of tests without the abuse of static initializers or globals
+  - extensible without recompiling
+  - fluent, expressive and readable API with the same modern syntax across C and C++
+  - process isolation for each test preventing intermittent failures
+    and cross-test dependencies
+  - built-in mocking for C, compatible with mockitopp and other C++ mocking libraries
+
+## Getting It
+
+Cgreen has recently moved from SourceForge to GitHub so things are in
+a bit of a flux. From [SourceForge](http://cgreen.sourceforge.net/projects/cgreen/)
+you can get pre-build packages for not-so-old development versions.
+
+But *Cgreen* is approaching a 1.0 release and things are changing, so
+for now an alternative is to download the zip from
+[GitHub](http://www.github.org/cgreen-devs/cgreen) and build it
+yourself.
+
+## Building It
+
+You need [Cmake](http://www.cmake.org) but most standard C/C++
+compilers should work. GCC definitely does.
+
+In the root directory run ``make``. That will configure and build the C
+version and the C++ version of the libraries.
+
+## Reading Up!
+
+The documentation is fairly up-to-date. You can read the extensive
+tutorial directly on
+[GitHub](https://github.com/cgreen-devs/cgreen/blob/master/doc/cgreen-guide-en.asciidoc).
+
+Exactly this moment that does not include the example code because of
+GitHubs rendering policies for asciidoc. But you can build the
+documentation yourself in HTML and PDF format.  Generate it using
+Asciidoctor, which can be done using the Cmake configuration. Of
+course you need [Asciidoctor](http://www.asciidoctor.org).
+
+Navigate to the ``build/build-c`` directory. You need to add the
+WITH_DOCS option:
+
+    cmake -DWITH_DOCS:bool=ON -DWITH_HTML:bool=ON ../..
+
+The ``WITH_HTML`` generates HTML-format, you can add, or change to,
+``WITH_PDF`` to get PDF-format.
+
+Run ``make``.
+
+## License
 
 If there is no licence agreement with this package please download
 a version from the location above. You must read and accept that
 licence to use this software. The file is titled simply LICENSE.
+
+## The Longer Version
 
 What is it? It's a framework for unit testing, written in C. A tool
 for C developers writing tests of their own code.
@@ -35,25 +107,16 @@ The other main extra feature is the support for writing mock
 callbacks. This includes generating sequences for return values
 or parameter expectations.
 
-If you want to install CGreen and have a play, just run "make" from
-the top level directory. CGreen uses CMake and I'm afraid I am no expert
-with this tool. There may well be teething problems. Please read the
-INSTALL file for more information and alternate ways to build.
-
 Feedback and queries should be sent to the mail list at Sourceforge:
 cgreen-users@lists.sourceforge.net
-
-If that doesn't work for some reason (bounce policies or whatever)
-then feel free to contact me directly:
-marcus@lastcraft.com
 
 This project would not have happened without the generous
 financial support of the Wordtracker keyword tool...
 http://www.wordtracker.com/
 
-This tool is basically a spin off from a research project at Wordtracker.
+This tool is basically a spin off from a research project at
+Wordtracker.
 
-yours Marcus Baker
--- 
-marcus@lastcraft.com
-
+Substantial inital work by Marcus Baker <marcus@lastcraft.com>. Recent
+additions by Matt Hargett <matt@use.net>, Thomas Nilsson
+<thomas@junovagen.se>, João Freitas <joaohf@gmail.com> and others.
