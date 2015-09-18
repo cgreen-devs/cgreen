@@ -178,16 +178,13 @@ bool doubles_are_equal(double tried, double expected) {
     return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(tried, expected));
 }
 
-/* there are almost certainly wrong, but can't get the neurons firing to make it right */
-/* "double" tests in all_constraints_printout and constraint_tests should all pass/fail appropriately */
 bool double_is_lesser(double actual, double expected) {
-    return actual - expected > accuracy(significant_figures, max(actual, expected));
+    return expected < actual + accuracy(significant_figures, max(actual, expected));
 }
 
 bool double_is_greater(double actual, double expected) {
-    return expected - actual > accuracy(significant_figures, max(actual, expected));
+    return expected > actual - accuracy(significant_figures, max(actual, expected));
 }
-/* end wrong implementations */
 
 static double accuracy(int figures, double largest) {
     return pow(10, 1 + (int)log10(fabs(largest)) - figures);

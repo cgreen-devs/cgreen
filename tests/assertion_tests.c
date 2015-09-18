@@ -176,6 +176,8 @@ Ensure(double_differences_do_not_matter_past_significant_figures) {
     assert_that_double(1.113, is_equal_to_double(1.115));
     assert_that_double(1113, is_equal_to_double(1115));
     assert_that_double(1113000, is_equal_to_double(1115000));
+    assert_that_double(1.1199999999, is_less_than_double(1.11));
+    assert_that_double(1.11, is_greater_than_double(1.119999));
 }
 
 Ensure(can_check_equality_of_negative_floating_point_numbers) {
