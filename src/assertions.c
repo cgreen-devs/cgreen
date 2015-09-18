@@ -190,7 +190,7 @@ bool double_is_greater(double actual, double expected) {
 /* end wrong implementations */
 
 static double accuracy(int figures, double largest) {
-    return pow(10, 1 + (int)log10(largest) - figures);
+    return pow(10, 1 + (int)log10(fabs(largest)) - figures);
 }
 
 #ifdef __cplusplus
