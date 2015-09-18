@@ -87,6 +87,12 @@ bool is_parameter(const Constraint *);
 bool constraint_is_not_for_parameter(const Constraint *, const char *);
 bool constraint_is_for_parameter(const Constraint *, const char *);
 bool constraint_is_for_parameter_in(const Constraint *, const char *);
+bool doubles_are_equal(double tried, double expected);
+bool double_is_lesser(double actual, double expected);
+bool double_is_greater(double actual, double expected);
+
+int get_significant_figures();
+void significant_figures_for_assert_double_are(int figures);
 
 #ifdef __cplusplus
     }
