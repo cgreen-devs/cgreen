@@ -20,7 +20,7 @@ execute_process(
 
 execute_process(
     COMMAND ${CMAKE_COMMAND} -E compare_files ${expected} ${actual}
-    RESULT_VARIABLE comparison_failed    
+    RESULT_VARIABLE comparison_failed
 )
 
 if(${comparison_failed})
