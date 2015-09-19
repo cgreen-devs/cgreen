@@ -606,6 +606,8 @@ Here are the standard constraints...
 | `begins_with_string(value)` |starts with the string 'value'
 | `is_equal_to_double(value)` |are equal to 'value' within the number of significant digits (you can set 'significant_figures_for_assert_double_are(int figures)')
 | `is_not_equal_to_double(value)` |are not equal to 'value' within the number of significant digits
+| `is_less_than_double(value)` | '< value' withing the number of significant digits
+| `is_greater_than_double(value)` | '> value' within the number of significant digits
 |=========================================================
 
 The boolean assertion macros accept an `int` value. The equality
