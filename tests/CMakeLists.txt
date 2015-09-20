@@ -114,7 +114,7 @@ macro_add_test(
             ${CMAKE_CURRENT_SOURCE_DIR}/${cgreen_all_constraints_library}.expected.${LANG}
             # ... but remove the following strings first
             ${CMAKE_CURRENT_SOURCE_DIR}/
-            ".*cgreen_all_constraints" # $<TARGET_FILE_NAME:${cgreen_all_constraints_library}>
+            \".*cgreen_all_constraints\" # $<TARGET_FILE_NAME:${cgreen_all_constraints_library}>
 )
 
 # add verification that all public api is available as it should
