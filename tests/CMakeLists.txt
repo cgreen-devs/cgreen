@@ -102,14 +102,19 @@ else()
   set(LANG c)
 endif()
 macro_add_test(
-    NAME verify_failure_messages
-    COMMAND ${CMAKE_COMMAND}
-    -D runner=${CMAKE_BINARY_DIR}/tools/cgreen-runner
-    -D lib=$<TARGET_FILE_NAME:${cgreen_all_constraints_library}>
-    -D expected=${CMAKE_CURRENT_SOURCE_DIR}/${cgreen_all_constraints_library}.expected.${LANG}
-    -D actual=${CMAKE_CURRENT_BINARY_DIR}/${cgreen_all_constraints_library}.actual
-    -D remove=${CMAKE_CURRENT_SOURCE_DIR}/
-    -P ${CMAKE_SOURCE_DIR}/tools/compare_output_test.cmake
+    NAME verify_failure_messsage
+    COMMAND ${CMAKE_SOURCE_DIR}/tools/compare_test_output_to_expected
+            # Run the runner in directory
+            ${CMAKE_BINARY_DIR}/tools
+            # .. on library
+            $<TARGET_FILE_NAME:${cgreen_all_constraints_library}>
+            # ... storing the output in an output file with basename
+            ${cgreen_all_constraints_library}
+            # ... then compare it to
+            ${CMAKE_CURRENT_SOURCE_DIR}/${cgreen_all_constraints_library}.expected.${LANG}
+            # ... but remove the following strings first
+            ${CMAKE_CURRENT_SOURCE_DIR}/
+            ".*cgreen_all_constraints" # $<TARGET_FILE_NAME:${cgreen_all_constraints_library}>
 )
 
 # add verification that all public api is available as it should

@@ -1,0 +1,26 @@
+#! /bin/sh
+#
+# Will run the cgreen-runner in directory $1
+# on library $2
+# store the output in $3.output,
+# compare it with expected output in $4
+# but remove $5.. from the output before doing the comparison
+
+# Run runner on library, strip absolute file path from output and store it
+$1/cgreen-runner $2 > $3.output
+
+# Remove strings in $5 and onwards from the output
+for r in ${@:5} ; do
+    echo sed -e s#$r##g $3.output $3.output.tmp
+    sed -e s#$r##g $3.output > $3.output.tmp
+    cp $3.output.tmp $3.output
+done
+
+# Compare output from expected
+cmp --silent $3.output $4
+
+# If not the same show diff
+rc=$?; if [ $rc -ne 0 ]; then diff -c $3.output $4 ; fi
+exit $rc
+
+                 

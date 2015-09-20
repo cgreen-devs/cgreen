@@ -1,4 +1,4 @@
-Running "cygcgreen_all_constraints" (24 tests)...
+Running "" (24 tests)...
 all_constraints_printout.c:117: Failure: FailureMessage -> for_always_followed_by_expectation 
 	Mocked function [some_mock] already has an expectation that it will always be called a certain way; any expectations declared after an always expectation are invalid
 
@@ -96,4 +96,4 @@ all_constraints_printout.c:140: Exception: FailureMessage -> increments_exceptio
 	Test terminated with signal: Terminated
 
 Completed "FailureMessage": 0 passes, 23 failures, 1 exception.
-Completed "cygcgreen_all_constraints": 0 passes, 23 failures, 1 exception.
+Completed "": 0 passes, 23 failures, 1 exception.
