@@ -18,7 +18,7 @@ shift 4
 for r in $@ ; do
     echo sed -e s%$r%%g ${name}.output ${name}.output.tmp
     sed -e s%$r%%g ${name}.output > ${name}.output.tmp
-    cp ${name}.output.tmp ${name}.output
+    mv ${name}.output.tmp ${name}.output
 done
 
 # Compare output from expected

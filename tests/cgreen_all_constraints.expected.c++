@@ -1,4 +1,4 @@
-Running "cygcgreen_all_constraints" (27 tests)...
+Running  (27 tests)...
 all_constraints_printout.c:117: Failure: FailureMessage -> for_always_followed_by_expectation 
 	Mocked function [some_mock] already has an expectation that it will always be called a certain way; any expectations declared after an always expectation are invalid
 
@@ -105,4 +105,4 @@ all_constraints_printout.c:153: Exception: FailureMessage -> increments_exceptio
 	Test terminated unexpectedly, likely from a non-standard exception or Posix signal
 
 Completed "FailureMessage": 0 passes, 24 failures, 3 exceptions.
-Completed "cygcgreen_all_constraints": 0 passes, 24 failures, 3 exceptions.
+Completed : 0 passes, 24 failures, 3 exceptions.
