@@ -98,6 +98,9 @@ suite1: suite1.o suite_person_test.o suite_strlen_test.o
 stream0: stream_test0.o read_paragraph1.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
+# All these examples run using the runner which automatically outputs the file name
+# Since that includes the example #, which we don't want in the tutorial, we use
+# sed to remove that number from the file name in the output
 .PHONY: stream1
 stream1: stream_test1.o read_paragraph1.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
@@ -119,6 +122,7 @@ stream4: stream_test3.o read_paragraph2.o
 	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' > $@.out
 
 .PHONY: stream5
+# This test generates random characters read from memory so we need to tidy that up
 stream5: stream_test4.o read_paragraph2.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
 	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' | sed -e '/\"the$$/{ n; s/.*//; s//\"]/ }' > $@.out
