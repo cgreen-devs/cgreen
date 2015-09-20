@@ -94,10 +94,10 @@ system.
 When you have the CMake tool, the steps are:
 
 -----------------------------------------
-tar -zxpvf cgreen.tar.gz
-make
-make test    
-make install
+$ tar -zxpvf cgreen.tar.gz
+$ make
+$ make test    
+$ make install
 -----------------------------------------
 
 The initial __make__ command will configure the build process and
@@ -153,9 +153,9 @@ the compilation command.
 Then, building this test is, of course, trivial...
 
 -----------------------------
-gcc -c first_test.c
-gcc first_test.o -lcgreen -o first_test
-./first_test
+$ gcc -c first_test.c
+$ gcc first_test.o -lcgreen -o first_test
+$ ./first_test
 -----------------------------
           
 Invoking the executable should give...
@@ -258,9 +258,9 @@ better function is the one simply called `run()`.
 Building this scaffolding...
 
 -------------------------------
-gcc -c words_test.c
-gcc -c all_tests.c
-gcc words_test.o all_tests.o -lcgreen -o all_tests
+$ gcc -c words_test.c
+$ gcc -c all_tests.c
+$ gcc words_test.o all_tests.o -lcgreen -o all_tests
 -------------------------------
 
 ...and executing the result gives the familiar...
@@ -304,11 +304,11 @@ include::tutorial_src/words1.c[lines=3..5]
 A full build later...
 
 -------------------------------
-gcc -c all_tests.c
-gcc -c words_test.c
-gcc -c words.c
-gcc all_tests.o words_test.o words.o -lcgreen -o all_tests
-./all_tests
+$ gcc -c all_tests.c
+$ gcc -c words_test.c
+$ gcc -c words.c
+$ gcc all_tests.o words_test.o words.o -lcgreen -o all_tests
+$ ./all_tests
 -------------------------------
 
 ...and we get the more useful response...
@@ -767,9 +767,9 @@ include::tutorial_src/strlen_test5.c[]
 Compiling and running gives...
 
 -----------------------------
-gcc -c strlen_test.c
-gcc strlen_test.o -lcgreen -o strlen_test
-./strlen_test
+$ gcc -c strlen_test.c
+$ gcc strlen_test.o -lcgreen -o strlen_test
+$ ./strlen_test
 include::tutorial_src/strlen2.out[]
 -----------------------------
 
@@ -1278,6 +1278,8 @@ case `Cgreen` so the test should be refered to as
 `Cgreen:this_test_should_fail`.
 
 
+[[options, Cgreen Runner Options]]
+
 Cgreen Runner Options
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -1691,12 +1693,12 @@ assertions.
 When specifying behavior of mocks there are three parts. First, how
 often the specified behaviour or expectation will be executed:
 
-|=========================================
-|*Macro*|*Description*
-|`expect(function, ...)`|Expected once, in order
+|=======================================================================
+|*Macro*                       |*Description*
+|`expect(function, ...)`       |Expected once, in order
 |`always_expect(function, ...)`|Expect this behavior from here onwards
-|`never_expect(function)`|This mock is expected to never be called
-|=========================================
+|`never_expect(function)`      |This mock is expected to never be called
+|=======================================================================
 
 You can specify constraints and behaviours for each expectation
 (except for `never_expect()` naturally). A constraint places
@@ -1708,9 +1710,9 @@ A parameter constraint is defined using the `when(parameter,
 constraint)` macro. It takes two parameters:
 
 |=================================================
-|*Parameter*|*Description*
-|parameter|The name of the parameter to the mock function
-|constraint|A constraint placed on that parameter
+|*Parameter* |*Description*
+|`parameter` |The name of the parameter to the mock function
+|`constraint`|A constraint placed on that parameter
 |=================================================
 
 There is a multitude of constraints available (actually, exactly the
@@ -1718,30 +1720,30 @@ same as for the assertions we saw earlier):
 
 |========================================
 |*Constraint*|*Type*
-|is_equal_to(value)| Integers
-|is_not_equal_to(value)| Integers
-|is_greater_than(value)| Integers
-|is_less_than(value)| Integers
+|`is_equal_to(value)`| Integers
+|`is_not_equal_to(value)`| Integers
+|`is_greater_than(value)`| Integers
+|`is_less_than(value)`| Integers
 ||
-|is_equal_to_contents_of(pointer, size_of_contents)|Bytes/Structures
-|is_not_equal_to_contents_of(pointer, size_of_contents)|Bytes/Structures
+|`is_equal_to_contents_of(pointer, size_of_contents)`|Bytes/Structures
+|`is_not_equal_to_contents_of(pointer, size_of_contents)`|Bytes/Structures
 ||
-|is_equal_to_string(value)|String
-|is_not_equal_to_string(value)|String
-|contains_string(value)|String
-|does_not_contain_string(value)|String
-|begins_with_string(value)|String
+|`is_equal_to_string(value)`|String
+|`is_not_equal_to_string(value)`|String
+|`contains_string(value)`|String
+|`does_not_contain_string(value)`|String
+|`begins_with_string(value)`|String
 ||
-|is_equal_to_double(value)|Double
-|is_not_equal_to_double(value)|Double
+|`is_equal_to_double(value)`|Double
+|`is_not_equal_to_double(value)`|Double
 |========================================
 
 Then there are two ways to return results:
 
 |========================================
 |*Macro*|*Description*
-|will_return(value)|Return the value from the mock function (which needs to be declared returning that type
-|will_set_contents_of_parameter(parameter_name, value, size)|Writes the value in the referenced parameter
+|`will_return(value)`|Return the value from the mock function (which needs to be declared returning that type
+|`will_set_contents_of_parameter(parameter_name, value, size)`|Writes the value in the referenced parameter
 |========================================
 
 You can combine these in various ways:
@@ -2325,11 +2327,11 @@ call `walk_breadcrumb()`.  Here is the full signature...
 void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *), void *memo);
 -----------------------
 
-The `void (\*walker)(const char \*, void \*) is a callback
+The `void (\*walker)(const char \*, void \*)` is a callback
 that will be passed the name of the test suite for each
 level of nesting.
 
-It is also passed the `memo pointer that was
+It is also passed the `memo` pointer that was
 passed to the `walk_breadcrumb()` call.
 You can use this pointer for anything you want, as
 all *Cgreen* does is pass it from call to call.
@@ -2347,11 +2349,13 @@ memo:: By contrast, this is a spare pointer for your own expansion.
 An example XML reporter
 ~~~~~~~~~~~~~~~~~~~~~~~
             
-Let's make things real with an example.
-Suppose we want to send the output from *Cgreen* in XML format,
-say for storing in a repository or for sending across the network.
-             
-            
+Let's make things real with an example.  Suppose we want to send the
+output from *Cgreen* in XML format, say for storing in a repository or
+for sending across the network.
+
+NOTE: The `cgreen-runner` already has an XML-reporter that you can
+use. See <<options, Cgreen Runner Options>>.
+
 Suppose also that we have come up with the following format...
 
 [source,xml]

@@ -58,24 +58,23 @@ version and the C++ version of the libraries.
 ## Reading Up!
 
 The documentation is fairly up-to-date. You can read the extensive
-tutorial directly on
-[GitHub](https://github.com/cgreen-devs/cgreen/blob/master/doc/cgreen-guide-en.asciidoc).
+tutorial directly on [GitHub](https://cgreen-devs.github.io).
 
-Exactly this moment that does not include the example code because of
-GitHubs rendering policies for asciidoc. But you can build the
-documentation yourself in HTML and PDF format.  Generate it using
-Asciidoctor, which can be done using the Cmake configuration. Of
-course you need [Asciidoctor](http://www.asciidoctor.org).
+You can also build the documentation yourself in HTML and PDF format.
+Generate it using Asciidoctor, which can be done using the Cmake
+configuration. Of course you need
+[Asciidoctor](http://www.asciidoctor.org).
 
 Navigate to the ``build/build-c`` directory. You need to add the
-WITH_DOCS option:
+``WITH_HTML`` and/or ``WITH_PDF`` option:
 
-    cmake -DWITH_DOCS:bool=ON -DWITH_HTML:bool=ON ../..
+    cmake -DWITH_HTML:bool=ON ../..
 
-The ``WITH_HTML`` generates HTML-format, you can add, or change to,
-``WITH_PDF`` to get PDF-format.
+Run ``make``. For example
 
-Run ``make``.
+    cd build/build-c
+    cmake -DWITH_HTML:bool=ON -DWITH_PDF:bool=ON ../..
+    make
 
 ## License
 
