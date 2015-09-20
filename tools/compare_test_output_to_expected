@@ -11,8 +11,8 @@ $1/cgreen-runner $2 > $3.output
 
 # Remove strings in $5 and onwards from the output
 for r in ${@:5} ; do
-    echo sed -e s#$r##g $3.output $3.output.tmp
-    sed -e s#$r##g $3.output > $3.output.tmp
+    echo sed -e s%$r%%g $3.output $3.output.tmp
+    sed -e s%$r%%g $3.output > $3.output.tmp
     cp $3.output.tmp $3.output
 done
 
