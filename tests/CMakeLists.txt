@@ -103,7 +103,7 @@ else()
 endif()
 macro_add_test(
     NAME verify_failure_messsage
-    COMMAND ${CMAKE_SOURCE_DIR}/tools/compare_test_output_to_expected
+    COMMAND ${CMAKE_SOURCE_DIR}/tools/cgreen_runner_output_diff
             # Run the runner in directory
             ${CMAKE_BINARY_DIR}/tools
             # .. on library
