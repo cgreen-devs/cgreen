@@ -1,8 +1,11 @@
-= Cgreen - Unit Tests for C and C++
-Marcus Baker <marcus@lastcraft.com>, Thomas Nilsson <thomas@junovagen.se>, João Freitas <joaohf@gmail.com>
 :source-highlighter: highlightjs
 :icons: font
 :numbered:
+:toc:
+
+= Cgreen - Unit Tests for C and C++
+Marcus Baker <marcus@lastcraft.com>;Thomas Nilsson <thomas@junovagen.se>;João Freitas <joaohf@gmail.com>
+
 
 Cgreen Quickstart Guide
 -----------------------
@@ -11,9 +14,9 @@ What is Cgreen?
 ~~~~~~~~~~~~~~~
 
 *Cgreen* is a unit tester for the C and C++ software developer, a test
-automation and software quality assurance tool for development
-teams. The tool is completely open source published under the
-http://www.gnu.org/licenses/lgpl.html[LGPL]
+automation and software quality assurance tool for programmers and
+development teams. The tool is completely open source published under
+the http://www.gnu.org/licenses/lgpl.html[LGPL]
 
 Unit testing is a development practice popularised by the agile
 development community.  It is characterised by writing many small
@@ -348,7 +351,8 @@ is broken into separate words...
 
 [source,c]
 ---------------------------------
-include::tutorial_src/words_test2.c[lines=1..10]
+...
+include::tutorial_src/words_test2.c[lines=10]
     ...
 include::tutorial_src/words_test2.c[lines=15..23]
 ---------------------------------
