@@ -1,0 +1,17 @@
+Running "main" (4 tests)...
+words_test.c:38: Failure: words_tests -> invokes_callback_for_each_word_in_a_phrase 
+	Expected [[word] parameter in [mocked_callback]] to [equal string] ["Birds"]
+		actual value:			["Birds of a feather"]
+		expected to equal:		["Birds"]
+
+words_test.c:39: Failure: words_tests -> invokes_callback_for_each_word_in_a_phrase 
+	Expected call was not made to mocked function [mocked_callback]
+
+words_test.c:40: Failure: words_tests -> invokes_callback_for_each_word_in_a_phrase 
+	Expected call was not made to mocked function [mocked_callback]
+
+words_test.c:41: Failure: words_tests -> invokes_callback_for_each_word_in_a_phrase 
+	Expected call was not made to mocked function [mocked_callback]
+
+Completed "words_tests": 4 passes, 4 failures, 0 exceptions.
+Completed "main": 4 passes, 4 failures, 0 exceptions.

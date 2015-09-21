@@ -1,0 +1,6 @@
+Running "first_test" (2 tests)...
+first_test2.c:12: Failure: Cgreen -> fails_this_test 
+	Expected [0 == 1] to [be true]
+
+Completed "Cgreen": 1 pass, 1 failure, 0 exceptions.
+Completed "first_test": 1 pass, 1 failure, 0 exceptions.

@@ -48,6 +48,10 @@ set(CGREEN_TEST_LIBRARY
   CACHE INTERNAL "cgreen tests shared library"
 )
 
+set(cgreen_all_constraints_library
+  cgreen_all_constraints
+)
+
 set(all_constraints_library_SRCS
   all_constraints_printout.c)
 
@@ -62,7 +66,7 @@ endif (WITH_CXX)
 
 add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_library_SRCS})
 
-add_library(cgreen_all_constraints_library SHARED ${all_constraints_library_SRCS})
+add_library(${cgreen_all_constraints_library} SHARED ${all_constraints_library_SRCS})
 
 add_executable(test_all_constraints ${all_constraints_SRCS})
 
@@ -75,11 +79,11 @@ endif()
 if (WITH_CXX)
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
   target_link_libraries(test_all_constraints ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
-  target_link_libraries(cgreen_all_constraints_library ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
+  target_link_libraries(${cgreen_all_constraints_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
 else()
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY})
   target_link_libraries(test_all_constraints ${CGREEN_LIBRARY})
-  target_link_libraries(cgreen_all_constraints_library ${CGREEN_LIBRARY})
+  target_link_libraries(${cgreen_all_constraints_library} ${CGREEN_LIBRARY})
 endif (WITH_CXX)
 
 if (WITH_CXX)
@@ -91,6 +95,27 @@ endif(WITH_CXX)
 macro_add_unit_test(test_cgreen "${test_SRCS}" "${TEST_TARGET_LIBRARIES}")
 
 macro_add_test(NAME test_cgreen_run_named_test COMMAND test_cgreen integer_one_should_assert_true)
+
+if (WITH_CXX)
+  set(LANG c++)
+else()
+  set(LANG c)
+endif()
+macro_add_test(
+    NAME verify_failure_messsage
+    COMMAND ${CMAKE_SOURCE_DIR}/tools/cgreen_runner_output_diff
+            # Run the runner in directory
+            ${CMAKE_BINARY_DIR}/tools
+            # .. on library
+            $<TARGET_FILE_NAME:${cgreen_all_constraints_library}>
+            # ... storing the output in an output file with basename
+            ${cgreen_all_constraints_library}
+            # ... then compare it to
+            ${CMAKE_CURRENT_SOURCE_DIR}/${cgreen_all_constraints_library}.expected.${LANG}
+            # ... but remove the following strings first
+            ${CMAKE_CURRENT_SOURCE_DIR}/
+            \".*cgreen_all_constraints\" # $<TARGET_FILE_NAME:${cgreen_all_constraints_library}>
+)
 
 # add verification that all public api is available as it should
 add_subdirectory(api)

@@ -3,7 +3,9 @@
 
 CC = gcc -c -g -Wall
 LINK = gcc -g
-LIBDIRS = -L../../build/build-c/src
+CGREEN_ROOT=../../build/build-c
+LIBDIRS = -L$(CGREEN_ROOT)/src
+RUNNER = $(CGREEN_ROOT)/tools/cgreen-runner
 #LIBDIRS = -L/usr/local/lib
 
 all: with_main with_runner
@@ -11,7 +13,7 @@ all: with_main with_runner
 with_main: first0 first1 words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 schema1 schema2 crash1 crash2 crash3 suite1
 	for f in $^ ; do echo $$f; ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
 
-with_runner: runner1 runner2 stream0 stream1 stream2 stream4 stream5 stream6 multiple_streams1 multiple_streams2
+with_runner: runner1 runner2 stream0 stream1 stream2 stream3 stream4 stream5 stream6 multiple_streams1 multiple_streams2
 
 
 clean:
@@ -96,35 +98,39 @@ suite1: suite1.o suite_person_test.o suite_strlen_test.o
 stream0: stream_test0.o read_paragraph1.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
+# All these examples run using the runner which automatically outputs the file name
+# Since that includes the example #, which we don't want in the tutorial, we use
+# sed to remove that number from the file name in the output
 .PHONY: stream1
 stream1: stream_test1.o read_paragraph1.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner stream_tests.so > $@.out
+	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' > $@.out
 
 .PHONY: stream2
 stream2: stream_test2.o read_paragraph1.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner stream_tests.so > $@.out
+	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' > $@.out
 
 .PHONY: stream3
 stream3: stream_test2.o read_paragraph2.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner stream_tests.so > $@.out
+	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' > $@.out
 
 .PHONY: stream4
 stream4: stream_test3.o read_paragraph2.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner stream_tests.so > $@.out
+	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' > $@.out
 
 .PHONY: stream5
+# This test generates random characters read from memory so we need to tidy that up
 stream5: stream_test4.o read_paragraph2.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner stream_tests.so > $@.out
+	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' | sed -e '/\"the$$/{ n; s/.*//; s//\"]/ }' > $@.out
 
 .PHONY: stream6
 stream6: stream_test4.o read_paragraph3.o
 	$(LINK) -shared -o stream_tests.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner stream_tests.so > $@.out
+	$(RUNNER) stream_tests.so | sed 's/[0-9]*\.c/.c/g' > $@.out
 
 .PHONY: multiple_streams1
 multiple_streams1: multiple_streams1.c
@@ -137,15 +143,15 @@ multiple_streams2: multiple_streams2.c
 .PHONY: runner1
 runner1: first_test2.o
 	$(LINK) -shared -o first_test.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner first_test.so > $@.out
+	$(RUNNER) first_test.so > $@.out
 
 .PHONY: runner2
 runner2: first_test2.o
 	$(LINK) -shared -o first_test.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner first_test.so Cgreen:fails_this_test > $@.out
+	$(RUNNER) first_test.so Cgreen:fails_this_test > $@.out
 
 .PHONY: runner3
 runner3: first_test2.o
 	$(LINK) -shared -o first_test.so $^ $(LIBDIRS) -lcgreen
-	cgreen-runner -v first_test.so Cgreen:fails_this_test > $@.out
+	$(RUNNER) -v first_test.so Cgreen:fails_this_test > $@.out
 
