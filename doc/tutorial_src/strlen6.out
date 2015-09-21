@@ -1,0 +1,7 @@
+Running "our_tests" (1 tests)...
+strlen_test.c:9: Failure: returns_five_for_hello 
+	Expected [strlen("Hiya")] to [equal] [5]
+		actual value:			[4]
+		expected value:			[5]
+
+Completed "our_tests": 0 passes, 1 failure, 0 exceptions.

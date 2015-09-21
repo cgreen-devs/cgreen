@@ -1,0 +1,6 @@
+Running "main" (3 tests)...
+words_test.c:33: Failure: words_tests -> invokes_callback_once_for_single_word_sentence 
+	Expected call was not made to mocked function [mocked_callback]
+
+Completed "words_tests": 2 passes, 1 failure, 0 exceptions.
+Completed "main": 2 passes, 1 failure, 0 exceptions.
