@@ -6,6 +6,7 @@
 #include <cgreen/parameters.h>
 #include <cgreen/vector.h>
 #include <inttypes.h>
+#include <math.h>
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
@@ -22,6 +23,23 @@
 #ifdef __cplusplus
 namespace cgreen {
 #endif
+
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) > (b) ? (b) : (a))
+
+
+static int significant_figures = 8;
+
+
+static double accuracy(int significant_figures, double largest);
 
 static bool compare_want_greater_value(Constraint *constraint, intptr_t actual);
 
@@ -580,6 +598,29 @@ bool constraint_is_for_parameter_in(const Constraint *constraint, const char *na
     return found;
 }
 
+bool doubles_are_equal(double tried, double expected) {
+    return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(tried, expected));
+}
+
+bool double_is_lesser(double actual, double expected) {
+    return expected < actual + accuracy(significant_figures, max(actual, expected));
+}
+
+bool double_is_greater(double actual, double expected) {
+    return expected > actual - accuracy(significant_figures, max(actual, expected));
+}
+
+static double accuracy(int figures, double largest) {
+    return pow(10, 1 + (int)log10(fabs(largest)) - figures);
+}
+
+void significant_figures_for_assert_double_are(int figures) {
+    significant_figures = figures;
+}
+
+int get_significant_figures() {
+    return significant_figures;
+}
 
 #ifdef __cplusplus
 } // namespace cgreen
