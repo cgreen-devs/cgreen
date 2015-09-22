@@ -52,8 +52,10 @@ Ensure(FailureMessage,for_is_equal_to_double) {
 }
 
 Ensure(FailureMessage,for_is_not_equal_to_double) {
-    double should_not_be_four_point_five = 4.5f, forty_five = 45;
-    assert_that_double(should_not_be_four_point_five, is_not_equal_to_double(forty_five));
+    significant_figures_for_assert_double_are(4);
+    double epsilon = 1.0e-4;
+    double four_point_five = 4.5, almost_four_point_five = 4.5 - epsilon;
+    assert_that_double(four_point_five, is_not_equal_to_double(almost_four_point_five));
 }
 
 Ensure(FailureMessage,for_is_greater_than_double) {
