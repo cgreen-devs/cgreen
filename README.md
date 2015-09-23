@@ -1,3 +1,4 @@
+
 Linux: [![Build Status](https://travis-ci.org/cgreen-devs/cgreen.svg?branch=master)](https://travis-ci.org/cgreen-devs/cgreen)
 Cygwin: [![Build Status](http://ci.alanif.se:8080/buildStatus/icon?job=Cgreen)](http://ci.alanif.se:8080/job/Cgreen/)
 
@@ -39,7 +40,7 @@ are some of Cgreens unique selling points:
 ## Getting It
 
 Cgreen has recently moved from SourceForge to GitHub so things are in
-a bit of a flux. From [SourceForge](http://cgreen.sourceforge.net/projects/cgreen/)
+a bit of a flux. From [SourceForge](https://sourceforge.net/projects/cgreen/)
 you can get pre-build packages for not-so-old development versions.
 
 But *Cgreen* is approaching a 1.0 release and things are changing, so
