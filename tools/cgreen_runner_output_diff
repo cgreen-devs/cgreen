@@ -4,7 +4,7 @@
 # on library $2
 # store the output in $3.output,
 # compare it with expected output in $4
-# but remove $5.. from the output before doing the comparison
+# but run the SED commands in $5 and onwards on the output before doing the comparison
 runner_dir=$1
 lib=$2
 name=$3
@@ -14,10 +14,10 @@ expected=$4
 ${runner_dir}/cgreen-runner ${lib} > ${name}.output
 
 shift 4
-# Remove strings in $5 and onwards from the output
-for r in $@ ; do
-    echo sed -e s%$r%%g ${name}.output ${name}.output.tmp
-    sed -e s%$r%%g ${name}.output > ${name}.output.tmp
+# Execute some SED command in $5 and onwards on the output
+for sedcommand in $@ ; do
+    echo sed -e ${sedcommand} ${name}.output ${name}.output.tmp
+    sed -e ${sedcommand} ${name}.output > ${name}.output.tmp
     mv ${name}.output.tmp ${name}.output
 done
 
@@ -28,4 +28,4 @@ cmp --silent ${name}.output ${expected}
 rc=$?; if [ $rc -ne 0 ]; then diff -c ${name}.output ${expected} ; fi
 exit $rc
 
-                 
+             
