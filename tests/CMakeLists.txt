@@ -112,9 +112,9 @@ macro_add_test(
             ${cgreen_all_constraints_library}
             # ... then compare it to
             ${CMAKE_CURRENT_SOURCE_DIR}/${cgreen_all_constraints_library}.expected.${LANG}
-            # ... but remove the following strings first
-            ${CMAKE_CURRENT_SOURCE_DIR}/
-            \".*cgreen_all_constraints\" # $<TARGET_FILE_NAME:${cgreen_all_constraints_library}>
+            # ... but execute the following SED commands on the output before making the comparison
+            s%${CMAKE_CURRENT_SOURCE_DIR}/%%g
+            s%\".*cgreen_all_constraints\"%\"cgreen_all_constraints\"%g # should like to have $<TARGET_FILE_NAME:${cgreen_all_constraints_library}>
 )
 
 # add verification that all public api is available as it should
