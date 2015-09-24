@@ -37,3 +37,6 @@ after_success:
       cd ..;
       coveralls-lcov build/coverage.info;
     fi
+
+notifications:
+  slack: cgreen:EC3bZqwnyBsaqyeIndEewwNT
