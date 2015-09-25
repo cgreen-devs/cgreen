@@ -1885,23 +1885,7 @@ functions directly, but I believe it will serve as an example.
 
 [source,c]
 -----
-static char *string_out(int p1) {
-    return (char *)mock(p1);
-}
-
-static int integer_out() {
-    return (int)mock();
-}
-
-Ensure(Mocks, learning_mocks_emit_pastable_code) {
-    cgreen_mocks_are(learning_mocks);
-    string_out(1);
-    string_out(2);
-    integer_out();
-    integer_out();
-    string_out(3);
-    integer_out();
-}
+include::tutorial_src/learning_mocks.c[lines=8..-1]
 -----
 
 We can see the call to `cgreen_mocks_are()` starting the test and

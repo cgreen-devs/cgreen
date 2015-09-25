@@ -433,11 +433,24 @@ void clear_mocks(void) {
     }
 }
 
+static void show_breadcrumb(const char *name, void *memo) {
+	if (*(int *) memo > 1) {
+		printf("-> ");
+	}
+	if (*(int *) memo > 0) {
+		printf("%s ", name);
+	}
+	(*(int *) memo)++;
+}
+
+
 void print_learned_mocks(void) {
-    int e, c;
+    int e, c, i = 0;
     CgreenBreadcrumb *breadcrumb = get_test_reporter()->breadcrumb;
-    printf("%s: learned mocks:\n",
-           get_current_from_breadcrumb(breadcrumb));
+
+	walk_breadcrumb(breadcrumb, &show_breadcrumb, (void *) &i);
+    
+    printf(": Learned mocks are\n");
 
     if (cgreen_vector_size(learned_mock_calls) == 0) {
         printf("\t<none>\n");

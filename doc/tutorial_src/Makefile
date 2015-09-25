@@ -5,7 +5,7 @@ CC = gcc -c -g -Wall
 LINK = gcc -g
 CGREEN_ROOT=../../build/build-c
 LIBDIRS = -L$(CGREEN_ROOT)/src
-RUNNER = $(CGREEN_ROOT)/tools/cgreen-runner
+RUNNER = PATH=$(CGREEN_ROOT)/src:$(PATH) $(CGREEN_ROOT)/tools/cgreen-runner
 #LIBDIRS = -L/usr/local/lib
 
 all: with_main with_runner
@@ -16,7 +16,8 @@ with_main: first0 first1 words0 words1 words2 words3 words4 words5 words6 words7
 with_runner: runner1 runner2 \
 			 stream0 stream1 stream2 stream3 stream4 stream5 stream6 \
 			 multiple_streams1 multiple_streams2 \
-			 formatter0 formatter1 formatter2 formatter3 formatter4 formatter5 formatter6
+			 formatter0 formatter1 formatter2 formatter3 formatter4 formatter5 formatter6 \
+			 learning_mocks
 
 
 clean:
@@ -186,3 +187,7 @@ formatter5: stream1.o formatter_tests5.o
 formatter6: stream2.o formatter_tests5.o
 	$(LINK) -shared -o formatter_tests.so $^ $(LIBDIRS) -lcgreen
 	$(RUNNER) formatter_tests.so > $@.out
+
+learning_mocks: learning_mocks.o
+	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
+	$(RUNNER) $@.so
