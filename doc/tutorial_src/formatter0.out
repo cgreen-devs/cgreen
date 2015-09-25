@@ -1,9 +1,0 @@
-Discovered Formatter:makes_one_letter_paragraph_from_one_character_input (Formatter__makes_one_letter_paragraph_from_one_character_input)
-Discovered 1 test(s)
-Opening [formatter_test.so] to run all 1 discovered tests ...
-Running "formatter_test" (1 tests)...
-formatter_test0.c:16: Exception: Formatter -> makes_one_letter_paragraph_from_one_character_input 
-	Test terminated with signal: Interrupt
-
-Completed "Formatter": 0 passes, 0 failures, 1 exception.
-Completed "formatter_test": 0 passes, 0 failures, 1 exception.

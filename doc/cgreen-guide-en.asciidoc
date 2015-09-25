@@ -130,7 +130,7 @@ with no tests, called `first_test.c`...
 
 [source,c]
 ---------------------------------------
-include::tutorial_src/first_test0.c[]
+include::tutorial_src/first_tests0.c[]
 ---------------------------------------
 
 This is very unexciting. It just creates an empty test suite
@@ -178,7 +178,7 @@ Let's add a meaningless test or two so that you can see how it runs...
 
 [source,c]
 -----------------------------
-include::tutorial_src/first_test1.c[]
+include::tutorial_src/first_tests1.c[]
 -----------------------------
 
 A test is denoted by the macro `Ensure`. You can think of a test as
@@ -229,7 +229,7 @@ Here is the, so far empty, test case in `words_test.c`...
 
 [source,c]
 -------------------------------
-include::tutorial_src/words_test0.c[]
+include::tutorial_src/words_tests0.c[]
 -------------------------------
 
 Here is the `all_tests.c` test runner...
@@ -282,7 +282,7 @@ Here is a first test for `split_words()` in `words_test.c`...
 
 [source,c]
 -------------------------------
-include::tutorial_src/words_test1.c[]
+include::tutorial_src/words_tests1.c[]
 -------------------------------
 
 The `assert_that()` macro takes two parameters, the value to assert
@@ -352,9 +352,9 @@ is broken into separate words...
 [source,c]
 ---------------------------------
 ...
-include::tutorial_src/words_test2.c[lines=10]
+include::tutorial_src/words_tests2.c[lines=10]
     ...
-include::tutorial_src/words_test2.c[lines=15..23]
+include::tutorial_src/words_tests2.c[lines=15..23]
 ---------------------------------
 
 Sure enough, we get a failure...
@@ -430,11 +430,11 @@ test for that...
 
 [source,c]
 ---------------------------------
-include::tutorial_src/words_test3.c[lines=1..2]
+include::tutorial_src/words_tests3.c[lines=1..2]
 ...
-include::tutorial_src/words_test3.c[lines=27..38]
+include::tutorial_src/words_tests3.c[lines=27..38]
     ...
-include::tutorial_src/words_test3.c[lines=41..-1]
+include::tutorial_src/words_tests3.c[lines=41..-1]
 ---------------------------------
 
 What is the funny looking `mock()` function?
@@ -496,7 +496,7 @@ add to `words_test.c`...
 
 [source,c]
 ----------------------------
-include::tutorial_src/words_test4.c[lines=37..43]
+include::tutorial_src/words_tests4.c[lines=37..43]
 ----------------------------
 
 Each call is expected in sequence. Any failures, or left-over calls,
@@ -556,7 +556,7 @@ with the +Ensure+ macro. An example might be...
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test1.c[lines=8..10]
+include::tutorial_src/strlen_tests1.c[lines=8..10]
 -----------------------------
 
 The `Ensure` macro takes two arguments (in the BDD style) where the
@@ -565,7 +565,7 @@ first is the Subject Under Test (SUT) which must be declared with the
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test1.c[lines=4]
+include::tutorial_src/strlen_tests1.c[lines=4]
 -----------------------------
 
 The second argument is the test name and can be anything you want as
@@ -637,7 +637,7 @@ The only difference, in priciple, is the use of the SUT or
 [source,c]
 .BDD style:
 -----------------------------
-include::tutorial_src/strlen_test2.c[lines=4..16]
+include::tutorial_src/strlen_tests2.c[lines=4..16]
 -----------------------------
 <1> The `Describe` macro must name the SUT
 <2> The `BeforeEach` function...
@@ -654,7 +654,7 @@ If you use the older pure-TDD style you skip the `Describe` macro, the
 [source,c]
 .TDD style:
 -----------------------------
-include::tutorial_src/strlen_test3.c[lines=3..12]
+include::tutorial_src/strlen_tests3.c[lines=3..12]
 -----------------------------
 <1> No `Describe`, `BeforeEach()` or `AfterEach()`
 <2> No SUT/context in the `Ensure()` macro
@@ -713,7 +713,7 @@ the test above to be...
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test4.c[lines=4..8]
+include::tutorial_src/strlen_tests4.c[lines=4..8]
 -----------------------------
 
 This should produce a slightly more user friendly message when things
@@ -734,7 +734,7 @@ also <<runner, Automatic Test Discovery>>.)
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test5.c[lines=12..16]
+include::tutorial_src/strlen_tests5.c[lines=12..16]
 -----------------------------
 
 In case you have spotted that the reference to
@@ -749,7 +749,7 @@ just write...
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test5.c[lines=19]
+include::tutorial_src/strlen_tests5.c[lines=19]
 -----------------------------
 
 The results of assertions are ultimately delivered as passes and
@@ -765,7 +765,7 @@ The complete test code now looks like...
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test5.c[]
+include::tutorial_src/strlen_tests5.c[]
 -----------------------------
 
 Compiling and running gives...
@@ -783,7 +783,7 @@ failures. So, let's break our test to see it...
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test6.c[lines=8..10]
+include::tutorial_src/strlen_tests6.c[lines=8..10]
 -----------------------------
 
 ...we'll get the helpful message...
@@ -802,7 +802,7 @@ tests. Adding a test of `strlen()` with an empty string for example...
 [source,c]
 -----------------------------
 ...
-include::tutorial_src/strlen_test7.c[lines=12..21]
+include::tutorial_src/strlen_tests7.c[lines=12..21]
 ...
 -----------------------------
 
@@ -817,7 +817,7 @@ example...
 
 [source,c]
 ------------------------------
-include::tutorial_src/schema_test1.c[]
+include::tutorial_src/schema_tests1.c[]
 ------------------------------
 
 We have already factored out the duplicate code into its own functions
@@ -835,11 +835,11 @@ Here is the new version...
 [source,c]
 ---------------------------
 ...
-include::tutorial_src/schema_test2.c[lines=6] 
+include::tutorial_src/schema_tests2.c[lines=6] 
     ...
-include::tutorial_src/schema_test2.c[lines=11..13]
+include::tutorial_src/schema_tests2.c[lines=11..13]
     ...
-include::tutorial_src/schema_test2.c[lines=18..41]
+include::tutorial_src/schema_tests2.c[lines=18..41]
 ...
 ---------------------------
 
@@ -860,7 +860,7 @@ the tests to `BeforeEach()`:
 
 [source,c]
 ---------------------------
-include::tutorial_src/schema_test2.c[lines=25..26] 
+include::tutorial_src/schema_tests2.c[lines=25..26] 
 ---------------------------
 
 Of course that would require an extra variable, and it might make the
@@ -890,7 +890,7 @@ Consider this test method...
 
 [source,c]
 -----------------------------
-include::tutorial_src/crash_test1.c[lines=8..11]
+include::tutorial_src/crash_tests1.c[lines=8..11]
 -----------------------------
 
 Crashes are not something you would normally want to have in a test
@@ -910,7 +910,7 @@ For example...
 
 [source,c]
 -----------------------------
-include::tutorial_src/crash_test1.c[]
+include::tutorial_src/crash_tests1.c[]
 -----------------------------
 
 When built and run, this gives...
@@ -937,7 +937,7 @@ crashing test...
 
 [source,c]
 -----------------------------
-include::tutorial_src/crash_test2.c[lines=13..17]
+include::tutorial_src/crash_tests2.c[lines=13..17]
 int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
     add_test(suite, will_seg_fault);
@@ -998,9 +998,9 @@ Here is an example of time limiting a test...
 [source,c]
 ---------------------------
 ...
-include::tutorial_src/crash_test3.c[lines=8]
+include::tutorial_src/crash_tests3.c[lines=8]
     ...
-include::tutorial_src/crash_test3.c[lines=11..23]
+include::tutorial_src/crash_tests3.c[lines=11..23]
 ---------------------------
                 
 When executed, the code will slow for a second, and then finish with...
@@ -1030,7 +1030,7 @@ Firstly we need to remove the `main()` calls.  E.g...
 
 [source,c]
 ----------------------------
-include::tutorial_src/suite_strlen_test.c[lines=7..8;11..12;15..-1]
+include::tutorial_src/suite_strlen_tests.c[lines=7..8;11..12;15..-1]
 ----------------------------
 
 Then we can write a small runner script with a new
@@ -1264,7 +1264,7 @@ don't need all this:
 
 [source,c]
 ------------------------
-include::tutorial_src/first_test1.c[lines=15..20]
+include::tutorial_src/first_tests1.c[lines=15..20]
 ------------------------
 
 It always feel good to delete code, right?
@@ -1408,7 +1408,7 @@ exhausted.  That is, it just returns a steady stream of `EOF`s.
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test0.c[lines=6..22]
+include::tutorial_src/stream_tests0.c[lines=6..22]
 -----------------------
 
 Our simulation is easy here, because our fake stream returns only one
@@ -1430,7 +1430,7 @@ stubbed stream...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test1.c[lines=6..8]
+include::tutorial_src/stream_tests1.c[lines=6..8]
 -----------------------
 
 Hardly longer that our trivial server stub above, it is just a macro
@@ -1441,7 +1441,7 @@ For our simple example above we just tell it to always return `EOF`...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test1.c[lines=1..17]
+include::tutorial_src/stream_tests1.c[lines=1..17]
 -----------------------
 
 The `always_expect()` macro at (1) takes as arguments the function
@@ -1468,7 +1468,7 @@ Here is how we can do this...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test2.c[lines=19..25]
+include::tutorial_src/stream_tests2.c[lines=19..25]
 -----------------------
 
 Unlike the `always_expect()` instruction, `expect()` sets up an
@@ -1510,7 +1510,7 @@ We can crank out our tests quite quickly now...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test3.c[lines=27..33]
+include::tutorial_src/stream_tests3.c[lines=27..33]
 -----------------------
 
 I've been a bit naughty.  As each test runs in its own process, I
@@ -1532,14 +1532,14 @@ specification of the wanted behaviour...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test4.c[lines=35..41]
+include::tutorial_src/stream_tests4.c[lines=35..41]
 -----------------------
 
 ...and just for luck...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test4.c[lines=43..46]
+include::tutorial_src/stream_tests4.c[lines=43..46]
 -----------------------
 
 This time we musn't use `always_return()`. We want to leave the stream
@@ -1631,7 +1631,7 @@ the called function...
 [source,c]
 -----------------------
 ...
-include::tutorial_src/formatter_test0.c[lines=12..-1]
+include::tutorial_src/formatter_tests0.c[lines=12..-1]
 ...
 -----------------------
 
@@ -1645,20 +1645,7 @@ test...
 
 [source,c]
 -----------------------
-static int reader(void *stream) {
-    return (int)mock(stream);
-}
-
-static void writer(void *stream, char *paragraph) {
-    mock(stream, paragraph);
-}
-
-Ensure(one_character_is_made_into_a_one_letter_paragraph) {
-    expect(reader, will_return('a'));
-    always_expect(reader, will_return(EOF));
-    expect(writer, when(paragraph, is_equal_to_string("a")));
-    by_paragraph(&reader, NULL, &writer, NULL);
-}
+include::tutorial_src/formatter_tests1.c[lines=10..-1]
 -----------------------
 
 Where are the assertions?
@@ -1703,33 +1690,33 @@ constraint)` macro. It takes two parameters:
 There is a multitude of constraints available (actually, exactly the
 same as for the assertions we saw earlier):
 
-|========================================
-|*Constraint*|*Type*
-|`is_equal_to(value)`| Integers
-|`is_not_equal_to(value)`| Integers
-|`is_greater_than(value)`| Integers
-|`is_less_than(value)`| Integers
+|==========================================================================
+|*Constraint*                                             |*Type*
+|`is_equal_to(value)`                                     | Integers
+|`is_not_equal_to(value)`                                 | Integers
+|`is_greater_than(value)`                                 | Integers
+|`is_less_than(value)`                                    | Integers
+|                                                         |
+|`is_equal_to_contents_of(pointer, size_of_contents)`     |Bytes/Structures
+|`is_not_equal_to_contents_of(pointer, size_of_contents)` |Bytes/Structures
 ||
-|`is_equal_to_contents_of(pointer, size_of_contents)`|Bytes/Structures
-|`is_not_equal_to_contents_of(pointer, size_of_contents)`|Bytes/Structures
-||
-|`is_equal_to_string(value)`|String
-|`is_not_equal_to_string(value)`|String
-|`contains_string(value)`|String
-|`does_not_contain_string(value)`|String
-|`begins_with_string(value)`|String
-||
-|`is_equal_to_double(value)`|Double
-|`is_not_equal_to_double(value)`|Double
-|========================================
+|`is_equal_to_string(value)`                              |String
+|`is_not_equal_to_string(value)`                          |String
+|`contains_string(value)`                                 |String
+|`does_not_contain_string(value)`                         |String
+|`begins_with_string(value)`                              |String
+|                                                         |
+|`is_equal_to_double(value)`                              |Double
+|`is_not_equal_to_double(value)`                          |Double
+|==========================================================================
 
 Then there are two ways to return results:
 
-|========================================
-|*Macro*|*Description*
-|`will_return(value)`|Return the value from the mock function (which needs to be declared returning that type
+|=================================================================================================
+|*Macro*                                                      |*Description*
+|`will_return(value)`                                         |Return the value from the mock function (which needs to be declared returning that type
 |`will_set_contents_of_parameter(parameter_name, value, size)`|Writes the value in the referenced parameter
-|========================================
+|=================================================================================================
 
 You can combine these in various ways:
 
@@ -1755,8 +1742,7 @@ expectation, one for each reference parameter, but naturally only one
 It's about time we actually ran our test...
 
 -----------------------
-Running "stream_tests" (6 tests)...
-Completed "stream_tests": 6 passes, 0 failures, 0 exceptions.
+include::tutorial_src/formatter1.out[]
 -----------------------
 
 Confident that a single character works, we can further specify the
@@ -1764,52 +1750,46 @@ behaviour.  Firstly an input sequence...
 
 [source,c]
 -----------------------
-Ensure(no_line_endings_makes_one_paragraph) {
-    expect(reader, will_return('a'));
-    expect(reader, will_return(' '));
-    expect(reader, will_return('b'));
-    expect(reader, will_return(' '));
-    expect(reader, will_return('c'));
-    always_expect(reader, will_return(EOF));
-    expect(writer, when(paragraph, is_equal_to_string("a b c")));
-    by_paragraph(&reader, NULL, &writer, NULL);
-}
+include::tutorial_src/formatter_tests2.c[lines=25..34]
 -----------------------
 
 A more intelligent programmer than me would place all these calls in a
-loop.  Next, checking an output sequence...
+loop.
+
+-------------------------
+include::tutorial_src/formatter2.out[]
+-------------------------
+
+Next, checking an output sequence...
 
 [source,c]
 -----------------------
-Ensure(line_endings_generate_separate_paragraphs) {
-    expect(reader, will_return('a'));
-    expect(reader, will_return('\n'));
-    expect(reader, will_return('b'));
-    expect(reader, will_return('\n'));
-    expect(reader, will_return('c'));
-    always_expect(reader, will_return(EOF));
-    expect(writer, when(paragraph, is_equal_to_string("a")));
-    expect(writer, when(paragraph, is_equal_to_string("b")));
-    expect(writer, when(paragraph, is_equal_to_string("c")));
-    by_paragraph(&reader, NULL, &writer, NULL);
-}
+include::tutorial_src/formatter_tests3.c[lines=36..-1]
 -----------------------
 
 Again we can se that the `expect()` calls follow a record and playback
 model.  Each one tests a successive call.  This sequence confirms that
 we get `"a"`, `"b"` and `"c"` in order.
 
+-----------------------
+include::tutorial_src/formatter3.out[]
+-----------------------
+
+So, why the 5 passes? Each ``expect()`` with a constrait is actually
+an assert. It asserts that the call specified is actually made with
+the parameters given and in the specified order. In this case all the
+expected calls were made.
+
 Then we'll make sure the correct stream pointers are passed to the
 correct functions.  This is a more realistic parameter check...
 
 [source,c]
 -----------------------
-Ensure(resources_are_paired_with_the_functions) {
-    expect(reader, when(stream, is_equal_to(1)), will_return('a'));
-    always_expect(reader, when(stream, is_equal_to(1)), will_return(EOF));
-    expect(writer, when(stream, is_equal_to(2)));
-    by_paragraph(&reader, (void *)1, &writer, (void *)2);
-}
+include::tutorial_src/formatter_tests4.c[lines=49..-1]
+-----------------------
+
+-----------------------
+include::tutorial_src/formatter4.out[]
 -----------------------
 
 And finally we'll specify that the writer is not called if
@@ -1817,21 +1797,13 @@ there is no paragraph.
 
 [source,c]
 -----------------------
-Ensure(empty_paragraphs_are_ignored) {
-    expect(reader, will_return('\n'));
-    always_expect(reader, will_return(EOF));
-    never_expect(writer);
-    by_paragraph(&reader, NULL, &writer, NULL);
-}
+include::tutorial_src/formatter_tests5.c[lines=56..-1]
 -----------------------
 
 This last test is our undoing...
 
 -----------------------
-Running "stream_tests" (10 tests)...
-streams_tests.c:93: Test Failure: -> empty_paragraphs_are_ignored
-        Function [writer] has an expectation that it will never be called, but it was
-Completed "stream_tests": 14 passes, 1 failure, 0 exceptions.
+include::tutorial_src/formatter5.out[]
 -----------------------
 
 Obviously blank lines are still being dispatched to the `writer()`.
@@ -1839,24 +1811,14 @@ Once this is pointed out, the fix is obvious...
 
 [source,c]
 -----------------------
-void by_paragraph(int (*read)(void *), void *in, void (*write)(void *, char *), void *out) {
-    while (1) {
-        char *line = read_paragraph(read, in);
-        if ((line == NULL) || (strlen(line) == 0)) {
-            return;
-        }
-        (*write)(out, line);
-        free(line);
-    }
-}
+include::tutorial_src/stream2.c[lines=23..-1]
 -----------------------
 
 Tests with `never_expect()` can be very effective at uncovering subtle
 bugs.
 
 -----------------------
-Running "stream_tests"...
-Completed "stream_tests": 14 passes, 0 failures, 0 exceptions.
+include::tutorial_src/formatter6.out[]
 -----------------------
 
 All done.

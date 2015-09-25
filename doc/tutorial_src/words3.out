@@ -1,5 +1,5 @@
 Running "main" (2 tests)...
-words_test.c:21: Failure: words_tests -> converts_spaces_to_zeroes 
+words_tests.c:21: Failure: words_tests -> converts_spaces_to_zeroes 
 	Expected [comparison] to [equal] [0]
 		actual value:			[-32]
 		expected value:			[0]
