@@ -5,12 +5,17 @@ CC = gcc -c -g -Wall
 LINK = gcc -g
 CGREEN_ROOT=../../build/build-c
 LIBDIRS = -L$(CGREEN_ROOT)/src
-RUNNER = PATH=$(CGREEN_ROOT)/src:$(PATH) $(CGREEN_ROOT)/tools/cgreen-runner
+RUNNER = $(CGREEN_ROOT)/tools/cgreen-runner
 #LIBDIRS = -L/usr/local/lib
 
 all: with_main with_runner
 
-with_main: first0 first1 words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 schema1 schema2 crash1 crash2 crash3 suite1
+with_main:  first0 first1 \
+			words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 \
+			strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 \
+			schema1 schema2 \
+			crash1 crash2 crash3 \
+			suite1
 	for f in $^ ; do echo $$f; ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
 
 with_runner: runner1 runner2 \

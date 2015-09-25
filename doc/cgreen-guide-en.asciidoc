@@ -1896,13 +1896,16 @@ up in our terminal:
 
 [source,c]
 ----
-learning_mocks_emit_pastable_code: learned mocks:
+Running "learning_mocks" (1 tests)...
+LearningMocks -> emit_pastable_code : Learned mocks are
         expect(string_out, when(p1, is_equal_to(1)));
         expect(string_out, when(p1, is_equal_to(2)));
         expect(integer_out);
         expect(integer_out);
         expect(string_out, when(p1, is_equal_to(3)));
         expect(integer_out);
+Completed "LearningMocks": 0 passes, 0 failures, 0 exceptions.
+Completed "learning_mocks": 0 passes, 0 failures, 0 exceptions.
 ----
 
 If this were a real test we could just copy this and paste it in place
