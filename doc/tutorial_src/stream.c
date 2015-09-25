@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 char *read_paragraph(int (*read)(void *), void *stream) {
     int buffer_size = 0, length = 0;

@@ -422,7 +422,7 @@ now.
 
 The function under test is the `words()` function and we want to make
 sure it walks the sentence correctly, dispatching individual words as
-it goes. How to test this?
+it goes. So what calls are made are very important. How to test this?
 
 Let's start with a one word sentence. In this case we would expect the
 callback to be invoked once with the only word, right? Here is the
@@ -629,7 +629,7 @@ BDD Style vs. TDD Style
 So far we have encouraged the modern BDD style. It has merits that we
 really want you to benefit from. But you might come across another
 style, the standard TDD style, which is more inline with previous
-thinking as is more similar to other frameworks.
+thinking and might be more similar to other frameworks.
 
 The only difference, in priciple, is the use of the SUT or
 'context'. In the BDD style you have it, in the TDD style you don't.
@@ -1609,16 +1609,7 @@ Here is the prewritten production code...
 
 [source,c]
 -----------------------
-void by_paragraph(int (*read)(void *), void *in, void (*write)(void *, char *), void *out) {
-    while (1) {
-        char *line = read_paragraph(read, in);
-        if (line == NULL) {
-            return;
-        }
-        (*write)(out, line);
-        free(line);
-    }
-}
+include::tutorial_src/stream.c[lines=22..31]
 -----------------------
 
 This is the start of a formatter utility.  Later filters will probably
@@ -1640,17 +1631,7 @@ the called function...
 [source,c]
 -----------------------
 ...
-void expect_one_letter_paragraph(char *paragraph, void *stream) {
-    assert_string_equal(paragraph, "a", NULL);
-}
-
-Ensure(one_character_is_made_into_a_one_letter_paragraph) {
-    by_paragraph(
-            &one_character_stream,
-            NULL,
-            &expect_one_letter_paragraph,
-            NULL);
-}
+include::tutorial_src/formatter_test0.c[lines=12..-1]
 ...
 -----------------------
 

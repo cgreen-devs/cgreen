@@ -13,7 +13,7 @@ all: with_main with_runner
 with_main: first0 first1 words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 schema1 schema2 crash1 crash2 crash3 suite1
 	for f in $^ ; do echo $$f; ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
 
-with_runner: runner1 runner2 stream0 stream1 stream2 stream3 stream4 stream5 stream6 multiple_streams1 multiple_streams2
+with_runner: runner1 runner2 stream0 stream1 stream2 stream3 stream4 stream5 stream6 multiple_streams1 multiple_streams2 formatter0 formatter1
 
 
 clean:
@@ -155,3 +155,11 @@ runner3: first_test2.o
 	$(LINK) -shared -o first_test.so $^ $(LIBDIRS) -lcgreen
 	$(RUNNER) -v first_test.so Cgreen:fails_this_test > $@.out
 
+.PHONY: formatter0
+formatter0: stream.o formatter_test0.o
+	$(LINK) -shared -o formatter_test.so $^ $(LIBDIRS) -lcgreen
+
+.PHONY: formatter1
+formatter1: stream.o formatter_test1.o
+	$(LINK) -shared -o formatter_test.so $^ $(LIBDIRS) -lcgreen
+	$(RUNNER) formatter_test.so > $@.out
