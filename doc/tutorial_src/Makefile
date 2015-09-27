@@ -1,7 +1,9 @@
 .IGNORE :
 .SILENT :
 
-CC = gcc -c -g -Wall
+FPIC = -fPIC	# required on Linux
+
+CC = gcc -c -g -Wall $(FPIC)
 LINK = gcc -g
 CGREEN_ROOT=../../build/build-c
 LIBDIRS = -L$(CGREEN_ROOT)/src
@@ -24,13 +26,12 @@ with_main:  first0 first1 \
 
 # Most tests built to run with the runner we can run here, but some need special care
 # They have their output produced directly in the build rules below
-with_runner: runner1 \
-			 stream0 stream1 stream2 stream3 stream4 stream6 \
+with_runner: stream0 stream1 stream2 stream3 stream4 stream6 \
 			 multiple_streams1 multiple_streams2 \
 			 formatter0 formatter1 formatter2 formatter3 formatter4 formatter5 formatter6
 	for f in $^ ; do echo $$f; $(RUNNER) $$f.so | sed 's/[0-9]*\"/\"/g' > $$f.out; done
 
-special: runner2 runner3 stream5 learning_mocks
+special: runner1 runner2 runner3 stream5 learning_mocks
 
 clean:
 	rm *.exe *.o *.out *.so *.stackdump *~
@@ -157,23 +158,24 @@ stream4: stream_tests3.o read_paragraph2.o
 # This test generates random characters read from memory so we need to tidy that up
 stream5: stream_tests4.o read_paragraph2.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) $@.so | sed 's/[0-9]*\.c/.c/g' | sed -e '/\"the$$/{ n; s/.*//; s//\"]/ }' > $@.out
+	$(RUNNER) $@.so | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' | LANG='' sed -e '/actual value:.*\".*$$/ { n; s/[\x00-\xff]*\"]$$/\"\]/ }' > $@.out
 
 .PHONY: stream6
 stream6: stream_tests4.o read_paragraph3.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
 .PHONY: multiple_streams1
-multiple_streams1: multiple_streams1.c
+multiple_streams1: multiple_streams1.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
 .PHONY: multiple_streams2
-multiple_streams2: multiple_streams2.c
+multiple_streams2: multiple_streams2.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
 .PHONY: runner1
 runner1: first_tests2.o
 	$(LINK) -shared -o first_tests.so $^ $(LIBDIRS) -lcgreen
+	$(RUNNER) first_tests.so > $@.out
 
 .PHONY: runner2
 runner2: first_tests2.o
@@ -197,16 +199,16 @@ formatter2: stream1.o formatter_tests2.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
 formatter3: stream1.o formatter_tests3.o
-	$(LINK) -shared -o $@ $^ $(LIBDIRS) -lcgreen
+	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
 formatter4: stream1.o formatter_tests4.o
-	$(LINK) -shared -o $@ $^ $(LIBDIRS) -lcgreen
+	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
 formatter5: stream1.o formatter_tests5.o
-	$(LINK) -shared -o $@ $^ $(LIBDIRS) -lcgreen
+	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
 formatter6: stream2.o formatter_tests5.o
-	$(LINK) -shared -o $@ $^ $(LIBDIRS) -lcgreen
+	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
 learning_mocks: learning_mocks.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen

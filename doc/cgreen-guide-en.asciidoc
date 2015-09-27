@@ -1,11 +1,11 @@
 :source-highlighter: highlightjs
-:highlightjs-style: agate
+:highlightjs-style: Darkula
 :icons: font
 :numbered:
 :toc:
 
 = Cgreen - Unit Tests for C and C++
-Marcus Baker <marcus@lastcraft.com>;Thomas Nilsson <thomas@junovagen.se>;João Freitas <joaohf@gmail.com>
+Marcus Baker <marcus@lastcraft.com>; Thomas Nilsson <thomas@junovagen.se>; João Freitas <joaohf@gmail.com>;
 
 
 Cgreen Quickstart Guide
@@ -111,7 +111,7 @@ using *CMake*. This is called an 'out of source build'. It compiles
 file organization and enables multi-target builds from the same
 sources by leaving the complete source tree untouched. The top level
 `Makefile` will by default create the two directories, `build/build-c`
-and `build/build-c{plus}+`, which houses the __C__ and __C++__ builds
+and `build/build-c++`, which houses the __C__ and __C++__ builds
 respectively.
 
 TIP: Experienced users may tweak the build configurations by going to
@@ -504,7 +504,6 @@ Each call is expected in sequence. Any failures, or left-over calls,
 or extra calls, and we get failures. We can see all this when we run
 the tests...
 
-[source,c]
 ----------------------------
 include::tutorial_src/words8.out[]
 ----------------------------
@@ -553,7 +552,7 @@ Writing basic tests
 
 *Cgreen* tests are simply C, or C++, functions with no parameters and
 no return value. To signal that they actually are tests we mark them
-with the +Ensure+ macro. An example might be...
+with the `Ensure` macro. An example might be...
 
 [source,c]
 -----------------------------
@@ -1031,7 +1030,11 @@ Firstly we need to remove the `main()` calls.  E.g...
 
 [source,c]
 ----------------------------
-include::tutorial_src/suite_strlen_tests.c[lines=7..8;11..12;15..-1]
+include::tutorial_src/suite_strlen_tests.c[lines=8]
+   ...
+include::tutorial_src/suite_strlen_tests.c[lines=10..12]
+   ...
+include::tutorial_src/suite_strlen_tests.c[lines=14..-1]
 ----------------------------
 
 Then we can write a small runner script with a new
@@ -1077,7 +1080,7 @@ They will all be named after the function the create call sits in.  If
 you want to get around this, or you just like to name your test
 suites, you can use `create_named_test_suite()` instead of
 `create_test_suite()`.  This takes a single string parameter.  In fact
-`create_test_suite()` is just a macro that inserts the `\__func__`
+`create_test_suite()` is just a macro that inserts the `__func__`
 constant into `create_named_test_suite()`.
 
 What happens to `setup` and `teardown` functions in a `TestSuite` that
@@ -1188,7 +1191,7 @@ Forgot to add your test?
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 When we write a new test we focus on the details about the test we are
-trying to write. And writing tests are no trivial matter so this might
+trying to write. And writing tests is no trivial matter so this might
 well take a lot of brain power.
 
 So, it comes as no big surprise, that sometimes you write your test
@@ -1238,7 +1241,7 @@ build your library using `gcc` would be
 $ gcc -shared -o first_test.so -fPIC first_test.c -lcgreen
 --------------------------
 
-The `-fPIC` means to generate +position independent code+ which is
+The `-fPIC` means to generate 'position independent code' which is
 required if you want to load the library dynamically.
 
 How to build a dynamically loadable shared library might vary a lot
@@ -1502,7 +1505,7 @@ the stub and the calls to `will_return()` build up a static list of
 return values which are used and returned in order as those calls
 arrive. The return values are cleared between tests.
 
-The `mock()` macro captures the parameter names and the `\__func__`
+The `mock()` macro captures the parameter names and the `__func__`
 property (the name of the stub function).  *Cgreen* can then use these
 to look up entries in the return list, and also to generate more
 helpful messages.
@@ -1610,7 +1613,7 @@ Here is the prewritten production code...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream.c[lines=22..31]
+include::tutorial_src/stream.c[lines=23..32]
 -----------------------
 
 This is the start of a formatter utility.  Later filters will probably
@@ -1670,7 +1673,7 @@ often the specified behaviour or expectation will be executed:
 |*Macro*                       |*Description*
 |`expect(function, ...)`       |Expected once, in order
 |`always_expect(function, ...)`|Expect this behavior from here onwards
-|`never_expect(function)`      |This mock is expected to never be called
+|`never_expect(function)`      |From this point this mock function must never be called
 |=======================================================================
 
 You can specify constraints and behaviours for each expectation
