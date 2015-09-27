@@ -1,4 +1,4 @@
-FIND_PACKAGE(ASCIIDOCTOR)
+FIND_PACKAGE(Asciidoctor)
 
 SET(ASCIIDOC_CONFFILE "${CMAKE_SOURCE_DIR}/doc/cgreen_asciidoc.conf")
 
