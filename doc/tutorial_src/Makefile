@@ -29,7 +29,7 @@ with_main:  first0 first1 \
 with_runner: stream0 stream1 stream2 stream3 stream4 stream6 \
 			 multiple_streams1 multiple_streams2 \
 			 formatter0 formatter1 formatter2 formatter3 formatter4 formatter5 formatter6
-	for f in $^ ; do echo $$f; $(RUNNER) $$f.so | sed 's/[0-9]*\"/\"/g' > $$f.out; done
+	for f in $^ ; do echo $$f; $(RUNNER) $$f.so | sed -e 's/[0-9]\"/\"/' -e 's/[0-9]\.c/\.c/' > $$f.out; done
 
 special: runner1 runner2 runner3 stream5 learning_mocks
 
@@ -175,17 +175,17 @@ multiple_streams2: multiple_streams2.o
 .PHONY: runner1
 runner1: first_tests2.o
 	$(LINK) -shared -o first_tests.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) first_tests.so > $@.out
+	$(RUNNER) first_tests.so | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
 
 .PHONY: runner2
 runner2: first_tests2.o
 	$(LINK) -shared -o first_tests.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) first_tests.so Cgreen:fails_this_test > $@.out
+	$(RUNNER) first_tests.so Cgreen:fails_this_test | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
 
 .PHONY: runner3
 runner3: first_tests2.o
 	$(LINK) -shared -o first_tests.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) -v first_tests.so Cgreen:fails_this_test > $@.out
+	$(RUNNER) -v first_tests.so Cgreen:fails_this_test | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
 
 .PHONY: formatter0
 formatter0: stream1.o formatter_tests0.o

@@ -1,7 +1,7 @@
 Running "stream" (2 tests)...
-stream_tests2.c:23: Failure: ParagraphReader -> gives_one_character_line_for_one_character_stream 
+stream_tests.c:23: Failure: ParagraphReader -> gives_one_character_line_for_one_character_stream 
 	Expected [line] to [equal string] ["a"]
-		actual value:			["ma"]
+		actual value:			["xa"]
 		expected to equal:		["a"]
 
 Completed "ParagraphReader": 1 pass, 1 failure, 0 exceptions.

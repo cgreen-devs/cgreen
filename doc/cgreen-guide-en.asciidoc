@@ -1,5 +1,4 @@
 :source-highlighter: highlightjs
-:highlightjs-style: Darkula
 :icons: font
 :numbered:
 :toc:
@@ -631,7 +630,7 @@ really want you to benefit from. But you might come across another
 style, the standard TDD style, which is more inline with previous
 thinking and might be more similar to other frameworks.
 
-The only difference, in priciple, is the use of the SUT or
+The only difference, in principle, is the use of the SUT or
 'context'. In the BDD style you have it, in the TDD style you don't.
 
 [source,c]
@@ -821,7 +820,7 @@ include::tutorial_src/schema_tests1.c[]
 ------------------------------
 
 We have already factored out the duplicate code into its own functions
-`create_scheme()` and `drop_schema()`, so things are not so bad. At
+`create_schema()` and `drop_schema()`, so things are not so bad. At
 least not yet. But what happens when we get dozens of tests? For a
 test subject as complicated as a database
 http://www.martinfowler.com/eaaCatalog/activeRecord.html[ActiveRecord],
@@ -938,11 +937,6 @@ crashing test...
 [source,c]
 -----------------------------
 include::tutorial_src/crash_tests2.c[lines=13..17]
-int main(int argc, char **argv) {
-    TestSuite *suite = create_test_suite();
-    add_test(suite, will_seg_fault);
-    run_single_test(suite, "will_seg_fault", create_text_reporter());
-}
 -----------------------------
 
 When run in this way, *Cgreen* will not `fork()`.
@@ -1037,19 +1031,18 @@ include::tutorial_src/suite_strlen_tests.c[lines=10..12]
 include::tutorial_src/suite_strlen_tests.c[lines=14..-1]
 ----------------------------
 
-Then we can write a small runner script with a new
-`main()` function...
+Then we can write a small runner with a new `main()` function...
 
 [source,c]
 -----------------------
 include::tutorial_src/suite1.c[]
 -----------------------
 
-It's usually easier to place the `TestSuite` prototypes in the runner
-scripts, rather than have lot's of header files.  This is the same
-reasoning that let us drop the prototypes for the test functions in
-the actual test scripts.  We can get away with this, because the tests
-are more about documentation than encapsulation.
+It's usually easier to place the `TestSuite` prototypes directly in
+the runner source, rather than have lot's of header files.  This is
+the same reasoning that let us drop the prototypes for the test
+functions in the actual test scripts.  We can get away with this,
+because the tests are more about documentation than encapsulation.
 
 As we saw above, we can run a single test using the
 `run_single_test()` function, and we'd like to be able to do that from
@@ -1335,7 +1328,7 @@ you have non-BDD style tests __without__ any `setup()` and/or
 where the tests live in this case is called `default`. But why don't
 you convert your tests to BDD notation? This would save you from the
 frustrating trouble-shooting that you risk when you added `setup()`
-and `teardown()` and can't understand we they are not run...
+and `teardown()` and can't understand why they are not run...
 
 So, the runner requires you to use the BDD notation. But since we
 recommend that you do anyway, that's no extra problem if you are
