@@ -1,19 +1,24 @@
 #include <cgreen/cgreen.h>
+
 #include <stdbool.h>
 #include "xml_reporter.h"
 
-Ensure(a_test_that_passes) {
+Describe(XML_reporter);
+BeforeEach(XML_reporter) {}
+AfterEach(XML_reporter) {}
+
+Ensure(XML_reporter, reports_a_test_that_passes) {
     assert_that(1 == 1);
 }
 
-Ensure(a_test_that_fails) {
-    fail("A failure");
+Ensure(XML_reporter, reports_a_test_that_fails) {
+    fail_test("A failure");
 }
 
 TestSuite *create_test_group() {
     TestSuite *suite = create_named_test_suite("A Group");
-    add_test(suite, a_test_that_passes);
-    add_test(suite, a_test_that_fails);
+    add_test_with_context(suite, XML_reporter, reports_a_test_that_passes);
+    add_test_with_context(suite, XML_reporter, reports_a_test_that_fails);
     return suite;
 }
 

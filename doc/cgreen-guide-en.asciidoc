@@ -1,4 +1,5 @@
 :source-highlighter: highlightjs
+:highlightjs-style: agate
 :icons: font
 :numbered:
 :toc:
@@ -1894,7 +1895,10 @@ setting the mocks into learning mode.
 If we run this, just as we usually run tests, the following will show
 up in our terminal:
 
-[source,c]
+// This needs to be copied and pasted from the output of make in tutorial_src
+// At least, I couldn't make make capture it into the output file
+// It ought to be:
+// include::tutorial_src/learning_mocks.out[]
 ----
 Running "learning_mocks" (1 tests)...
 LearningMocks -> emit_pastable_code : Learned mocks are
@@ -1912,10 +1916,10 @@ If this were a real test we could just copy this and paste it in place
 of the call to `cgreen_mocks_are()` and we're done.
 
 
-BDD-ish Style Cgreen
---------------------
+Context, Subject Under Test & Suites
+------------------------------------
 
-As mentioned earlier, *Cgreen* also supports the behaviour driven
+As mentioned earlier, *Cgreen* promotes the behaviour driven
 style of test driving code. The thinking behind BDD is that we don't
 really want to test anything, if we just could specify the behaviour
 of our code and ensure that it actually behaves this way we would be
@@ -1923,10 +1927,10 @@ fine.
 
 This might seem like an age old dream, but when you think about it,
 there is actually very little difference in the mechanics from
-TDD. First we write how we want it, then implement it. But the small
-change in wording, from `test´ to `behaviour´, from `test that´ to `ensure
-that´, makes a huge difference in thinking, and also very often in quality
-of the resulting code.
+vanillla TDD. First we write how we want it, then implement it. But
+the small change in wording, from `test´ to `behaviour´, from `test
+that´ to `ensure that´, makes a huge difference in thinking, and also
+very often in quality of the resulting code.
 
 The SUT - Subject Under Test
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1968,11 +1972,6 @@ basically calls a test suite. The suite specifies the behaviour of a
 `class´. (That's why some BDD frameworks draw on 'spec', like
 *RSpec*.)
 
-As you can see in the short example above, you have to give the SUT in
-the `Ensure()` declaration too. If you don't, *Cgreen* will get
-confused about which style you are using and your source won't
-compile.
-
 Contexts and Before and After
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1981,7 +1980,7 @@ and require various forms of setup. When using TDD style you
 would probably break this up into multiple suites having their own
 `setup()` and `teardown()`.
 
-With BDD-ish style we could consider the suite as a behaviour
+With BDD-ish style we could consider a suite as a behaviour
 specification for our SUT 'in a particular context'. E.g.
 
 [source, c]
@@ -2010,42 +2009,15 @@ Ensure(shopping_basket_for_returning_customer, can_use_discounts) {
 The 'context' would then be `shopping_basket_for_returning_customer`,
 with the SUT being the shopping basket 'class'.
 
-We have added two 'functions' which are exactly what they say they
-are. Before each 'test' (or behaviour specification) the customer
-record will always be created and the customer logged in, exactly like
-we could do with the `setUp()` function in TDD style. In the same
-manner, after each 'test' the customer will be logged out and the
-record destroyed.
-
-I've been holding back on running *Cgreen* with this example because
-you need to write all three of the new 'functions' (of course you
-can see that they are CPP macros, right?), to make that work.
-
-And there is one more thing. To run this using the same kind of main
-program that we saw earlier, we need to name the SUT or context when
-we add the test to a suite:
-
-[source, c]
-----------------------
-TestSuite *shopping_basket_tests()
-{
-  TestSuite *suite = create_test_suite();
-  add_test_with_context(suite, shopping_basket_for_returning_customer, can_use_discounts);
-  return suite;
-}
-----------------------
-
-Note that you don't need to (and shouldn't) add any `setup()` or `teardown()`
-to the suite. That's already taken care of by the `BeforeEach()` and
-`AfterEach()` definitions.
-
-Now we are ready to run the tests by compiling and linking as
-always. And then running the tests through our main program.
+So 'context', 'subject under test' and 'suite' are mostly
+interchangable concepts in *Cgreen* lingo. It's a named group of
+'tests' that share the same `BeforeEach` and `AfterEach` and lives in
+the same source file.
 
 [[changing_style, Changing Style]]
 
 Changing Style
-~~~~~~~~~~~~~~
+--------------
 
 If you already have some TDD style *Cgreen* test suites, it is quite
 easy to change them over to BDD-ish style. Here are the steps required
@@ -2261,16 +2233,14 @@ call `walk_breadcrumb()`.  Here is the full signature...
 void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *), void *memo);
 -----------------------
 
-The `void (\*walker)(const char \*, void \*)` is a callback
-that will be passed the name of the test suite for each
-level of nesting.
+The `void (*walker)(const char *, void *)` is a callback that will be
+passed the name of the test suite for each level of nesting.
 
-It is also passed the `memo` pointer that was
-passed to the `walk_breadcrumb()` call.
-You can use this pointer for anything you want, as
-all *Cgreen* does is pass it from call to call.
-This is so aggregate information can be kept track of whilst
-still being reentrant.
+It is also passed the `memo` pointer that was passed to the
+`walk_breadcrumb()` call.  You can use this pointer for anything you
+want, as all *Cgreen* does is pass it from call to call.  This is so
+aggregate information can be kept track of whilst still being
+reentrant.
 
 
 The last parts of the `TestReporter` structure are...
@@ -2310,64 +2280,36 @@ Suppose also that we have come up with the following format...
 -----------------------
 
 In other words a simple nesting of tests with only failures encoded.
-The absence of failure is a pass.
+The absence of failure XML node is a pass.
 
-Here is a test script, `test_in_xml.c` that we can use to construct the
+Here is a test script, `test_as_xml.c` that we can use to construct the
 above output...
 
 [source,c]
 -----------------------
-#include <cgreen/cgreen.h>
-
-Ensure(this_test_passes) {
-    assert_true(1);
-}
-
-Ensure(this_test_fails) {
-    assert_true_with_message(0, "A failure");
-}
-
-TestSuite *test_group() {
-    TestSuite *suite = create_test_suite();
-    add_test(suite, this_test_passes);
-    add_test(suite, this_test_fails);
-    return suite;
-}
-
-int main(int argc, char **argv) {
-    TestSuite *suite = create_test_suite();
-    add_suite(suite, test_group());
-    return run_test_suite(suite, create_text_reporter());
-}
+include::tutorial_src/test_as_xml0.c[]
 -----------------------
 
-The text reporter is used just to confirm that everything is working.
-So far it is.
+We can't use the auto-discovering runner here since we need to ensure
+that the nested suites are reported as a nested xml structure. And
+we're not actually writing real tests, just something that we can use
+to drive our new reporter.
+
+The text reporter is used just to confirm that everything is
+working. So far it is.
 
 -----------------------
-Running "main" (2 tests)...
-test_in_xml.c:8: Test Failure: -> test_group -> this_test_fails 
-	A failure
-Running "main" (2 tests)...
-Completed "main": 1 pass, 1 failure, 0 exceptions.
+include::tutorial_src/test_as_xml0.out[]
 -----------------------
-             
-          
+
 Our first move is to switch the reporter from text, to our
 not yet written XML version...
 
 [source,c]
 -----------------------
-#include "cgreen/cgreen.h
 #include "xml_reporter.h"
-
 ...
-
-int main(int argc, char **argv) {
-    TestSuite *suite = create_test_suite();
-    add_suite(suite, test_group());
-    return run_test_suite(suite, create_xml_reporter());
-}
+include::tutorial_src/test_as_xml1.c[lines=24..-1]
 -----------------------
 
 We'll start the ball rolling with the `xml_reporter.h`
@@ -2375,82 +2317,33 @@ header file...
 
 [source,c]
 -----------------------
-#ifndef _XML_REPORTER_HEADER_
-#define _XML_REPORTER_HEADER_
-
-#include "cgreen/reporter.h"
-
-TestReporter *create_xml_reporter();
-
-#endif
+include::tutorial_src/xml_reporter.h[]
 -----------------------
 
-...and the simplest possible reporter in `reporter.c`.
+...and the simplest possible reporter in `xml_reporter.c`.
 
 [source,c]
 -----------------------
-#include "xml_reporter.h"
-#include "cgreen/reporter.h"
-
-TestReporter *create_xml_reporter() {
-    TestReporter *reporter = create_reporter();
-    return reporter;
-}
+include::tutorial_src/xml_reporter0.c[]
 -----------------------
 
 One that outputs nothing.
 
 -----------------------
-gcc -c test_as_xml.c
-gcc -c xml_reporter.c
-gcc xml_reporter.o test_as_xml.o -lcgreen -o xml
-./xml
+$ gcc -c test_as_xml.c
+$ gcc -c xml_reporter.c
+$ gcc xml_reporter.o test_as_xml.o -lcgreen -o xml
+$ ./xml
 -----------------------
 
 Yep, nothing.
 
-
 Let's add the outer test tags first, so that we can see *Cgreen*
 navigating the test suite...
 
+[source,c]
 -----------------------
-#include "xml_reporter.h"
-#include "cgreen/reporter.h"
-#include <stdio.h>
-
-static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count);
-static void xml_reporter_start_test(TestReporter *reporter, const char *name);
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line);
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line);
-
-TestReporter *create_xml_reporter() {
-    TestReporter *reporter = create_reporter();
-    reporter->start_suite = &xml_reporter_start_suite;
-    reporter->start_test = &xml_reporter_start_test;
-    reporter->finish_test = &xml_reporter_finish_test;
-    reporter->finish_suite = &xml_reporter_finish_suite;
-    return reporter;
-}
-
-static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count) {
-    printf("<suite name=\"%s\">\n", name);
-    reporter_start(reporter, name);
-}
-
-static void xml_reporter_start_test(TestReporter *reporter, const char *name) {
-    printf("<test name=\"%s\">\n", name);
-    reporter_start(reporter, name);
-}
-
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line);
-    printf("</test>\n");
-}
-
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line);
-    printf("</suite>\n");
-}
+include::tutorial_src/xml_reporter1.c[]
 -----------------------
 
 Although chaining to the underlying `reporter_start()`
@@ -2461,87 +2354,40 @@ Our output meanwhile, is making its first tentative steps...
 
 [source,xml]
 -----------------------
-<suite name="main">
-<suite name="test_group">
-<test name="this_test_passes">
-</test>
-<test name="this_test_fails">
-</test>
-</suite>
-</suite>
+include::tutorial_src/test_as_xml1.out[]
 -----------------------
 
-We don't want a passing message, so the `show_fail()` function is all we
-need...
+We don't require a message for passing tests, so the `show_fail()`
+function is all we need...
 
 [source,c]
 -----------------------
 ...
-static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-
-TestReporter *create_xml_reporter() {
-    TestReporter *reporter = create_reporter();
-    reporter->start_suite = &xml_reporter_start_suite;
-    reporter->start_test = &xml_reporter_start_test;
-    reporter->show_fail = &xml_show_fail;
-    reporter->finish_test = &xml_reporter_finish_test;
-    reporter->finish_suite = &xml_reporter_finish_suite;
-    return reporter;
-}
-
+include::tutorial_src/xml_reporter2.c[lines=18..25]
 ...
-
-static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
-    printf("<fail>\n");
-    printf("\t<message>\"");
-    vprintf(message, arguments);
-    printf("\"</message>\n");
-    printf("\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
-    printf("</fail>\n");
-}
+include::tutorial_src/xml_reporter2.c[lines=37..-1]
 -----------------------
 
-We have to use `vprintf()` to handle the variable argument
-list passed to us.
-This will probably mean including the `stdarg.h` header
-as well as `stdio.h`.
-             
-            
+We have to use `vprintf()` to handle the variable argument list passed
+to us.  This will probably mean including the `stdarg.h` header as
+well as `stdio.h`.
+
 This gets us pretty close to what we want...
-			
+
 [source,xml]				
 -----------------------
-<suite name="main">
-<suite name="test_group">
-<test name="this_test_passes">
-</test>
-<test name="this_test_fails">
-<fail>
-        <message>A failure</message>
-        <location file="test_in_xml.c" line="9"/>
-</fail>
-</test>
-</suite>
-</suite>
+include::tutorial_src/test_as_xml2.out[]
 -----------------------
 
-For completeness we should add a tag for an incomplete test.
-We'll output this as a failure, athough we don't get a location this
-time...
+For completeness we should add a tag for a test that doesn't complete.
+We'll output this as a failure, although we don't bother with the
+location this time...
 
 [source,c]
 -----------------------
-#include "xml_reporter.h"
-#include "cgreen/reporter.h"
-#include "cgreen/breadcrumb.h"
-
+include::tutorial_src/xml_reporter3.c[lines=27..31]
 ...
-
-static void xml_show_incomplete(TestReporter *reporter, const char *name) {
-    printf("<fail>\n");
-    printf("\t<message>Failed to complete</message>\n");
-    printf("</fail>\n");
-}
+include::tutorial_src/xml_reporter3.c[lines=44..-1]
 -----------------------
 
 All that's left then is the XML declaration and the thorny issue of
@@ -2554,12 +2400,7 @@ outputs the correct number of tabs...
 
 [source,c]
 -----------------------
-static indent(TestReporter *reporter) {
-    int depth = get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb);
-    while (depth-- > 0) {
-        printf("\t");
-    }
-}
+include::tutorial_src/xml_reporter4.c[lines=7..12]
 -----------------------
 
 The `get_breadcrumb_depth()` function just gives the current test
@@ -2572,123 +2413,36 @@ complete listing...
 
 [source,c]
 -----------------------
-#include "xml_reporter.h"
-#include "cgreen/reporter.h"
-#include "cgreen/breadcrumb.h"
-
-#include <stdio.h>
-
-static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count);
-static void xml_reporter_start_test(TestReporter *reporter, const char *name);
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line);
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line);
-static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-
-TestReporter *create_xml_reporter() {
-    TestReporter *reporter = create_reporter();
-    reporter->start_suite = &xml_reporter_start_suite;
-    reporter->start_test = &xml_reporter_start_test;
-    reporter->show_fail = &xml_show_fail;
-    reporter->finish_test = &xml_reporter_finish_test;
-    reporter->finish_suite = &xml_reporter_finish_suite;
-    return reporter;
-}
-
-static indent(TestReporter *reporter) {
-    int depth = get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb);
-    while (depth-- > 0) {
-        printf("\t");
-    }
-}
-
-static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count) {
-    if (get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb) == 0) {
-        printf("<?xml?>\n");
-    }
-    indent(reporter);
-    printf("<suite name=\"%s\">\n", name);
-    reporter_start(reporter, name);
-}
-
-static void xml_reporter_start_test(TestReporter *reporter, const char *name) {
-    indent(reporter);
-    printf("<test name=\"%s\">\n", name);
-    reporter_start(reporter, name);
-}
-
-static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
-    indent(reporter);
-    printf("<fail>\n");
-    indent(reporter);
-    printf("\t<message>");
-    vprintf(message, arguments);
-    printf("</message>\n");
-    indent(reporter);
-    printf("\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
-    indent(reporter);
-    printf("</fail>\n");
-}
-
-static void xml_show_incomplete(TestReporter *reporter, const char *name) {
-    indent(reporter);
-    printf("<fail>\n");
-    indent(reporter);
-    printf("\t<message>Failed to complete]]></message>\n");
-    indent(reporter);
-    printf("</fail>\n");
-}
-
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line);
-    indent(reporter);
-    printf("</test>\n");
-}
-
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line);
-    indent(reporter);
-    printf("</suite>\n");
-}
+include::tutorial_src/xml_reporter4.c[]
 -----------------------
 
 And finally the desired output...
 
+[source,xml]
 -----------------------
-<?xml?>
-<suite name="main">
-    <suite name="test_group">
-        <test name="this_test_passes">
-        </test>
-        <test name="this_test_fails">
-            <fail>
-                <message>A failure</message>
-                <location file="test_in_xml.c" line="9"/>
-            </fail>
-        </test>
-    </suite>
-</suite>
+include::tutorial_src/test_as_xml4.out[]
 -----------------------
 
 Job done.
 
-Possible other extensions include reporters that write to `syslog`,
-talk to IDE plug-ins, paint pretty printed documents or just return a boolean
-for monitoring purposes.
+Possible other reporter customizations include reporters that write to
+`syslog`, talk to IDE plug-ins, paint pretty printed documents or just
+return a boolean for monitoring purposes.
 
 Hints and Tips
 --------------
 
-CAUTION: This chapter is in its infancy. It will contain some tips for
+CAUTION: This chapter is in its infancy. It will contain tips for
 situations that you need some help to get out of, typically strange
 error messages from the compiler. Since *Cgreen* uses some C/C++ macro
 magic this can happen and the error messages might not be straight
 forward to interpret.
 
 |=========================================================
-|*Compiler error message* |*Probable cause...*
-|`"contextFor<X>" is undeclared here`|You forgot the `BeforeEach()` function
+|*Compiler error message*                    |*Probable cause...*
+|`"contextFor<X>" is undeclared here`        |You forgot the `BeforeEach()` function
 |`undefined reference to 'AfterEach_For_<X>'`|You forgot the `AfterEach()` function
-|`CgreenSpec__<X>__<Y>__ is undeclared`|You forgot to specify the test subject/context in a BDD style test
+|`CgreenSpec__<X>__<Y>__ is undeclared`      |You forgot to specify the test subject/context in a BDD style test
 |=========================================================
 
 
