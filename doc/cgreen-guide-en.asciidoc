@@ -582,8 +582,10 @@ complemented with a constraint, in this case `is_equal_to()`. This
 makes a very fluent interface to the asserts, that actually reads like
 English.
 
-Assertions send messages to *Cgreen*, which in turn
-outputs the results.
+NOTE: Sometimes you just want to fail the test explicitly, and there is a function for that too, `fail_test(const char *message)`. And there is a function to explicitly pass, `pass_test(void)`.
+
+Assertions send messages to *Cgreen*, which in turn outputs the
+results.
 
 Here are the standard constraints...
 
@@ -777,8 +779,8 @@ include::tutorial_src/strlen2.out[]
 -----------------------------
 
 We can see that the outer test suite is called `our_tests` since it
-was in `our_tests()` we created the test suite. There are no messages shown unless there are
-failures. So, let's break our test to see it...
+was in `our_tests()` we created the test suite. There are no messages
+shown unless there are failures. So, let's break our test to see it...
 
 [source,c]
 -----------------------------
@@ -1300,7 +1302,13 @@ The `verbose` option is particularly handy since it will give you the
 actual names of all tests discovered. That means if you have long test
 names you can avoid mistyping them by copy and paste from the output
 of `cgreen-runner --verbose`. It will also give the mangled name of
-the test which should make it easier to find in the debugger.
+the test which should make it easier to find in the debugger. Here's
+an example:
+
+------------------------
+include::tutorial_src/runner3.out[]
+------------------------
+
 
 You can also run tests in multiple libraries in one go by adding them
 to the `cgreen-runner` command:
@@ -1772,7 +1780,7 @@ we get `"a"`, `"b"` and `"c"` in order.
 include::tutorial_src/formatter3.out[]
 -----------------------
 
-So, why the 5 passes? Each ``expect()`` with a constrait is actually
+So, why the 5 passes? Each `expect()` with a constrait is actually
 an assert. It asserts that the call specified is actually made with
 the parameters given and in the specified order. In this case all the
 expected calls were made.
@@ -1908,8 +1916,9 @@ Completed "LearningMocks": 0 passes, 0 failures, 0 exceptions.
 Completed "learning_mocks": 0 passes, 0 failures, 0 exceptions.
 ----
 
-If this were a real test we could just copy this and paste it in place
-of the call to `cgreen_mocks_are()` and we're done.
+If this was for real we could just copy this and paste it in place of
+the call to `cgreen_mocks_are()` and we have all the expectations
+done.
 
 
 Context, Subject Under Test & Suites
@@ -1942,9 +1951,9 @@ define a name for it.
 Describe(SUT);
 -----------------------
 
-Since *Cgreen* supports C++ there you naturally have the objects and
+*Cgreen* supports C++ and there you naturally have the objects and
 also the Class Under Test. But in plain C you will have to think about
-what is actually the "class" under test. E.g. in `sort.c` you might
+what is actually the "class" under test. E.g. in `sort_test.c` you might
 see
 
 [source, c]
@@ -2276,7 +2285,7 @@ Suppose also that we have come up with the following format...
 -----------------------
 
 In other words a simple nesting of tests with only failures encoded.
-The absence of failure XML node is a pass.
+The absence of "fail" XML node is a pass.
 
 Here is a test script, `test_as_xml.c` that we can use to construct the
 above output...
@@ -2286,10 +2295,10 @@ above output...
 include::tutorial_src/test_as_xml0.c[]
 -----------------------
 
-We can't use the auto-discovering runner here since we need to ensure
-that the nested suites are reported as a nested xml structure. And
-we're not actually writing real tests, just something that we can use
-to drive our new reporter.
+We can't use the auto-discovering `cgreen-runner` here since we need
+to ensure that the nested suites are reported as a nested xml
+structure. And we're not actually writing real tests, just something
+that we can use to drive our new reporter.
 
 The text reporter is used just to confirm that everything is
 working. So far it is.
@@ -2334,7 +2343,7 @@ $ ./xml
 
 Yep, nothing.
 
-Let's add the outer test tags first, so that we can see *Cgreen*
+Let's add the outer XML tags first, so that we can see *Cgreen*
 navigating the test suite...
 
 [source,c]
@@ -2353,7 +2362,7 @@ Our output meanwhile, is making its first tentative steps...
 include::tutorial_src/test_as_xml1.out[]
 -----------------------
 
-We don't require a message for passing tests, so the `show_fail()`
+We don't require an XML node for passing tests, so the `show_fail()`
 function is all we need...
 
 [source,c]
@@ -2390,8 +2399,9 @@ All that's left then is the XML declaration and the thorny issue of
 indenting.  Although the indenting is not strictly necessary, it would
 make the output a lot more readable.
 
-The test depth is kept track of for us with the `breadcrumb` object in
-the `TestReporter` structure.  We'll add an `indent()` function that
+Given that the test depth is kept track of for us with the
+`breadcrumb` object in the `TestReporter` structure, indentation will
+actually be quite simple.  We'll add an `indent()` function that
 outputs the correct number of tabs...
 
 [source,c]
