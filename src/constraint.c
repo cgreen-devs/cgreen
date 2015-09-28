@@ -6,6 +6,7 @@
 #include <cgreen/parameters.h>
 #include <cgreen/vector.h>
 #include <inttypes.h>
+#include <math.h>
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
@@ -22,6 +23,23 @@
 #ifdef __cplusplus
 namespace cgreen {
 #endif
+
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) > (b) ? (b) : (a))
+
+
+static int significant_figures = 8;
+
+
+static double accuracy(int significant_figures, double largest);
 
 static bool compare_want_greater_value(Constraint *constraint, intptr_t actual);
 
@@ -47,6 +65,9 @@ static bool compare_want_double(Constraint *constraint, intptr_t actual);
 static void test_want_double(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 static bool compare_do_not_want_double(Constraint *constraint, intptr_t actual);
 static void test_do_not_want_double(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
+static bool compare_want_lesser_double(Constraint *constraint, intptr_t actual);
+static bool compare_want_greater_double(Constraint *constraint, intptr_t actual);
+
 static void set_contents(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
 
@@ -273,6 +294,32 @@ Constraint *create_not_equal_to_double_constraint(double expected_value, const c
     return constraint;
 }
 
+Constraint *create_less_than_double_constraint(double expected_value, const char *expected_value_name) {
+    Constraint *constraint = create_constraint_expecting(box_double(expected_value), expected_value_name);
+    constraint->type = DOUBLE_COMPARER;
+
+    constraint->compare = &compare_want_lesser_double;
+    constraint->execute = &test_true;
+    constraint->name = "be less than double";
+    constraint->destroy = &destroy_double_constraint;
+    constraint->expected_value_message = "\t\texpected to be less than:\t[%08f]";
+
+    return constraint;
+}
+
+Constraint *create_greater_than_double_constraint(double expected_value, const char *expected_value_name) {
+    Constraint *constraint = create_constraint_expecting(box_double(expected_value), expected_value_name);
+    constraint->type = DOUBLE_COMPARER;
+
+    constraint->compare = &compare_want_greater_double;
+    constraint->execute = &test_true;
+    constraint->name = "be greater than double";
+    constraint->destroy = &destroy_double_constraint;
+    constraint->expected_value_message = "\t\texpected to be greater than:\t[%08f]";
+
+    return constraint;
+}
+
 Constraint *create_return_value_constraint(intptr_t value_to_return) {
     Constraint* constraint = create_constraint();
     constraint->type = RETURN_VALUE;
@@ -425,6 +472,14 @@ static bool compare_want_double(Constraint *constraint, intptr_t actual) {
     return doubles_are_equal(as_double(constraint->expected_value), as_double(actual));
 }
 
+static bool compare_want_lesser_double(Constraint *constraint, intptr_t actual) {
+    return double_is_lesser(as_double(constraint->expected_value), as_double(actual));
+}
+
+static bool compare_want_greater_double(Constraint *constraint, intptr_t actual) {
+    return double_is_greater(as_double(constraint->expected_value), as_double(actual));
+}
+
 static void test_want_double(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
             reporter,
@@ -543,6 +598,29 @@ bool constraint_is_for_parameter_in(const Constraint *constraint, const char *na
     return found;
 }
 
+bool doubles_are_equal(double tried, double expected) {
+    return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(tried, expected));
+}
+
+bool double_is_lesser(double actual, double expected) {
+    return expected < actual + accuracy(significant_figures, max(actual, expected));
+}
+
+bool double_is_greater(double actual, double expected) {
+    return expected > actual - accuracy(significant_figures, max(actual, expected));
+}
+
+static double accuracy(int figures, double largest) {
+    return pow(10, 1 + (int)log10(fabs(largest)) - figures);
+}
+
+void significant_figures_for_assert_double_are(int figures) {
+    significant_figures = figures;
+}
+
+int get_significant_figures() {
+    return significant_figures;
+}
 
 #ifdef __cplusplus
 } // namespace cgreen

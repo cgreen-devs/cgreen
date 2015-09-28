@@ -595,19 +595,25 @@ Here are the standard constraints...
 | `is_false` | evaluates to false
 | `is_null` | equals null
 | `is_non_null` | is a non null value
+||
 | `is_equal_to(value)` |'== value'
 | `is_not_equal_to(value)` |'!= value'
 | `is_greater_than(value)` |'> value'
 | `is_less_than(value)` |'< value'
+||
 | `is_equal_to_contents_of(pointer, size)` |matches the data pointed to by `pointer` to a size of `size` bytes
 | `is_not_equal_to_contents_of(pointer, size)` |does not match the data pointed to by `pointer` to a size of `size` bytes
+||
 | `is_equal_to_string(value)` |are equal when compared using `strcmp()`
 | `is_not_equal_to_string(value)` |are not equal when compared using `strcmp()`
 | `contains_string(value)` |contains `value` when evaluated using `strstr()`
-| `does_contain_string(value)` |does not contain `value` when evaluated using `strstr()`
+| `does_not_contain_string(value)` |does not contain `value` when evaluated using `strstr()`
 | `begins_with_string(value)` |starts with the string `value`
-| `is_equal_to_double(value)` |are equal to `value` within the number of significant digits (you can set `significant_figures_for_assert_double_are(int figures)`)
+||
+| `is_equal_to_double(value)` |are equal to `value` within the number of significant digits (which you can set with a call to `significant_figures_for_assert_double_are(int figures)`)
 | `is_not_equal_to_double(value)` |are not equal to `value` within the number of significant digits
+| `is_less_than_double(value)` | `< value` withing the number of significant digits
+| `is_greater_than_double(value)` | `> value` within the number of significant digits
 |=========================================================
 
 The boolean assertion macros accept an `int` value. The equality
@@ -869,7 +875,7 @@ tests less clear. And as we add more tests, it might turn out to not
 be common to all tests. This is a typical judgement call that you
 often get to make with `BeforeEach()` and `AfterEach()`.
 
-NOTE: if you use the pure-TDD notation, not having the test subject
+NOTE: If you use the pure-TDD notation, not having the test subject
 named by the `Describe` macro, you can't have the `BeforeEach()` and
 `AfterEach()` either. In this case you can still run a function before
 and after every test. Just nominate any `void(void)` function by
@@ -1079,7 +1085,7 @@ suites, you can use `create_named_test_suite()` instead of
 constant into `create_named_test_suite()`.
 
 What happens to `setup` and `teardown` functions in a `TestSuite` that
-contains other `TestSuite`s?
+contains other `TestSuite`:s?
 
 Well firstly, *Cgreen* does not `fork()` when running a suite.  It
 leaves it up to the child suite to `fork()` the individual tests.
@@ -1381,7 +1387,7 @@ The ideal is to have minimal stubs written for each individual test.
 The problem with streams
 ~~~~~~~~~~~~~~~~~~~~~~~~
             
-How would we test this code...?
+How would we test the following code...?
 
 [source,c]
 -----------------------
@@ -1710,10 +1716,16 @@ same as for the assertions we saw earlier):
 |`contains_string(value)`                                 |String
 |`does_not_contain_string(value)`                         |String
 |`begins_with_string(value)`                              |String
-|                                                         |
+||
 |`is_equal_to_double(value)`                              |Double
 |`is_not_equal_to_double(value)`                          |Double
+|`is_less_than_double(value)`                             |Double
+|`is_greater_than_double(value)`                          |Double
 |==========================================================================
+
+For the double valued constraints you can set the number of
+significant digits to consider a match with a call to
+`significant_figures_for_assert_double_are(int figures)`.
 
 Then there are two ways to return results:
 
