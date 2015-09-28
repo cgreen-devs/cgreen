@@ -1,13 +1,18 @@
 .IGNORE :
 .SILENT :
 
+CGREEN_ROOT=../..
 FPIC = -fPIC	# required on Linux
 
-CC = gcc -c -g -Wall $(FPIC)
+# Local tweaks, you can also override "MYSQL_*={somedir}" on the command line
+MYSQL_INCLUDE=
+MYSQL_LIB=
+
+CGREEN_BIN=$(CGREEN_ROOT)/build/build-c
+CC = gcc -c -g -Wall -I$(CGREEN_ROOT)/include -I$(MYSQL_INCLUDE) -I$(FPIC)
 LINK = gcc -g
-CGREEN_ROOT=../../build/build-c
-LIBDIRS = -L$(CGREEN_ROOT)/src
-RUNNER = PATH="$(CGREEN_ROOT)/src:$(PATH)" $(CGREEN_ROOT)/tools/cgreen-runner
+LIBDIRS = -L$(CGREEN_BIN)/src -L$(MYSQL_LIB)
+RUNNER = PATH="$(CGREEN_BIN)/src:$(PATH)" $(CGREEN_BIN)/tools/cgreen-runner
 
 all: with_main with_runner special
 
@@ -22,7 +27,7 @@ with_main:  first0 first1 \
 			test_as_xml2 \
 			test_as_xml3 \
 			test_as_xml4
-	for f in $^ ; do echo $$f; ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
+	for f in $^ ; do echo $$f; LD_LIBRARY_PATH=$(CGREEN_BIN)/src ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
 
 # Most tests built to run with the runner we can run here, but some need special care
 # They have their output produced directly in the build rules below

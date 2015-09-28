@@ -8,3 +8,5 @@ guide is still correct.
 
 On the other hand we will always know that the code in the guide
 actually works and is correct.
+
+You need mysql client header files to make some sources to compile.
