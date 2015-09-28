@@ -1,4 +1,4 @@
-Running "constraint_messages" (27 tests)...
+Running "constraint_messages" (35 tests)...
 constraint_messages_tests.c: Failure: FailureMessage -> for_always_followed_by_expectation 
 	Mocked function [some_mock] already has an expectation that it will always be called a certain way; any expectations declared after an always expectation are invalid
 
@@ -25,6 +25,13 @@ constraint_messages_tests.c: Failure: FailureMessage -> for_equal_to_double
 		actual value:	0.000000
 		expected value:	1.000000
 
+
+constraint_messages_tests.c: Failure: FailureMessage -> for_equal_to_double_negative 
+	Expected [-1] to [equal double] [-2] within [8] significant figures
+		actual value:	-1.000000
+		expected value:	-2.000000
+
+
 constraint_messages_tests.c: Exception: FailureMessage -> for_incorrect_assert_throws 
 	an exception was thrown during test: [something else]
 
@@ -37,6 +44,12 @@ constraint_messages_tests.c: Failure: FailureMessage -> for_is_equal_to_contents
 	Expected [thirty_three] to [equal contents of] [fourty_five]
 		at offset:			[9]
 
+constraint_messages_tests.c: Failure: FailureMessage -> for_is_equal_to_double 
+	Expected [four_point_five] to [equal double] [three_point_three] within [8] significant figures
+		actual value:	4.500000
+		expected value:	3.300000
+
+
 constraint_messages_tests.c: Failure: FailureMessage -> for_is_equal_to_string 
 	Expected [thirty_three] to [equal string] [fourty_five]
 		actual value:			["this string is thirtythree"]
@@ -47,10 +60,34 @@ constraint_messages_tests.c: Failure: FailureMessage -> for_is_greater_than
 		actual value:			[33]
 		expected to be greater than:	[45]
 
+constraint_messages_tests.c: Failure: FailureMessage -> for_is_greater_than_double 
+	Expected [three_point_three] to [be greater than double] [four_point_five] within [8] significant figures
+		actual value:	3.300000
+		expected value:	4.500000
+
+
+constraint_messages_tests.c: Failure: FailureMessage -> for_is_greater_than_double_with_accuracy 
+	Expected [1.0] to [be greater than double] [1.0 + 1.0e-3 + DBL_EPSILON] within [4] significant figures
+		actual value:	1.000000
+		expected value:	1.001000
+
+
 constraint_messages_tests.c: Failure: FailureMessage -> for_is_less_than 
 	Expected [fourty_five] to [be less than] [thirty_three]
 		actual value:			[45]
 		expected to be less than:	[33]
+
+constraint_messages_tests.c: Failure: FailureMessage -> for_is_less_than_double 
+	Expected [four_point_five] to [be less than double] [three_point_three] within [8] significant figures
+		actual value:	4.500000
+		expected value:	3.300000
+
+
+constraint_messages_tests.c: Failure: FailureMessage -> for_is_less_than_double_with_accuracy 
+	Expected [1.0] to [be less than double] [1.0 - 1.0e-3 - DBL_EPSILON] within [4] significant figures
+		actual value:	1.000000
+		expected value:	0.999000
+
 
 constraint_messages_tests.c: Failure: FailureMessage -> for_is_non_null 
 	Expected [pointer] to [be non null]
@@ -62,6 +99,12 @@ constraint_messages_tests.c: Failure: FailureMessage -> for_is_not_equal_to
 constraint_messages_tests.c: Failure: FailureMessage -> for_is_not_equal_to_contents_of 
 	Expected [fourty_five_and_up] to [not equal contents of] [another_fourty_five_and_up]
 		at offset:			[-1]
+
+constraint_messages_tests.c: Failure: FailureMessage -> for_is_not_equal_to_double 
+	Expected [four_point_five] to [not equal double] [almost_four_point_five] within [4] significant figures
+		actual value:	4.500000
+		expected value:	4.499900
+
 
 constraint_messages_tests.c: Failure: FailureMessage -> for_is_not_equal_to_string 
 	Expected [another_fourty_five] to [not equal string] [fourty_five]
@@ -92,11 +135,18 @@ constraint_messages_tests.c: Failure: FailureMessage -> for_not_equal_to_double
 		actual value:	0.000000
 		expected value:	0.000000
 
+
+constraint_messages_tests.c: Failure: FailureMessage -> for_not_equal_to_double_negative 
+	Expected [-1] to [not equal double] [-1] within [8] significant figures
+		actual value:	-1.000000
+		expected value:	-1.000000
+
+
 constraint_messages_tests.c: Failure: FailureMessage -> for_violated_never_expect 
 	Mocked function [some_mock] has an expectation that it will never be called, but it was
 
 constraint_messages_tests.c: Failure: FailureMessage -> if_exception_was_expected_but_nothing_thrown 
-	Expected [(void)5] to throw [stdstring]
+	Expected [(void)5] to throw [std::string]
 
 constraint_messages_tests.c: Exception: FailureMessage -> increments_exception_count_when_terminating_via_SIGQUIT 
 	Test terminated with signal: Terminated
@@ -104,5 +154,5 @@ constraint_messages_tests.c: Exception: FailureMessage -> increments_exception_c
 constraint_messages_tests.c: Exception: FailureMessage -> increments_exception_count_when_throwing 
 	Test terminated unexpectedly, likely from a non-standard exception or Posix signal
 
-Completed "FailureMessage": 0 passes, 24 failures, 3 exceptions.
-Completed "constraint_messages": 0 passes, 24 failures, 3 exceptions.
+Completed "FailureMessage": 0 passes, 32 failures, 3 exceptions.
+Completed "constraint_messages": 0 passes, 32 failures, 3 exceptions.

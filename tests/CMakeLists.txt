@@ -126,7 +126,7 @@ macro_add_test(
             # ... but execute the following SED commands on the output before making the comparison
             s%${CMAKE_CURRENT_SOURCE_DIR}/%%g
             s%\".*constraint_messages\"%\"constraint_messages\"%g
-            s/:[0-9]*:/:/g
+            s/:[0-9]\\\\+:/:/g
 )
 
 macro_add_test(
@@ -143,7 +143,7 @@ macro_add_test(
             # ... but execute the following SED commands on the output before making the comparison
             s%${CMAKE_CURRENT_SOURCE_DIR}/%%g                   # remove source path
             s%\".*mock_messages\"%\"mock_messages\"%g           # remove any leading 'lib' prefix
-            s/:[0-9]*:/:/g                                      # remove line numbers in messages
+            s/:[0-9]\\\\+:/:/g                                  # remove line numbers in messages
 )
 
 # add verification that all public api is available as it should
