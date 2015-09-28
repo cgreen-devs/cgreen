@@ -159,6 +159,10 @@ Ensure(zero_should_assert_double_not_equal_to_one) {
     assert_double_not_equal(0, 1);
 }
 
+Ensure(zero_should_assert_double_equal_to_zero) {
+    assert_double_equal(0, 0);
+}
+
 Ensure(one_should_assert_long_double_equal_to_one) {
     long double x = 1;
     long double y = 1;

@@ -55,10 +55,6 @@ set(constraint_messages_library
 set(constraint_messages_library_SRCS
   constraint_messages_tests.c)
 
-set(constraint_messages_SRCS
-  constraint_messages.c
-  ${constraint_messages_library_SRCS})
-
 set(mock_messages_library
     mock_messages)
 
@@ -67,7 +63,7 @@ set(mock_messages_library_SRCS
 
 if (WITH_CXX)
   SET_SOURCE_FILES_PROPERTIES( ${test_SRCS} PROPERTIES LANGUAGE CXX )
-  SET_SOURCE_FILES_PROPERTIES( ${constraint_messages_SRCS} PROPERTIES LANGUAGE CXX )
+  SET_SOURCE_FILES_PROPERTIES( ${constraint_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
   SET_SOURCE_FILES_PROPERTIES( ${mock_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
 endif (WITH_CXX)
 
@@ -77,8 +73,6 @@ add_library(${constraint_messages_library} SHARED ${constraint_messages_library_
 
 add_library(${mock_messages_library} SHARED ${mock_messages_library_SRCS})
 
-add_executable(test_constraint_messages ${constraint_messages_SRCS})
-
 if (WITH_STATIC_LIBRARY)
   set(CGREEN_LIBRARY ${CGREEN_STATIC_LIBRARY})
 else ()
@@ -87,12 +81,10 @@ endif()
 
 if (WITH_CXX)
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
-  target_link_libraries(test_constraint_messages ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
   target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
   target_link_libraries(${mock_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
 else()
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY})
-  target_link_libraries(test_constraint_messages ${CGREEN_LIBRARY})
   target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY})
   target_link_libraries(${mock_messages_library} ${CGREEN_LIBRARY})
 endif (WITH_CXX)
