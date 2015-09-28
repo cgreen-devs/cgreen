@@ -1,5 +1,5 @@
 Running "main" (2 tests)...
-first_test.c:12: Failure: fails_this_test 
+first_tests.c:12: Failure: fails_this_test 
 	Expected [0 == 1] to [be true]
 
 Completed "main": 1 pass, 1 failure, 0 exceptions.

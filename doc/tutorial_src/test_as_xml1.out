@@ -1,0 +1,8 @@
+<suite name="Top Level">
+<suite name="A Group">
+<test name="reports_a_test_that_passes">
+</test>
+<test name="reports_a_test_that_fails">
+</test>
+</suite>
+</suite>

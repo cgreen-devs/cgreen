@@ -4,7 +4,7 @@
 :toc:
 
 = Cgreen - Unit Tests for C and C++
-Marcus Baker <marcus@lastcraft.com>;Thomas Nilsson <thomas@junovagen.se>;João Freitas <joaohf@gmail.com>
+Marcus Baker <marcus@lastcraft.com>; Thomas Nilsson <thomas@junovagen.se>; João Freitas <joaohf@gmail.com>;
 
 
 Cgreen Quickstart Guide
@@ -110,7 +110,7 @@ using *CMake*. This is called an 'out of source build'. It compiles
 file organization and enables multi-target builds from the same
 sources by leaving the complete source tree untouched. The top level
 `Makefile` will by default create the two directories, `build/build-c`
-and `build/build-c{plus}+`, which houses the __C__ and __C++__ builds
+and `build/build-c++`, which houses the __C__ and __C++__ builds
 respectively.
 
 TIP: Experienced users may tweak the build configurations by going to
@@ -130,7 +130,7 @@ with no tests, called `first_test.c`...
 
 [source,c]
 ---------------------------------------
-include::tutorial_src/first_test0.c[]
+include::tutorial_src/first_tests0.c[]
 ---------------------------------------
 
 This is very unexciting. It just creates an empty test suite
@@ -178,7 +178,7 @@ Let's add a meaningless test or two so that you can see how it runs...
 
 [source,c]
 -----------------------------
-include::tutorial_src/first_test1.c[]
+include::tutorial_src/first_tests1.c[]
 -----------------------------
 
 A test is denoted by the macro `Ensure`. You can think of a test as
@@ -229,7 +229,7 @@ Here is the, so far empty, test case in `words_test.c`...
 
 [source,c]
 -------------------------------
-include::tutorial_src/words_test0.c[]
+include::tutorial_src/words_tests0.c[]
 -------------------------------
 
 Here is the `all_tests.c` test runner...
@@ -282,7 +282,7 @@ Here is a first test for `split_words()` in `words_test.c`...
 
 [source,c]
 -------------------------------
-include::tutorial_src/words_test1.c[]
+include::tutorial_src/words_tests1.c[]
 -------------------------------
 
 The `assert_that()` macro takes two parameters, the value to assert
@@ -352,9 +352,9 @@ is broken into separate words...
 [source,c]
 ---------------------------------
 ...
-include::tutorial_src/words_test2.c[lines=10]
+include::tutorial_src/words_tests2.c[lines=10]
     ...
-include::tutorial_src/words_test2.c[lines=15..23]
+include::tutorial_src/words_tests2.c[lines=15..23]
 ---------------------------------
 
 Sure enough, we get a failure...
@@ -422,7 +422,7 @@ now.
 
 The function under test is the `words()` function and we want to make
 sure it walks the sentence correctly, dispatching individual words as
-it goes. How to test this?
+it goes. So what calls are made are very important. How to test this?
 
 Let's start with a one word sentence. In this case we would expect the
 callback to be invoked once with the only word, right? Here is the
@@ -430,11 +430,11 @@ test for that...
 
 [source,c]
 ---------------------------------
-include::tutorial_src/words_test3.c[lines=1..2]
+include::tutorial_src/words_tests3.c[lines=1..2]
 ...
-include::tutorial_src/words_test3.c[lines=27..38]
+include::tutorial_src/words_tests3.c[lines=27..38]
     ...
-include::tutorial_src/words_test3.c[lines=41..-1]
+include::tutorial_src/words_tests3.c[lines=41..-1]
 ---------------------------------
 
 What is the funny looking `mock()` function?
@@ -496,14 +496,13 @@ add to `words_test.c`...
 
 [source,c]
 ----------------------------
-include::tutorial_src/words_test4.c[lines=37..43]
+include::tutorial_src/words_tests4.c[lines=37..43]
 ----------------------------
 
 Each call is expected in sequence. Any failures, or left-over calls,
 or extra calls, and we get failures. We can see all this when we run
 the tests...
 
-[source,c]
 ----------------------------
 include::tutorial_src/words8.out[]
 ----------------------------
@@ -552,11 +551,11 @@ Writing basic tests
 
 *Cgreen* tests are simply C, or C++, functions with no parameters and
 no return value. To signal that they actually are tests we mark them
-with the +Ensure+ macro. An example might be...
+with the `Ensure` macro. An example might be...
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test1.c[lines=8..10]
+include::tutorial_src/strlen_tests1.c[lines=8..10]
 -----------------------------
 
 The `Ensure` macro takes two arguments (in the BDD style) where the
@@ -565,7 +564,7 @@ first is the Subject Under Test (SUT) which must be declared with the
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test1.c[lines=4]
+include::tutorial_src/strlen_tests1.c[lines=4]
 -----------------------------
 
 The second argument is the test name and can be anything you want as
@@ -583,8 +582,10 @@ complemented with a constraint, in this case `is_equal_to()`. This
 makes a very fluent interface to the asserts, that actually reads like
 English.
 
-Assertions send messages to *Cgreen*, which in turn
-outputs the results.
+NOTE: Sometimes you just want to fail the test explicitly, and there is a function for that too, `fail_test(const char *message)`. And there is a function to explicitly pass, `pass_test(void)`.
+
+Assertions send messages to *Cgreen*, which in turn outputs the
+results.
 
 Here are the standard constraints...
 
@@ -629,15 +630,15 @@ BDD Style vs. TDD Style
 So far we have encouraged the modern BDD style. It has merits that we
 really want you to benefit from. But you might come across another
 style, the standard TDD style, which is more inline with previous
-thinking as is more similar to other frameworks.
+thinking and might be more similar to other frameworks.
 
-The only difference, in priciple, is the use of the SUT or
+The only difference, in principle, is the use of the SUT or
 'context'. In the BDD style you have it, in the TDD style you don't.
 
 [source,c]
 .BDD style:
 -----------------------------
-include::tutorial_src/strlen_test2.c[lines=4..16]
+include::tutorial_src/strlen_tests2.c[lines=4..16]
 -----------------------------
 <1> The `Describe` macro must name the SUT
 <2> The `BeforeEach` function...
@@ -654,7 +655,7 @@ If you use the older pure-TDD style you skip the `Describe` macro, the
 [source,c]
 .TDD style:
 -----------------------------
-include::tutorial_src/strlen_test3.c[lines=3..12]
+include::tutorial_src/strlen_tests3.c[lines=3..12]
 -----------------------------
 <1> No `Describe`, `BeforeEach()` or `AfterEach()`
 <2> No SUT/context in the `Ensure()` macro
@@ -713,7 +714,7 @@ the test above to be...
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test4.c[lines=4..8]
+include::tutorial_src/strlen_tests4.c[lines=4..8]
 -----------------------------
 
 This should produce a slightly more user friendly message when things
@@ -734,7 +735,7 @@ also <<runner, Automatic Test Discovery>>.)
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test5.c[lines=12..16]
+include::tutorial_src/strlen_tests5.c[lines=12..16]
 -----------------------------
 
 In case you have spotted that the reference to
@@ -749,7 +750,7 @@ just write...
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test5.c[lines=19]
+include::tutorial_src/strlen_tests5.c[lines=19]
 -----------------------------
 
 The results of assertions are ultimately delivered as passes and
@@ -765,7 +766,7 @@ The complete test code now looks like...
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test5.c[]
+include::tutorial_src/strlen_tests5.c[]
 -----------------------------
 
 Compiling and running gives...
@@ -778,12 +779,12 @@ include::tutorial_src/strlen2.out[]
 -----------------------------
 
 We can see that the outer test suite is called `our_tests` since it
-was in `our_tests()` we created the test suite. There are no messages shown unless there are
-failures. So, let's break our test to see it...
+was in `our_tests()` we created the test suite. There are no messages
+shown unless there are failures. So, let's break our test to see it...
 
 [source,c]
 -----------------------------
-include::tutorial_src/strlen_test6.c[lines=8..10]
+include::tutorial_src/strlen_tests6.c[lines=8..10]
 -----------------------------
 
 ...we'll get the helpful message...
@@ -802,7 +803,7 @@ tests. Adding a test of `strlen()` with an empty string for example...
 [source,c]
 -----------------------------
 ...
-include::tutorial_src/strlen_test7.c[lines=12..21]
+include::tutorial_src/strlen_tests7.c[lines=12..21]
 ...
 -----------------------------
 
@@ -817,11 +818,11 @@ example...
 
 [source,c]
 ------------------------------
-include::tutorial_src/schema_test1.c[]
+include::tutorial_src/schema_tests1.c[]
 ------------------------------
 
 We have already factored out the duplicate code into its own functions
-`create_scheme()` and `drop_schema()`, so things are not so bad. At
+`create_schema()` and `drop_schema()`, so things are not so bad. At
 least not yet. But what happens when we get dozens of tests? For a
 test subject as complicated as a database
 http://www.martinfowler.com/eaaCatalog/activeRecord.html[ActiveRecord],
@@ -835,11 +836,11 @@ Here is the new version...
 [source,c]
 ---------------------------
 ...
-include::tutorial_src/schema_test2.c[lines=6] 
+include::tutorial_src/schema_tests2.c[lines=6] 
     ...
-include::tutorial_src/schema_test2.c[lines=11..13]
+include::tutorial_src/schema_tests2.c[lines=11..13]
     ...
-include::tutorial_src/schema_test2.c[lines=18..41]
+include::tutorial_src/schema_tests2.c[lines=18..41]
 ...
 ---------------------------
 
@@ -860,7 +861,7 @@ the tests to `BeforeEach()`:
 
 [source,c]
 ---------------------------
-include::tutorial_src/schema_test2.c[lines=25..26] 
+include::tutorial_src/schema_tests2.c[lines=25..26] 
 ---------------------------
 
 Of course that would require an extra variable, and it might make the
@@ -890,7 +891,7 @@ Consider this test method...
 
 [source,c]
 -----------------------------
-include::tutorial_src/crash_test1.c[lines=8..11]
+include::tutorial_src/crash_tests1.c[lines=8..11]
 -----------------------------
 
 Crashes are not something you would normally want to have in a test
@@ -910,7 +911,7 @@ For example...
 
 [source,c]
 -----------------------------
-include::tutorial_src/crash_test1.c[]
+include::tutorial_src/crash_tests1.c[]
 -----------------------------
 
 When built and run, this gives...
@@ -937,12 +938,7 @@ crashing test...
 
 [source,c]
 -----------------------------
-include::tutorial_src/crash_test2.c[lines=13..17]
-int main(int argc, char **argv) {
-    TestSuite *suite = create_test_suite();
-    add_test(suite, will_seg_fault);
-    run_single_test(suite, "will_seg_fault", create_text_reporter());
-}
+include::tutorial_src/crash_tests2.c[lines=13..17]
 -----------------------------
 
 When run in this way, *Cgreen* will not `fork()`.
@@ -998,9 +994,9 @@ Here is an example of time limiting a test...
 [source,c]
 ---------------------------
 ...
-include::tutorial_src/crash_test3.c[lines=8]
+include::tutorial_src/crash_tests3.c[lines=8]
     ...
-include::tutorial_src/crash_test3.c[lines=11..23]
+include::tutorial_src/crash_tests3.c[lines=11..23]
 ---------------------------
                 
 When executed, the code will slow for a second, and then finish with...
@@ -1030,22 +1026,25 @@ Firstly we need to remove the `main()` calls.  E.g...
 
 [source,c]
 ----------------------------
-include::tutorial_src/suite_strlen_test.c[lines=7..8;11..12;15..-1]
+include::tutorial_src/suite_strlen_tests.c[lines=8]
+   ...
+include::tutorial_src/suite_strlen_tests.c[lines=10..12]
+   ...
+include::tutorial_src/suite_strlen_tests.c[lines=14..-1]
 ----------------------------
 
-Then we can write a small runner script with a new
-`main()` function...
+Then we can write a small runner with a new `main()` function...
 
 [source,c]
 -----------------------
 include::tutorial_src/suite1.c[]
 -----------------------
 
-It's usually easier to place the `TestSuite` prototypes in the runner
-scripts, rather than have lot's of header files.  This is the same
-reasoning that let us drop the prototypes for the test functions in
-the actual test scripts.  We can get away with this, because the tests
-are more about documentation than encapsulation.
+It's usually easier to place the `TestSuite` prototypes directly in
+the runner source, rather than have lot's of header files.  This is
+the same reasoning that let us drop the prototypes for the test
+functions in the actual test scripts.  We can get away with this,
+because the tests are more about documentation than encapsulation.
 
 As we saw above, we can run a single test using the
 `run_single_test()` function, and we'd like to be able to do that from
@@ -1076,7 +1075,7 @@ They will all be named after the function the create call sits in.  If
 you want to get around this, or you just like to name your test
 suites, you can use `create_named_test_suite()` instead of
 `create_test_suite()`.  This takes a single string parameter.  In fact
-`create_test_suite()` is just a macro that inserts the `\__func__`
+`create_test_suite()` is just a macro that inserts the `__func__`
 constant into `create_named_test_suite()`.
 
 What happens to `setup` and `teardown` functions in a `TestSuite` that
@@ -1187,7 +1186,7 @@ Forgot to add your test?
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 When we write a new test we focus on the details about the test we are
-trying to write. And writing tests are no trivial matter so this might
+trying to write. And writing tests is no trivial matter so this might
 well take a lot of brain power.
 
 So, it comes as no big surprise, that sometimes you write your test
@@ -1237,7 +1236,7 @@ build your library using `gcc` would be
 $ gcc -shared -o first_test.so -fPIC first_test.c -lcgreen
 --------------------------
 
-The `-fPIC` means to generate +position independent code+ which is
+The `-fPIC` means to generate 'position independent code' which is
 required if you want to load the library dynamically.
 
 How to build a dynamically loadable shared library might vary a lot
@@ -1264,7 +1263,7 @@ don't need all this:
 
 [source,c]
 ------------------------
-include::tutorial_src/first_test1.c[lines=15..20]
+include::tutorial_src/first_tests1.c[lines=15..20]
 ------------------------
 
 It always feel good to delete code, right?
@@ -1303,7 +1302,13 @@ The `verbose` option is particularly handy since it will give you the
 actual names of all tests discovered. That means if you have long test
 names you can avoid mistyping them by copy and paste from the output
 of `cgreen-runner --verbose`. It will also give the mangled name of
-the test which should make it easier to find in the debugger.
+the test which should make it easier to find in the debugger. Here's
+an example:
+
+------------------------
+include::tutorial_src/runner3.out[]
+------------------------
+
 
 You can also run tests in multiple libraries in one go by adding them
 to the `cgreen-runner` command:
@@ -1331,7 +1336,7 @@ you have non-BDD style tests __without__ any `setup()` and/or
 where the tests live in this case is called `default`. But why don't
 you convert your tests to BDD notation? This would save you from the
 frustrating trouble-shooting that you risk when you added `setup()`
-and `teardown()` and can't understand we they are not run...
+and `teardown()` and can't understand why they are not run...
 
 So, the runner requires you to use the BDD notation. But since we
 recommend that you do anyway, that's no extra problem if you are
@@ -1408,7 +1413,7 @@ exhausted.  That is, it just returns a steady stream of `EOF`s.
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test0.c[lines=6..22]
+include::tutorial_src/stream_tests0.c[lines=6..22]
 -----------------------
 
 Our simulation is easy here, because our fake stream returns only one
@@ -1430,7 +1435,7 @@ stubbed stream...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test1.c[lines=6..8]
+include::tutorial_src/stream_tests1.c[lines=6..8]
 -----------------------
 
 Hardly longer that our trivial server stub above, it is just a macro
@@ -1441,7 +1446,7 @@ For our simple example above we just tell it to always return `EOF`...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test1.c[lines=1..17]
+include::tutorial_src/stream_tests1.c[lines=1..17]
 -----------------------
 
 The `always_expect()` macro at (1) takes as arguments the function
@@ -1468,7 +1473,7 @@ Here is how we can do this...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test2.c[lines=19..25]
+include::tutorial_src/stream_tests2.c[lines=19..25]
 -----------------------
 
 Unlike the `always_expect()` instruction, `expect()` sets up an
@@ -1501,7 +1506,7 @@ the stub and the calls to `will_return()` build up a static list of
 return values which are used and returned in order as those calls
 arrive. The return values are cleared between tests.
 
-The `mock()` macro captures the parameter names and the `\__func__`
+The `mock()` macro captures the parameter names and the `__func__`
 property (the name of the stub function).  *Cgreen* can then use these
 to look up entries in the return list, and also to generate more
 helpful messages.
@@ -1510,7 +1515,7 @@ We can crank out our tests quite quickly now...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test3.c[lines=27..33]
+include::tutorial_src/stream_tests3.c[lines=27..33]
 -----------------------
 
 I've been a bit naughty.  As each test runs in its own process, I
@@ -1532,14 +1537,14 @@ specification of the wanted behaviour...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test4.c[lines=35..41]
+include::tutorial_src/stream_tests4.c[lines=35..41]
 -----------------------
 
 ...and just for luck...
 
 [source,c]
 -----------------------
-include::tutorial_src/stream_test4.c[lines=43..46]
+include::tutorial_src/stream_tests4.c[lines=43..46]
 -----------------------
 
 This time we musn't use `always_return()`. We want to leave the stream
@@ -1609,16 +1614,7 @@ Here is the prewritten production code...
 
 [source,c]
 -----------------------
-void by_paragraph(int (*read)(void *), void *in, void (*write)(void *, char *), void *out) {
-    while (1) {
-        char *line = read_paragraph(read, in);
-        if (line == NULL) {
-            return;
-        }
-        (*write)(out, line);
-        free(line);
-    }
-}
+include::tutorial_src/stream.c[lines=23..32]
 -----------------------
 
 This is the start of a formatter utility.  Later filters will probably
@@ -1640,17 +1636,7 @@ the called function...
 [source,c]
 -----------------------
 ...
-void expect_one_letter_paragraph(char *paragraph, void *stream) {
-    assert_string_equal(paragraph, "a", NULL);
-}
-
-Ensure(one_character_is_made_into_a_one_letter_paragraph) {
-    by_paragraph(
-            &one_character_stream,
-            NULL,
-            &expect_one_letter_paragraph,
-            NULL);
-}
+include::tutorial_src/formatter_tests0.c[lines=12..-1]
 ...
 -----------------------
 
@@ -1664,20 +1650,7 @@ test...
 
 [source,c]
 -----------------------
-static int reader(void *stream) {
-    return (int)mock(stream);
-}
-
-static void writer(void *stream, char *paragraph) {
-    mock(stream, paragraph);
-}
-
-Ensure(one_character_is_made_into_a_one_letter_paragraph) {
-    expect(reader, will_return('a'));
-    always_expect(reader, will_return(EOF));
-    expect(writer, when(paragraph, is_equal_to_string("a")));
-    by_paragraph(&reader, NULL, &writer, NULL);
-}
+include::tutorial_src/formatter_tests1.c[lines=10..-1]
 -----------------------
 
 Where are the assertions?
@@ -1701,7 +1674,7 @@ often the specified behaviour or expectation will be executed:
 |*Macro*                       |*Description*
 |`expect(function, ...)`       |Expected once, in order
 |`always_expect(function, ...)`|Expect this behavior from here onwards
-|`never_expect(function)`      |This mock is expected to never be called
+|`never_expect(function)`      |From this point this mock function must never be called
 |=======================================================================
 
 You can specify constraints and behaviours for each expectation
@@ -1722,33 +1695,33 @@ constraint)` macro. It takes two parameters:
 There is a multitude of constraints available (actually, exactly the
 same as for the assertions we saw earlier):
 
-|========================================
-|*Constraint*|*Type*
-|`is_equal_to(value)`| Integers
-|`is_not_equal_to(value)`| Integers
-|`is_greater_than(value)`| Integers
-|`is_less_than(value)`| Integers
+|==========================================================================
+|*Constraint*                                             |*Type*
+|`is_equal_to(value)`                                     | Integers
+|`is_not_equal_to(value)`                                 | Integers
+|`is_greater_than(value)`                                 | Integers
+|`is_less_than(value)`                                    | Integers
+|                                                         |
+|`is_equal_to_contents_of(pointer, size_of_contents)`     |Bytes/Structures
+|`is_not_equal_to_contents_of(pointer, size_of_contents)` |Bytes/Structures
 ||
-|`is_equal_to_contents_of(pointer, size_of_contents)`|Bytes/Structures
-|`is_not_equal_to_contents_of(pointer, size_of_contents)`|Bytes/Structures
-||
-|`is_equal_to_string(value)`|String
-|`is_not_equal_to_string(value)`|String
-|`contains_string(value)`|String
-|`does_not_contain_string(value)`|String
-|`begins_with_string(value)`|String
-||
-|`is_equal_to_double(value)`|Double
-|`is_not_equal_to_double(value)`|Double
-|========================================
+|`is_equal_to_string(value)`                              |String
+|`is_not_equal_to_string(value)`                          |String
+|`contains_string(value)`                                 |String
+|`does_not_contain_string(value)`                         |String
+|`begins_with_string(value)`                              |String
+|                                                         |
+|`is_equal_to_double(value)`                              |Double
+|`is_not_equal_to_double(value)`                          |Double
+|==========================================================================
 
 Then there are two ways to return results:
 
-|========================================
-|*Macro*|*Description*
-|`will_return(value)`|Return the value from the mock function (which needs to be declared returning that type
+|=================================================================================================
+|*Macro*                                                      |*Description*
+|`will_return(value)`                                         |Return the value from the mock function (which needs to be declared returning that type
 |`will_set_contents_of_parameter(parameter_name, value, size)`|Writes the value in the referenced parameter
-|========================================
+|=================================================================================================
 
 You can combine these in various ways:
 
@@ -1774,8 +1747,7 @@ expectation, one for each reference parameter, but naturally only one
 It's about time we actually ran our test...
 
 -----------------------
-Running "stream_tests" (6 tests)...
-Completed "stream_tests": 6 passes, 0 failures, 0 exceptions.
+include::tutorial_src/formatter1.out[]
 -----------------------
 
 Confident that a single character works, we can further specify the
@@ -1783,52 +1755,46 @@ behaviour.  Firstly an input sequence...
 
 [source,c]
 -----------------------
-Ensure(no_line_endings_makes_one_paragraph) {
-    expect(reader, will_return('a'));
-    expect(reader, will_return(' '));
-    expect(reader, will_return('b'));
-    expect(reader, will_return(' '));
-    expect(reader, will_return('c'));
-    always_expect(reader, will_return(EOF));
-    expect(writer, when(paragraph, is_equal_to_string("a b c")));
-    by_paragraph(&reader, NULL, &writer, NULL);
-}
+include::tutorial_src/formatter_tests2.c[lines=25..34]
 -----------------------
 
 A more intelligent programmer than me would place all these calls in a
-loop.  Next, checking an output sequence...
+loop.
+
+-------------------------
+include::tutorial_src/formatter2.out[]
+-------------------------
+
+Next, checking an output sequence...
 
 [source,c]
 -----------------------
-Ensure(line_endings_generate_separate_paragraphs) {
-    expect(reader, will_return('a'));
-    expect(reader, will_return('\n'));
-    expect(reader, will_return('b'));
-    expect(reader, will_return('\n'));
-    expect(reader, will_return('c'));
-    always_expect(reader, will_return(EOF));
-    expect(writer, when(paragraph, is_equal_to_string("a")));
-    expect(writer, when(paragraph, is_equal_to_string("b")));
-    expect(writer, when(paragraph, is_equal_to_string("c")));
-    by_paragraph(&reader, NULL, &writer, NULL);
-}
+include::tutorial_src/formatter_tests3.c[lines=36..-1]
 -----------------------
 
 Again we can se that the `expect()` calls follow a record and playback
 model.  Each one tests a successive call.  This sequence confirms that
 we get `"a"`, `"b"` and `"c"` in order.
 
+-----------------------
+include::tutorial_src/formatter3.out[]
+-----------------------
+
+So, why the 5 passes? Each `expect()` with a constrait is actually
+an assert. It asserts that the call specified is actually made with
+the parameters given and in the specified order. In this case all the
+expected calls were made.
+
 Then we'll make sure the correct stream pointers are passed to the
 correct functions.  This is a more realistic parameter check...
 
 [source,c]
 -----------------------
-Ensure(resources_are_paired_with_the_functions) {
-    expect(reader, when(stream, is_equal_to(1)), will_return('a'));
-    always_expect(reader, when(stream, is_equal_to(1)), will_return(EOF));
-    expect(writer, when(stream, is_equal_to(2)));
-    by_paragraph(&reader, (void *)1, &writer, (void *)2);
-}
+include::tutorial_src/formatter_tests4.c[lines=49..-1]
+-----------------------
+
+-----------------------
+include::tutorial_src/formatter4.out[]
 -----------------------
 
 And finally we'll specify that the writer is not called if
@@ -1836,21 +1802,13 @@ there is no paragraph.
 
 [source,c]
 -----------------------
-Ensure(empty_paragraphs_are_ignored) {
-    expect(reader, will_return('\n'));
-    always_expect(reader, will_return(EOF));
-    never_expect(writer);
-    by_paragraph(&reader, NULL, &writer, NULL);
-}
+include::tutorial_src/formatter_tests5.c[lines=56..-1]
 -----------------------
 
 This last test is our undoing...
 
 -----------------------
-Running "stream_tests" (10 tests)...
-streams_tests.c:93: Test Failure: -> empty_paragraphs_are_ignored
-        Function [writer] has an expectation that it will never be called, but it was
-Completed "stream_tests": 14 passes, 1 failure, 0 exceptions.
+include::tutorial_src/formatter5.out[]
 -----------------------
 
 Obviously blank lines are still being dispatched to the `writer()`.
@@ -1858,24 +1816,14 @@ Once this is pointed out, the fix is obvious...
 
 [source,c]
 -----------------------
-void by_paragraph(int (*read)(void *), void *in, void (*write)(void *, char *), void *out) {
-    while (1) {
-        char *line = read_paragraph(read, in);
-        if ((line == NULL) || (strlen(line) == 0)) {
-            return;
-        }
-        (*write)(out, line);
-        free(line);
-    }
-}
+include::tutorial_src/stream2.c[lines=23..-1]
 -----------------------
 
 Tests with `never_expect()` can be very effective at uncovering subtle
 bugs.
 
 -----------------------
-Running "stream_tests"...
-Completed "stream_tests": 14 passes, 0 failures, 0 exceptions.
+include::tutorial_src/formatter6.out[]
 -----------------------
 
 All done.
@@ -1942,23 +1890,7 @@ functions directly, but I believe it will serve as an example.
 
 [source,c]
 -----
-static char *string_out(int p1) {
-    return (char *)mock(p1);
-}
-
-static int integer_out() {
-    return (int)mock();
-}
-
-Ensure(Mocks, learning_mocks_emit_pastable_code) {
-    cgreen_mocks_are(learning_mocks);
-    string_out(1);
-    string_out(2);
-    integer_out();
-    integer_out();
-    string_out(3);
-    integer_out();
-}
+include::tutorial_src/learning_mocks.c[lines=8..-1]
 -----
 
 We can see the call to `cgreen_mocks_are()` starting the test and
@@ -1967,25 +1899,32 @@ setting the mocks into learning mode.
 If we run this, just as we usually run tests, the following will show
 up in our terminal:
 
-[source,c]
+// This needs to be copied and pasted from the output of make in tutorial_src
+// At least, I couldn't make make capture it into the output file
+// It ought to be:
+// include::tutorial_src/learning_mocks.out[]
 ----
-learning_mocks_emit_pastable_code: learned mocks:
+Running "learning_mocks" (1 tests)...
+LearningMocks -> emit_pastable_code : Learned mocks are
         expect(string_out, when(p1, is_equal_to(1)));
         expect(string_out, when(p1, is_equal_to(2)));
         expect(integer_out);
         expect(integer_out);
         expect(string_out, when(p1, is_equal_to(3)));
         expect(integer_out);
+Completed "LearningMocks": 0 passes, 0 failures, 0 exceptions.
+Completed "learning_mocks": 0 passes, 0 failures, 0 exceptions.
 ----
 
-If this were a real test we could just copy this and paste it in place
-of the call to `cgreen_mocks_are()` and we're done.
+If this was for real we could just copy this and paste it in place of
+the call to `cgreen_mocks_are()` and we have all the expectations
+done.
 
 
-BDD-ish Style Cgreen
---------------------
+Context, Subject Under Test & Suites
+------------------------------------
 
-As mentioned earlier, *Cgreen* also supports the behaviour driven
+As mentioned earlier, *Cgreen* promotes the behaviour driven
 style of test driving code. The thinking behind BDD is that we don't
 really want to test anything, if we just could specify the behaviour
 of our code and ensure that it actually behaves this way we would be
@@ -1993,10 +1932,10 @@ fine.
 
 This might seem like an age old dream, but when you think about it,
 there is actually very little difference in the mechanics from
-TDD. First we write how we want it, then implement it. But the small
-change in wording, from `test´ to `behaviour´, from `test that´ to `ensure
-that´, makes a huge difference in thinking, and also very often in quality
-of the resulting code.
+vanillla TDD. First we write how we want it, then implement it. But
+the small change in wording, from `test´ to `behaviour´, from `test
+that´ to `ensure that´, makes a huge difference in thinking, and also
+very often in quality of the resulting code.
 
 The SUT - Subject Under Test
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2012,9 +1951,9 @@ define a name for it.
 Describe(SUT);
 -----------------------
 
-Since *Cgreen* supports C++ there you naturally have the objects and
+*Cgreen* supports C++ and there you naturally have the objects and
 also the Class Under Test. But in plain C you will have to think about
-what is actually the "class" under test. E.g. in `sort.c` you might
+what is actually the "class" under test. E.g. in `sort_test.c` you might
 see
 
 [source, c]
@@ -2038,11 +1977,6 @@ basically calls a test suite. The suite specifies the behaviour of a
 `class´. (That's why some BDD frameworks draw on 'spec', like
 *RSpec*.)
 
-As you can see in the short example above, you have to give the SUT in
-the `Ensure()` declaration too. If you don't, *Cgreen* will get
-confused about which style you are using and your source won't
-compile.
-
 Contexts and Before and After
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -2051,7 +1985,7 @@ and require various forms of setup. When using TDD style you
 would probably break this up into multiple suites having their own
 `setup()` and `teardown()`.
 
-With BDD-ish style we could consider the suite as a behaviour
+With BDD-ish style we could consider a suite as a behaviour
 specification for our SUT 'in a particular context'. E.g.
 
 [source, c]
@@ -2080,42 +2014,15 @@ Ensure(shopping_basket_for_returning_customer, can_use_discounts) {
 The 'context' would then be `shopping_basket_for_returning_customer`,
 with the SUT being the shopping basket 'class'.
 
-We have added two 'functions' which are exactly what they say they
-are. Before each 'test' (or behaviour specification) the customer
-record will always be created and the customer logged in, exactly like
-we could do with the `setUp()` function in TDD style. In the same
-manner, after each 'test' the customer will be logged out and the
-record destroyed.
-
-I've been holding back on running *Cgreen* with this example because
-you need to write all three of the new 'functions' (of course you
-can see that they are CPP macros, right?), to make that work.
-
-And there is one more thing. To run this using the same kind of main
-program that we saw earlier, we need to name the SUT or context when
-we add the test to a suite:
-
-[source, c]
-----------------------
-TestSuite *shopping_basket_tests()
-{
-  TestSuite *suite = create_test_suite();
-  add_test_with_context(suite, shopping_basket_for_returning_customer, can_use_discounts);
-  return suite;
-}
-----------------------
-
-Note that you don't need to (and shouldn't) add any `setup()` or `teardown()`
-to the suite. That's already taken care of by the `BeforeEach()` and
-`AfterEach()` definitions.
-
-Now we are ready to run the tests by compiling and linking as
-always. And then running the tests through our main program.
+So 'context', 'subject under test' and 'suite' are mostly
+interchangable concepts in *Cgreen* lingo. It's a named group of
+'tests' that share the same `BeforeEach` and `AfterEach` and lives in
+the same source file.
 
 [[changing_style, Changing Style]]
 
 Changing Style
-~~~~~~~~~~~~~~
+--------------
 
 If you already have some TDD style *Cgreen* test suites, it is quite
 easy to change them over to BDD-ish style. Here are the steps required
@@ -2331,16 +2238,14 @@ call `walk_breadcrumb()`.  Here is the full signature...
 void walk_breadcrumb(Breadcrumb *breadcrumb, void (*walker)(const char *, void *), void *memo);
 -----------------------
 
-The `void (\*walker)(const char \*, void \*)` is a callback
-that will be passed the name of the test suite for each
-level of nesting.
+The `void (*walker)(const char *, void *)` is a callback that will be
+passed the name of the test suite for each level of nesting.
 
-It is also passed the `memo` pointer that was
-passed to the `walk_breadcrumb()` call.
-You can use this pointer for anything you want, as
-all *Cgreen* does is pass it from call to call.
-This is so aggregate information can be kept track of whilst
-still being reentrant.
+It is also passed the `memo` pointer that was passed to the
+`walk_breadcrumb()` call.  You can use this pointer for anything you
+want, as all *Cgreen* does is pass it from call to call.  This is so
+aggregate information can be kept track of whilst still being
+reentrant.
 
 
 The last parts of the `TestReporter` structure are...
@@ -2380,64 +2285,36 @@ Suppose also that we have come up with the following format...
 -----------------------
 
 In other words a simple nesting of tests with only failures encoded.
-The absence of failure is a pass.
+The absence of "fail" XML node is a pass.
 
-Here is a test script, `test_in_xml.c` that we can use to construct the
+Here is a test script, `test_as_xml.c` that we can use to construct the
 above output...
 
 [source,c]
 -----------------------
-#include <cgreen/cgreen.h>
-
-Ensure(this_test_passes) {
-    assert_true(1);
-}
-
-Ensure(this_test_fails) {
-    assert_true_with_message(0, "A failure");
-}
-
-TestSuite *test_group() {
-    TestSuite *suite = create_test_suite();
-    add_test(suite, this_test_passes);
-    add_test(suite, this_test_fails);
-    return suite;
-}
-
-int main(int argc, char **argv) {
-    TestSuite *suite = create_test_suite();
-    add_suite(suite, test_group());
-    return run_test_suite(suite, create_text_reporter());
-}
+include::tutorial_src/test_as_xml0.c[]
 -----------------------
 
-The text reporter is used just to confirm that everything is working.
-So far it is.
+We can't use the auto-discovering `cgreen-runner` here since we need
+to ensure that the nested suites are reported as a nested xml
+structure. And we're not actually writing real tests, just something
+that we can use to drive our new reporter.
+
+The text reporter is used just to confirm that everything is
+working. So far it is.
 
 -----------------------
-Running "main" (2 tests)...
-test_in_xml.c:8: Test Failure: -> test_group -> this_test_fails 
-	A failure
-Running "main" (2 tests)...
-Completed "main": 1 pass, 1 failure, 0 exceptions.
+include::tutorial_src/test_as_xml0.out[]
 -----------------------
-             
-          
+
 Our first move is to switch the reporter from text, to our
 not yet written XML version...
 
 [source,c]
 -----------------------
-#include "cgreen/cgreen.h
 #include "xml_reporter.h"
-
 ...
-
-int main(int argc, char **argv) {
-    TestSuite *suite = create_test_suite();
-    add_suite(suite, test_group());
-    return run_test_suite(suite, create_xml_reporter());
-}
+include::tutorial_src/test_as_xml1.c[lines=24..-1]
 -----------------------
 
 We'll start the ball rolling with the `xml_reporter.h`
@@ -2445,82 +2322,33 @@ header file...
 
 [source,c]
 -----------------------
-#ifndef _XML_REPORTER_HEADER_
-#define _XML_REPORTER_HEADER_
-
-#include "cgreen/reporter.h"
-
-TestReporter *create_xml_reporter();
-
-#endif
+include::tutorial_src/xml_reporter.h[]
 -----------------------
 
-...and the simplest possible reporter in `reporter.c`.
+...and the simplest possible reporter in `xml_reporter.c`.
 
 [source,c]
 -----------------------
-#include "xml_reporter.h"
-#include "cgreen/reporter.h"
-
-TestReporter *create_xml_reporter() {
-    TestReporter *reporter = create_reporter();
-    return reporter;
-}
+include::tutorial_src/xml_reporter0.c[]
 -----------------------
 
 One that outputs nothing.
 
 -----------------------
-gcc -c test_as_xml.c
-gcc -c xml_reporter.c
-gcc xml_reporter.o test_as_xml.o -lcgreen -o xml
-./xml
+$ gcc -c test_as_xml.c
+$ gcc -c xml_reporter.c
+$ gcc xml_reporter.o test_as_xml.o -lcgreen -o xml
+$ ./xml
 -----------------------
 
 Yep, nothing.
 
-
-Let's add the outer test tags first, so that we can see *Cgreen*
+Let's add the outer XML tags first, so that we can see *Cgreen*
 navigating the test suite...
 
+[source,c]
 -----------------------
-#include "xml_reporter.h"
-#include "cgreen/reporter.h"
-#include <stdio.h>
-
-static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count);
-static void xml_reporter_start_test(TestReporter *reporter, const char *name);
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line);
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line);
-
-TestReporter *create_xml_reporter() {
-    TestReporter *reporter = create_reporter();
-    reporter->start_suite = &xml_reporter_start_suite;
-    reporter->start_test = &xml_reporter_start_test;
-    reporter->finish_test = &xml_reporter_finish_test;
-    reporter->finish_suite = &xml_reporter_finish_suite;
-    return reporter;
-}
-
-static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count) {
-    printf("<suite name=\"%s\">\n", name);
-    reporter_start(reporter, name);
-}
-
-static void xml_reporter_start_test(TestReporter *reporter, const char *name) {
-    printf("<test name=\"%s\">\n", name);
-    reporter_start(reporter, name);
-}
-
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line);
-    printf("</test>\n");
-}
-
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line);
-    printf("</suite>\n");
-}
+include::tutorial_src/xml_reporter1.c[]
 -----------------------
 
 Although chaining to the underlying `reporter_start()`
@@ -2531,105 +2359,54 @@ Our output meanwhile, is making its first tentative steps...
 
 [source,xml]
 -----------------------
-<suite name="main">
-<suite name="test_group">
-<test name="this_test_passes">
-</test>
-<test name="this_test_fails">
-</test>
-</suite>
-</suite>
+include::tutorial_src/test_as_xml1.out[]
 -----------------------
 
-We don't want a passing message, so the `show_fail()` function is all we
-need...
+We don't require an XML node for passing tests, so the `show_fail()`
+function is all we need...
 
 [source,c]
 -----------------------
 ...
-static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-
-TestReporter *create_xml_reporter() {
-    TestReporter *reporter = create_reporter();
-    reporter->start_suite = &xml_reporter_start_suite;
-    reporter->start_test = &xml_reporter_start_test;
-    reporter->show_fail = &xml_show_fail;
-    reporter->finish_test = &xml_reporter_finish_test;
-    reporter->finish_suite = &xml_reporter_finish_suite;
-    return reporter;
-}
-
+include::tutorial_src/xml_reporter2.c[lines=18..25]
 ...
-
-static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
-    printf("<fail>\n");
-    printf("\t<message>\"");
-    vprintf(message, arguments);
-    printf("\"</message>\n");
-    printf("\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
-    printf("</fail>\n");
-}
+include::tutorial_src/xml_reporter2.c[lines=37..-1]
 -----------------------
 
-We have to use `vprintf()` to handle the variable argument
-list passed to us.
-This will probably mean including the `stdarg.h` header
-as well as `stdio.h`.
-             
-            
+We have to use `vprintf()` to handle the variable argument list passed
+to us.  This will probably mean including the `stdarg.h` header as
+well as `stdio.h`.
+
 This gets us pretty close to what we want...
-			
+
 [source,xml]				
 -----------------------
-<suite name="main">
-<suite name="test_group">
-<test name="this_test_passes">
-</test>
-<test name="this_test_fails">
-<fail>
-        <message>A failure</message>
-        <location file="test_in_xml.c" line="9"/>
-</fail>
-</test>
-</suite>
-</suite>
+include::tutorial_src/test_as_xml2.out[]
 -----------------------
 
-For completeness we should add a tag for an incomplete test.
-We'll output this as a failure, athough we don't get a location this
-time...
+For completeness we should add a tag for a test that doesn't complete.
+We'll output this as a failure, although we don't bother with the
+location this time...
 
 [source,c]
 -----------------------
-#include "xml_reporter.h"
-#include "cgreen/reporter.h"
-#include "cgreen/breadcrumb.h"
-
+include::tutorial_src/xml_reporter3.c[lines=27..31]
 ...
-
-static void xml_show_incomplete(TestReporter *reporter, const char *name) {
-    printf("<fail>\n");
-    printf("\t<message>Failed to complete</message>\n");
-    printf("</fail>\n");
-}
+include::tutorial_src/xml_reporter3.c[lines=44..-1]
 -----------------------
 
 All that's left then is the XML declaration and the thorny issue of
 indenting.  Although the indenting is not strictly necessary, it would
 make the output a lot more readable.
 
-The test depth is kept track of for us with the `breadcrumb` object in
-the `TestReporter` structure.  We'll add an `indent()` function that
+Given that the test depth is kept track of for us with the
+`breadcrumb` object in the `TestReporter` structure, indentation will
+actually be quite simple.  We'll add an `indent()` function that
 outputs the correct number of tabs...
 
 [source,c]
 -----------------------
-static indent(TestReporter *reporter) {
-    int depth = get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb);
-    while (depth-- > 0) {
-        printf("\t");
-    }
-}
+include::tutorial_src/xml_reporter4.c[lines=7..12]
 -----------------------
 
 The `get_breadcrumb_depth()` function just gives the current test
@@ -2642,123 +2419,36 @@ complete listing...
 
 [source,c]
 -----------------------
-#include "xml_reporter.h"
-#include "cgreen/reporter.h"
-#include "cgreen/breadcrumb.h"
-
-#include <stdio.h>
-
-static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count);
-static void xml_reporter_start_test(TestReporter *reporter, const char *name);
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line);
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line);
-static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-
-TestReporter *create_xml_reporter() {
-    TestReporter *reporter = create_reporter();
-    reporter->start_suite = &xml_reporter_start_suite;
-    reporter->start_test = &xml_reporter_start_test;
-    reporter->show_fail = &xml_show_fail;
-    reporter->finish_test = &xml_reporter_finish_test;
-    reporter->finish_suite = &xml_reporter_finish_suite;
-    return reporter;
-}
-
-static indent(TestReporter *reporter) {
-    int depth = get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb);
-    while (depth-- > 0) {
-        printf("\t");
-    }
-}
-
-static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count) {
-    if (get_breadcrumb_depth((CgreenBreadcrumb *)reporter->breadcrumb) == 0) {
-        printf("<?xml?>\n");
-    }
-    indent(reporter);
-    printf("<suite name=\"%s\">\n", name);
-    reporter_start(reporter, name);
-}
-
-static void xml_reporter_start_test(TestReporter *reporter, const char *name) {
-    indent(reporter);
-    printf("<test name=\"%s\">\n", name);
-    reporter_start(reporter, name);
-}
-
-static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
-    indent(reporter);
-    printf("<fail>\n");
-    indent(reporter);
-    printf("\t<message>");
-    vprintf(message, arguments);
-    printf("</message>\n");
-    indent(reporter);
-    printf("\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
-    indent(reporter);
-    printf("</fail>\n");
-}
-
-static void xml_show_incomplete(TestReporter *reporter, const char *name) {
-    indent(reporter);
-    printf("<fail>\n");
-    indent(reporter);
-    printf("\t<message>Failed to complete]]></message>\n");
-    indent(reporter);
-    printf("</fail>\n");
-}
-
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line);
-    indent(reporter);
-    printf("</test>\n");
-}
-
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line);
-    indent(reporter);
-    printf("</suite>\n");
-}
+include::tutorial_src/xml_reporter4.c[]
 -----------------------
 
 And finally the desired output...
 
+[source,xml]
 -----------------------
-<?xml?>
-<suite name="main">
-    <suite name="test_group">
-        <test name="this_test_passes">
-        </test>
-        <test name="this_test_fails">
-            <fail>
-                <message>A failure</message>
-                <location file="test_in_xml.c" line="9"/>
-            </fail>
-        </test>
-    </suite>
-</suite>
+include::tutorial_src/test_as_xml4.out[]
 -----------------------
 
 Job done.
 
-Possible other extensions include reporters that write to `syslog`,
-talk to IDE plug-ins, paint pretty printed documents or just return a boolean
-for monitoring purposes.
+Possible other reporter customizations include reporters that write to
+`syslog`, talk to IDE plug-ins, paint pretty printed documents or just
+return a boolean for monitoring purposes.
 
 Hints and Tips
 --------------
 
-CAUTION: This chapter is in its infancy. It will contain some tips for
+CAUTION: This chapter is in its infancy. It will contain tips for
 situations that you need some help to get out of, typically strange
 error messages from the compiler. Since *Cgreen* uses some C/C++ macro
 magic this can happen and the error messages might not be straight
 forward to interpret.
 
 |=========================================================
-|*Compiler error message* |*Probable cause...*
-|`"contextFor<X>" is undeclared here`|You forgot the `BeforeEach()` function
+|*Compiler error message*                    |*Probable cause...*
+|`"contextFor<X>" is undeclared here`        |You forgot the `BeforeEach()` function
 |`undefined reference to 'AfterEach_For_<X>'`|You forgot the `AfterEach()` function
-|`CgreenSpec__<X>__<Y>__ is undeclared`|You forgot to specify the test subject/context in a BDD style test
+|`CgreenSpec__<X>__<Y>__ is undeclared`      |You forgot to specify the test subject/context in a BDD style test
 |=========================================================
 
 

@@ -1,0 +1,9 @@
+Running "multiple_streams" (1 tests)...
+multiple_streams.c:19: Failure: Streams -> good_test 
+	Expected call was not made to mocked function [first_stream_stub]
+
+multiple_streams.c:20: Failure: Streams -> good_test 
+	Expected call was not made to mocked function [second_stream_stub]
+
+Completed "Streams": 0 passes, 2 failures, 0 exceptions.
+Completed "multiple_streams": 0 passes, 2 failures, 0 exceptions.

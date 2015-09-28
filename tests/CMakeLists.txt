@@ -48,27 +48,36 @@ set(CGREEN_TEST_LIBRARY
   CACHE INTERNAL "cgreen tests shared library"
 )
 
-set(cgreen_all_constraints_library
-  cgreen_all_constraints
+set(constraint_messages_library
+  constraint_messages
 )
 
-set(all_constraints_library_SRCS
-  all_constraints_printout.c)
+set(constraint_messages_library_SRCS
+  constraint_messages_tests.c)
 
-set(all_constraints_SRCS
-  all_constraints_tests.c
-  ${all_constraints_library_SRCS})
+set(constraint_messages_SRCS
+  constraint_messages.c
+  ${constraint_messages_library_SRCS})
+
+set(mock_messages_library
+    mock_messages)
+
+set(mock_messages_library_SRCS
+    mock_messages_tests.c)
 
 if (WITH_CXX)
   SET_SOURCE_FILES_PROPERTIES( ${test_SRCS} PROPERTIES LANGUAGE CXX )
-  SET_SOURCE_FILES_PROPERTIES( ${all_constraints_SRCS} PROPERTIES LANGUAGE CXX )
+  SET_SOURCE_FILES_PROPERTIES( ${constraint_messages_SRCS} PROPERTIES LANGUAGE CXX )
+  SET_SOURCE_FILES_PROPERTIES( ${mock_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
 endif (WITH_CXX)
 
 add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_library_SRCS})
 
-add_library(${cgreen_all_constraints_library} SHARED ${all_constraints_library_SRCS})
+add_library(${constraint_messages_library} SHARED ${constraint_messages_library_SRCS})
 
-add_executable(test_all_constraints ${all_constraints_SRCS})
+add_library(${mock_messages_library} SHARED ${mock_messages_library_SRCS})
+
+add_executable(test_constraint_messages ${constraint_messages_SRCS})
 
 if (WITH_STATIC_LIBRARY)
   set(CGREEN_LIBRARY ${CGREEN_STATIC_LIBRARY})
@@ -78,12 +87,14 @@ endif()
 
 if (WITH_CXX)
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
-  target_link_libraries(test_all_constraints ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
-  target_link_libraries(${cgreen_all_constraints_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
+  target_link_libraries(test_constraint_messages ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
+  target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
+  target_link_libraries(${mock_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
 else()
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY})
-  target_link_libraries(test_all_constraints ${CGREEN_LIBRARY})
-  target_link_libraries(${cgreen_all_constraints_library} ${CGREEN_LIBRARY})
+  target_link_libraries(test_constraint_messages ${CGREEN_LIBRARY})
+  target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY})
+  target_link_libraries(${mock_messages_library} ${CGREEN_LIBRARY})
 endif (WITH_CXX)
 
 if (WITH_CXX)
@@ -102,19 +113,35 @@ else()
   set(LANG c)
 endif()
 macro_add_test(
-    NAME verify_failure_messsage
+    NAME constraint_failure_messsages
     COMMAND ${CMAKE_SOURCE_DIR}/tools/cgreen_runner_output_diff
             # Run the runner in directory
             ${CMAKE_BINARY_DIR}/tools
             # .. on library
-            $<TARGET_FILE_NAME:${cgreen_all_constraints_library}>
+            $<TARGET_FILE_NAME:${constraint_messages_library}>
             # ... storing the output in an output file with basename
-            ${cgreen_all_constraints_library}
+            ${constraint_messages_library}
             # ... then compare it to
-            ${CMAKE_CURRENT_SOURCE_DIR}/${cgreen_all_constraints_library}.expected.${LANG}
+            ${CMAKE_CURRENT_SOURCE_DIR}/${constraint_messages_library}.expected.${LANG}
             # ... but execute the following SED commands on the output before making the comparison
             s%${CMAKE_CURRENT_SOURCE_DIR}/%%g
-            s%\".*cgreen_all_constraints\"%\"cgreen_all_constraints\"%g # should like to have $<TARGET_FILE_NAME:${cgreen_all_constraints_library}>
+            s%\".*constraint_messages\"%\"constraint_messages\"%g # should like to have $<TARGET_FILE_NAME:${constraint_messages_library}>
+)
+
+macro_add_test(
+    NAME mock_failure_messsages
+    COMMAND ${CMAKE_SOURCE_DIR}/tools/cgreen_runner_output_diff
+            # Run the runner in directory
+            ${CMAKE_BINARY_DIR}/tools
+            # .. on library
+            $<TARGET_FILE_NAME:${mock_messages_library}>
+            # ... storing the output in an output file with basename
+            ${mock_messages_library}
+            # ... then compare it to
+            ${CMAKE_CURRENT_SOURCE_DIR}/${mock_messages_library}.expected.${LANG}
+            # ... but execute the following SED commands on the output before making the comparison
+            s%${CMAKE_CURRENT_SOURCE_DIR}/%%g
+            s%\".*mock_messages\"%\"mock_messages\"%g # should like to have $<TARGET_FILE_NAME:${mock_messages_library}>
 )
 
 # add verification that all public api is available as it should

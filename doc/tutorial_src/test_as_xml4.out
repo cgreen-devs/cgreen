@@ -1,0 +1,13 @@
+<?xml?>
+<suite name="Top Level">
+	<suite name="A Group">
+		<test name="reports_a_test_that_passes">
+		</test>
+		<test name="reports_a_test_that_fails">
+			<fail>
+				<message>A failure</message>
+				<location file="test_as_xml.c" line="15"/>
+			</fail>
+		</test>
+	</suite>
+</suite>

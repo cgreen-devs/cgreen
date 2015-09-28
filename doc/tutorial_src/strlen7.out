@@ -1,5 +1,5 @@
 Running "our_tests" (2 tests)...
-strlen_test.c:9: Failure: returns_five_for_hello 
+strlen_tests.c:9: Failure: returns_five_for_hello 
 	Expected [strlen("Hiya")] to [equal] [5]
 		actual value:			[4]
 		expected value:			[5]

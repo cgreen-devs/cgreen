@@ -1,5 +1,5 @@
 Running "main" (1 tests)...
-words_test.c:13: Failure: words_tests -> returns_word_count 
+words_tests.c:13: Failure: words_tests -> returns_word_count 
 	Expected [word_count] to [equal] [4]
 		actual value:			[0]
 		expected value:			[4]
