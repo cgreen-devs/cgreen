@@ -15,11 +15,6 @@ AfterEach(ReflectiveRunner) {
     counter += 1;
 }
 
-Ensure(ReflectiveRunner, outputs_exceptional_error) {
-//	char *foo = NULL;
-//	*foo = '1';
-}
-
 Ensure(ReflectiveRunner, calls_setup_before_each_test) {
     assert_that(counter, is_equal_to(5));
 }
