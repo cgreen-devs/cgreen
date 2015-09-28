@@ -64,6 +64,11 @@ Ensure(Mocks, failure_reported_when_expect_after_always_expect_for_same_function
     expect(integer_out);
 }
 
+Ensure(Mocks, reports_multiple_always_expect) {
+    always_expect(integer_out);
+    always_expect(integer_out);
+}
+
 Ensure(Mocks, single_uncalled_expectation_fails_tally) {
     expect(string_out,
         will_return(5),
