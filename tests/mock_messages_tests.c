@@ -69,6 +69,11 @@ Ensure(Mocks, reports_multiple_always_expect) {
     always_expect(integer_out);
 }
 
+Ensure(Mocks, reports_multiple_never_expect) {
+    never_expect(integer_out);
+    never_expect(integer_out);
+}
+
 Ensure(Mocks, single_uncalled_expectation_fails_tally) {
     expect(string_out,
         will_return(5),
