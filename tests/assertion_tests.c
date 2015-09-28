@@ -305,6 +305,7 @@ TestSuite *assertion_tests() {
     add_test(suite, zero_should_assert_float_not_equal_to_one);
     add_test(suite, one_should_assert_double_equal_to_one);
     add_test(suite, zero_should_assert_double_not_equal_to_one);
+    add_test(suite, zero_should_assert_double_not_equal_to_one);
     add_test(suite, one_should_assert_long_double_equal_to_one);
     add_test(suite, zero_should_assert_long_double_not_equal_to_one);
     add_test(suite, double_differences_do_not_matter_past_significant_figures);
