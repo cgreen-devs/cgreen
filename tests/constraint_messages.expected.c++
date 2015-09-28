@@ -99,7 +99,7 @@ constraint_messages_tests.c:150: Failure: FailureMessage -> if_exception_was_exp
 	Expected [(void)5] to throw [std::string]
 
 constraint_messages_tests.c:140: Exception: FailureMessage -> increments_exception_count_when_terminating_via_SIGQUIT 
-	Test terminated with signal: Terminated: 15
+	Test terminated with signal: Terminated
 
 constraint_messages_tests.c:153: Exception: FailureMessage -> increments_exception_count_when_throwing 
 	Test terminated unexpectedly, likely from a non-standard exception or Posix signal
