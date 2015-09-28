@@ -45,6 +45,8 @@ void assert_that_double_(const char *file, int line, const char *actual_string, 
 
 const char *show_null_as_the_string_null(const char *string);
 bool doubles_are_equal(double tried, double expected);
+bool double_is_lesser(double actual, double expected);
+bool double_is_greater(double actual, double expected);
 
 #ifdef __cplusplus
     }

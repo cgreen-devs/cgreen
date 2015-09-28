@@ -35,6 +35,12 @@ bool compare_do_not_want_value(CppConstraint<T> *constraint, T actual) {
 
 template<typename T>
 void test_want_value(CppConstraint<T> *constraint, const char *function, T actual, const char *test_file, int test_line, TestReporter *reporter) {
+    (void)constraint;
+    (void)function;
+    (void)actual;
+    (void)test_file;
+    (void)test_line;
+    (void)reporter;
 }
 
 #include <stdlib.h>

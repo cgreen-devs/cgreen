@@ -9,26 +9,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
 
 #ifdef __cplusplus
 namespace cgreen {
 #endif
 
-
-#ifdef max
-#undef max
-#endif
-
-#ifdef min
-#undef min
-#endif
-
-#define max(a,b) ((a) > (b) ? (a) : (b))
-#define min(a,b) ((a) > (b) ? (b) : (a))
-
-static double accuracy(int significant_figures, double largest);
-
-static int significant_figures = 8;
 
 void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint* constraint) {
 
@@ -97,11 +83,11 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
     (*get_test_reporter()->assert_true)(get_test_reporter(), file, line, (*constraint->compare)(constraint, (intptr_t)boxed_actual),
             "Expected [%s] to [%s] [%s] within [%d] significant figures\n"
             "\t\tactual value:\t%08f\n"
-            "\t\texpected value:\t%08f",
+            "\t\texpected value:\t%08f\n",
             expression,
             constraint->name,
             constraint->expected_value_name,
-            significant_figures,
+            get_significant_figures(),
             actual,
             as_double(constraint->expected_value));
 
@@ -133,7 +119,7 @@ void assert_double_equal_(const char *file, int line, const char *expression, do
             file,
             line,
             doubles_are_equal(tried, expected),
-            "[%s] should be [%f] within %d significant figures but was [%f]\n", expression, expected, significant_figures, tried);
+            "[%s] should be [%f] within %d significant figures but was [%f]\n", expression, expected, get_significant_figures(), tried);
 }
 
 void assert_double_not_equal_(const char *file, int line, const char *expression, double tried, double expected) {
@@ -142,7 +128,7 @@ void assert_double_not_equal_(const char *file, int line, const char *expression
             file,
             line,
             ! doubles_are_equal(tried, expected),
-            "[%s] should not be [%f] within %d significant figures but was [%f]\n", expression, expected, significant_figures, tried);
+            "[%s] should not be [%f] within %d significant figures but was [%f]\n", expression, expected, get_significant_figures(), tried);
 }
 
 void assert_string_equal_(const char *file, int line, const char *expression, const char *tried, const char *expected) {
@@ -163,21 +149,10 @@ void assert_string_not_equal_(const char *file, int line, const char *expression
             "[%s] should not be [%s] but was\n", expression, show_null_as_the_string_null(expected));
 }
 
-void significant_figures_for_assert_double_are(int figures) {
-    significant_figures = figures;
-}
-
 const char *show_null_as_the_string_null(const char *string) {
     return (string == NULL ? "NULL" : string);
 }
 
-bool doubles_are_equal(double tried, double expected) {
-    return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(tried, expected));
-}
-
-static double accuracy(int figures, double largest) {
-    return pow(10, 1 + (int)log10(largest) - figures);
-}
 
 #ifdef __cplusplus
 } // namespace cgreen

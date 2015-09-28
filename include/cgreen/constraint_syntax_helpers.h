@@ -35,6 +35,10 @@ extern "C" {
 #define is_equal_to_double(value) create_equal_to_double_constraint(value, #value)
 #define is_not_equal_to_double(value) create_not_equal_to_double_constraint(value, #value)
 
+#define is_less_than_double(value) create_less_than_double_constraint(value, #value)
+#define is_greater_than_double(value) create_greater_than_double_constraint(value, #value)
+
+
 #define will_return(value) create_return_value_constraint((intptr_t)value)
 #define will_set_contents_of_parameter(parameter_name, value, size) create_set_parameter_value_constraint(#parameter_name, (intptr_t)value, (size_t)size)
 

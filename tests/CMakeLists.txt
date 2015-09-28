@@ -125,7 +125,8 @@ macro_add_test(
             ${CMAKE_CURRENT_SOURCE_DIR}/${constraint_messages_library}.expected.${LANG}
             # ... but execute the following SED commands on the output before making the comparison
             s%${CMAKE_CURRENT_SOURCE_DIR}/%%g
-            s%\".*constraint_messages\"%\"constraint_messages\"%g # should like to have $<TARGET_FILE_NAME:${constraint_messages_library}>
+            s%\".*constraint_messages\"%\"constraint_messages\"%g
+            s/:[0-9]\\\\+:/:/g
 )
 
 macro_add_test(
@@ -140,8 +141,9 @@ macro_add_test(
             # ... then compare it to
             ${CMAKE_CURRENT_SOURCE_DIR}/${mock_messages_library}.expected.${LANG}
             # ... but execute the following SED commands on the output before making the comparison
-            s%${CMAKE_CURRENT_SOURCE_DIR}/%%g
-            s%\".*mock_messages\"%\"mock_messages\"%g # should like to have $<TARGET_FILE_NAME:${mock_messages_library}>
+            s%${CMAKE_CURRENT_SOURCE_DIR}/%%g                   # remove source path
+            s%\".*mock_messages\"%\"mock_messages\"%g           # remove any leading 'lib' prefix
+            s/:[0-9]\\\\+:/:/g                                  # remove line numbers in messages
 )
 
 # add verification that all public api is available as it should

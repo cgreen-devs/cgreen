@@ -176,11 +176,36 @@ Ensure(double_differences_do_not_matter_past_significant_figures) {
     assert_that_double(1.113, is_equal_to_double(1.115));
     assert_that_double(1113, is_equal_to_double(1115));
     assert_that_double(1113000, is_equal_to_double(1115000));
+    assert_that_double(1.1199999999, is_less_than_double(1.11));
+    assert_that_double(1.11, is_greater_than_double(1.119999));
+}
+
+Ensure(can_check_equality_of_negative_floating_point_numbers) {
+    significant_figures_for_assert_double_are(3);
+    assert_that_double(-1.113, is_equal_to_double(-1.115));
+    assert_that_double(-1.13, is_not_equal_to_double(-1.15));
+}
+
+Ensure(double_one_is_less_than_two) {
+    assert_that_double(1.0, is_less_than_double(2.0));
+}
+
+Ensure(double_one_is_greater_than_zero) {
+    assert_that_double(1.0, is_greater_than_double(0.0));
+}
+
+Ensure(double_can_compare_negative_numbers) {
+    assert_that_double(1.0, is_greater_than_double(-10.0));
+    assert_that_double(-2.0, is_less_than_double(1.0));
+    assert_that_double(-21.0, is_less_than_double(-10.0));
+    assert_that_double(-11.0, is_greater_than_double(-12.0));
 }
 
 Ensure(double_differences_matter_past_significant_figures) {
     significant_figures_for_assert_double_are(4);
     assert_that_double(1.113, is_not_equal_to_double(1.115));
+    assert_that_double(1.113, is_less_than_double(1.115));
+    assert_that_double(1.115, is_greater_than_double(1.113));
     assert_that_double(1113, is_not_equal_to_double(1115));
     assert_that_double(1113000, is_not_equal_to_double(1115000));
 }
@@ -188,7 +213,7 @@ Ensure(double_differences_matter_past_significant_figures) {
 Ensure(double_assertions_can_have_custom_messages) {
     significant_figures_for_assert_double_are(3);
 
-    /* this passes because the difference is below the set signifigant figure */
+    /* this passes because the difference is below the set significant figure */
     assert_that_double(1.113, is_equal_to_double(1.115));
 }
 
@@ -283,6 +308,10 @@ TestSuite *assertion_tests() {
     add_test(suite, one_should_assert_long_double_equal_to_one);
     add_test(suite, zero_should_assert_long_double_not_equal_to_one);
     add_test(suite, double_differences_do_not_matter_past_significant_figures);
+    add_test(suite, can_check_equality_of_negative_floating_point_numbers);
+    add_test(suite, double_one_is_less_than_two);
+    add_test(suite, double_one_is_greater_than_zero);
+    add_test(suite, double_can_compare_negative_numbers);
     add_test(suite, double_differences_matter_past_significant_figures);
     add_test(suite, double_assertions_can_have_custom_messages);
     add_test(suite, identical_string_copies_should_match);

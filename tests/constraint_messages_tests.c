@@ -5,6 +5,7 @@
 #include <cgreen/cgreen.h>
 #include <cgreen/mocks.h>
 #include <signal.h>
+#include <float.h>
 
 #ifdef __cplusplus
 using namespace cgreen;
@@ -43,6 +44,28 @@ Ensure(FailureMessage,for_is_greater_than) {
 Ensure(FailureMessage,for_is_less_than) {
     int fourty_five = 45, thirty_three = 33;
     assert_that(fourty_five, is_less_than(thirty_three));
+}
+
+Ensure(FailureMessage,for_is_equal_to_double) {
+    double four_point_five = 4.5f, three_point_three = 3.3f;
+    assert_that_double(four_point_five, is_equal_to_double(three_point_three));
+}
+
+Ensure(FailureMessage,for_is_not_equal_to_double) {
+    significant_figures_for_assert_double_are(4);
+    double epsilon = 1.0e-4;
+    double four_point_five = 4.5, almost_four_point_five = 4.5 - epsilon;
+    assert_that_double(four_point_five, is_not_equal_to_double(almost_four_point_five));
+}
+
+Ensure(FailureMessage,for_is_greater_than_double) {
+    double four_point_five = 4.5f, three_point_three = 3.3f;
+    assert_that_double(three_point_three, is_greater_than_double(four_point_five));
+}
+
+Ensure(FailureMessage,for_is_less_than_double) {
+    double four_point_five = 4.5f, three_point_three = 3.3f;
+    assert_that_double(four_point_five, is_less_than_double(three_point_three));
 }
 
 Ensure(FailureMessage,for_is_equal_to_contents_of) {
@@ -84,8 +107,26 @@ Ensure(FailureMessage,for_equal_to_double) {
   assert_that_double(0, is_equal_to_double(1));
 }
 
+Ensure(FailureMessage,for_equal_to_double_negative) {
+  assert_that_double(-1, is_equal_to_double(-2));
+}
+
 Ensure(FailureMessage,for_not_equal_to_double) {
   assert_that_double(0, is_not_equal_to_double(0));
+}
+
+Ensure(FailureMessage,for_not_equal_to_double_negative) {
+  assert_that_double(-1, is_not_equal_to_double(-1));
+}
+
+Ensure(FailureMessage,for_is_less_than_double_with_accuracy) {
+  significant_figures_for_assert_double_are(4);
+  assert_that_double(1.0, is_less_than_double(1.0 - 1.0e-3 - DBL_EPSILON));
+}
+
+Ensure(FailureMessage,for_is_greater_than_double_with_accuracy) {
+  significant_figures_for_assert_double_are(4);
+  assert_that_double(1.0, is_greater_than_double(1.0 + 1.0e-3 + DBL_EPSILON));
 }
 
 Ensure(FailureMessage,for_assert_that) {
@@ -170,6 +211,10 @@ TestSuite *all_constraints_tests() {
     add_test_with_context(suite, FailureMessage, for_is_not_equal_to);
     add_test_with_context(suite, FailureMessage, for_is_greater_than);
     add_test_with_context(suite, FailureMessage, for_is_less_than);
+    add_test_with_context(suite, FailureMessage, for_is_equal_to_double);
+    add_test_with_context(suite, FailureMessage, for_is_not_equal_to_double);
+    add_test_with_context(suite, FailureMessage, for_is_greater_than_double);
+    add_test_with_context(suite, FailureMessage, for_is_less_than_double);
     add_test_with_context(suite, FailureMessage, for_is_equal_to_contents_of);
     add_test_with_context(suite, FailureMessage, for_is_not_equal_to_contents_of);
     add_test_with_context(suite, FailureMessage, for_is_equal_to_string);
@@ -178,7 +223,11 @@ TestSuite *all_constraints_tests() {
     add_test_with_context(suite, FailureMessage, for_does_not_contain_string);
     add_test_with_context(suite, FailureMessage, for_begins_with_string);
     add_test_with_context(suite, FailureMessage, for_equal_to_double);
+    add_test_with_context(suite, FailureMessage, for_equal_to_double_negative);
     add_test_with_context(suite, FailureMessage, for_not_equal_to_double);
+    add_test_with_context(suite, FailureMessage, for_not_equal_to_double_negative);
+    add_test_with_context(suite, FailureMessage, for_is_less_than_double_with_accuracy);
+    add_test_with_context(suite, FailureMessage, for_is_greater_than_double_with_accuracy);
     add_test_with_context(suite, FailureMessage, for_assert_that);
     add_test_with_context(suite, FailureMessage, for_mock_called_with_unexpected_parameter_value);
     add_test_with_context(suite, FailureMessage, for_mock_called_more_times_than_expected);
