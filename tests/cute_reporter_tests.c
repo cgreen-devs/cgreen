@@ -144,8 +144,8 @@ Ensure(CuteReporter, will_report_non_finishing_test) {
     reporter_start(reporter, "suite_name");
     send_reporter_exception_notification(reporter);
     reporter->finish_suite(reporter, "filename", line);
-    assert_that(output, begins_with_string("#ending"));
-    assert_that(output, contains_string("failed to non-complete"));
+    assert_that(output, begins_with_string("#error"));
+    assert_that(output, contains_string("failed to complete"));
 }
 
 TestSuite *cute_reporter_tests() {
