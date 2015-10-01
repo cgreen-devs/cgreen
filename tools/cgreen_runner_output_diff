@@ -16,8 +16,8 @@ ${runner_dir}/cgreen-runner ${lib} > ${name}.output
 shift 4
 # Execute some SED command in $5 and onwards on the output
 for sedcommand in $@ ; do
-    echo sed -e ${sedcommand} ${name}.output ${name}.output.tmp
-    sed -e ${sedcommand} ${name}.output > ${name}.output.tmp
+    echo sed -E -e ${sedcommand} ${name}.output ${name}.output.tmp
+    sed -E -e ${sedcommand} ${name}.output > ${name}.output.tmp
     mv ${name}.output.tmp ${name}.output
 done
 

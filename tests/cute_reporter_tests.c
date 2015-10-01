@@ -45,7 +45,7 @@ static void setup_cute_reporter_tests() {
     reporter = create_cute_reporter();
 
     // We can not use setup_reporting() since we are running
-    // inside an test suite which needs the real reporting
+    // inside a test suite which needs the real reporting
     // So we'll have to set up the messaging explicitly
     reporter->ipc = start_cgreen_messaging(666);
 
@@ -129,14 +129,25 @@ Ensure(CuteReporter, will_report_failing_of_test_only_once) {
 }
 
 Ensure(CuteReporter, will_report_finishing_of_suite) {
-    // Must indicate test suite completion before calling finish_suite()
     const int line = 666;
     reporter_start(reporter, "suite_name");
-//  reporter->start_suite(reporter, "filename", line);
+
     send_reporter_completion_notification(reporter);
     reporter->finish_suite(reporter, "filename", line);
+
     assert_that(output, begins_with_string("#ending"));
     assert_that(output, contains_string("suite_name"));
+}
+
+Ensure(CuteReporter, will_report_non_finishing_test) {
+    const int line = 666;
+    reporter_start(reporter, "suite_name");
+
+    send_reporter_exception_notification(reporter);
+    reporter->finish_suite(reporter, "filename", line);
+
+    assert_that(output, begins_with_string("#error"));
+    assert_that(output, contains_string("failed to complete"));
 }
 
 TestSuite *cute_reporter_tests() {
@@ -147,6 +158,7 @@ TestSuite *cute_reporter_tests() {
     add_test_with_context(suite, CuteReporter, will_report_beginning_and_successful_finishing_of_test);
     add_test_with_context(suite, CuteReporter, will_report_failing_of_test_only_once);
     add_test_with_context(suite, CuteReporter, will_report_finishing_of_suite);
+    add_test_with_context(suite, CuteReporter, will_report_non_finishing_test);
 
     set_teardown(suite, cute_reporter_tests_teardown);
     return suite;
