@@ -16,7 +16,7 @@ ${runner_dir}/cgreen-runner ${lib} > ${name}.output
 shift 4
 # Execute some SED command in $5 and onwards on the output
 for sedcommand in $@ ; do
-    if [[ $OSTYPE == darwin* ]]
+    if [ "$(uname)"  == "Darwin" ]
     then
         echo sed -E -e ${sedcommand} ${name}.output ${name}.output.tmp
         sed -E -e ${sedcommand} ${name}.output > ${name}.output.tmp
