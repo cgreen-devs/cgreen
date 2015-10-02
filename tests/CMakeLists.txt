@@ -122,7 +122,7 @@ macro_add_test(
             # ... storing the output in an output file with basename
             ${constraint_messages_library}
             # ... then compare it to
-            ${CMAKE_CURRENT_SOURCE_DIR}/${constraint_messages_library}.expected.${LANG}
+            ${CMAKE_CURRENT_SOURCE_DIR}/${constraint_messages_library}.${LANG}.expected
             # ... but execute the following SED commands on the output before making the comparison
             s%${CMAKE_CURRENT_SOURCE_DIR}/%%g
             s%\".*constraint_messages\"%\"constraint_messages\"%g
@@ -140,7 +140,7 @@ macro_add_test(
             # ... storing the output in an output file with basename
             ${mock_messages_library}
             # ... then compare it to
-            ${CMAKE_CURRENT_SOURCE_DIR}/${mock_messages_library}.expected.${LANG}
+            ${CMAKE_CURRENT_SOURCE_DIR}/${mock_messages_library}.${LANG}.expected
             # ... but execute the following SED commands on the output before making the comparison
             s%${CMAKE_CURRENT_SOURCE_DIR}/%%g                   # remove source path
             s%\".*mock_messages\"%\"mock_messages\"%g           # remove any leading 'lib' prefix
