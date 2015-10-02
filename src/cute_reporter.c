@@ -26,9 +26,9 @@ static void assert_passed(TestReporter *reporter, const char *file, int line,
 static void testcase_failed_to_complete(TestReporter *reporter,
         const char *file, int line, const char *message, va_list arguments);
 static void cute_reporter_testcase_finished(TestReporter *reporter,
-        const char *filename, int line, const char *message);
+        const char *filename, int line, const char *message, uint32_t duration_in_milliseconds);
 static void cute_reporter_suite_finished(TestReporter *reporter,
-        const char *filename, int line);
+        const char *filename, int line, uint32_t duration_in_milliseconds);
 
 void set_cute_printer(TestReporter *reporter, Printer *printer) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
@@ -80,28 +80,30 @@ static void cute_reporter_testcase_started(TestReporter *reporter,
     memo->printer("#starting %s\n", name);
 }
 
-static void cute_reporter_testcase_finished(TestReporter *reporter, const char *filename, int line, const char *message) {
+static void cute_reporter_testcase_finished(TestReporter *reporter, const char *filename, int line, const char *message,
+                                            uint32_t duration_in_milliseconds) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 
-    reporter_finish(reporter, filename, line, message);
+    reporter_finish(reporter, filename, line, message, duration_in_milliseconds);
     if (memo->error_count == reporter->failures + reporter->exceptions) {
-        memo->printer("#success %s OK\n", name);
+        memo->printer("#success %s, %d ms OK\n", name);
     }
 }
 
-static void cute_reporter_suite_finished(TestReporter *reporter,
-        const char *filename, int line) {
+static void cute_reporter_suite_finished(TestReporter *reporter, const char *filename, int line,
+                                         uint32_t duration_in_milliseconds) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
-    reporter_finish(reporter, filename, line, NULL);
+    reporter_finish(reporter, filename, line, NULL, duration_in_milliseconds);
 
     memo->printer("#ending %s", name);
     if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0) {
-        memo->printer(": %d pass%s, %d failure%s, %d exception%s.\n",
+        memo->printer(": %d pass%s, %d failure%s, %d exception%s, %d ms.\n",
                 reporter->passes, reporter->passes == 1 ? "" : "es",
                 reporter->failures, reporter->failures == 1 ? "" : "s",
-                reporter->exceptions, reporter->exceptions == 1 ? "" : "s");
+                reporter->exceptions, reporter->exceptions == 1 ? "" : "s",
+                duration_in_milliseconds);
     } else
         memo->printer("\n");
 }

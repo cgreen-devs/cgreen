@@ -98,7 +98,9 @@ void reporter_start_suite(TestReporter *reporter, const char *name, const int co
     reporter_start(reporter, name);
 }
 
-void reporter_finish(TestReporter *reporter, const char *filename, int line, const char *message) {
+void reporter_finish(TestReporter *reporter, const char *filename, int line, const char *message,
+                     uint32_t duration_in_milliseconds) {
+    (void)duration_in_milliseconds;
     int status = read_reporter_results(reporter);
 
     if (status == FINISH_NOTIFICATION_NOT_RECEIVED) {
@@ -111,11 +113,14 @@ void reporter_finish(TestReporter *reporter, const char *filename, int line, con
     pop_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 }
 
-void reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
-    (void) filename;
-    (void) line;
+void reporter_finish_suite(TestReporter *reporter, const char *filename, int line, uint32_t duration_in_milliseconds) {
+    (void)filename;
+    (void)line;
+    (void)duration_in_milliseconds;
+
     read_reporter_results(reporter);
     pop_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
+
 }
 
 void add_reporter_result(TestReporter *reporter, int result) {
