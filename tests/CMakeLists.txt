@@ -61,17 +61,24 @@ set(mock_messages_library
 set(mock_messages_library_SRCS
     mock_messages_tests.c)
 
+set(failure_messages_library
+  failure_messages
+)
+
+set(failure_messages_library_SRCS
+  failure_messages_tests.c)
+
 if (WITH_CXX)
   SET_SOURCE_FILES_PROPERTIES( ${test_SRCS} PROPERTIES LANGUAGE CXX )
   SET_SOURCE_FILES_PROPERTIES( ${constraint_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
   SET_SOURCE_FILES_PROPERTIES( ${mock_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
+  SET_SOURCE_FILES_PROPERTIES( ${failure_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
 endif (WITH_CXX)
 
 add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_library_SRCS})
-
 add_library(${constraint_messages_library} SHARED ${constraint_messages_library_SRCS})
-
 add_library(${mock_messages_library} SHARED ${mock_messages_library_SRCS})
+add_library(${failure_messages_library} SHARED ${failure_messages_library_SRCS})
 
 if (WITH_STATIC_LIBRARY)
   set(CGREEN_LIBRARY ${CGREEN_STATIC_LIBRARY})
@@ -83,10 +90,12 @@ if (WITH_CXX)
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
   target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
   target_link_libraries(${mock_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
+  target_link_libraries(${failure_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
 else()
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY})
   target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY})
   target_link_libraries(${mock_messages_library} ${CGREEN_LIBRARY})
+  target_link_libraries(${failure_messages_library} ${CGREEN_LIBRARY})
 endif (WITH_CXX)
 
 if (WITH_CXX)
@@ -96,7 +105,6 @@ else()
 endif(WITH_CXX)
 
 macro_add_unit_test(test_cgreen "${test_SRCS}" "${TEST_TARGET_LIBRARIES}")
-#macro_add_test(NAME cgreen_tests COMMAND cgreen-runner ${CGREEN_TEST_LIBRARY})
 macro_add_test(NAME test_cgreen_run_named_test COMMAND test_cgreen integer_one_should_assert_true)
 
 if (WITH_CXX)
@@ -105,7 +113,7 @@ else()
   set(LANG c)
 endif()
 macro_add_test(
-    NAME constraint_failure_messsages
+    NAME constraint_messsages
     COMMAND ${CMAKE_SOURCE_DIR}/tools/cgreen_runner_output_diff
             # Run the runner in directory
             ${CMAKE_BINARY_DIR}/tools
@@ -123,7 +131,7 @@ macro_add_test(
 )
 
 macro_add_test(
-    NAME mock_failure_messsages
+    NAME mock_messsages
     COMMAND ${CMAKE_SOURCE_DIR}/tools/cgreen_runner_output_diff
             # Run the runner in directory
             ${CMAKE_BINARY_DIR}/tools
@@ -137,6 +145,22 @@ macro_add_test(
             s%${CMAKE_CURRENT_SOURCE_DIR}/%%g                   # remove source path
             s%\".*mock_messages\"%\"mock_messages\"%g           # remove any leading 'lib' prefix
             s/:[0-9]+:/:/g                                      # remove line numbers in messages
+)
+
+macro_add_test(NAME failure_messages
+    COMMAND env "CGREEN_PER_TEST_TIMEOUT=1" ${CMAKE_SOURCE_DIR}/tools/cgreen_runner_output_diff
+            # Run the runner in directory
+            ${CMAKE_BINARY_DIR}/tools
+            # .. on library
+            $<TARGET_FILE_NAME:${failure_messages_library}>
+            # ... storing the output in an output file with basename
+            ${failure_messages_library}
+            # ... then compare it to
+            ${CMAKE_CURRENT_SOURCE_DIR}/${failure_messages_library}.${LANG}.expected
+            # ... but execute the following SED commands on the output before making the comparison
+            s%${CMAKE_CURRENT_SOURCE_DIR}/%%g
+            s%\".*failure_messages\"%\"failure_messages\"%g
+            s/:[0-9]+:/:/g
 )
 
 # add verification that all public api is available as it should
