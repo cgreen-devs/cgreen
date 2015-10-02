@@ -44,8 +44,7 @@ void setup_reporting(TestReporter *reporter);
 void destroy_reporter(TestReporter *reporter);
 void destroy_memo(TestReportMemo *memo);
 void reporter_start(TestReporter *reporter, const char *name);
-void reporter_start_suite(TestReporter *reporter, const char *name,
-    const int count);
+void reporter_start_suite(TestReporter *reporter, const char *name, const int count);
 void reporter_finish(TestReporter *reporter, const char *filename, int line, const char *message);
 void reporter_finish_suite(TestReporter *reporter, const char *filename, int line);
 void add_reporter_result(TestReporter *reporter, int result);
