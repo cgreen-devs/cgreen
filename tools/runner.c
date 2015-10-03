@@ -235,6 +235,11 @@ static int count(TestItem test_items[]) {
     return i;
 }
 
+/*----------------------------------------------------------------------*/
+static bool error_when_matching(int number_of_matches) {
+    return number_of_matches < 0;
+}
+
 
 /*----------------------------------------------------------------------*/
 static int run_tests(TestReporter *reporter, const char *suite_name, const char *symbolic_name,
@@ -243,9 +248,11 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
     ContextSuite *context_suites = NULL;
     TestSuite *suite = create_named_test_suite(suite_name);
 
-    const int number_of_matches = add_matching_tests_to_suite(test_library_handle, symbolic_name, test_items, suite, &context_suites);
-    if (number_of_matches < 0)
-	return EXIT_FAILURE;
+    const int number_of_matches = add_matching_tests_to_suite(test_library_handle, symbolic_name,
+                                                              test_items, suite, &context_suites);
+
+    if (error_when_matching(number_of_matches))
+        return EXIT_FAILURE;
 
     if (symbolic_name != NULL && number_of_matches == 1) {
         bool found = matching_test_exists(symbolic_name, test_items);
