@@ -235,10 +235,11 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
     if (is_content_comparing(constraint)) {
         int difference_index = find_index_of_difference((char *)constraint->expected_value,
                                                         (char *)actual, constraint->size_of_expected_value);
-        if (difference_index != -1)
+        if (difference_index != -1) {
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
                      at_offset,
                      difference_index);
+        }
         return message;
     }
 
