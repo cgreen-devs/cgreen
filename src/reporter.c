@@ -17,6 +17,11 @@ namespace cgreen {
 enum { pass = 1, fail, completion, exception };
 enum { FINISH_NOTIFICATION_RECEIVED = 0, FINISH_NOTIFICATION_NOT_RECEIVED };
 
+struct TestContext_ {
+    TestReporter *reporter;
+};
+typedef struct TestContext_ TestContext;
+
 static TestContext context;
 
 static void show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);

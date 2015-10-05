@@ -31,12 +31,6 @@ struct TestReporter_ {
 
 typedef void TestReportMemo;
 
-struct TestContext_ {
-    TestReporter *reporter;
-};
-
-typedef struct TestContext_ TestContext;
-
 TestReporter *create_reporter(void);
 TestReporter *get_test_reporter(void);
 void set_reporter_options(TestReporter *reporter, void *options);
