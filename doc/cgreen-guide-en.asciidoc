@@ -1017,8 +1017,13 @@ suite has problems.
 
 Of course, if you want to set a general time limit on all your tests,
 then you can add a `die_in()` to a `BeforeEach()` (or `setup()`)
-function. *Cgreen* will then apply the limit to each of the tests, of
-course.
+function. *Cgreen* will then apply the limit to each of the tests in
+that context, of course.
+
+Another possibility is the use of an environment variable named
+`CGREEN_TIMEOUT_PER_TEST` which, if set to a number will apply that
+timeout to every test run. This will apply to all tests in the same
+run.
 
 Building composite test suites
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
