@@ -126,9 +126,8 @@ macro_add_test(
             ${constraint_messages_library}
             # ... then compare it to
             ${CMAKE_CURRENT_SOURCE_DIR}/${constraint_messages_library}.${LANG}.expected
-            # ... but execute the following SED commands on the output before making the comparison
+            # ... but execute the following extra SED commands on the output before making the comparison
             ${IGNORE_SOURCE_PATH_REGEX}
-            s%\".*constraint_messages\"%\"constraint_messages\"%g
             s/Terminated:.+[0-9]+/Terminated/
 )
 
@@ -143,9 +142,8 @@ macro_add_test(
             ${mock_messages_library}
             # ... then compare it to
             ${CMAKE_CURRENT_SOURCE_DIR}/${mock_messages_library}.${LANG}.expected
-            # ... but execute the following SED commands on the output before making the comparison
+            # ... but execute the following extra SED commands on the output before making the comparison
             ${IGNORE_SOURCE_PATH_REGEX}
-            s%\".*mock_messages\"%\"mock_messages\"%g           # ignore any leading 'lib' prefix
 )
 
 macro_add_test(NAME failure_messages
@@ -158,9 +156,8 @@ macro_add_test(NAME failure_messages
             ${failure_messages_library}
             # ... then compare it to
             ${CMAKE_CURRENT_SOURCE_DIR}/${failure_messages_library}.${LANG}.expected
-            # ... but execute the following SED commands on the output before making the comparison
+            # ... but execute the following extra SED commands on the output before making the comparison
             ${IGNORE_SOURCE_PATH_REGEX}
-            s%\".*failure_messages\"%\"failure_messages\"%g
 )
 
 # add verification that all public api is available as it should

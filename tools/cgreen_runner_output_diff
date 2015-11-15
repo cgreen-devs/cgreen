@@ -22,6 +22,10 @@ mv ${name}.output.tmp ${name}.output
 sed -E -e 's/in [0-9]+ms\./in 0ms\./g' ${name}.output > ${name}.output.tmp
 mv ${name}.output.tmp ${name}.output
 
+# - library prefix
+sed -E -e s/\".*${name}\"/\"${name}\"/g ${name}.output > ${name}.output.tmp
+mv ${name}.output.tmp ${name}.output
+
 
 # Execute some extra SED command in $5 and onwards on the output
 shift 4
