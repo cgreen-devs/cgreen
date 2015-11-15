@@ -114,8 +114,6 @@ else()
 endif()
 
 set(IGNORE_SOURCE_PATH_REGEX s%${CMAKE_CURRENT_SOURCE_DIR}/%%g)
-set(IGNORE_LINE_NUMBERS_REGEX s/:[0-9]+:/:/g)
-set(IGNORE_TIMING_REGEX s/[0-9]+ms/0ms/g)
 
 macro_add_test(
     NAME constraint_messsages
@@ -130,8 +128,6 @@ macro_add_test(
             ${CMAKE_CURRENT_SOURCE_DIR}/${constraint_messages_library}.${LANG}.expected
             # ... but execute the following SED commands on the output before making the comparison
             ${IGNORE_SOURCE_PATH_REGEX}
-            ${IGNORE_LINE_NUMBERS_REGEX}
-            ${IGNORE_TIMING_REGEX}
             s%\".*constraint_messages\"%\"constraint_messages\"%g
             s/Terminated:.+[0-9]+/Terminated/
 )
@@ -149,8 +145,6 @@ macro_add_test(
             ${CMAKE_CURRENT_SOURCE_DIR}/${mock_messages_library}.${LANG}.expected
             # ... but execute the following SED commands on the output before making the comparison
             ${IGNORE_SOURCE_PATH_REGEX}
-            ${IGNORE_LINE_NUMBERS_REGEX}
-            ${IGNORE_TIMING_REGEX}
             s%\".*mock_messages\"%\"mock_messages\"%g           # ignore any leading 'lib' prefix
 )
 
@@ -166,8 +160,6 @@ macro_add_test(NAME failure_messages
             ${CMAKE_CURRENT_SOURCE_DIR}/${failure_messages_library}.${LANG}.expected
             # ... but execute the following SED commands on the output before making the comparison
             ${IGNORE_SOURCE_PATH_REGEX}
-            ${IGNORE_LINE_NUMBERS_REGEX}
-            ${IGNORE_TIMING_REGEX}
             s%\".*failure_messages\"%\"failure_messages\"%g
 )
 

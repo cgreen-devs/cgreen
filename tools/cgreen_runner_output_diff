@@ -13,10 +13,19 @@ expected=$4
 # Run runner on library store output
 ${runner_dir}/cgreen-runner ${lib} > ${name}.output
 
+# Execute some standard SED command to ignore things that might differ:
+# - line numbers in error messages
+sed -E -e s/:[0-9]+:/:/g ${name}.output > ${name}.output.tmp
+mv ${name}.output.tmp ${name}.output
+
+# - timing info
+sed -E -e s/[0-9]+ms/0ms/g ${name}.output > ${name}.output.tmp
+mv ${name}.output.tmp ${name}.output
+
+
+# Execute some extra SED command in $5 and onwards on the output
 shift 4
-# Execute some SED command in $5 and onwards on the output
 for sedcommand in $@ ; do
-    echo sed -E -e ${sedcommand} ${name}.output ${name}.output.tmp
     sed -E -e ${sedcommand} ${name}.output > ${name}.output.tmp
     mv ${name}.output.tmp ${name}.output
 done
