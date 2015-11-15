@@ -112,6 +112,11 @@ if (WITH_CXX)
 else()
   set(LANG c)
 endif()
+
+set(IGNORE_SOURCE_PATH_REGEX s%${CMAKE_CURRENT_SOURCE_DIR}/%%g)
+set(IGNORE_LINE_NUMBERS_REGEX s/:[0-9]+:/:/g)
+set(IGNORE_TIMING_REGEX s/[0-9]+ms/0ms/g)
+
 macro_add_test(
     NAME constraint_messsages
     COMMAND ${CMAKE_SOURCE_DIR}/tools/cgreen_runner_output_diff
@@ -124,9 +129,10 @@ macro_add_test(
             # ... then compare it to
             ${CMAKE_CURRENT_SOURCE_DIR}/${constraint_messages_library}.${LANG}.expected
             # ... but execute the following SED commands on the output before making the comparison
-            s%${CMAKE_CURRENT_SOURCE_DIR}/%%g
+            ${IGNORE_SOURCE_PATH_REGEX}
+            ${IGNORE_LINE_NUMBERS_REGEX}
+            ${IGNORE_TIMING_REGEX}
             s%\".*constraint_messages\"%\"constraint_messages\"%g
-            s/:[0-9]+:/:/g
             s/Terminated:.+[0-9]+/Terminated/
 )
 
@@ -142,9 +148,10 @@ macro_add_test(
             # ... then compare it to
             ${CMAKE_CURRENT_SOURCE_DIR}/${mock_messages_library}.${LANG}.expected
             # ... but execute the following SED commands on the output before making the comparison
-            s%${CMAKE_CURRENT_SOURCE_DIR}/%%g                   # remove source path
-            s%\".*mock_messages\"%\"mock_messages\"%g           # remove any leading 'lib' prefix
-            s/:[0-9]+:/:/g                                      # remove line numbers in messages
+            ${IGNORE_SOURCE_PATH_REGEX}
+            ${IGNORE_LINE_NUMBERS_REGEX}
+            ${IGNORE_TIMING_REGEX}
+            s%\".*mock_messages\"%\"mock_messages\"%g           # ignore any leading 'lib' prefix
 )
 
 macro_add_test(NAME failure_messages
@@ -158,9 +165,10 @@ macro_add_test(NAME failure_messages
             # ... then compare it to
             ${CMAKE_CURRENT_SOURCE_DIR}/${failure_messages_library}.${LANG}.expected
             # ... but execute the following SED commands on the output before making the comparison
-            s%${CMAKE_CURRENT_SOURCE_DIR}/%%g
+            ${IGNORE_SOURCE_PATH_REGEX}
+            ${IGNORE_LINE_NUMBERS_REGEX}
+            ${IGNORE_TIMING_REGEX}
             s%\".*failure_messages\"%\"failure_messages\"%g
-            s/:[0-9]+:/:/g
 )
 
 # add verification that all public api is available as it should

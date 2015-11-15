@@ -10,6 +10,8 @@
 using namespace cgreen;
 #endif
 
+static const int line=666;
+static const uint32_t duration_in_milliseconds = 1;
 static char *output = NULL;
 
 static void clear_output()
@@ -85,7 +87,6 @@ Ensure(CuteReporter, will_report_beginning_of_suite) {
 
 Ensure(CuteReporter, will_report_beginning_and_successful_finishing_of_test) {
     va_list arguments;
-    const int line=666;
 
     reporter->start_test(reporter, "test_name");
     assert_that(output, begins_with_string("#starting"));
@@ -99,14 +100,13 @@ Ensure(CuteReporter, will_report_beginning_and_successful_finishing_of_test) {
 
     // Must indicate test case completion before calling finish_test()
     send_reporter_completion_notification(reporter);
-    reporter->finish_test(reporter, "filename", line, NULL);
+    reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds);
     assert_that(output, begins_with_string("#success"));
     assert_that(output, contains_string("test_name"));
 }
 
 Ensure(CuteReporter, will_report_failing_of_test_only_once) {
     va_list arguments;
-    const int line = 666;
 
     reporter->start_test(reporter, "test_name");
 
@@ -124,16 +124,16 @@ Ensure(CuteReporter, will_report_failing_of_test_only_once) {
 
     // Must indicate test case completion before calling finish_test()
     send_reporter_completion_notification(reporter);
-    reporter->finish_test(reporter, "filename", line, NULL);
+    reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds);
     assert_no_output();
 }
 
 Ensure(CuteReporter, will_report_finishing_of_suite) {
-    const int line = 666;
+    // Must indicate test suite completion before calling finish_suite()
     reporter_start(reporter, "suite_name");
 
     send_reporter_completion_notification(reporter);
-    reporter->finish_suite(reporter, "filename", line);
+    reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
 
     assert_that(output, begins_with_string("#ending"));
     assert_that(output, contains_string("suite_name"));
@@ -144,7 +144,7 @@ Ensure(CuteReporter, will_report_non_finishing_test) {
     reporter_start(reporter, "suite_name");
 
     send_reporter_exception_notification(reporter);
-    reporter->finish_suite(reporter, "filename", line);
+    reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
 
     assert_that(output, begins_with_string("#error"));
     assert_that(output, contains_string("failed to complete"));

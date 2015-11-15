@@ -27,5 +27,3 @@ cmp --silent ${name}.output ${expected}
 # If not the same, show diff
 rc=$?; if [ $rc -ne 0 ]; then diff -c ${name}.output ${expected} ; fi
 exit $rc
-
-             

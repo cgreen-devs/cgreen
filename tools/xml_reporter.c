@@ -3,14 +3,17 @@
 #include "cgreen/breadcrumb.h"
 
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
 static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count);
 static void xml_reporter_start_test(TestReporter *reporter, const char *name);
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message);
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line);
+static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message,
+                                     uint32_t duration_in_milliseconds);
+static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line,
+                                      uint32_t duration_in_milliseconds);
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void xml_show_incomplete(TestReporter *reporter, const char *filename, int line, const char *message, va_list arguments);
 
@@ -107,17 +110,19 @@ static void xml_show_incomplete(TestReporter *reporter, const char *filename, in
     fflush(out);
 }
 
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message) {
+static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message,
+                                     uint32_t duration_in_milliseconds) {
     FILE *out = file_stack[file_stack_p-1];
-    reporter_finish(reporter, filename, line, message);
+    reporter_finish(reporter, filename, line, message, duration_in_milliseconds);
     indent(out, reporter);
     fprintf(out, "</testcase>\n");
     fflush(out);
 }
 
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
+static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line,
+                                      uint32_t duration_in_milliseconds) {
     FILE *out = file_stack[--file_stack_p];
-    reporter_finish_suite(reporter, filename, line);
+    reporter_finish_suite(reporter, filename, line, duration_in_milliseconds);
     indent(out, reporter);
     fprintf(out, "</testsuite>\n");
     fclose(out);

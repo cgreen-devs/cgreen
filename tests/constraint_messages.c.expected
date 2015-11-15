@@ -134,5 +134,5 @@ constraint_messages_tests.c: Failure: FailureMessage -> for_violated_never_expec
 constraint_messages_tests.c: Exception: FailureMessage -> increments_exception_count_when_terminating_via_SIGQUIT 
 	Test terminated with signal: Terminated
 
-Completed "FailureMessage": 0 passes, 31 failures, 1 exception.
-Completed "constraint_messages": 0 passes, 31 failures, 1 exception.
+Completed "FailureMessage": 0 passes, 31 failures, 1 exception in 0ms.
+Completed "constraint_messages": 0 passes, 31 failures, 1 exception in 0ms.
