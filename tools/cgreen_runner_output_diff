@@ -19,7 +19,7 @@ sed -E -e s/:[0-9]+:/:/g ${name}.output > ${name}.output.tmp
 mv ${name}.output.tmp ${name}.output
 
 # - timing info
-sed -E -e s/[0-9]+ms/0ms/g ${name}.output > ${name}.output.tmp
+sed -E -e 's/in [0-9]+ms\./in 0ms\./g' ${name}.output > ${name}.output.tmp
 mv ${name}.output.tmp ${name}.output
 
 
