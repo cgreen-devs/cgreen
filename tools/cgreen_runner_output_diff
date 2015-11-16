@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 #
 # Will run the cgreen-runner in directory $1
 # on library $2
@@ -14,7 +14,7 @@ expected=$4
 ${runner_dir}/cgreen-runner ${lib} > ${name}.output
 
 # Execute some standard SED commands to ignore things that might differ:
-function do_sed {
+do_sed() {
   sed -E -e "$1" ${name}.output > ${name}.output.tmp
   mv ${name}.output.tmp ${name}.output
 }
