@@ -121,14 +121,18 @@ the build configuration in that subtree. Creating an extra build
 subdirectory with a name starting with `build-` is also possible. The
 `Makefile` will automatically pick that up and build there too.
 
-The build process will create a library (on unix called
-`libcgreen.so`) which can be used in conjunction with the `cgreen.h`
-header file to compile test code. The created library is installed in
-the system, by default in the `/usr/local/lib/`.
+The build process will create a library (on unix called `libcgreen.so`
+and `libcgreen++.so`for C++) which can be used in conjunction with the
+`cgreen.h` header file to compile test code. The created library is
+installed in the system, by default in the `/usr/local/lib/`.
 
-We will demonstrate the use of *CGreen* by first writing a test to
-confirm everything is working. Let's start with a simple test module
-with no tests, called `first_test.c`...
+
+Your First Test
+^^^^^^^^^^^^^^^
+
+We will first demonstrate the use of *CGreen* by first writing a test
+to confirm everything is working. Let's start with a simple test
+module with no tests, called `first_test.c`...
 
 [source,c]
 ---------------------------------------
@@ -534,6 +538,18 @@ to swap `sentence` for `word` in the `(*callback)()` call, and finally
 third time lucky. Of course running the tests each time made these
 mistakes very obvious. It's taken me far longer to write these
 paragraphs than it has to write the code.
+
+
+Using Cgreen with C++
+^^^^^^^^^^^^^^^^^^^^^
+
+This is actually quite simple. If you have installed the Cgreen
+library for C++ all you have to do is
+
+  * Place your tests in the `cgreen` name space by surrounding them
+    with `namespace cgreen {}`
+
+  * Use the C++ version of the library when linking
 
 
 Building Cgreen test suites
