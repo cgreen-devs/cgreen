@@ -25,6 +25,9 @@ clean: build
 package: build
 	cd build; make package
 
+install:
+	cd build; make install
+
 ############# Internal
 
 build:

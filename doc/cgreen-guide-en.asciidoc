@@ -85,6 +85,8 @@ Team. You can fetch it from http://cgreen.sourceforge.net[Cgreen
 website project]. Download and install it using the normal procedures
 for your system.
 
+NOTE: There is currently no supported packages available.
+
 Installing from source
 ^^^^^^^^^^^^^^^^^^^^^^
 

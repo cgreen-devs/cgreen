@@ -20,6 +20,10 @@ package:
 	cd build-c; make package
 	cd build-c++; make package
 
+install:
+	cd build-c; make install
+	cd build-c++; make install
+
 ############ Internal
 
 build-c:
