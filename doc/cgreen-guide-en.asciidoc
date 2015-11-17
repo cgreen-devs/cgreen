@@ -2,6 +2,7 @@
 :icons: font
 :numbered:
 :toc:
+:pp: ++
 
 = Cgreen - Unit Tests for C and C++
 Marcus Baker <marcus@lastcraft.com>; Thomas Nilsson <thomas@junovagen.se>; João Freitas <joaohf@gmail.com>;
@@ -540,18 +541,21 @@ mistakes very obvious. It's taken me far longer to write these
 paragraphs than it has to write the code.
 
 
-Using Cgreen with C++
-^^^^^^^^^^^^^^^^^^^^^
+Using Cgreen with C{pp}
+~~~~~~~~~~~~~~~~~~~~~~~
 
-This is actually quite simple. If you have installed the Cgreen
-library for C++ all you have to do is
+The above example, as well as most of this guide, shows how to uses
+*CGreen* with C. You can also use *CGreen* with C++. This is actually
+quite simple. If you have installed the *Cgreen* library for C{pp} all you
+have to do is
 
   * Place your tests in the `cgreen` name space by surrounding them
     with `namespace cgreen {}`
 
-  * Use the C++ version of the library when linking (`-lcgreen++` or
+  * Use the C{pp} version of the library when linking (`-lcgreen{pp}` or
     something similar)
 
+There is one extra feature when you use C++, the `assert_throws` function.
 
 Building Cgreen test suites
 ---------------------------
@@ -597,14 +601,20 @@ extracting all the `Ensure`:s from your test might give you all the
 documentation you'll need.
 
 The `assert_that()` call is the primary part of an assertion, which is
-complemented with a constraint, in this case `is_equal_to()`. This
-makes a very fluent interface to the asserts, that actually reads like
-English.
+complemented with a constraint, in this case `is_equal_to()`, as a
+parameter. This makes a very fluent interface to the asserts, that
+actually reads like English.
 
-NOTE: Sometimes you just want to fail the test explicitly, and there is a function for that too, `fail_test(const char *message)`. And there is a function to explicitly pass, `pass_test(void)`.
+NOTE: Sometimes you just want to fail the test explicitly, and there
+is a function for that too, `fail_test(const char *message)`. And
+there is a function to explicitly pass, `pass_test(void)`.
 
 Assertions send messages to *Cgreen*, which in turn outputs the
 results.
+
+
+The Standard Constraints
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Here are the standard constraints...
 
@@ -615,22 +625,22 @@ Here are the standard constraints...
 | `is_null` | equals null
 | `is_non_null` | is a non null value
 ||
-| `is_equal_to(value)` |'== value'
-| `is_not_equal_to(value)` |'!= value'
-| `is_greater_than(value)` |'> value'
-| `is_less_than(value)` |'< value'
+| `is_equal_to(value)` | '== value'
+| `is_not_equal_to(value)` | '!= value'
+| `is_greater_than(value)` | '> value'
+| `is_less_than(value)` | '< value'
 ||
-| `is_equal_to_contents_of(pointer, size)` |matches the data pointed to by `pointer` to a size of `size` bytes
-| `is_not_equal_to_contents_of(pointer, size)` |does not match the data pointed to by `pointer` to a size of `size` bytes
+| `is_equal_to_contents_of(pointer, size)` | matches the data pointed to by `pointer` to a size of `size` bytes
+| `is_not_equal_to_contents_of(pointer, size)` | does not match the data pointed to by `pointer` to a size of `size` bytes
 ||
-| `is_equal_to_string(value)` |are equal when compared using `strcmp()`
-| `is_not_equal_to_string(value)` |are not equal when compared using `strcmp()`
-| `contains_string(value)` |contains `value` when evaluated using `strstr()`
-| `does_not_contain_string(value)` |does not contain `value` when evaluated using `strstr()`
-| `begins_with_string(value)` |starts with the string `value`
+| `is_equal_to_string(value)` | are equal when compared using `strcmp()`
+| `is_not_equal_to_string(value)` | are not equal when compared using `strcmp()`
+| `contains_string(value)` | contains `value` when evaluated using `strstr()`
+| `does_not_contain_string(value)` | does not contain `value` when evaluated using `strstr()`
+| `begins_with_string(value)` | starts with the string `value`
 ||
-| `is_equal_to_double(value)` |are equal to `value` within the number of significant digits (which you can set with a call to `significant_figures_for_assert_double_are(int figures)`)
-| `is_not_equal_to_double(value)` |are not equal to `value` within the number of significant digits
+| `is_equal_to_double(value)` | are equal to `value` within the number of significant digits (which you can set with a call to `significant_figures_for_assert_double_are(int figures)`)
+| `is_not_equal_to_double(value)` | are not equal to `value` within the number of significant digits
 | `is_less_than_double(value)` | `< value` withing the number of significant digits
 | `is_greater_than_double(value)` | `> value` within the number of significant digits
 |=========================================================
@@ -648,6 +658,18 @@ string literal concatenation (like "don't" "use" "string"
 will get weird error messages about missing arguments to the
 constraint macros. This is caused by the macros using argument strings
 to produce nice failure messages.
+
+
+Asserting C++ Exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+When you use *CGreen* with C++ there is one extra assertion available:
+
+|=========================================================
+|*Assertion* |*Description*
+| `assert_throws(exception, expression)` | Passes if evaluating `expression` throws `exception`
+|=========================================================
+
 
 BDD Style vs. TDD Style
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -694,10 +716,10 @@ Legacy style assertions
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Cgreen have been around for a while, developed and matured. There is
-another style of assertions that was the initial version, a style that
-we now call the 'legacy style', because it was more aligned with the
-original, now old, unit test frameworks. If you are not interested in
-historical artifacts, I recommend that you skip this section.
+an older style of assertions that was the initial version, a style
+that we now call the 'legacy style', because it was more aligned with
+the original, now old, unit test frameworks. If you are not interested
+in historical artifacts, I recommend that you skip this section.
 
 But for completeness of documentation, here are the legacy style
 assertion macros:
