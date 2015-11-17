@@ -549,7 +549,8 @@ library for C++ all you have to do is
   * Place your tests in the `cgreen` name space by surrounding them
     with `namespace cgreen {}`
 
-  * Use the C++ version of the library when linking
+  * Use the C++ version of the library when linking (`-lcgreen++` or
+    something similar)
 
 
 Building Cgreen test suites
