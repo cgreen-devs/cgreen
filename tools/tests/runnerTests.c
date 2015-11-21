@@ -3,7 +3,7 @@
 #include "utils.h"
 
 #ifdef __cplusplus
-namespace cgreen {
+using namespace cgreen;
 #endif
 
 #include "../runner.c"
@@ -139,10 +139,6 @@ Ensure(Runner, can_add_test_to_the_suite_for_its_context) {
     destroy_context_suites(suite_list);
 }
 
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */
 /* Local variables: */
