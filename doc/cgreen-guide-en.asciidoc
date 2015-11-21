@@ -123,7 +123,7 @@ subdirectory with a name starting with `build-` is also possible. The
 `Makefile` will automatically pick that up and build there too.
 
 The build process will create a library (on unix called `libcgreen.so`
-and `libcgreen++.so`for C++) which can be used in conjunction with the
+and `libcgreen++.so` for C++) which can be used in conjunction with the
 `cgreen.h` header file to compile test code. The created library is
 installed in the system, by default in the `/usr/local/lib/`.
 
@@ -156,7 +156,7 @@ technical reasons (actually requirements of the C language), you must
 declare the `BeforeEach()` and `AfterEach()` functions even if they
 are empty. (You will get strange errors if you don't!)
 
-I am assuming we have the *Cgreen* folder in the include search
+I am assuming you have the *Cgreen* folder in the include search
 path to ensure compilation works, otherwise you'll need to add that in
 the compilation command.
 
