@@ -17,6 +17,11 @@ namespace cgreen {
 enum { pass = 1, fail, completion, exception };
 enum { FINISH_NOTIFICATION_RECEIVED = 0, FINISH_NOTIFICATION_NOT_RECEIVED };
 
+struct TestContext_ {
+    TestReporter *reporter;
+};
+typedef struct TestContext_ TestContext;
+
 static TestContext context;
 
 static void show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
@@ -35,10 +40,9 @@ void setup_reporting(TestReporter *reporter) {
 }
 
 void set_reporter_options(TestReporter *reporter, void *options) {
-    if (reporter->options != NULL)
-        free(reporter->options);
-    reporter->options = options;
-}
+    /* We should really copy the options locally to avoid caller to
+       free the area, but we don't know the size of it... */
+    reporter->options = options; }
 
 TestReporter *create_reporter() {
     CgreenBreadcrumb *breadcrumb;
@@ -98,7 +102,9 @@ void reporter_start_suite(TestReporter *reporter, const char *name, const int co
     reporter_start(reporter, name);
 }
 
-void reporter_finish(TestReporter *reporter, const char *filename, int line, const char *message) {
+void reporter_finish(TestReporter *reporter, const char *filename, int line, const char *message,
+                     uint32_t duration_in_milliseconds) {
+    (void)duration_in_milliseconds;
     int status = read_reporter_results(reporter);
 
     if (status == FINISH_NOTIFICATION_NOT_RECEIVED) {
@@ -111,11 +117,14 @@ void reporter_finish(TestReporter *reporter, const char *filename, int line, con
     pop_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 }
 
-void reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
-    (void) filename;
-    (void) line;
+void reporter_finish_suite(TestReporter *reporter, const char *filename, int line, uint32_t duration_in_milliseconds) {
+    (void)filename;
+    (void)line;
+    (void)duration_in_milliseconds;
+
     read_reporter_results(reporter);
     pop_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
+
 }
 
 void add_reporter_result(TestReporter *reporter, int result) {

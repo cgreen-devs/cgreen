@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 #
 # Will run the cgreen-runner in directory $1
 # on library $2
@@ -13,12 +13,26 @@ expected=$4
 # Run runner on library store output
 ${runner_dir}/cgreen-runner ${lib} > ${name}.output
 
+# Execute some standard SED commands to ignore things that might differ:
+do_sed() {
+  sed -E -e "$1" ${name}.output > ${name}.output.tmp
+  mv ${name}.output.tmp ${name}.output
+}
+
+# - line numbers in error messages
+do_sed s/:[0-9]+:/:/g
+
+# - timing info
+do_sed "s/in [0-9]+ms\./in 0ms\./g"
+
+# - library prefix
+do_sed s/\".*${name}\"/\"${name}\"/g
+
+
+# Execute some extra SED commands in $5 and onwards on the output
 shift 4
-# Execute some SED command in $5 and onwards on the output
 for sedcommand in $@ ; do
-    echo sed -E -e ${sedcommand} ${name}.output ${name}.output.tmp
-    sed -E -e ${sedcommand} ${name}.output > ${name}.output.tmp
-    mv ${name}.output.tmp ${name}.output
+    do_sed ${sedcommand}
 done
 
 # Compare output to expected
@@ -27,5 +41,3 @@ cmp --silent ${name}.output ${expected}
 # If not the same, show diff
 rc=$?; if [ $rc -ne 0 ]; then diff -c ${name}.output ${expected} ; fi
 exit $rc
-
-             

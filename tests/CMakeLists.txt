@@ -112,6 +112,9 @@ if (WITH_CXX)
 else()
   set(LANG c)
 endif()
+
+set(IGNORE_SOURCE_PATH_REGEX s%${CMAKE_CURRENT_SOURCE_DIR}/%%g)
+
 macro_add_test(
     NAME constraint_messsages
     COMMAND ${CMAKE_SOURCE_DIR}/tools/cgreen_runner_output_diff
@@ -123,10 +126,8 @@ macro_add_test(
             ${constraint_messages_library}
             # ... then compare it to
             ${CMAKE_CURRENT_SOURCE_DIR}/${constraint_messages_library}.${LANG}.expected
-            # ... but execute the following SED commands on the output before making the comparison
-            s%${CMAKE_CURRENT_SOURCE_DIR}/%%g
-            s%\".*constraint_messages\"%\"constraint_messages\"%g
-            s/:[0-9]+:/:/g
+            # ... but execute the following extra SED commands on the output before making the comparison
+            ${IGNORE_SOURCE_PATH_REGEX}
             s/Terminated:.+[0-9]+/Terminated/
 )
 
@@ -141,10 +142,8 @@ macro_add_test(
             ${mock_messages_library}
             # ... then compare it to
             ${CMAKE_CURRENT_SOURCE_DIR}/${mock_messages_library}.${LANG}.expected
-            # ... but execute the following SED commands on the output before making the comparison
-            s%${CMAKE_CURRENT_SOURCE_DIR}/%%g                   # remove source path
-            s%\".*mock_messages\"%\"mock_messages\"%g           # remove any leading 'lib' prefix
-            s/:[0-9]+:/:/g                                      # remove line numbers in messages
+            # ... but execute the following extra SED commands on the output before making the comparison
+            ${IGNORE_SOURCE_PATH_REGEX}
 )
 
 macro_add_test(NAME failure_messages
@@ -157,10 +156,8 @@ macro_add_test(NAME failure_messages
             ${failure_messages_library}
             # ... then compare it to
             ${CMAKE_CURRENT_SOURCE_DIR}/${failure_messages_library}.${LANG}.expected
-            # ... but execute the following SED commands on the output before making the comparison
-            s%${CMAKE_CURRENT_SOURCE_DIR}/%%g
-            s%\".*failure_messages\"%\"failure_messages\"%g
-            s/:[0-9]+:/:/g
+            # ... but execute the following extra SED commands on the output before making the comparison
+            ${IGNORE_SOURCE_PATH_REGEX}
 )
 
 # add verification that all public api is available as it should

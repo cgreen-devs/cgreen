@@ -9,6 +9,7 @@ set(cgreen_internal_HDRS
   c_assertions.h
   cpp_assertions.h
   cgreen_pipe.h
+  cgreen_time.h
   runner_platform.h
   function_macro.h
 )

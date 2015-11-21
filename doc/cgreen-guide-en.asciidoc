@@ -2160,17 +2160,22 @@ struct _TestReporter {
     void *breadcrumb;
     int ipc;
     void *memo;
+    void *options;
 };
 -----------------------
 
-The first block are the methods that can be overridden.
+The first block are the methods that can be overridden:
 
-void (*destroy)(TestReporter *reporter)::
-This is the destructor for the default 
-structure. If this is overridden, then the overriding function must call 
-`destroy_reporter(TestReporter *reporter)` to finish the clean up. 
 
-void (*start_suite)(TestReporter *reporter, const char *name, const int count)::
+`void (*destroy)(TestReporter *reporter)`::
+
+This is the destructor for the default structure. If this is
+overridden, then the overriding function must call
+`destroy_reporter(TestReporter *reporter)` to finish the clean up.
+
+
+`void (*start_suite)(TestReporter *reporter, const char *name, const int count)`::
+
 This is the first of the callbacks. At the start of
 each test suite *Cgreen* will call this method on the reporter with
 the name of the suite being entered and the number of tests in that
@@ -2179,7 +2184,9 @@ suite. The default version keeps track of the stack of tests in the
 breadcrumb functions, as the defaults do, then you will need to call
 `reporter_start()` to keep the book keeping in sync.
 
-void (*start_test)(TestReporter *reporter, const char *name)::
+
+`void (*start_test)(TestReporter *reporter, const char *name)`::
+
 At the start of each test *Cgreen* will call this method on the
 reporter with the name of the test being entered. Again, the default
 version keeps track of the stack of tests in the `breadcrumb` pointer
@@ -2187,7 +2194,9 @@ of `TestReporter`. If you make use of the breadcrumb functions, as the
 defaults do, then you will need to call `reporter_start()` to keep the
 book keeping in sync.
 
-void (*show_pass)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)::
+
+`void (*show_pass)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)`::
+
 This method is initially empty as there most reporters see little
 point in reporting passing tests (but you might do), so there is no
 need to chain the call to any other function. Besides the pointer to
@@ -2197,42 +2206,52 @@ additional parameters to substitute into the message. The message
 comes in as `printf()` style format string, and so the variable
 argument list should match the substitutions.
 
-void (*show_fail)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)::
+
+`void (*show_fail)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)`::
+
 The partner of `show_pass()`, and the one you'll likely overload first.
 
-void (*show_incomplete)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)::
+
+`void (*show_incomplete)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)`::
+
 When a test fails to complete, this is the handler that is called. As it's an unexpected
 outcome, no message is received, but we do get the name of the
 test. The text reporter combines this with the breadcrumb to produce
 the exception report.
 
-void (*assert_true)(TestReporter *reporter, const char *file, int line, int result, const char * message, ...)::
-This is not normally
-overridden and is really internal. It is the raw entry point for the
-test messages from the test suite. By default it dispatches the call
-to either `show_pass()` or `show_fail()`.
 
-void (*finish_test)(TestReporter *reporter, const char *file, int line)::
-The counterpart to the `(*start_test)()` call. It is called
-on leaving the test. It needs to be chained to the
-`reporter_finish()` to keep track of the breadcrumb book keeping.
+`void (*assert_true)(TestReporter *reporter, const char *file, int line, int result, const char * message, ...)`::
 
-void (*finish_suite)(TestReporter *reporter, const char *file, int line)::
-The counterpart to the `(*start_suite)()` call called on
-leaving the test suite, and similar to the `(*finish_test)()` if your
-reporter needs a handle on that event too. The default text reporter
-chains both this and `(*finish_test)()` to the same function where it
-figures out if it is the end of the top level suite. If so, it prints
-the familiar summary of passes and fails.
+This is not normally overridden and is really internal. It is the raw
+entry point for the test messages from the test suite. By default it
+dispatches the call to either `show_pass()` or `show_fail()`.
+
+
+`void (*finish_test)(TestReporter *reporter, const char *file, int line)`::
+
+The counterpart to the `(*start_test)()` call. It is called on leaving
+the test. It needs to be chained to the `reporter_finish()` to keep
+track of the breadcrumb book keeping.
+
+
+`void (*finish_suite)(TestReporter *reporter, const char *file, int line)`::
+
+The counterpart to the `(*start_suite)()` call called on leaving the
+test suite, and similar to the `(*finish_test)()` if your reporter
+needs a handle on that event too. The default text reporter chains
+both this and `(*finish_test)()` to the same function where it figures
+out if it is the end of the top level suite. If so, it prints the
+familiar summary of passes and fails.
+
 
 The second block is simply resources and book keeping that the reporter
 can use to liven up the messages...
 
 [horizontal]
-passes:: The number of passes so far.
-failures::  The number of failures generated so far.
-exceptions:: The number of test functions that have failed to complete so far. 
-breadcrumb:: This is a pointer to the list of test names in the stack.
+`passes`:: The number of passes so far.
+`failures`::  The number of failures generated so far.
+`exceptions`:: The number of test functions that have failed to complete so far. 
+`breadcrumb`:: This is a pointer to the list of test names in the stack.
 				
 The `breadcrumb` pointer is different and needs a little explanation.
 Basically it is a stack, analogous to the breadcrumb trail you see on
@@ -2268,9 +2287,16 @@ reentrant.
 The last parts of the `TestReporter` structure are...
 
 [horizontal]
-ipc:: This is an internal structure for handling the messaging between reporter
+`ipc`:: This is an internal structure for handling the messaging between reporter
 and test suite. You shouldn't touch this.
-memo:: By contrast, this is a spare pointer for your own expansion.
+
+`memo`:: By contrast, this is a spare pointer for your own expansion.
+
+`options`:: A pointer to a reporter specific structure that can be
+used to set options. E.g. the textreporter defines the structure
+`TextReporterOptions` which can be used by calling code to define the
+use of colors when printing passes and failures. You set it with
+`set_reporter_options(*void)`.
              
 An example XML reporter
 ~~~~~~~~~~~~~~~~~~~~~~~

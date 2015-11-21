@@ -45,6 +45,7 @@ set(cgreen_SRCS
   assertions.c
   boxed_double.c
   breadcrumb.c
+  cgreen_time.c
   constraint.c
   constraint_syntax_helpers.c
   cute_reporter.c
@@ -65,6 +66,7 @@ set(cgreen_SRCS
 if (UNIX)
   LIST(APPEND cgreen_SRCS 
     posix_cgreen_pipe.c
+    posix_cgreen_time.c
     posix_runner_platform.c
   )
 else(UNIX)

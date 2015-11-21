@@ -9,7 +9,7 @@
 #ifndef O_ASYNC
 #  define O_ASYNC FASYNC
 #  ifndef FASYNC
-#    error "Your POSIX platform does not support ASYNC pipe reads. Please report a bug to cgreen-devel@lists.sf.net"
+#    error "Your POSIX platform does not support ASYNC pipe reads. Please report a bug to http://github.com/cgreen-devs/cgreen/issues"
 #  endif
 #endif
 

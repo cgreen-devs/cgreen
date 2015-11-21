@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cgreen/internal/cgreen_time.h>
 
 #include "runner.h"
 
@@ -55,9 +56,11 @@ int run_single_test(TestSuite *suite, const char *name, TestReporter *reporter) 
 
 static void run_every_test(TestSuite *suite, TestReporter *reporter) {
     int i;
+    uint32_t test_duration;
 
     run_specified_test_if_child(suite, reporter);
 
+    uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
     (*reporter->start_suite)(reporter, suite->name, count_tests(suite));
     for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
@@ -68,12 +71,18 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
             (*suite->teardown)();
         }
     }
+
+    test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
+                                                                  cgreen_time_get_current_milliseconds());
     send_reporter_completion_notification(reporter);
-    (*reporter->finish_suite)(reporter, suite->filename, suite->line);
+    (*reporter->finish_suite)(reporter, suite->filename, suite->line, test_duration);
 }
 
 static void run_named_test(TestSuite *suite, const char *name, TestReporter *reporter) {
     int i;
+    uint32_t test_duration;
+    uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
+
     (*reporter->start_suite)(reporter, suite->name, count_tests(suite));
     for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
@@ -86,16 +95,26 @@ static void run_named_test(TestSuite *suite, const char *name, TestReporter *rep
             (*suite->teardown)();
         }
     }
+
+    test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
+                                                                  cgreen_time_get_current_milliseconds());
+
     send_reporter_completion_notification(reporter);
-    (*reporter->finish_suite)(reporter, suite->filename, suite->line);
+    (*reporter->finish_suite)(reporter, suite->filename, suite->line, test_duration);
 }
 
 
 static void run_test_in_the_current_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter) {
+    uint32_t test_duration;
+    uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
+
     (*reporter->start_test)(reporter, test->name);
     run_the_test_code(suite, test, reporter);
+    test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
+                                                         cgreen_time_get_current_milliseconds());
+
     send_reporter_completion_notification(reporter);
-    (*reporter->finish_test)(reporter, test->filename, test->line, NULL);
+    (*reporter->finish_test)(reporter, test->filename, test->line, NULL, test_duration);
 }
 
 static int per_test_timeout_defined() {

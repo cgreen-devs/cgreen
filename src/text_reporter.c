@@ -21,13 +21,14 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 		const int number_of_tests);
 static void text_reporter_start_test(TestReporter *reporter, const char *name);
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
-		int line, const char *message);
+		int line, const char *message, uint32_t duration_in_milliseconds);
 static void show_fail(TestReporter *reporter, const char *file, int line,
 		const char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *file, int line,
 		const char *message, va_list arguments);
 static void show_breadcrumb(const char *name, void *memo);
-static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line);
+static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line,
+									   uint32_t duration_in_milliseconds);
 
 TestReporter *create_text_reporter(void) {
 	TestReporter *reporter = create_reporter();
@@ -60,26 +61,47 @@ static void text_reporter_start_test(TestReporter *reporter, const char *name) {
 }
 
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
-		int line, const char *message) {
-	reporter_finish(reporter, filename, line, message);
+		int line, const char *message, uint32_t duration_in_milliseconds) {
+	reporter_finish(reporter, filename, line, message, duration_in_milliseconds);
 }
 
-static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line) {
+
+static void format_count(char *buff, int count, const char *name, const char *color, const char *plural, bool use_colors) {
+    const char *color_on = use_colors?color:"";
+    const char *color_off = use_colors?RESET:"";
+    sprintf(buff, "%s%d %s%s%s", count>0?color_on:"", count, name, count==1?"":plural, color_off);
+}
+
+static char *format_passes(int passes, bool use_colors) {
+    static char buff[100];
+    format_count(buff, passes, "pass", GREEN, "es", use_colors);
+    return buff;
+}
+
+static char *format_failures(int failures, bool use_colors) {
+    static char buff[100];
+    format_count(buff, failures, "failure", RED, "s", use_colors);
+    return buff;
+}
+
+static char *format_exceptions(int exceptions, bool use_colors) {
+    static char buff[100];
+    format_count(buff, exceptions, "exception", MAGENTA, "s", use_colors);
+    return buff;
+}
+
+static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line, uint32_t duration_in_milliseconds) {
 	const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb);
+    bool use_colors = reporter->options && ((TextReporterOptions *)reporter->options)->use_colours;
 
-    reporter_finish_suite(reporter, file, line);
+    reporter_finish_suite(reporter, file, line, duration_in_milliseconds);
 
-    if (reporter->options && ((TextReporterOptions *)reporter->options)->use_colours)
-        printf("Completed \"%s\": %s%d pass%s%s, %s%d failure%s%s, %s%d exception%s%s.\n",
-               name,
-			   (reporter->passes > 0) ? GREEN : "", reporter->passes, reporter->passes == 1 ? "" : "es", RESET, 
-               (reporter->failures > 0) ? RED : "", reporter->failures, reporter->failures == 1 ? "" : "s", RESET,
-               (reporter->exceptions > 0) ? MAGENTA : "", reporter->exceptions, reporter->exceptions == 1 ? "" : "s", RESET);
-    else
-        printf("Completed \"%s\": %d pass%s, %d failure%s, %d exception%s.\n",
-               name, reporter->passes, reporter->passes == 1 ? "" : "es",
-               reporter->failures, reporter->failures == 1 ? "" : "s",
-               reporter->exceptions, reporter->exceptions == 1 ? "" : "s");
+    printf("Completed \"%s\": %s, %s, %s in %dms.\n",
+           name,
+           format_passes(reporter->passes, use_colors),
+           format_failures(reporter->failures, use_colors),
+           format_exceptions(reporter->exceptions, use_colors),
+           duration_in_milliseconds);
 }
 
 static void show_fail(TestReporter *reporter, const char *file, int line,

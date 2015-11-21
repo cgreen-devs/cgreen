@@ -143,5 +143,5 @@ constraint_messages_tests.c: Exception: FailureMessage -> increments_exception_c
 constraint_messages_tests.c: Exception: FailureMessage -> increments_exception_count_when_throwing 
 	Test terminated unexpectedly, likely from a non-standard exception or Posix signal
 
-Completed "FailureMessage": 0 passes, 32 failures, 3 exceptions.
-Completed "constraint_messages": 0 passes, 32 failures, 3 exceptions.
+Completed "FailureMessage": 0 passes, 32 failures, 3 exceptions in 0ms.
+Completed "constraint_messages": 0 passes, 32 failures, 3 exceptions in 0ms.
