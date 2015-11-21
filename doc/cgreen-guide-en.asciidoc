@@ -54,10 +54,10 @@ research project at Wordtracker and created by Marcus Baker.
 Cgreen - Vanilla or Chocolate?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Test driven development (TDD) catched on when the JUnit framework for
-Java spread to other langauges, giving us a family of xUnit
-tools. *Cgreen* was born in this wave and have many similarities to
-the xUnit family.
+Test driven development (TDD) really catched on when the JUnit
+framework for Java spread to other langauges, giving us a family of
+xUnit tools. *Cgreen* was born in this wave and have many similarities
+to the xUnit family.
 
 But TDD evolved over time and modern thinking and practice is more
 along the lines of BDD, an acronym for Behaviour Driven Development,
@@ -549,13 +549,13 @@ The above example, as well as most of this guide, shows how to uses
 quite simple. If you have installed the *Cgreen* library for C{pp} all you
 have to do is
 
-  * Place your tests in the `cgreen` name space by surrounding them
-    with `namespace cgreen {}`
+  * Use the `cgreen` name space by adding `using namespace cgreen;` at
+    the beginning of the file with your tests
 
   * Use the C{pp} version of the library when linking (`-lcgreen{pp}` or
     something similar)
 
-There is one extra feature when you use C++, the `assert_throws` function.
+There is also one extra feature when you use C++, the `assert_throws` function.
 
 Building Cgreen test suites
 ---------------------------
