@@ -305,13 +305,10 @@ static int register_test(TestItem *test_items, int maximum_number_of_tests, char
 
 
 
-#if defined(__CYGWIN__) || defined(__APPLE__)
 // Cygwin and MacOSX nm lists external names with a leading '_'
 // which dlsym() doesn't want, so we'll include the '_' in the separator
-#  define NM_OUTPUT_COLUMN_SEPARATOR "D _"
-#else
-#  define NM_OUTPUT_COLUMN_SEPARATOR "D "
-#endif
+#define NM_OUTPUT_COLUMN_SEPARATOR1 " D _"
+#define NM_OUTPUT_COLUMN_SEPARATOR2 " D "
 
 /*----------------------------------------------------------------------*/
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
@@ -334,7 +331,13 @@ static int discover_tests_in(const char* test_library, TestItem* test_items, con
     char line[1024];
     while (fgets(line, sizeof(line)-1, nm_output_pipe) != NULL) {
         if (is_cgreen_spec(line)) {
-            char *specification_name = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR) + strlen(NM_OUTPUT_COLUMN_SEPARATOR);
+            char *pos = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR1);
+            int len = strlen(NM_OUTPUT_COLUMN_SEPARATOR1);
+            if (pos == NULL) {
+                pos = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR2);
+                len = strlen(NM_OUTPUT_COLUMN_SEPARATOR2);
+            }
+            char *specification_name = pos + len;
             specification_name[strlen(specification_name) - 1] = 0; /* remove newline */
             if (verbose) {
                 char *suite_name = context_name_from_specname(specification_name);
@@ -348,8 +351,8 @@ static int discover_tests_in(const char* test_library, TestItem* test_items, con
             if (register_test(test_items, maximum_number_of_test_items, specification_name) < 0) {
 		ret = -1;
 		break;
-	    }
-        }
+	    }}
+        
     }
 
     pclose(nm_output_pipe);
