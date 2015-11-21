@@ -83,7 +83,7 @@ If there is no licence agreement with this package please download
 a version from the location above. You must read and accept that
 licence to use this software. The file is titled simply LICENSE.
 
-## The Longer Version
+## The Original, Longer Version
 
 What is it? It's a framework for unit testing, written in C. A tool
 for C developers writing tests of their own code.
@@ -107,10 +107,10 @@ The other main extra feature is the support for writing mock
 callbacks. This includes generating sequences for return values
 or parameter expectations.
 
-Feedback and queries should be sent to the mail list at Sourceforge:
-cgreen-users@lists.sourceforge.net
+Feedback, queries and request should be put to the cgreen developers through
+https://github.com/cgreen-devs/cgreen.
 
-This project would not have happened without the generous
+The initial project would not have happened without the generous
 financial support of the Wordtracker keyword tool...
 http://www.wordtracker.com/
 

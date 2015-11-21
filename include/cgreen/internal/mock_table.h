@@ -35,7 +35,7 @@
 
 //mock1 works for 1 or 0
 #define mock1(test_reporter, function_name, mock_file, mock_line, arguments_string, ...)\
-  mock_(test_reporter, function_name, mock_file, mock_line, arguments_string, __VA_ARGS__)
+    mock_(test_reporter, function_name, mock_file, mock_line, arguments_string, (intptr_t)__VA_ARGS__)
 
 #define PP_RSEQ_N() \
 	mock63, mock62, mock61, mock60, mock59, mock58, mock57, mock56, mock55, mock54,\
