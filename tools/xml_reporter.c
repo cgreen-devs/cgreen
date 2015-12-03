@@ -118,7 +118,7 @@ static void xml_reporter_finish_test(TestReporter *reporter, const char *filenam
                                      uint32_t duration_in_milliseconds) {
     FILE *out = file_stack[file_stack_p-1];
     reporter_finish(reporter, filename, line, message, duration_in_milliseconds);
-    fprintf(out, " time=\"%.3f\">\n", (double)duration_in_milliseconds/(double)1000);
+    fprintf(out, " time=\"%.5f\">\n", (double)duration_in_milliseconds/(double)1000);
     indent(out, reporter);
     fprintf(out, "</testcase>\n");
     fflush(out);
@@ -129,7 +129,8 @@ static void xml_reporter_finish_suite(TestReporter *reporter, const char *filena
     FILE *out = file_stack[--file_stack_p];
     reporter_finish_suite(reporter, filename, line, duration_in_milliseconds);
 
-    // TODO: Here we should backpatch the time for the suite
+    // TODO: Here we should backpatch the time for the suite but that's not
+    // exactly necessary as Jenkins, at least, seems to sum it up automatically
     indent(out, reporter);
     fprintf(out, "</testsuite>\n");
     fclose(out);
