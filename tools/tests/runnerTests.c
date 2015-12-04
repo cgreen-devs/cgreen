@@ -139,6 +139,76 @@ Ensure(Runner, can_add_test_to_the_suite_for_its_context) {
     destroy_context_suites(suite_list);
 }
 
+Ensure(Runner, can_sort_an_empty_list_of_tests) {
+    TestItem test_items[] = {
+        {NULL, NULL, NULL}
+    };
+
+    sort_test_items(test_items);
+    assert_that(test_items[0].specification_name, is_null);
+}
+
+Ensure(Runner, can_sort_a_list_of_a_single_tests) {
+    TestItem test_items[] = {
+        {(char *)"", (char *)"Context1", (char *)"Test1"},
+        {NULL, NULL, NULL}
+    };
+
+    sort_test_items(test_items);
+    assert_that(test_items[0].test_name, is_equal_to_string("Test1"));
+}
+
+Ensure(Runner, can_sort_a_list_of_two_unordered_tests) {
+    TestItem test_items[] = {
+        {(char *)"", (char *)"Context1", (char *)"Test2"},
+        {(char *)"", (char *)"Context1", (char *)"Test1"},
+        {NULL, NULL, NULL}
+    };
+
+    sort_test_items(test_items);
+    assert_that(test_items[0].test_name, is_equal_to_string("Test1"));
+    assert_that(test_items[1].test_name, is_equal_to_string("Test2"));
+}
+
+Ensure(Runner, can_sort_an_ordered_list_of_two_tests) {
+    TestItem test_items[] = {
+        {(char *)"", (char *)"Context1", (char *)"Test1"},
+        {(char *)"", (char *)"Context1", (char *)"Test2"},
+        {NULL, NULL, NULL}
+
+    };
+
+    sort_test_items(test_items);
+    assert_that(test_items[0].test_name, is_equal_to_string("Test1"));
+    assert_that(test_items[1].test_name, is_equal_to_string("Test2"));
+}
+
+Ensure(Runner, can_sort_an_unordered_list_of_tests) {
+    TestItem test_items[] = {
+        {(char *)"", (char *)"Context1", (char *)"Test9"},
+        {(char *)"", (char *)"Context1", (char *)"Test6"},
+        {(char *)"", (char *)"Context1", (char *)"Test3"},
+        {(char *)"", (char *)"Context1", (char *)"Test1"},
+        {(char *)"", (char *)"Context1", (char *)"Test5"},
+        {(char *)"", (char *)"Context1", (char *)"Test8"},
+        {(char *)"", (char *)"Context1", (char *)"Test7"},
+        {(char *)"", (char *)"Context1", (char *)"Test4"},
+        {(char *)"", (char *)"Context1", (char *)"Test2"},
+        {NULL, NULL, NULL}
+
+    };
+
+    sort_test_items(test_items);
+    assert_that(test_items[0].test_name, is_equal_to_string("Test1"));
+    assert_that(test_items[1].test_name, is_equal_to_string("Test2"));
+    assert_that(test_items[2].test_name, is_equal_to_string("Test3"));
+    assert_that(test_items[3].test_name, is_equal_to_string("Test4"));
+    assert_that(test_items[4].test_name, is_equal_to_string("Test5"));
+    assert_that(test_items[5].test_name, is_equal_to_string("Test6"));
+    assert_that(test_items[6].test_name, is_equal_to_string("Test7"));
+    assert_that(test_items[7].test_name, is_equal_to_string("Test8"));
+    assert_that(test_items[8].test_name, is_equal_to_string("Test9"));
+}
 
 /* vim: set ts=4 sw=4 et cindent: */
 /* Local variables: */

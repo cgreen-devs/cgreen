@@ -136,8 +136,8 @@ static void add_test_to_context(TestSuite *parent, ContextSuite **context_suites
     TestSuite *suite_for_context = find_suite_for_context(*context_suites, context_name);
 
     if (suite_for_context == NULL) {
-	*context_suites = add_new_context_suite(parent, context_name, *context_suites);
-	suite_for_context = (*context_suites)->suite;
+        *context_suites = add_new_context_suite(parent, context_name, *context_suites);
+        suite_for_context = (*context_suites)->suite;
     }
     add_test_(suite_for_context, test_name, test);
 }
@@ -360,6 +360,30 @@ static int discover_tests_in(const char* test_library, TestItem* test_items, con
 }
 
 
+/*----------------------------------------------------------------------*/
+void sort_test_items(TestItem test_items[]) {
+    int count;
+
+    for (count = 0; test_items[count].specification_name != NULL; count++);
+    if (count > 1) {
+        bool swap = true;
+        while (swap) {
+            int i;
+            swap = false;
+            for (i=0; test_items[i+1].specification_name != NULL; i++) {
+                if (strcmp(test_items[i].test_name, test_items[i+1].test_name) > 0) {
+                    TestItem temp;
+                    swap = true;
+                    temp = test_items[i];
+                    test_items[i] = test_items[i+1];
+                    test_items[i+1] = temp;
+                }
+            }
+        }
+    }
+}
+
+
 /*======================================================================*/
 int runner(TestReporter *reporter, const char *test_library_name,
            const char *suite_name, const char *test_name,
@@ -383,11 +407,12 @@ int runner(TestReporter *reporter, const char *test_library_name,
         printf("Discovered %d test(s)\n", count(discovered_tests));
 
     if (!dont_run) {
+        sort_test_items(discovered_tests);
         if (verbose)
             printf("Opening [%s]", test_library_name);
         test_library_handle = dlopen(test_library_name, RTLD_NOW);
         if (test_library_handle == NULL) {
-            fprintf (stderr, "\nERROR: dlopen failure (error: %s)\n", dlerror());
+            fprintf(stderr, "\nERROR: dlopen failure when trying to run '%s' (error: %s)\n", test_library_name, dlerror());
             status = 2;
         } else {
             status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
