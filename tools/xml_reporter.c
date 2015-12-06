@@ -80,12 +80,15 @@ static void xml_reporter_start_test(TestReporter *reporter, const char *testname
     fprintf(out, "<testcase classname=\"");
     int segment_count = reporter->breadcrumb->depth - 1;
     walk_breadcrumb(reporter->breadcrumb, pathprinter, &segment_count);
-    fprintf(out, "\" name=\"%s\">\n", testname);
+
+    // Don't terminate the XML-node now so that we can add the duration later
+    fprintf(out, "\" name=\"%s\"", testname);
     reporter_start(reporter, testname);
 }
 
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     FILE *out = file_stack[file_stack_p-1];
+    fprintf(out, ">\n");
     indent(out, reporter);
     fprintf(out, "<failure message=\"");
     vfprintf(out, message, arguments);
@@ -99,6 +102,7 @@ static void xml_show_fail(TestReporter *reporter, const char *file, int line, co
 
 static void xml_show_incomplete(TestReporter *reporter, const char *filename, int line, const char *message, va_list arguments) {
     FILE *out = file_stack[file_stack_p-1];
+    fprintf(out, ">\n");
     indent(out, reporter);
     fprintf(out, "<error type=\"Fatal\" message=\"");
     vfprintf(out, message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
@@ -114,6 +118,7 @@ static void xml_reporter_finish_test(TestReporter *reporter, const char *filenam
                                      uint32_t duration_in_milliseconds) {
     FILE *out = file_stack[file_stack_p-1];
     reporter_finish(reporter, filename, line, message, duration_in_milliseconds);
+    fprintf(out, " time=\"%.5f\">\n", (double)duration_in_milliseconds/(double)1000);
     indent(out, reporter);
     fprintf(out, "</testcase>\n");
     fflush(out);
@@ -123,6 +128,9 @@ static void xml_reporter_finish_suite(TestReporter *reporter, const char *filena
                                       uint32_t duration_in_milliseconds) {
     FILE *out = file_stack[--file_stack_p];
     reporter_finish_suite(reporter, filename, line, duration_in_milliseconds);
+
+    // TODO: Here we should backpatch the time for the suite but that's not
+    // exactly necessary as Jenkins, at least, seems to sum it up automatically
     indent(out, reporter);
     fprintf(out, "</testsuite>\n");
     fclose(out);
