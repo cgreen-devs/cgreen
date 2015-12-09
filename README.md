@@ -110,12 +110,10 @@ or parameter expectations.
 Feedback, queries and request should be put to the cgreen developers through
 https://github.com/cgreen-devs/cgreen.
 
-The initial project would not have happened without the generous
+This tool is basically a spin off from a research project at
+Wordtracker and would not have happened without the generous
 financial support of the Wordtracker keyword tool...
 http://www.wordtracker.com/
-
-This tool is basically a spin off from a research project at
-Wordtracker.
 
 Substantial inital work by Marcus Baker <marcus@lastcraft.com>. Recent
 additions by Matt Hargett <matt@use.net>, Thomas Nilsson
