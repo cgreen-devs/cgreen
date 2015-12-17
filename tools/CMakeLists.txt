@@ -1,6 +1,6 @@
 project(cgreen-runner C)
 
-include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${CMAKE_BINARY_DIR})
+include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${PROJECT_BINARY_DIR})
 
 remove_definitions(-Weffc++)
 add_definitions(-std=gnu99)

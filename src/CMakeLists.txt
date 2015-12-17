@@ -9,19 +9,19 @@ if (UNIX)
 endif(UNIX)
 
 set(CGREEN_PUBLIC_INCLUDE_DIRS
-  ${CMAKE_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/../include
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_SOURCE_DIR}
+  ${PROJECT_SOURCE_DIR}/..
   CACHE INTERNAL "cgreen public include directories"
 )
 
 set(CGREEN_PRIVATE_INCLUDE_DIRS
-  ${CMAKE_BINARY_DIR}
+  ${PROJECT_BINARY_DIR}/..
 )
 
 if (MSVC)
   LIST(APPEND CGREEN_PRIVATE_INCLUDE_DIRS
-    ${CMAKE_SOURCE_DIR}/include/cgreen/internal/windows_headers
+    ${PROJECT_SOURCE_DIR}/../include/cgreen/internal/windows_headers
   )
 endif(MSVC)
 

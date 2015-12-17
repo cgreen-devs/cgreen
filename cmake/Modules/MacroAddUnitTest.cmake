@@ -15,7 +15,7 @@ set(CMAKE_MODULE_LINKER_FLAGS_PROFILING " -fprofile-arcs -ftest-coverage" CACHE 
 set(CMAKE_EXEC_LINKER_FLAGS_PROFILING " -fprofile-arcs -ftest-coverage" CACHE STRING "Profiling Linker Flags")
 
 # custom options
-configure_file(tests/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake COPYONLY)
+configure_file(tests/CTestCustom.cmake ${PROJECT_BINARY_DIR}/CTestCustom.cmake COPYONLY)
 
 macro (MACRO_ADD_UNIT_TEST _testName _testSource)
   add_executable(${_testName} ${_testSource})

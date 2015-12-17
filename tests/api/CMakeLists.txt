@@ -37,9 +37,9 @@ else (WITH_CXX)
 endif (WITH_CXX)
 
 #macro_add_test(NAME api_compilation_test
-#              COMMAND ${CMAKE_SOURCE_DIR}/tools/compare_test_output_to_expected
-#                      ${CMAKE_BINARY_DIR}/tools                       # Where is cgreen-runner?
+#              COMMAND ${PROJECT_SOURCE_DIR}/tools/compare_test_output_to_expected
+#                      ${PROJECT_BINARY_DIR}/tools                       # Where is cgreen-runner?
 #                      $<TARGET_FILE_NAME:${CGREEN_API_TEST_LIBRARY}>  # Library to run
-#                      ${CMAKE_SOURCE_DIR}                             # Remove lines with these from output
+#                      ${PROJECT_SOURCE_DIR}                             # Remove lines with these from output
 #                      ${CGREEN_API_TEST_LIBRARY}                      # Normalized library name
 #                      ${CMAKE_CURRENT_SOURCE_DIR})                    # Where is the expected output?

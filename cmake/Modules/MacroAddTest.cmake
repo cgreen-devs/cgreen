@@ -9,6 +9,6 @@
 macro (macro_add_test)
   add_test(${ARGN})
   if (CYGWIN OR WIN32)
-    set_tests_properties(${ARGV1} PROPERTIES ENVIRONMENT PATH=${CMAKE_BINARY_DIR}/src:$ENV{PATH})
+    set_tests_properties(${ARGV1} PROPERTIES ENVIRONMENT PATH=${PROJECT_BINARY_DIR}/src:$ENV{PATH})
   endif ()
 endmacro(macro_add_test)

@@ -6,13 +6,13 @@ endif (WITH_CXX)
 
 set(CGREEN_TEST_INCLUDE_DIRS
   ${CGREEN_PUBLIC_INCLUDE_DIRS} 
-  ${CMAKE_BINARY_DIR}
+  ${PROJECT_BINARY_DIR}
 )
 
 
 if (MSVC)
   LIST(APPEND CGREEN_TEST_INCLUDE_DIRS
-    ${CMAKE_SOURCE_DIR}/include/cgreen/internal/windows_headers
+    ${PROJECT_SOURCE_DIR}/include/cgreen/internal/windows_headers
   )
 endif(MSVC)
 
@@ -117,9 +117,9 @@ set(IGNORE_SOURCE_PATH_REGEX s%${CMAKE_CURRENT_SOURCE_DIR}/%%g)
 
 macro_add_test(
     NAME constraint_messsages
-    COMMAND ${CMAKE_SOURCE_DIR}/tools/cgreen_runner_output_diff
+    COMMAND ${PROJECT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
             # Run the runner in directory
-            ${CMAKE_BINARY_DIR}/tools
+            ${PROJECT_BINARY_DIR}/../tools
             # .. on library
             $<TARGET_FILE_NAME:${constraint_messages_library}>
             # ... storing the output in an output file with basename
@@ -133,9 +133,9 @@ macro_add_test(
 
 macro_add_test(
     NAME mock_messsages
-    COMMAND ${CMAKE_SOURCE_DIR}/tools/cgreen_runner_output_diff
+    COMMAND ${PROJECT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
             # Run the runner in directory
-            ${CMAKE_BINARY_DIR}/tools
+            ${PROJECT_BINARY_DIR}/../tools
             # .. on library
             $<TARGET_FILE_NAME:${mock_messages_library}>
             # ... storing the output in an output file with basename
@@ -147,9 +147,9 @@ macro_add_test(
 )
 
 macro_add_test(NAME failure_messages
-    COMMAND env "CGREEN_PER_TEST_TIMEOUT=1" ${CMAKE_SOURCE_DIR}/tools/cgreen_runner_output_diff
+    COMMAND env "CGREEN_PER_TEST_TIMEOUT=1" ${PROJECT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
             # Run the runner in directory
-            ${CMAKE_BINARY_DIR}/tools
+            ${PROJECT_BINARY_DIR}/../tools
             # .. on library
             $<TARGET_FILE_NAME:${failure_messages_library}>
             # ... storing the output in an output file with basename
