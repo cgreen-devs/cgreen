@@ -3,8 +3,8 @@ Linux: [![Build Status](https://travis-ci.org/cgreen-devs/cgreen.svg?branch=mast
 
 [![Coverage Status](https://coveralls.io/repos/cgreen-devs/cgreen/badge.svg?branch=master&service=github)](https://coveralls.io/github/cgreen-devs/cgreen?branch=master)
 
-Cgreen - Modern Unit Test and Mocking Framework for C and C++
-=============================================================
+Cgreen - The Modern Unit Test and Mocking Framework for C and C++
+=================================================================
 
 Do you TDD? In C? Maybe you want to have your tests read out in a
 fluent fashion? Like this
