@@ -1,6 +1,5 @@
 
 Linux: [![Build Status](https://travis-ci.org/cgreen-devs/cgreen.svg?branch=master)](https://travis-ci.org/cgreen-devs/cgreen)
-Cygwin: [![Build Status](http://ci.alanif.se:8080/buildStatus/icon?job=Cgreen)](http://ci.alanif.se:8080/job/Cgreen/)
 
 [![Coverage Status](https://coveralls.io/repos/cgreen-devs/cgreen/badge.svg?branch=master&service=github)](https://coveralls.io/github/cgreen-devs/cgreen?branch=master)
 
