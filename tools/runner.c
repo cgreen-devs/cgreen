@@ -58,12 +58,6 @@ static void destroy_context_suites(ContextSuite *context_suite) {
 
 
 /*----------------------------------------------------------------------*/
-static bool is_cgreen_spec(const char* line) {
-    return strstr(line, CGREEN_SPEC_PREFIX) != NULL;
-}
-
-
-/*----------------------------------------------------------------------*/
 static char *context_name_of(const char* symbolic_name) {
     char *context_name;
 
@@ -310,6 +304,27 @@ static int register_test(TestItem *test_items, int maximum_number_of_tests, char
 #define NM_OUTPUT_COLUMN_SEPARATOR1 " D _"
 #define NM_OUTPUT_COLUMN_SEPARATOR2 " D "
 
+
+static char *name_start(const char *line) {
+    char *pos = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR1);
+    if (pos == NULL) {
+        pos = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR2);
+        if (pos == NULL)
+            return NULL;
+        else
+            return pos+strlen(NM_OUTPUT_COLUMN_SEPARATOR2);
+    } else
+        return pos+strlen(NM_OUTPUT_COLUMN_SEPARATOR1);
+}
+
+
+/*----------------------------------------------------------------------*/
+static bool is_cgreen_spec(const char *line) {
+    return strstr(line, CGREEN_SPEC_PREFIX) != NULL
+        && name_start(line) != NULL;
+}
+
+
 /*----------------------------------------------------------------------*/
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
 // XXX: but nm is more portable across object formats...
@@ -331,13 +346,7 @@ static int discover_tests_in(const char* test_library, TestItem* test_items, con
     char line[1024];
     while (fgets(line, sizeof(line)-1, nm_output_pipe) != NULL) {
         if (is_cgreen_spec(line)) {
-            char *pos = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR1);
-            int len = strlen(NM_OUTPUT_COLUMN_SEPARATOR1);
-            if (pos == NULL) {
-                pos = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR2);
-                len = strlen(NM_OUTPUT_COLUMN_SEPARATOR2);
-            }
-            char *specification_name = pos + len;
+            char *specification_name = name_start(line);
             specification_name[strlen(specification_name) - 1] = 0; /* remove newline */
             if (verbose) {
                 char *suite_name = context_name_from_specname(specification_name);
@@ -349,10 +358,10 @@ static int discover_tests_in(const char* test_library, TestItem* test_items, con
                 free(function_name);
             }
             if (register_test(test_items, maximum_number_of_test_items, specification_name) < 0) {
-		ret = -1;
-		break;
-	    }}
-        
+                ret = -1;
+                break;
+            }
+        }
     }
 
     pclose(nm_output_pipe);
