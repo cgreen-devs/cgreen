@@ -1,9 +1,9 @@
 # This Makefile is copied from the cgreen top directory (where it is
 # named Makefile.build) and put in a subdirectory called 'build' where
-# builds are made This Makefile then automatically creates
-# subdirectories for C and C++ builds configuring them using the cmake
-# command. Once created you can always tweak the cmake setup as with
-# any cmake build directory
+# Cmake out of source builds are made. This Makefile then
+# automatically creates subdirectories for C and C++ builds
+# configuring them using the cmake command. Once created you can
+# always tweak the cmake setup as with any cmake build directory.
 
 all: build-c build-c++
 	for d in build-* ; do cd $$d; make ; cd .. ; done
