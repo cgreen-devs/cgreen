@@ -300,22 +300,19 @@ static int register_test(TestItem *test_items, int maximum_number_of_tests, char
 
 
 // Cygwin and MacOSX nm lists external names with a leading '_'
-// which dlsym() doesn't want, so we'll include the '_' in the type field
-// Note that because of the overlap we need to match them in this order
-#define NM_OUTPUT_TYPE_FIELD1 " D _"
-#define NM_OUTPUT_TYPE_FIELD2 " D "
+// which dlsym() doesn't want, so we'll have to remove that
+#define NM_SYMBOL_TYPE_FIELD " D "
 
 
+/*----------------------------------------------------------------------*/
 static char *name_start(const char *line) {
-    char *pos = strstr(line, NM_OUTPUT_TYPE_FIELD1);
-    if (pos == NULL) {
-        pos = strstr(line, NM_OUTPUT_TYPE_FIELD2);
-        if (pos == NULL)
-            return NULL;
-        else
-            return pos+strlen(NM_OUTPUT_TYPE_FIELD2);
-    } else
-        return pos+strlen(NM_OUTPUT_TYPE_FIELD1);
+    char *pos = strstr(line, NM_SYMBOL_TYPE_FIELD);
+    if (pos == NULL)
+        return NULL;
+
+    pos += strlen(NM_SYMBOL_TYPE_FIELD);
+    if (*pos == '_') pos++;
+    return pos;
 }
 
 
