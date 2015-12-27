@@ -435,10 +435,10 @@ void clear_mocks(void) {
 
 static void show_breadcrumb(const char *name, void *memo) {
 	if (*(int *) memo > 1) {
-		printf("-> ");
+		fprintf(stderr, "-> ");
 	}
 	if (*(int *) memo > 0) {
-		printf("%s ", name);
+		fprintf(stderr, "%s ", name);
 	}
 	(*(int *) memo)++;
 }
@@ -450,22 +450,22 @@ void print_learned_mocks(void) {
 
 	walk_breadcrumb(breadcrumb, &show_breadcrumb, (void *) &i);
     
-    printf(": Learned mocks are\n");
+    fprintf(stderr, ": Learned mocks are\n");
 
     if (cgreen_vector_size(learned_mock_calls) == 0) {
-        printf("\t<none>\n");
+        fprintf(stderr, "\t<none>\n");
         return;
     }
 
     for (e = 0; e < cgreen_vector_size(learned_mock_calls); e++) {
         RecordedExpectation *expectation = (RecordedExpectation*)cgreen_vector_get(learned_mock_calls, e);
         const char *function_name = expectation->function;
-        printf("\texpect(%s", function_name);
+        fprintf(stderr, "\texpect(%s", function_name);
         for (c = 0; c < cgreen_vector_size(expectation->constraints); c++) {
             Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, c);
-            printf(", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name, constraint->expected_value);
+            fprintf(stderr, ", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name, constraint->expected_value);
         }
-        printf(");\n");
+        fprintf(stderr, ");\n");
     }
 }
 
@@ -544,7 +544,7 @@ void remove_expectation_for(const char *function) {
         RecordedExpectation *expectation = (RecordedExpectation *)cgreen_vector_get(global_expectation_queue, i);
 
         if (NULL == expectation) {
-            printf("*** CGREEN: NULL expectation found -- maybe a previous incorrect removal?");
+            fprintf(stderr, "*** CGREEN: NULL expectation found -- maybe a previous incorrect removal?");
             continue;
         }
 
