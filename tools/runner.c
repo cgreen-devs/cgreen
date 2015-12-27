@@ -306,7 +306,7 @@ static int register_test(TestItem *test_items, int maximum_number_of_tests, char
 
 /*----------------------------------------------------------------------*/
 static char *name_start(const char *line) {
-    char *pos = strstr(line, NM_SYMBOL_TYPE_FIELD);
+    char *pos = (char *)strstr(line, NM_SYMBOL_TYPE_FIELD);
     if (pos == NULL)
         return NULL;
 
