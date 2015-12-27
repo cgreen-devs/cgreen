@@ -300,26 +300,27 @@ static int register_test(TestItem *test_items, int maximum_number_of_tests, char
 
 
 // Cygwin and MacOSX nm lists external names with a leading '_'
-// which dlsym() doesn't want, so we'll include the '_' in the separator
-#define NM_OUTPUT_COLUMN_SEPARATOR1 " D _"
-#define NM_OUTPUT_COLUMN_SEPARATOR2 " D "
+// which dlsym() doesn't want, so we'll include the '_' in the type field
+// Note that because of the overlap we need to match them in this order
+#define NM_OUTPUT_TYPE_FIELD1 " D _"
+#define NM_OUTPUT_TYPE_FIELD2 " D "
 
 
 static char *name_start(const char *line) {
-    char *pos = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR1);
+    char *pos = strstr(line, NM_OUTPUT_TYPE_FIELD1);
     if (pos == NULL) {
-        pos = strstr(line, NM_OUTPUT_COLUMN_SEPARATOR2);
+        pos = strstr(line, NM_OUTPUT_TYPE_FIELD2);
         if (pos == NULL)
             return NULL;
         else
-            return pos+strlen(NM_OUTPUT_COLUMN_SEPARATOR2);
+            return pos+strlen(NM_OUTPUT_TYPE_FIELD2);
     } else
-        return pos+strlen(NM_OUTPUT_COLUMN_SEPARATOR1);
+        return pos+strlen(NM_OUTPUT_TYPE_FIELD1);
 }
 
 
 /*----------------------------------------------------------------------*/
-static bool is_cgreen_spec(const char *line) {
+static bool is_cgreen_spec_line(const char *line) {
     return strstr(line, CGREEN_SPEC_PREFIX) != NULL
         && name_start(line) != NULL;
 }
@@ -345,7 +346,7 @@ static int discover_tests_in(const char* test_library, TestItem* test_items, con
 
     char line[1024];
     while (fgets(line, sizeof(line)-1, nm_output_pipe) != NULL) {
-        if (is_cgreen_spec(line)) {
+        if (is_cgreen_spec_line(line)) {
             char *specification_name = name_start(line);
             specification_name[strlen(specification_name) - 1] = 0; /* remove newline */
             if (verbose) {
