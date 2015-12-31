@@ -31,11 +31,18 @@ install:
 
 # This is kind of a hack to get a quicker and clearer feedback when developing Cgreen
 # Should be updated when new test libraries or output comparisons are added
-OS=$(shell uname -s)
+
+# Find out if 'uname -o' works, if it does use it, otherwise use 'uname -s'
+UNAMEOEXISTS=$(shell uname -o 1>&2 2>/dev/null; echo $$?)
+ifeq ($(UNAMEOEXISTS),0)
+  OS=$(shell uname -o)
+else
+  OS=$(shell uname -s)
+endif
 ifeq ($(OS),Darwin)
 	PREFIX=lib
 	SUFFIX=.dylib
-else ifeq ($(OS),Cygwin(
+else ifeq ($(OS),Cygwin)
 	PREFIX=cyg
 	SUFFIX=.dll
 else
@@ -48,7 +55,6 @@ unit:
 	for d in c c++ ; do \
 	  cd build/build-$$d ; \
 	  make ; \
-	  tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_tests$(SUFFIX)` ; \
 	  tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
 	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)mock_messages$(SUFFIX)'` mock_messages ../../tests/mock_messages.$$d.expected s%$$DIR%%g ; \
 	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)constraint_messages$(SUFFIX)'` constraint_messages ../../tests/constraint_messages.$$d.expected s%$$DIR%%g ; \
