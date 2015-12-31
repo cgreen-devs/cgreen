@@ -55,9 +55,10 @@ unit:
 	for d in c c++ ; do \
 	  cd build/build-$$d ; \
 	  make ; \
+	  tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_tests$(SUFFIX)` ; \
 	  tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
 	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)mock_messages$(SUFFIX)'` mock_messages ../../tests/mock_messages.$$d.expected s%$$DIR%%g ; \
-	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)constraint_messages$(SUFFIX)'` constraint_messages ../../tests/constraint_messages.$$d.expected s%$$DIR%%g ; \
+	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)constraint_messages$(SUFFIX)'` constraint_messages ../../tests/constraint_messages.$$d.expected s%$$DIR%%g s%Terminated:.+%Terminated%g ; \
 	  CGREEN_PER_TEST_TIMEOUT=1 ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)failure_messages$(SUFFIX)'` failure_messages ../../tests/failure_messages.$$d.expected s%$${DIR}%%g ; \
 	  cd ../.. ; \
 	done
