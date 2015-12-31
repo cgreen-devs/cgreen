@@ -20,6 +20,8 @@ do_sed() {
   mv ${name}.output.tmp ${name}.output
 }
 
+# TODO: This should really be optimized into a single sed invocation...
+
 # - line numbers in error messages
 do_sed s/:[0-9]+:/:/g
 
