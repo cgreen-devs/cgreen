@@ -1,12 +1,6 @@
-if (CGREEN_WITH_CXX)
-  project(tests CXX)
-else()
-  project(tests C)
-endif (CGREEN_WITH_CXX)
-
 set(CGREEN_TEST_INCLUDE_DIRS
   ${CGREEN_PUBLIC_INCLUDE_DIRS} 
-  ${PROJECT_BINARY_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 
@@ -117,9 +111,9 @@ set(IGNORE_SOURCE_PATH_REGEX s%${CMAKE_CURRENT_SOURCE_DIR}/%%g)
 
 macro_add_test(
     NAME constraint_messsages
-    COMMAND ${PROJECT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
             # Run the runner in directory
-            ${PROJECT_BINARY_DIR}/../tools
+            ${CMAKE_CURRENT_BINARY_DIR}/../tools
             # .. on library
             $<TARGET_FILE_NAME:${constraint_messages_library}>
             # ... storing the output in an output file with basename
@@ -133,9 +127,9 @@ macro_add_test(
 
 macro_add_test(
     NAME mock_messsages
-    COMMAND ${PROJECT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
             # Run the runner in directory
-            ${PROJECT_BINARY_DIR}/../tools
+            ${CMAKE_CURRENT_BINARY_DIR}/../tools
             # .. on library
             $<TARGET_FILE_NAME:${mock_messages_library}>
             # ... storing the output in an output file with basename
@@ -147,9 +141,9 @@ macro_add_test(
 )
 
 macro_add_test(NAME failure_messages
-    COMMAND env "CGREEN_PER_TEST_TIMEOUT=1" ${PROJECT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
+    COMMAND env "CGREEN_PER_TEST_TIMEOUT=1" ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
             # Run the runner in directory
-            ${PROJECT_BINARY_DIR}/../tools
+            ${CMAKE_CURRENT_BINARY_DIR}/../tools
             # .. on library
             $<TARGET_FILE_NAME:${failure_messages_library}>
             # ... storing the output in an output file with basename

@@ -4,12 +4,6 @@
 #
 # There is no need to run the tests...
 
-if (CGREEN_WITH_CXX)
-  project(api CXX)
-else()
-  project(api C)
-endif (CGREEN_WITH_CXX)
-
 include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS})
 
 set(api_SRCS

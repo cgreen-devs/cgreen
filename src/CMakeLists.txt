@@ -1,22 +1,16 @@
-if (CGREEN_WITH_CXX)
-  project(cgreen-library CXX)
-else()
-  project(cgreen-library C)
-endif (CGREEN_WITH_CXX)
-
 if (UNIX)
   find_library(MATH_LIB m)
 endif(UNIX)
 
 set(CGREEN_PUBLIC_INCLUDE_DIRS
-  ${PROJECT_SOURCE_DIR}/../include
+  ${PROJECT_SOURCE_DIR}/
+  ${PROJECT_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${PROJECT_SOURCE_DIR}/..
   CACHE INTERNAL "cgreen public include directories"
 )
 
 set(CGREEN_PRIVATE_INCLUDE_DIRS
-  ${PROJECT_BINARY_DIR}/..
+  ${PROJECT_BINARY_DIR}
 )
 
 if (MSVC)

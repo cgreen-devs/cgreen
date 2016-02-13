@@ -1,5 +1,3 @@
-project(cgreen-headers C)
-
 set(cgreen_HDRS
   assertions.h
   boxed_double.h

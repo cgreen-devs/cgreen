@@ -1,10 +1,7 @@
-if (CGREEN_WITH_CXX)
-  project(cgreen-runner-tests CXX)
-else()
-  project(cgreen-runner-tests C)
-endif (CGREEN_WITH_CXX)
-
-include_directories(.. ${CGREEN_PUBLIC_INCLUDE_DIRS} ${PROJECT_BINARY_DIR})
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
+    ${CGREEN_PUBLIC_INCLUDE_DIRS}
+    ${CURRENT_BINARY_DIR})
 
 set(CGREEN_RUNNER_TESTS_LIBRARY
   cgreen_runner_tests

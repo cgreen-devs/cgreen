@@ -8,7 +8,7 @@ if (NOT(CMAKE_MAJOR_VERSION LESS 3) AND APPLE)
   endif()
 endif()
 
-project(cgreen C)
+project(cgreen)
 
 find_package (Threads)
 
