@@ -1,8 +1,8 @@
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
   project(tests CXX)
 else()
   project(tests C)
-endif (WITH_CXX)
+endif (CGREEN_WITH_CXX)
 
 set(CGREEN_TEST_INCLUDE_DIRS
   ${CGREEN_PUBLIC_INCLUDE_DIRS} 
@@ -34,9 +34,9 @@ set(test_library_SRCS
   vector_tests.c
 )
 
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
   set(test_library_SRCS ${test_library_SRCS} cpp_assertion_tests.cpp)
-endif(WITH_CXX)
+endif(CGREEN_WITH_CXX)
 
 set(test_SRCS
   all_tests.c
@@ -68,25 +68,25 @@ set(failure_messages_library
 set(failure_messages_library_SRCS
   failure_messages_tests.c)
 
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
   SET_SOURCE_FILES_PROPERTIES( ${test_SRCS} PROPERTIES LANGUAGE CXX )
   SET_SOURCE_FILES_PROPERTIES( ${constraint_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
   SET_SOURCE_FILES_PROPERTIES( ${mock_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
   SET_SOURCE_FILES_PROPERTIES( ${failure_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
-endif (WITH_CXX)
+endif (CGREEN_WITH_CXX)
 
 add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_library_SRCS})
 add_library(${constraint_messages_library} SHARED ${constraint_messages_library_SRCS})
 add_library(${mock_messages_library} SHARED ${mock_messages_library_SRCS})
 add_library(${failure_messages_library} SHARED ${failure_messages_library_SRCS})
 
-if (WITH_STATIC_LIBRARY)
+if (CGREEN_WITH_STATIC_LIBRARY)
   set(CGREEN_LIBRARY ${CGREEN_STATIC_LIBRARY})
 else ()
   set(CGREEN_LIBRARY ${CGREEN_SHARED_LIBRARY})
 endif()
 
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
   target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
   target_link_libraries(${mock_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
@@ -96,18 +96,18 @@ else()
   target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY})
   target_link_libraries(${mock_messages_library} ${CGREEN_LIBRARY})
   target_link_libraries(${failure_messages_library} ${CGREEN_LIBRARY})
-endif (WITH_CXX)
+endif (CGREEN_WITH_CXX)
 
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
   set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
 else()
   set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
-endif(WITH_CXX)
+endif(CGREEN_WITH_CXX)
 
 macro_add_unit_test(test_cgreen "${test_SRCS}" "${TEST_TARGET_LIBRARIES}")
 macro_add_test(NAME test_cgreen_run_named_test COMMAND test_cgreen integer_one_should_assert_true)
 
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
   set(LANG c++)
 else()
   set(LANG c)

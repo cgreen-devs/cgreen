@@ -36,5 +36,5 @@
 #cmakedefine USE_W32API 1
 
 /* Define if building with gcov instrumentation */
-#cmakedefine INTERNAL_WITH_GCOV
+#cmakedefine CGREEN_INTERNAL_WITH_GCOV
 

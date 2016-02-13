@@ -4,11 +4,11 @@
 #
 # There is no need to run the tests...
 
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
   project(api CXX)
 else()
   project(api C)
-endif (WITH_CXX)
+endif (CGREEN_WITH_CXX)
 
 include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS})
 
@@ -18,9 +18,9 @@ set(api_SRCS
   suites_with_context_api.c
 )
 
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
   SET_SOURCE_FILES_PROPERTIES( ${api_SRCS} PROPERTIES LANGUAGE CXX )
-endif (WITH_CXX)
+endif (CGREEN_WITH_CXX)
 
 
 set(CGREEN_API_TEST_LIBRARY
@@ -30,11 +30,11 @@ set(CGREEN_API_TEST_LIBRARY
 
 add_library(${CGREEN_API_TEST_LIBRARY} SHARED ${api_SRCS})
 
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
    target_link_libraries(${CGREEN_API_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
-else (WITH_CXX)
+else (CGREEN_WITH_CXX)
    target_link_libraries(${CGREEN_API_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
-endif (WITH_CXX)
+endif (CGREEN_WITH_CXX)
 
 #macro_add_test(NAME api_compilation_test
 #              COMMAND ${PROJECT_SOURCE_DIR}/tools/compare_test_output_to_expected

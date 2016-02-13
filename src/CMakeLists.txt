@@ -1,8 +1,8 @@
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
   project(cgreen-library CXX)
 else()
   project(cgreen-library C)
-endif (WITH_CXX)
+endif (CGREEN_WITH_CXX)
 
 if (UNIX)
   find_library(MATH_LIB m)
@@ -80,16 +80,16 @@ else(UNIX)
   endif(WIN32)
 endif(UNIX)
 
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
   set(CGREEN_LIBRARY_NAME cgreen++)
   set(cgreen_SRCS ${cgreen_SRCS} 
     cpp_assertions.cpp
     cpp_constraint.cpp
   )
   SET_SOURCE_FILES_PROPERTIES( ${cgreen_SRCS} PROPERTIES LANGUAGE CXX )
-else (WITH_CXX)
+else (CGREEN_WITH_CXX)
   set(CGREEN_LIBRARY_NAME cgreen)
-endif (WITH_CXX)
+endif (CGREEN_WITH_CXX)
  
 include_directories(
   ${CGREEN_PUBLIC_INCLUDE_DIRS}
@@ -99,7 +99,7 @@ include_directories(
 ### cgreen
 add_library(${CGREEN_SHARED_LIBRARY} SHARED ${cgreen_SRCS})
 
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
     target_link_libraries(
       ${CGREEN_SHARED_LIBRARY} 
       ${CGREEN_LINK_LIBRARIES} 
@@ -107,14 +107,14 @@ if (WITH_CXX)
       ${MATH_LIB} 
       ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
     )
-else (WITH_CXX)
+else (CGREEN_WITH_CXX)
     target_link_libraries(
       ${CGREEN_SHARED_LIBRARY}
       ${CGREEN_LINK_LIBRARIES}
       ${CMAKE_THREAD_LIBS_INIT}
       ${MATH_LIB} 
     )
-endif (WITH_CXX)
+endif (CGREEN_WITH_CXX)
 
 set_target_properties(
   ${CGREEN_SHARED_LIBRARY}
@@ -138,11 +138,11 @@ install(
 
 add_library(${CGREEN_STATIC_LIBRARY} STATIC ${cgreen_SRCS})
 
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
   target_link_libraries(${CGREEN_STATIC_LIBRARY} 
     ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
   )    
-endif (WITH_CXX)
+endif (CGREEN_WITH_CXX)
 
 target_link_libraries(${CGREEN_STATIC_LIBRARY}
   ${CGREEN_LINK_LIBRARIES}

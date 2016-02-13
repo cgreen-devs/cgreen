@@ -60,7 +60,7 @@ if (UNIX)
 endif(UNIX)
 # add_subdirectory(samples)
 
-if (WITH_UNIT_TESTS)
+if (CGREEN_WITH_UNIT_TESTS)
   include(MacroAddUnitTest)
   include(MacroAddTest)
   add_subdirectory(tests)
@@ -68,7 +68,7 @@ if (WITH_UNIT_TESTS)
     # reflective runner only supported on UNIX/binutils platforms
     add_subdirectory(tools/tests)
   endif(UNIX)
-endif (WITH_UNIT_TESTS)
+endif (CGREEN_WITH_UNIT_TESTS)
 
 # add custom 'check' target to run tests with output-on-failure
 if (CMAKE_CONFIGURATION_TYPES)

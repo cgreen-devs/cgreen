@@ -18,7 +18,7 @@ static void run_test_in_its_own_process_child(TestSuite *suite, CgreenTest *test
 
 static void CALLBACK stop(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
-#ifdef INTERNAL_WITH_GCOV
+#ifdef CGREEN_INTERNAL_WITH_GCOV
     if (1)
 #else
     if (NULL != getenv("CGREEN_CHILD_EXIT_WITH_FLUSH"))

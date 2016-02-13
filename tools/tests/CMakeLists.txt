@@ -1,8 +1,8 @@
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
   project(cgreen-runner-tests CXX)
 else()
   project(cgreen-runner-tests C)
-endif (WITH_CXX)
+endif (CGREEN_WITH_CXX)
 
 include_directories(.. ${CGREEN_PUBLIC_INCLUDE_DIRS} ${PROJECT_BINARY_DIR})
 
@@ -14,7 +14,7 @@ set(CGREEN_RUNNER_TESTS_LIBRARY
 set(RUNNER_TESTS_SRCS
   runnerTests.c)
 
-if (WITH_CXX)
+if (CGREEN_WITH_CXX)
    set_source_files_properties( ${RUNNER_TESTS_SRCS} PROPERTIES LANGUAGE CXX)
 else()
    remove_definitions(-Weffc++)
