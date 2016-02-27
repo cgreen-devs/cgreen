@@ -16,13 +16,16 @@ addons:
     packages:
     - cmake
     - lcov
+    - g++
 
 before_install:
   - echo `$CC --version`
+  - echo `$CXX --version`
   - gem install coveralls-lcov
   - if [ "$CC" = "gcc" ]; then export WITH_GCOV=ON; else WITH_GCOV=OFF; fi
 
 script:
+  - print $LANG
   - mkdir -p build
   - cd build
   - cmake -DCGREEN_WITH_CXX:BOOL=$WITH_CXX -DCGREEN_WITH_UNIT_TESTS:BOOL=ON -DBUILD_SHARED_LIBS:BOOL=$BUILD_SHARED_LIBS -DCGREEN_INTERNAL_WITH_GCOV:BOOL=$WITH_GCOV ..
