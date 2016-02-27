@@ -19,6 +19,7 @@ addons:
     - g++
 
 before_install:
+  - export CXX=$CC++
   - echo `$CC --version`
   - echo `$CXX --version`
   - gem install coveralls-lcov
