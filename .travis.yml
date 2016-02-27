@@ -1,10 +1,11 @@
-sudo: false
+1xsudo: false
 language: c
 
 # Build matrix
 compiler:
   - gcc
   - clang
+
 env:
   - BUILD_SHARED_LIBS="ON"
   - BUILD_SHARED_LIBS="OFF"
@@ -19,6 +20,7 @@ addons:
     - g++
 
 before_install:
+  - if [[ $CC==gcc ]] ; then export CXX=g++ ; fi
   - echo `$CC --version`
   - echo `$CXX --version`
   - gem install coveralls-lcov
