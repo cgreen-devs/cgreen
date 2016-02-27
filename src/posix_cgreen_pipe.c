@@ -61,11 +61,11 @@ ssize_t cgreen_pipe_write(int p, const void *buf, size_t count)
         if (errno == EWOULDBLOCK) {
             fprintf(stderr, "\tCGREEN EXCEPTION: Too many assertions within a single test.\n");
         } else if (errno != EPIPE) {
-            fprintf(stderr, "\tCGREEN EXCEPTION: Error when reporting from test case process to reporter\n");
+            fprintf(stderr, "\tCGREEN EXCEPTION: Error when reporting from test case process to reporter.\n");
         }
         raise(SIGPIPE);
         wait(&status); /* Safe-guarding against a signalhandler for SIGPIPE, which
-                          incidentaly the test case for pipe block need to have... */
+                          incidentally the test case for pipe block need to have... */
     }
     return pipe_write_result;
 }

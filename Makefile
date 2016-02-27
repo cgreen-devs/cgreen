@@ -19,6 +19,19 @@ all: build
 test: build
 	cd build; make test
 
+unit:
+	DIR=$$PWD/tests/ ; \
+	for d in c c++ ; do \
+	  cd build/build-$$d ; \
+	  make ; \
+	  tools/cgreen-runner -c `find tests -name *cgreen_tests* -type f -not -name *.a` ; \
+	  tools/cgreen-runner -c `find tools/tests -name *cgreen_runner_tests.* -type f -not -name *.a` ; \
+	  ../../tools/cgreen_runner_output_diff tools `find tests -name '*mock_messages*' -prune -type f -not -name '*.a' -not -name '*.error' -not -name '*.output'` mock_messages ../../tests/mock_messages.$$d.expected s%$$DIR%%g ; \
+	  ../../tools/cgreen_runner_output_diff tools `find tests -name '*constraint_messages*' -prune -type f -not -name '*.a' -not -name '*.error' -not -name '*.output'` constraint_messages ../../tests/constraint_messages.$$d.expected s%$$DIR%%g ; \
+	  CGREEN_PER_TEST_TIMEOUT=1 ../../tools/cgreen_runner_output_diff tools `find tests -name '*failure_messages*' -prune -type f -not -name '*.a' -not -name '*.error' -not -name '*.output'` failure_messages ../../tests/failure_messages.$$d.expected s%$${DIR}%%g ; \
+	  cd ../.. ; \
+	done
+
 clean: build
 	cd build; make clean
 

@@ -1,6 +1,7 @@
 # This subdirectory verifies that the user level api compiles using
 # only the publiced includes by compiling test files refering to that
-# api. Goal is to use, and thus verify, the whole api
+# api. Goal is to reference, and thus verify, the whole api so that
+# unintended changes to the API gets noticed early.
 #
 # There is no need to run the tests...
 
