@@ -21,7 +21,7 @@
 if [[ $_ != $0 ]]; then
    echo "Sourced"
 else
-   echo "Subshell"
+   echo "You should really source this, like in '. cygwin-setup.sh'"
 fi
 
 # And here's the meat

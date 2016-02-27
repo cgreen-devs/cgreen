@@ -73,7 +73,7 @@ Ensure(zero_should_assert_unsigned_long_long_not_equal_to_one) {
     assert_that(x, is_not_equal_to(y));
 }
 
-Ensure( one_should_assert_short_equal_to_one) {
+Ensure(one_should_assert_short_equal_to_one) {
     short x = 1;
     short y = 1;
     assert_equal(x, y);

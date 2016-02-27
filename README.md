@@ -1,11 +1,10 @@
 
 Linux: [![Build Status](https://travis-ci.org/cgreen-devs/cgreen.svg?branch=master)](https://travis-ci.org/cgreen-devs/cgreen)
-Cygwin: [![Build Status](http://ci.alanif.se:8080/buildStatus/icon?job=Cgreen)](http://ci.alanif.se:8080/job/Cgreen/)
 
 [![Coverage Status](https://coveralls.io/repos/cgreen-devs/cgreen/badge.svg?branch=master&service=github)](https://coveralls.io/github/cgreen-devs/cgreen?branch=master)
 
-Cgreen - Modern Unit Test and Mocking Framework for C and C++
-=============================================================
+Cgreen - The Modern Unit Test and Mocking Framework for C and C++
+=================================================================
 
 Do you TDD? In C? Maybe you want to have your tests read out in a
 fluent fashion? Like this
@@ -110,12 +109,10 @@ or parameter expectations.
 Feedback, queries and request should be put to the cgreen developers through
 https://github.com/cgreen-devs/cgreen.
 
-The initial project would not have happened without the generous
+This tool is basically a spin off from a research project at
+Wordtracker and would not have happened without the generous
 financial support of the Wordtracker keyword tool...
 http://www.wordtracker.com/
-
-This tool is basically a spin off from a research project at
-Wordtracker.
 
 Substantial inital work by Marcus Baker <marcus@lastcraft.com>. Recent
 additions by Matt Hargett <matt@use.net>, Thomas Nilsson
