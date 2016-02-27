@@ -88,7 +88,7 @@ void run_specified_test_if_child(TestSuite *suite, TestReporter *reporter){
 }
 
 static void stop(void) {
-#ifdef INTERNAL_WITH_GCOV
+#ifdef CGREEN_INTERNAL_WITH_GCOV
     if (1)
 #else
     if (NULL != getenv("CGREEN_CHILD_EXIT_WITH_FLUSH"))

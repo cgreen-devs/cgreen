@@ -1,6 +1,6 @@
 FIND_PACKAGE(Asciidoctor)
 
-SET(ASCIIDOC_CONFFILE "${CMAKE_SOURCE_DIR}/doc/cgreen_asciidoc.conf")
+SET(ASCIIDOC_CONFFILE "${PROJECT_SOURCE_DIR}/doc/cgreen_asciidoc.conf")
 
 OPTION(WITH_HTML "with HTML output" FALSE)
 OPTION(WITH_PDF "with PDF output" FALSE)

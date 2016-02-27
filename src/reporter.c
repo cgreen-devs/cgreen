@@ -163,8 +163,6 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line, 
     (void)arguments;
 }
 
-static const unsigned int MAX_ASSERTIONS_PER_TEST = 8100;
-
 static void assert_true(TestReporter *reporter, const char *file, int line, int result, const char *message, ...) {
     va_list arguments;
     memset(&arguments, 0, sizeof(va_list));
