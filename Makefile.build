@@ -28,6 +28,6 @@ build-c:
 
 build-c++:
 	mkdir build-c++
-	cd build-c++; cmake -DWITH_CXX:bool=ON ../..
+	cd build-c++; cmake -DCGREEN_WITH_CXX:bool=ON ../..
 
 .SILENT:
