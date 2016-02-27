@@ -264,62 +264,6 @@ Ensure(Mocks, can_stub_an_out_parameter) {
 }
 
 
-/* Expected fail tests follow. */
-/* TODO: put these in a separate suite and validate all tests in said suite fail during 'make check' */
-/*
-Ensure(Mocks, can_declare_function_never_called) {
-    never_expect(sample_mock);
-
-    sample_mock(0, "");
-}
-
-Ensure(Mocks, calls_beyond_expected_sequence_fail_when_mocks_are_strict) {
-    expect(integer_out,
-        will_return(1)
-    );
-
-    expect(integer_out,
-        will_return(2)
-    );
-
-    expect(integer_out,
-        will_return(3)
-    );
-
-    assert_that(integer_out(), is_equal_to(1));
-    assert_that(integer_out(), is_equal_to(2));
-    assert_that(integer_out(), is_equal_to(3));
-    // expected fail
-    assert_that(integer_out(), is_equal_to(3));
-}
-
-Ensure(Mocks, failure_when_no_presets_for_default_strict_mock) {
-    assert_that(integer_out(), is_equal_to(0));
-}
-
-Ensure(Mocks, failure_reported_when_expect_after_never_expect_for_same_function) {
-    never_expect(integer_out);
-
-    expect(integer_out);
-}
-
-Ensure(Mocks, failure_reported_when_expect_after_always_expect_for_same_function) {
-    always_expect(integer_out,
-        will_return(666)
-    );
-
-    expect(integer_out);
-}
-
-Ensure(Mocks, single_uncalled_expectation_fails_tally) {
-    expect(string_out,
-        will_return(5),
-        when(i, is_equal_to(666)),
-        when(s, is_equal_to_string("devil"))
-    );
-}
-*/
-
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();
     add_test_with_context(suite, Mocks, default_return_value_when_no_presets_for_loose_mock);
