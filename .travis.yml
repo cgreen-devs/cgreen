@@ -20,11 +20,7 @@ addons:
     - g++
 
 before_install:
-<<<<<<< HEAD
   - if [[ $CC==gcc ]] ; then export CXX=g++ ; else export CXX=clang++ ; fi
-=======
-  - if [[ $CC==gcc ]] ; then export CXX=g++ ; fi
->>>>>>> 2a70ab6fd368f97714e2b23350b0854c8cdece1a
   - echo `$CC --version`
   - echo `$CXX --version`
   - gem install coveralls-lcov
