@@ -1,4 +1,4 @@
-1xsudo: false
+sudo: false
 language: c
 
 # Build matrix
