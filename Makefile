@@ -61,7 +61,7 @@ unit:
 	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)mock_messages$(SUFFIX)'` \
 		mock_messages ../../tests/mock_messages.$$d.expected s%$$DIR%%g ; \
 	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)constraint_messages$(SUFFIX)'` \
-		constraint_messages ../../tests/constraint_messages.$$d.expected s%$$DIR%%g s%Terminated:.+%Terminated%g ; \
+		constraint_messages ../../tests/constraint_messages.$$d.expected s%$$DIR%%g ; \
 	  CGREEN_PER_TEST_TIMEOUT=1 ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)failure_messages$(SUFFIX)'` \
 		failure_messages ../../tests/failure_messages.$$d.expected s%$${DIR}%%g ; \
 	  cd ../.. ; \

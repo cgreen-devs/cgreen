@@ -1,4 +1,4 @@
-sudo: false
+1xsudo: false
 language: c
 
 # Build matrix
@@ -17,9 +17,12 @@ addons:
     packages:
     - cmake
     - lcov
+    - g++
 
 before_install:
+  - if [[ $CC == gcc ]] ; then export CXX=g++ ; else export CXX=clang++ ; fi
   - echo `$CC --version`
+  - echo `$CXX --version`
   - gem install coveralls-lcov
   - if [ "$CC" = "gcc" ]; then export WITH_GCOV=ON; else WITH_GCOV=OFF; fi
 
