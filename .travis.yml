@@ -5,11 +5,12 @@ language: c
 compiler:
   - gcc
   - clang
+
 env:
-  - BUILD_SHARED_LIBS="ON"
-  - BUILD_SHARED_LIBS="OFF"
-  - WITH_CXX="ON"
-  - WITH_CXX="OFF"
+  - BUILD_SHARED_LIBS="OFF" CGREEN_WITH_CXX="OFF"
+  - BUILD_SHARED_LIBS="ON" CGREEN_WITH_CXX="OFF"
+  - BUILD_SHARED_LIBS="OFF" CGREEN_WITH_CXX="ON"
+  - BUILD_SHARED_LIBS="ON" CGREEN_WITH_CXX="ON"
 
 addons:
   apt:
