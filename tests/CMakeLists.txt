@@ -62,17 +62,26 @@ set(failure_messages_library
 set(failure_messages_library_SRCS
   failure_messages_tests.c)
 
+set(assertion_messages_library
+  assertion_messages
+)
+
+set(assertion_messages_library_SRCS
+  assertion_messages_tests.c)
+
 if (CGREEN_WITH_CXX)
   SET_SOURCE_FILES_PROPERTIES( ${test_SRCS} PROPERTIES LANGUAGE CXX )
   SET_SOURCE_FILES_PROPERTIES( ${constraint_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
   SET_SOURCE_FILES_PROPERTIES( ${mock_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
   SET_SOURCE_FILES_PROPERTIES( ${failure_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
+  SET_SOURCE_FILES_PROPERTIES( ${assertion_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
 endif (CGREEN_WITH_CXX)
 
 add_library(${CGREEN_TEST_LIBRARY} SHARED ${test_library_SRCS})
 add_library(${constraint_messages_library} SHARED ${constraint_messages_library_SRCS})
 add_library(${mock_messages_library} SHARED ${mock_messages_library_SRCS})
 add_library(${failure_messages_library} SHARED ${failure_messages_library_SRCS})
+add_library(${assertion_messages_library} SHARED ${assertion_messages_library_SRCS})
 
 if (CGREEN_WITH_STATIC_LIBRARY)
   set(CGREEN_LIBRARY ${CGREEN_STATIC_LIBRARY})
@@ -85,11 +94,13 @@ if (CGREEN_WITH_CXX)
   target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
   target_link_libraries(${mock_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
   target_link_libraries(${failure_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
+  target_link_libraries(${assertion_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
 else()
   target_link_libraries(${CGREEN_TEST_LIBRARY} ${CGREEN_LIBRARY})
   target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY})
   target_link_libraries(${mock_messages_library} ${CGREEN_LIBRARY})
   target_link_libraries(${failure_messages_library} ${CGREEN_LIBRARY})
+  target_link_libraries(${assertion_messages_library} ${CGREEN_LIBRARY})
 endif (CGREEN_WITH_CXX)
 
 if (CGREEN_WITH_CXX)
@@ -150,6 +161,20 @@ macro_add_test(NAME failure_messages
             ${failure_messages_library}
             # ... then compare it to
             ${CMAKE_CURRENT_SOURCE_DIR}/${failure_messages_library}.${LANG}.expected
+            # ... but execute the following extra SED commands on the output before making the comparison
+            ${IGNORE_SOURCE_PATH_REGEX}
+)
+
+macro_add_test(NAME assertion_messages
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
+            # Run the runner in directory
+            ${CMAKE_CURRENT_BINARY_DIR}/../tools
+            # .. on library
+            $<TARGET_FILE_NAME:${assertion_messages_library}>
+            # ... storing the output in an output file with basename
+            ${assertion_messages_library}
+            # ... then compare it to
+            ${CMAKE_CURRENT_SOURCE_DIR}/${assertion_messages_library}.${LANG}.expected
             # ... but execute the following extra SED commands on the output before making the comparison
             ${IGNORE_SOURCE_PATH_REGEX}
 )

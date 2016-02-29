@@ -18,6 +18,13 @@ Ensure(FailureMessage, for_time_out_in_only_one_second) {
 }
 
 Ensure(FailureMessage, for_CGREEN_PER_TEST_TIMEOUT) {
-    setenv("CGREEN_PER_TEST_TIMEOUT", "2", false);
-    sleep(10);
+    // Setting the environment variable here does not work
+    // It needs to be set before the runner forks
+    //    setenv("CGREEN_PER_TEST_TIMEOUT", "1", true);
+    // so we leave that to the test environment...
+
+    // And fail if there is no environment variable set
+    assert_that(getenv("CGREEN_PER_TEST_TIMEOUT"), is_not_equal_to(NULL));
+    sleep(2);
+    fail_test("This test should have been aborted within CGREEN_PER_TEST_TIMEOUT seconds and not get here.");
 }

@@ -64,6 +64,8 @@ unit:
 		constraint_messages ../../tests/constraint_messages.$$d.expected s%$$DIR%%g ; \
 	  CGREEN_PER_TEST_TIMEOUT=1 ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)failure_messages$(SUFFIX)'` \
 		failure_messages ../../tests/failure_messages.$$d.expected s%$${DIR}%%g ; \
+	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)assertion_messages$(SUFFIX)'` \
+		assertion_messages ../../tests/assertion_messages.$$d.expected s%$${DIR}%%g ; \
 	  cd ../.. ; \
 	done
 

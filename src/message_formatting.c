@@ -50,7 +50,7 @@ bool parameters_are_not_valid_for(Constraint *constraint, intptr_t actual) {
 
 char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
     const char *name_has_incorrect_size_message =
-    		"\t\tWanted to compare contents with [%s], but [%lu] was given for the comparison size.";
+    		"\t\tWanted to compare contents with [%s], but [%ld] was given for the comparison size.";
     const char *null_used_for_compare_message =
             "\t\tWanted to compare contents with [%s], but NULL was used for the pointer we wanted to compare to."
             "\t\tIf you want to explicitly check for null, use the is_null constraint instead.";
@@ -83,11 +83,11 @@ char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
             compared_to_name = constraint->expected_value_name;
         }
 
-        if (constraint->size_of_expected_value <= 0) {
+        if ((long signed)constraint->size_of_expected_value <= 0) {
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
                     name_has_incorrect_size_message,
                     compared_to_name,
-                    (unsigned long)constraint->size_of_expected_value);
+                    (long signed)constraint->size_of_expected_value);
 
             return message;
         }
