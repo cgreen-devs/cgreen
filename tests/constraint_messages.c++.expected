@@ -1,4 +1,4 @@
-Running "constraint_messages" (35 tests)...
+Running "constraint_messages" (36 tests)...
 constraint_messages_tests.c: Failure: FailureMessage -> for_always_followed_by_expectation 
 	Mocked function [some_mock] already has an expectation that it will always be called a certain way; any expectations declared after an always expectation are invalid
 
@@ -46,6 +46,11 @@ constraint_messages_tests.c: Failure: FailureMessage -> for_is_equal_to_double
 	Expected [four_point_five] to [equal double] [three_point_three] within [8] significant figures
 		actual value:	4.500000
 		expected value:	3.300000
+
+constraint_messages_tests.c: Failure: FailureMessage -> for_is_equal_to_hex 
+	Expected [chars[0]] to [equal] [0xbb]
+		actual value:			[0xffffffaa]
+		expected value:			[0xbb]
 
 constraint_messages_tests.c: Failure: FailureMessage -> for_is_equal_to_string 
 	Expected [thirty_three] to [equal string] [fourty_five]
@@ -143,6 +148,6 @@ constraint_messages_tests.c: Exception: FailureMessage -> increments_exception_c
 constraint_messages_tests.c: Exception: FailureMessage -> increments_exception_count_when_throwing 
 	Test terminated unexpectedly, likely from a non-standard exception or Posix signal
 
-Completed "FailureMessage": 0 passes, 32 failures, 3 exceptions in 0ms.
-Completed "constraint_messages": 0 passes, 32 failures, 3 exceptions in 0ms.
+Completed "FailureMessage": 0 passes, 33 failures, 3 exceptions in 0ms.
+Completed "constraint_messages": 0 passes, 33 failures, 3 exceptions in 0ms.
 terminate called without an active exception
