@@ -72,7 +72,10 @@ static void set_contents(Constraint *constraint, const char *function, intptr_t 
 
 
 static const char *default_expected_value_message = "\t\texpected value:\t\t\t[%" PRIdPTR "]";
+static const char *default_actual_value_message = "\n\t\tactual value:\t\t\t[%" PRIdPTR "]";
+static const char *actual_value_message_in_hex = "\n\t\tactual value:\t\t\t[0x%x]";
 
+ 
 Constraint *create_constraint() {
     Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));
     /* TODO: setting this to NULL as an implicit type check :( */
@@ -80,6 +83,7 @@ Constraint *create_constraint() {
     constraint->destroy = &destroy_empty_constraint;
     constraint->failure_message = &failure_message_for;
     constraint->expected_value_name = NULL;
+    constraint->actual_value_message = default_actual_value_message;
     constraint->expected_value_message = default_expected_value_message;
 
     return constraint;
