@@ -225,6 +225,7 @@ TestSuite *constraint_tests() {
     add_test_with_context(suite, Constraint, compare_contents_is_correct_on_larger_than_intptr_array);
     add_test_with_context(suite, Constraint, compare_equal_to_contents_is_false_on_null);
     add_test_with_context(suite, Constraint, compare_not_equal_to_contents_is_false_on_null);
+    add_test_with_context(suite, Constraint, can_compare_to_hex);
 //    add_test_with_context(suite, Constraint, unequal_structs_with_same_value_for_specific_field_compare_true);
 
     return suite;
