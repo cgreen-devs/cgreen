@@ -205,6 +205,12 @@ Ensure(Constraint, compare_not_equal_to_contents_is_false_on_null) {
     destroy_constraint(is_not_equal_to_contents);
 }
 
+Ensure(Constraint, can_compare_to_hex) {
+    char chars[3];
+    memset(chars, 0xaa, sizeof(chars));
+    assert_that((unsigned char)chars[0], is_equal_to_hex(0xaa));
+}
+                                            
 TestSuite *constraint_tests() {
     TestSuite *suite = create_test_suite();
     add_test_with_context(suite, Constraint, default_destroy_clears_state);
