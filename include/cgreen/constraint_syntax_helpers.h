@@ -21,7 +21,7 @@ extern "C" {
  * reasonable way to do it.
  */
 #define is_equal_to(value) create_equal_to_value_constraint((intptr_t)value, #value)
-#define is_equal_to_hex(value) create_equal_to_value_constraint((intptr_t)value, #value)
+#define is_equal_to_hex(value) create_equal_to_hexvalue_constraint((intptr_t)value, #value)
 #define is_not_equal_to(value) create_not_equal_to_value_constraint((intptr_t)value, #value)
 
 #define is_greater_than(value) create_greater_than_value_constraint((intptr_t)value, #value)
