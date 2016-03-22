@@ -5,27 +5,31 @@ language: c
 compiler:
   - gcc
   - clang
+
 env:
-  - BUILD_SHARED_LIBS="ON"
-  - BUILD_SHARED_LIBS="OFF"
-  - WITH_CXX="ON"
-  - WITH_CXX="OFF"
+  - BUILD_SHARED_LIBS="OFF" CGREEN_WITH_CXX="OFF"
+  - BUILD_SHARED_LIBS="ON" CGREEN_WITH_CXX="OFF"
+  - BUILD_SHARED_LIBS="OFF" CGREEN_WITH_CXX="ON"
+  - BUILD_SHARED_LIBS="ON" CGREEN_WITH_CXX="ON"
 
 addons:
   apt:
     packages:
     - cmake
     - lcov
+    - g++
 
 before_install:
-  - echo `$CC --version`
+  - if [[ $CC == gcc ]] ; then export CXX=g++ ; else export CXX=clang++ ; fi
+  - $CC --version
+  - $CXX --version
   - gem install coveralls-lcov
   - if [ "$CC" = "gcc" ]; then export WITH_GCOV=ON; else WITH_GCOV=OFF; fi
 
 script:
   - mkdir -p build
   - cd build
-  - cmake -DWITH_CXX:BOOL=$WITH_CXX -DWITH_UNIT_TESTS:BOOL=ON -DBUILD_SHARED_LIBS:BOOL=$BUILD_SHARED_LIBS -DINTERNAL_WITH_GCOV:BOOL=$WITH_GCOV ..
+  - cmake -DCGREEN_WITH_CXX:BOOL=$CGREEN_WITH_CXX -DCGREEN_WITH_UNIT_TESTS:BOOL=ON -DBUILD_SHARED_LIBS:BOOL=$BUILD_SHARED_LIBS -DCGREEN_INTERNAL_WITH_GCOV:BOOL=$WITH_GCOV ..
   - make -j2
   - ctest --output-on-failure
 

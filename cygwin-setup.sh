@@ -17,10 +17,8 @@
 #
 
 # Ensure that the script is sourced:
-if [[ $_ != $0 ]]; then
-   echo "Sourced. OK."
-else
-   echo "Subshell. To have any effect you must source this file, like '. cygwin-setup.sh'"
+if [[ $_ == $0 ]]; then
+   echo "You should really source this, like in '. cygwin-setup.sh'"
 fi
 
 # And here's the meat

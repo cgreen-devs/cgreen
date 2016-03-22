@@ -19,19 +19,6 @@ all: build
 test: build
 	cd build; make test
 
-unit:
-	DIR=$$PWD/tests/ ; \
-	for d in c c++ ; do \
-	  cd build/build-$$d ; \
-	  make ; \
-	  tools/cgreen-runner -c `find tests -name *cgreen_tests* -type f -not -name *.a` ; \
-	  tools/cgreen-runner -c `find tools/tests -name *cgreen_runner_tests.* -type f -not -name *.a` ; \
-	  ../../tools/cgreen_runner_output_diff tools `find tests -name '*mock_messages*' -prune -type f -not -name '*.a' -not -name '*.error' -not -name '*.output'` mock_messages ../../tests/mock_messages.$$d.expected s%$$DIR%%g ; \
-	  ../../tools/cgreen_runner_output_diff tools `find tests -name '*constraint_messages*' -prune -type f -not -name '*.a' -not -name '*.error' -not -name '*.output'` constraint_messages ../../tests/constraint_messages.$$d.expected s%$$DIR%%g ; \
-	  CGREEN_PER_TEST_TIMEOUT=1 ../../tools/cgreen_runner_output_diff tools `find tests -name '*failure_messages*' -prune -type f -not -name '*.a' -not -name '*.error' -not -name '*.output'` failure_messages ../../tests/failure_messages.$$d.expected s%$${DIR}%%g ; \
-	  cd ../.. ; \
-	done
-
 clean: build
 	cd build; make clean
 
@@ -40,6 +27,47 @@ package: build
 
 install:
 	cd build; make install
+
+
+# This is kind of a hack to get a quicker and clearer feedback when developing Cgreen
+# Should be updated when new test libraries or output comparisons are added
+
+# Find out if 'uname -o' works, if it does use it, otherwise use 'uname -s'
+UNAMEOEXISTS=$(shell uname -o 1>&2 2>/dev/null; echo $$?)
+ifeq ($(UNAMEOEXISTS),0)
+  OS=$(shell uname -o)
+else
+  OS=$(shell uname -s)
+endif
+ifeq ($(OS),Darwin)
+	PREFIX=lib
+	SUFFIX=.dylib
+else ifeq ($(OS),Cygwin)
+	PREFIX=cyg
+	SUFFIX=.dll
+else
+	PREFIX=lib
+	SUFFIX=.so
+endif
+
+unit:
+	DIR=$$PWD/tests/ ; \
+	for d in c c++ ; do \
+	  cd build/build-$$d ; \
+	  make ; \
+	  export PATH=src:$$PATH ; \
+	  tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_tests$(SUFFIX)` ; \
+	  tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
+	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)mock_messages$(SUFFIX)'` \
+		mock_messages ../../tests/mock_messages.$$d.expected s%$$DIR%%g ; \
+	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)constraint_messages$(SUFFIX)'` \
+		constraint_messages ../../tests/constraint_messages.$$d.expected s%$$DIR%%g ; \
+	  CGREEN_PER_TEST_TIMEOUT=1 ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)failure_messages$(SUFFIX)'` \
+		failure_messages ../../tests/failure_messages.$$d.expected s%$${DIR}%%g ; \
+	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)assertion_messages$(SUFFIX)'` \
+		assertion_messages ../../tests/assertion_messages.$$d.expected s%$${DIR}%%g ; \
+	  cd ../.. ; \
+	done
 
 ############# Internal
 

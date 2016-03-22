@@ -10,6 +10,8 @@ lib=$2
 name=$3
 expected=$4
 
+echo "Comparing output for $2 with CGREEN_PER_TEST_TIMEOUT= $CGREEN_PER_TEST_TIMEOUT"
+
 # Run runner on library store output and error
 ${runner_dir}/cgreen-runner ${lib} > ${name}.output 2> ${name}.error
 cat ${name}.error >> ${name}.output
@@ -19,6 +21,8 @@ do_sed() {
   sed -E -e "$1" ${name}.output > ${name}.output.tmp
   mv ${name}.output.tmp ${name}.output
 }
+
+# TODO: This should really be optimized into a single sed invocation...
 
 # - line numbers in error messages
 do_sed s/:[0-9]+:/:/g

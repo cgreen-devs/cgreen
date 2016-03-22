@@ -11,8 +11,8 @@ There are several ways to use Cgreen:
    is the normal way to use Cgreen.
 3) You want to ship working tests with a product and want to bundle Cgreen
    as the test runner.
-4) You are pulling Cgreen directly from subversion on Sourceforge:
-   https://cgreen.svn.sourceforge.net/svnroot/cgreen/trunk/cgreen
+4) You are pulling Cgreen directly from github:
+   git clone git@github.com:cgreen-devs/cgreen.git
 
 We'll walk you through these in order...
 
@@ -40,25 +40,20 @@ through...
 3) ???
 
 4) You will have to carry out some additional steps if you work straight off
-of a Subversion checkout.
+of a Git clone.
 
 We are using the CMake (www.cmake.org) build system. The following
 steps are called "out-of-source building", because we will build all
 the project files outside of the sources directory to completely
 retain the original source tree.
 
-Assuming you have the checked out cgreen sources into a subdirectory
+Assuming you have the cloned cgreen sources into a subdirectory
 "cgreen" in the current directory we want to create a build directory
-parallel to the source directory. (Actually you can create the build
-directory almost anywhere, just use the path to the top source
-directory instead of "../cmake" in the following.)
+parallel to the source directory.
 
-First the build directory:
-    $ mkdir cgreen-build
-    $ cd cgreen-build
-Within this new directory, we let cmake configure the Makefiles
-    $ cmake ../cgreen
-We then get the following make targets:
+The default Makefile will create a separate 'build' directory and inside
+that subdirectories for C and C++. That means that you can just do:
+
     $ make
     $ make test
     $ make install
@@ -71,13 +66,17 @@ To enable any of these use the cmake graphical user interface (CMakeSetup
 on Windows or ccmake on UNIX) to turn these options on or off.
 
 Note on CYGWIN: Cygwin is not a WIN32 platform, but it is a
-DLL-platform where libraries normally goes in the bin directory. I
-have yet to convince CMake to handle this automatically, so to make
-the above work you have two choices:
+DLL-platform where libraries normally goes in the bin directory. Running
+the self-tests handles this automatically but if you want to use the binaries
+in the 'build'-tree you can either:
 
 1) install before running the tests and also set PATH to include
 "/usr/local/lib"
 
 2) setting the PATH to include the build directory where the libraries are
+   there is a sh-compatible command script to do that for you. From the top
+   of the Cgreen source directory do:
 
-/Thomas 2012-08-20
+     . cygwin-setup.sh
+
+/Thomas 2015-12-29
