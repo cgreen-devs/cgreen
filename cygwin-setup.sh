@@ -16,12 +16,11 @@
 # it.
 #
 
-# The following is a first (non-successful) attempt at ensuring that
-# the script is sourced:
+# Ensure that the script is sourced:
 if [[ $_ != $0 ]]; then
-   echo "Sourced"
+   echo "Sourced. OK."
 else
-   echo "Subshell"
+   echo "Subshell. To have any effect you must source this file, like '. cygwin-setup.sh'"
 fi
 
 # And here's the meat
