@@ -24,11 +24,6 @@ set(CGREEN_SHARED_LIBRARY
   CACHE INTERNAL "cgreen shared library"
 )
 
-set(CGREEN_STATIC_LIBRARY
-  cgreen_static
-  CACHE INTERNAL "cgreen static library"
-)
-
 if (WIN32 AND NOT CYGWIN)
   set(CGREEN_LINK_LIBRARIES
     winmm.lib
@@ -130,34 +125,42 @@ install(
   COMPONENT libraries
 )
 
-add_library(${CGREEN_STATIC_LIBRARY} STATIC ${cgreen_SRCS})
+if (CGREEN_WITH_STATIC_LIBRARY)
 
-if (CGREEN_WITH_CXX)
-  target_link_libraries(${CGREEN_STATIC_LIBRARY} 
-    ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
-  )    
-endif (CGREEN_WITH_CXX)
+  set(CGREEN_STATIC_LIBRARY
+    cgreen_static
+    CACHE INTERNAL "cgreen static library"
+  )
 
-target_link_libraries(${CGREEN_STATIC_LIBRARY}
-  ${CGREEN_LINK_LIBRARIES}
-  ${MATH_LIB}
-)
+  add_library(${CGREEN_STATIC_LIBRARY} STATIC ${cgreen_SRCS})
 
-set_target_properties(
-  ${CGREEN_STATIC_LIBRARY}
-    PROPERTIES
-      VERSION
-        ${LIBRARY_VERSION}
-      SOVERSION
-        ${LIBRARY_SOVERSION}
-      OUTPUT_NAME
-        ${CGREEN_LIBRARY_NAME}
-)
+  if (CGREEN_WITH_CXX)
+    target_link_libraries(${CGREEN_STATIC_LIBRARY} 
+      ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
+    )
+  endif (CGREEN_WITH_CXX)
 
-install(
-  TARGETS ${CGREEN_STATIC_LIBRARY}
-  LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-  ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-  RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-  COMPONENT libraries
-)
+  target_link_libraries(${CGREEN_STATIC_LIBRARY}
+    ${CGREEN_LINK_LIBRARIES}
+    ${MATH_LIB}
+  )
+
+  set_target_properties(
+    ${CGREEN_STATIC_LIBRARY}
+      PROPERTIES
+        VERSION
+          ${LIBRARY_VERSION}
+        SOVERSION
+          ${LIBRARY_SOVERSION}
+        OUTPUT_NAME
+          ${CGREEN_LIBRARY_NAME}
+  )
+
+  install(
+    TARGETS ${CGREEN_STATIC_LIBRARY}
+    LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+    ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+    RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+    COMPONENT libraries
+  )
+endif(CGREEN_WITH_STATIC_LIBRARY)
