@@ -22,6 +22,8 @@ install:
 
 ############ Internal
 
+dirs: build-c build-c++
+
 build-c:
 	mkdir build-c
 	cd build-c; cmake ../..
