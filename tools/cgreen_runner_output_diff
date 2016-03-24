@@ -10,35 +10,35 @@ lib=$2
 name=$3
 expected=$4
 
-echo "Comparing output for $2 with CGREEN_PER_TEST_TIMEOUT= $CGREEN_PER_TEST_TIMEOUT"
+if [ -z "$CGREEN_PER_TEST_TIMEOUT" ]; then
+    echo "Comparing output of $2 to expected"
+else
+    echo "Comparing output of $2 to expected with CGREEN_PER_TEST_TIMEOUT=$CGREEN_PER_TEST_TIMEOUT"
+fi
 
 # Run runner on library store output and error
 ${runner_dir}/cgreen-runner ${lib} > ${name}.output 2> ${name}.error
 cat ${name}.error >> ${name}.output
 
-# Execute some standard SED commands to ignore things that might differ:
-do_sed() {
-  sed -E -e "$1" ${name}.output > ${name}.output.tmp
-  mv ${name}.output.tmp ${name}.output
-}
-
-# TODO: This should really be optimized into a single sed invocation...
+tempfile=`mktemp`
 
 # - line numbers in error messages
-do_sed s/:[0-9]+:/:/g
+echo "s/:[0-9]+:/:/g" > $tempfile
 
 # - timing info
-do_sed "s/in [0-9]+ms\./in 0ms\./g"
+echo "s/in [0-9]+ms\./in 0ms\./g" >> $tempfile
 
 # - library prefix
-do_sed s/\".*${name}\"/\"${name}\"/g
-
+echo s/\".*${name}\"/\"${name}\"/g >> $tempfile
 
 # Execute some extra SED commands in $5 and onwards on the output
 shift 4
 for sedcommand in $@ ; do
-    do_sed ${sedcommand}
+    echo ${sedcommand} >> $tempfile
 done
+
+sed -E -f $tempfile ${name}.output > ${name}.output.tmp
+mv ${name}.output.tmp ${name}.output
 
 # Compare output to expected
 cmp --silent ${name}.output ${expected}
