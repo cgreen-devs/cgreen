@@ -32,7 +32,7 @@ install:
 # This is kind of a hack to get a quicker and clearer feedback when developing Cgreen
 # Should be updated when new test libraries or output comparisons are added
 
-# Find out if 'uname -o' works, if it does use it, otherwise use 'uname -s'
+# Find out if 'uname -o' works, if it does - use it, otherwise use 'uname -s'
 UNAMEOEXISTS=$(shell uname -o 1>&2 2>/dev/null; echo $$?)
 ifeq ($(UNAMEOEXISTS),0)
   OS=$(shell uname -o)
@@ -50,22 +50,25 @@ else
 	SUFFIX=.so
 endif
 
-unit:
-	DIR=$$PWD/tests/ ; \
+OUTPUT_DIFF=../../tools/cgreen_runner_output_diff tools
+OUTPUT_DIFF_ARGUMENTS = `find tests -name '$(PREFIX)$(1)_messages$(SUFFIX)'` $(1)_messages ../../tests/$(1)_messages.$$d.expected s%$$EXPECTEDDIR%%g
+MOCK_MESSAGES_TESTS=`find tests -name '$(PREFIX)mock_messages$(SUFFIX)'`
+CONSTRAINT_MESSAGES_TESTS=`find tests -name '$(PREFIX)constraint_messages$(SUFFIX)'`
+FAILURE_MESSAGES_TESTS=`find tests -name '$(PREFIX)failure_messages$(SUFFIX)'`
+ASSERTION_MESSAGES_TESTS=`find tests -name '$(PREFIX)assertion_messages$(SUFFIX)'`
+
+unit: build
+	EXPECTEDDIR=$$PWD/tests/ ; \
 	for d in c c++ ; do \
 	  cd build/build-$$d ; \
 	  make ; \
 	  export PATH=src:$$PATH ; \
 	  tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_tests$(SUFFIX)` ; \
 	  tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
-	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)mock_messages$(SUFFIX)'` \
-		mock_messages ../../tests/mock_messages.$$d.expected s%$$DIR%%g ; \
-	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)constraint_messages$(SUFFIX)'` \
-		constraint_messages ../../tests/constraint_messages.$$d.expected s%$$DIR%%g ; \
-	  CGREEN_PER_TEST_TIMEOUT=1 ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)failure_messages$(SUFFIX)'` \
-		failure_messages ../../tests/failure_messages.$$d.expected s%$${DIR}%%g ; \
-	  ../../tools/cgreen_runner_output_diff tools `find tests -name '$(PREFIX)assertion_messages$(SUFFIX)'` \
-		assertion_messages ../../tests/assertion_messages.$$d.expected s%$${DIR}%%g ; \
+	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,mock) ; \
+	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint) s/Terminated:.+[0-9]+/Terminated/ ; \
+	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,assertion) ; \
+	  CGREEN_PER_TEST_TIMEOUT=1 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure) ; \
 	  cd ../.. ; \
 	done
 
@@ -74,6 +77,7 @@ unit:
 build:
 	mkdir build
 	cp Makefile.build build/Makefile
+	cd build; make dirs
 
 
 .SILENT:
