@@ -179,6 +179,10 @@ Ensure(FailureMessage, for_no_mock_parameters_with_parameter_constraint) {
 }
 
 Ensure(FailureMessage, increments_exception_count_when_terminating_via_SIGQUIT) {
+    raise(SIGQUIT);
+}
+
+Ensure(FailureMessage, increments_exception_count_when_terminating_via_SIGTERM) {
     raise(SIGTERM);
 }
 

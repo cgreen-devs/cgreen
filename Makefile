@@ -68,7 +68,7 @@ unit: build
 	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,mock) ; \
 	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint) s/Terminated:.+[0-9]+/Terminated/ ; \
 	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,assertion) ; \
-	  CGREEN_PER_TEST_TIMEOUT=1 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure) ; \
+	  CGREEN_PER_TEST_TIMEOUT=2 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure) ; \
 	  cd ../.. ; \
 	done
 

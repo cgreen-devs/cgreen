@@ -1,4 +1,4 @@
-Running "constraint_messages" (35 tests)...
+Running "constraint_messages" (36 tests)...
 constraint_messages_tests.c: Failure: FailureMessage -> for_always_followed_by_expectation 
 	Mocked function [some_mock] already has an expectation that it will always be called a certain way; any expectations declared after an always expectation are invalid
 
@@ -138,11 +138,14 @@ constraint_messages_tests.c: Failure: FailureMessage -> if_exception_was_expecte
 	Expected [(void)5] to throw [std::string]
 
 constraint_messages_tests.c: Exception: FailureMessage -> increments_exception_count_when_terminating_via_SIGQUIT 
+	Test terminated with signal: Quit
+
+constraint_messages_tests.c: Exception: FailureMessage -> increments_exception_count_when_terminating_via_SIGTERM 
 	Test terminated with signal: Terminated
 
 constraint_messages_tests.c: Exception: FailureMessage -> increments_exception_count_when_throwing 
 	Test terminated unexpectedly, likely from a non-standard exception or Posix signal
 
-Completed "FailureMessage": 0 passes, 32 failures, 3 exceptions in 0ms.
-Completed "constraint_messages": 0 passes, 32 failures, 3 exceptions in 0ms.
+Completed "FailureMessage": 0 passes, 32 failures, 4 exceptions in 0ms.
+Completed "constraint_messages": 0 passes, 32 failures, 4 exceptions in 0ms.
 terminate called without an active exception

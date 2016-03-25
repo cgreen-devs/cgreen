@@ -152,7 +152,7 @@ macro_add_test(
 )
 
 macro_add_test(NAME failure_messages
-    COMMAND env "CGREEN_PER_TEST_TIMEOUT=1" ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
+    COMMAND env "CGREEN_PER_TEST_TIMEOUT=2" ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
             # Run the runner in directory
             ${CMAKE_CURRENT_BINARY_DIR}/../tools
             # .. on library
