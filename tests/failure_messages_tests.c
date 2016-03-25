@@ -28,3 +28,10 @@ Ensure(FailureMessage, for_CGREEN_PER_TEST_TIMEOUT) {
     sleep(3);
     fail_test("This test should have been aborted within CGREEN_PER_TEST_TIMEOUT seconds and not get here.");
 }
+
+#ifdef __cplusplus
+Ensure(FailureMessage, increments_exception_count_when_throwing) {
+    throw;
+}
+#endif
+
