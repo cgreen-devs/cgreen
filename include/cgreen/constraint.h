@@ -31,6 +31,7 @@ struct Constraint_ {
     bool (*compare)(Constraint *, intptr_t);
     void(*execute)(Constraint *, const char *, intptr_t, const char *, int, TestReporter *);
     char *(*failure_message)(Constraint *, const char *, intptr_t);
+    const char *actual_value_message;
     const char *expected_value_message;
     intptr_t expected_value;
     const char *expected_value_name;
@@ -56,6 +57,7 @@ void test_want(Constraint *constraint, const char *function, intptr_t actual, co
 void test_constraint(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
 Constraint *create_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name);
+Constraint *create_equal_to_hexvalue_constraint(intptr_t expected_value, const char *expected_value_name);
 Constraint *create_not_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name);
 Constraint *create_greater_than_value_constraint(intptr_t expected_value, const char *expected_value_name);
 Constraint *create_less_than_value_constraint(intptr_t expected_value, const char *expected_value_name);
