@@ -44,6 +44,10 @@ TestReporter *create_text_reporter(void) {
 	return reporter;
 }
 
+static bool have_quiet_mode(TestReporter *reporter) {
+    return reporter->options&&((TextReporterOptions *)reporter->options)->quiet_mode;
+}
+
 static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 		const int number_of_tests) {
 	reporter_start(reporter, name);
@@ -52,7 +56,7 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 				get_current_from_breadcrumb(
 						(CgreenBreadcrumb *) reporter->breadcrumb),
                number_of_tests,
-               ((TextReporterOptions *)reporter->options)->quiet_mode?":":"...\n");
+               have_quiet_mode(reporter)?":":"...\n");
         fflush(stdout);
 	}
 }
@@ -97,7 +101,7 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
 
     reporter_finish_suite(reporter, file, line, duration_in_milliseconds);
 
-    if (((TextReporterOptions *)reporter->options)->quiet_mode) {
+    if (have_quiet_mode(reporter)) {
         printf(".");
         if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0)
             printf("\n");
