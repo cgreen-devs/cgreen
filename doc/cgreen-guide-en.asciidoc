@@ -1349,6 +1349,7 @@ is fairly straight-forward. But you have a few options:
 --no-run::       Don't run the tests
 --verbose::      Show progress information and list discovered tests
 --colours::      Use colours (or colors) to emphasis result (requires ANSI-capable terminal)
+--quiet::        Be more quiet
 
 The `verbose` option is particularly handy since it will give you the
 actual names of all tests discovered. That means if you have long test
