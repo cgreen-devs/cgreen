@@ -134,6 +134,7 @@ macro_add_test(
             # ... but execute the following extra SED commands on the output before making the comparison
             ${IGNORE_SOURCE_PATH_REGEX}
             s/Terminated:.+[0-9]+/Terminated/
+            s/Quit:.+[0-9]+/Quit/
 )
 
 macro_add_test(
