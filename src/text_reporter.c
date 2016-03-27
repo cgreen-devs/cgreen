@@ -48,10 +48,11 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 		const int number_of_tests) {
 	reporter_start(reporter, name);
 	if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 1) {
-		printf("Running \"%s\" (%d tests)...\n",
+		printf("Running \"%s\" (%d tests)%s",
 				get_current_from_breadcrumb(
 						(CgreenBreadcrumb *) reporter->breadcrumb),
-				number_of_tests);
+               number_of_tests,
+               ((TextReporterOptions *)reporter->options)->quiet_mode?":":"...\n");
         fflush(stdout);
 	}
 }
@@ -96,12 +97,18 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
 
     reporter_finish_suite(reporter, file, line, duration_in_milliseconds);
 
-    printf("Completed \"%s\": %s, %s, %s in %dms.\n",
-           name,
-           format_passes(reporter->passes, use_colors),
-           format_failures(reporter->failures, use_colors),
-           format_exceptions(reporter->exceptions, use_colors),
-           duration_in_milliseconds);
+    if (((TextReporterOptions *)reporter->options)->quiet_mode) {
+        printf(".");
+        if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0)
+            printf("\n");
+    } else {
+        printf("Completed \"%s\": %s, %s, %s in %dms.\n",
+               name,
+               format_passes(reporter->passes, use_colors),
+               format_failures(reporter->failures, use_colors),
+               format_exceptions(reporter->exceptions, use_colors),
+               duration_in_milliseconds);
+    }
 }
 
 static void show_fail(TestReporter *reporter, const char *file, int line,
