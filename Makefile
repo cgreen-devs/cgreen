@@ -51,7 +51,7 @@ else
 endif
 
 OUTPUT_DIFF=../../tools/cgreen_runner_output_diff tools
-OUTPUT_DIFF_ARGUMENTS = `find tests -name '$(PREFIX)$(1)_messages$(SUFFIX)'` $(1)_messages ../../tests/$(1)_messages.$$d.expected s%$$EXPECTEDDIR%%g
+OUTPUT_DIFF_ARGUMENTS = `find tests -name '$(PREFIX)$(1)_messages_tests$(SUFFIX)'` $(1)_messages_tests ../../tests/$(1)_messages_tests.$$d.expected s%$$EXPECTEDDIR%%g
 MOCK_MESSAGES_TESTS=`find tests -name '$(PREFIX)mock_messages$(SUFFIX)'`
 CONSTRAINT_MESSAGES_TESTS=`find tests -name '$(PREFIX)constraint_messages$(SUFFIX)'`
 FAILURE_MESSAGES_TESTS=`find tests -name '$(PREFIX)failure_messages$(SUFFIX)'`
