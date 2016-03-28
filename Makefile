@@ -51,7 +51,7 @@ else
 endif
 
 OUTPUT_DIFF=../../tools/cgreen_runner_output_diff tools
-OUTPUT_DIFF_ARGUMENTS = `find tests -name '$(PREFIX)$(1)_messages$(SUFFIX)'` $(1)_messages ../../tests/$(1)_messages.$$d.expected s%$$EXPECTEDDIR%%g
+OUTPUT_DIFF_ARGUMENTS = `find tests -name '$(PREFIX)$(1)_messages_tests$(SUFFIX)'` $(1)_messages_tests ../../tests/$(1)_messages_tests.$$d.expected s%$$EXPECTEDDIR%%g
 MOCK_MESSAGES_TESTS=`find tests -name '$(PREFIX)mock_messages$(SUFFIX)'`
 CONSTRAINT_MESSAGES_TESTS=`find tests -name '$(PREFIX)constraint_messages$(SUFFIX)'`
 FAILURE_MESSAGES_TESTS=`find tests -name '$(PREFIX)failure_messages$(SUFFIX)'`
@@ -66,7 +66,7 @@ unit: build
 	  tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_tests$(SUFFIX)` ; \
 	  tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
 	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,mock) ; \
-	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint) s/Terminated:.+[0-9]+/Terminated/ ; \
+	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint) s/Terminated:.+[0-9]+/Terminated/ s/Quit:.+[0-9]+/Quit/ ; \
 	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,assertion) ; \
 	  CGREEN_PER_TEST_TIMEOUT=2 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure) ; \
 	  cd ../.. ; \

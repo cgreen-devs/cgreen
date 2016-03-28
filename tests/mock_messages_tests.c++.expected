@@ -1,4 +1,4 @@
-Running "mock_messages" (10 tests)...
+Running "mock_messages_tests" (10 tests)...
 mock_messages_tests.c: Failure: Mocks -> calls_beyond_expected_sequence_fail_when_mocks_are_strict 
 	Mocked function [integer_out] was called too many times
 
@@ -29,7 +29,7 @@ mock_messages_tests.c: Failure: Mocks -> single_uncalled_expectation_fails_tally
 	Expected call was not made to mocked function [string_out]
 
 Completed "Mocks": 4 passes, 9 failures, 0 exceptions in 0ms.
-Completed "mock_messages": 4 passes, 9 failures, 0 exceptions in 0ms.
+Completed "mock_messages_tests": 4 passes, 9 failures, 0 exceptions in 0ms.
 Mocks -> learning_mocks_emit_none_when_learning_no_mocks : Learned mocks are
 	<none>
 Mocks -> learning_mocks_emit_pastable_code : Learned mocks are

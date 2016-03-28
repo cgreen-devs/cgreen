@@ -71,8 +71,10 @@ static bool compare_want_greater_double(Constraint *constraint, intptr_t actual)
 static void set_contents(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 
 
+static const char *default_actual_value_message = "\n\t\tactual value:\t\t\t[%" PRIdPTR "]";
 static const char *default_expected_value_message = "\t\texpected value:\t\t\t[%" PRIdPTR "]";
 
+ 
 Constraint *create_constraint() {
     Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));
     /* TODO: setting this to NULL as an implicit type check :( */
@@ -80,6 +82,7 @@ Constraint *create_constraint() {
     constraint->destroy = &destroy_empty_constraint;
     constraint->failure_message = &failure_message_for;
     constraint->expected_value_name = NULL;
+    constraint->actual_value_message = default_actual_value_message;
     constraint->expected_value_message = default_expected_value_message;
 
     return constraint;
@@ -144,6 +147,20 @@ Constraint *create_equal_to_value_constraint(intptr_t expected_value, const char
     constraint->execute = &test_want;
     constraint->name = "equal";
     constraint->size_of_expected_value = sizeof(intptr_t);
+
+    return constraint;
+}
+
+Constraint *create_equal_to_hexvalue_constraint(intptr_t expected_value, const char *expected_value_name) {
+    Constraint *constraint = create_constraint_expecting(expected_value, expected_value_name);
+    constraint->type = VALUE_COMPARER;
+
+    constraint->compare = &compare_want_value;
+    constraint->execute = &test_want;
+    constraint->name = "equal";
+    constraint->size_of_expected_value = sizeof(intptr_t);
+    constraint->actual_value_message = "\n\t\tactual value:\t\t\t[0x%x]";
+    constraint->expected_value_message = "\t\texpected value:\t\t\t[0x%x]";
 
     return constraint;
 }

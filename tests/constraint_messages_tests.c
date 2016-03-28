@@ -31,6 +31,12 @@ Ensure(ConstraintMessage,for_is_equal_to) {
     assert_that(fourty_five, is_equal_to(thirty_three));
 }
 
+Ensure(ConstraintMessage, for_is_equal_to_hex) {
+    char chars[4];
+    memset(chars, 0xaa, sizeof(chars));
+    assert_that(chars[0], is_equal_to_hex(0xbb));
+}
+
 Ensure(ConstraintMessage,for_is_not_equal_to) {
     int should_not_be_fourty_five = 45, forty_five = 45;
     assert_that(should_not_be_fourty_five, is_not_equal_to(forty_five));

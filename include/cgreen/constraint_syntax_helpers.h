@@ -13,11 +13,15 @@ namespace cgreen {
 extern "C" {
 #endif
 
-/* we normally want to favor delegating functions (for namespacing, and to avoid confusing symbol/preprocessor conflicts),
- * but for the intptr_t catch-all type, we need an explicit cast lest we get warnings-as-errors in newer compilers.
- * also, we need the textual representation of the expected value and this is the only reasonable way to do it.
+/* we normally want to favor delegating functions (for namespacing,
+ * and to avoid confusing symbol/preprocessor conflicts), but for the
+ * intptr_t catch-all type, we need an explicit cast lest we get
+ * warnings-as-errors in newer compilers.  also, we need the textual
+ * representation of the expected value and this is the only
+ * reasonable way to do it.
  */
 #define is_equal_to(value) create_equal_to_value_constraint((intptr_t)value, #value)
+#define is_equal_to_hex(value) create_equal_to_hexvalue_constraint((intptr_t)value, #value)
 #define is_not_equal_to(value) create_not_equal_to_value_constraint((intptr_t)value, #value)
 
 #define is_greater_than(value) create_greater_than_value_constraint((intptr_t)value, #value)
@@ -44,9 +48,10 @@ extern "C" {
 
 
 
-/* these constraints don't take arguments, and we don't want to force users to put "()" on the end of every usage.
- * we also want to avoid macros when practical, for the namespacing and confusing symbol collision issues, 
- * so we use singleton instances.
+/* these constraints don't take arguments, and we don't want to force
+ * users to put "()" on the end of every usage.  we also want to avoid
+ * macros when practical, for the namespacing and confusing symbol
+ * collision issues, so we use singleton instances.
  */
 extern Constraint static_non_null_constraint;
 extern Constraint *is_non_null;

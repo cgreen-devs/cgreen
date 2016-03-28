@@ -1,4 +1,4 @@
-Running "constraint_messages" (35 tests)...
+Running "constraint_messages_tests" (34 tests)...
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_always_followed_by_expectation 
 	Mocked function [some_mock] already has an expectation that it will always be called a certain way; any expectations declared after an always expectation are invalid
 
@@ -30,12 +30,6 @@ constraint_messages_tests.c: Failure: ConstraintMessage -> for_equal_to_double_n
 		actual value:	-1.000000
 		expected value:	-2.000000
 
-constraint_messages_tests.c: Failure: ConstraintMessage -> for_exception_was_expected_but_nothing_thrown 
-	Expected [(void)5] to throw [std::string]
-
-constraint_messages_tests.c: Exception: ConstraintMessage -> for_incorrect_assert_throws 
-	an exception was thrown during test: [something else]
-
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to 
 	Expected [fourty_five] to [equal] [thirty_three]
 		actual value:			[45]
@@ -49,6 +43,11 @@ constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to_doubl
 	Expected [four_point_five] to [equal double] [three_point_three] within [8] significant figures
 		actual value:	4.500000
 		expected value:	3.300000
+
+constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to_hex 
+	Expected [chars[0]] to [equal] [0xbb]
+		actual value:			[0xffffffaa]
+		expected value:			[0xbb]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to_string 
 	Expected [thirty_three] to [equal string] [fourty_five]
@@ -143,5 +142,5 @@ constraint_messages_tests.c: Exception: ConstraintMessage -> increments_exceptio
 constraint_messages_tests.c: Exception: ConstraintMessage -> increments_exception_count_when_terminating_via_SIGTERM 
 	Test terminated with signal: Terminated
 
-Completed "ConstraintMessage": 0 passes, 32 failures, 3 exceptions in 0ms.
-Completed "constraint_messages": 0 passes, 32 failures, 3 exceptions in 0ms.
+Completed "ConstraintMessage": 0 passes, 32 failures, 2 exceptions in 0ms.
+Completed "constraint_messages_tests": 0 passes, 32 failures, 2 exceptions in 0ms.

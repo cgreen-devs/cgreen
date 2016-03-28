@@ -43,27 +43,28 @@ set(CGREEN_TEST_LIBRARY
 )
 
 set(constraint_messages_library
-  constraint_messages
+  constraint_messages_tests
 )
 
 set(constraint_messages_library_SRCS
   constraint_messages_tests.c)
 
 set(mock_messages_library
-    mock_messages)
+    mock_messages_tests
+)
 
 set(mock_messages_library_SRCS
     mock_messages_tests.c)
 
 set(failure_messages_library
-  failure_messages
+  failure_messages_tests
 )
 
 set(failure_messages_library_SRCS
   failure_messages_tests.c)
 
 set(assertion_messages_library
-  assertion_messages
+  assertion_messages_tests
 )
 
 set(assertion_messages_library_SRCS
@@ -134,6 +135,7 @@ macro_add_test(
             # ... but execute the following extra SED commands on the output before making the comparison
             ${IGNORE_SOURCE_PATH_REGEX}
             s/Terminated:.+[0-9]+/Terminated/
+            s/Quit:.+[0-9]+/Quit/
 )
 
 macro_add_test(

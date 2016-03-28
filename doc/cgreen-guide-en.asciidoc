@@ -1349,6 +1349,7 @@ is fairly straight-forward. But you have a few options:
 --no-run::       Don't run the tests
 --verbose::      Show progress information and list discovered tests
 --colours::      Use colours (or colors) to emphasis result (requires ANSI-capable terminal)
+--quiet::        Be more quiet
 
 The `verbose` option is particularly handy since it will give you the
 actual names of all tests discovered. That means if you have long test
@@ -1750,6 +1751,7 @@ same as for the assertions we saw earlier):
 |==========================================================================
 |*Constraint*                                             |*Type*
 |`is_equal_to(value)`                                     | Integers
+|`is_equal_to_hex(value)`                                 | Integers
 |`is_not_equal_to(value)`                                 | Integers
 |`is_greater_than(value)`                                 | Integers
 |`is_less_than(value)`                                    | Integers
@@ -2523,10 +2525,14 @@ Hints and Tips
 --------------
 
 CAUTION: This chapter is in its infancy. It will contain tips for
-situations that you need some help to get out of, typically strange
-error messages from the compiler. Since *Cgreen* uses some C/C++ macro
-magic this can happen and the error messages might not be straight
-forward to interpret.
+situations that you need some help to get out of.
+
+Compiler Error Messages
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Sometimes you can get cryptic and strange error messages from the
+compiler. Since *Cgreen* uses some C/C++ macro magic this can happen
+and the error messages might not be straight forward to interpret.
 
 |=========================================================
 |*Compiler error message*                    |*Probable cause...*
@@ -2534,6 +2540,69 @@ forward to interpret.
 |`undefined reference to 'AfterEach_For_<X>'`|You forgot the `AfterEach()` function
 |`CgreenSpec__<X>__<Y>__ is undeclared`      |You forgot to specify the test subject/context in a BDD style test
 |=========================================================
+
+
+Signed, Unsigned, Hex and Byte
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Cgreen attempts to handle primitive type comparisons with a single
+constraint, `is_equal_to()`. This means that it must store the actual
+and expected values in a form that will accomodate all possible values
+that primitive types might take, typically an `intptr_t`.
+
+This might sometimes cause unexpected comparisons since all actual
+values will be cast to match `intptr_t`, which is a signed value. E.g.
+
+[source, c]
+------------------------------
+Ensure(Char, can_compare_byte) {
+  char chars[4] = {0xaa, 0xaa, 0xaa, 0};
+  assert_that(chars[0], is_equal_to(0xaa));
+}
+------------------------------
+
+On a system which considers `char` to be signed this will cause the
+following Cgreen assertion error:
+
+------------------------------
+char_tests.c:11: Failure: Char -> can_compare_byte
+        Expected [chars[0]] to [equal] [0xaa]
+                actual value:                   [-86]
+                expected value:                 [170]
+------------------------------
+
+This is caused by the C rules forcing an implicit cast of the `signed
+char` to `intptr_t` by sign-extension. This might not be what you
+expected. The correct solution, by any standard, is to cast the actual
+value to `unsigned char` which will then be interpreted correctly. And
+the test passes.
+
+NOTE: Casting to `unsigned` will not always suffice since that is
+interpreted as `unsigned int` which will cause a sign-extension from
+the `signed char` and might or might not work depending on the size of
+`int` on your machine.
+
+In order to reveal what really happens you might want to see the actual and
+expected values in hex. This can easily be done with the
+`is_equal_to_hex()`.
+
+[source, c]
+------------------------------
+Ensure(Char, can_compare_byte) {
+  char chars[4] = {0xaa, 0xaa, 0xaa, 0};
+  assert_that(chars[0], is_equal_to_hex(0xaa));
+}
+------------------------------
+
+This might make the mistake easier to spot:
+
+------------------------------
+char_tests.c:11: Failure: Char -> can_compare_byte
+        Expected [chars[0]] to [equal] [0xaa]
+        actual value:                   [0xfffffffffffffaa]
+        expected value:                 [0xaa]
+------------------------------
+
 
 
 [appendix]

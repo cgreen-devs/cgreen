@@ -14,6 +14,7 @@ namespace cgreen {
 
 typedef struct text_reporter_options {
     bool use_colours;
+    bool quiet_mode;
 } TextReporterOptions;
 
 TestReporter *create_text_reporter(void);
