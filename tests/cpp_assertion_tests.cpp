@@ -62,7 +62,12 @@ Ensure(custom_large_classes_are_not_equal) {
     assert_that(my_class != other);
 }
 
-Ensure(stl_string_references_are_not_equal) {
+Ensure(same_stl_string_references_are_equal) {
+    std::string bob("bob");
+    assert_that(bob, is_equal_to_string(bob));
+}
+
+Ensure(different_stl_string_references_are_not_equal) {
     std::string bob("bob");
     std::string alice("alice");
     assert_that(bob, is_not_equal_to_string(alice));
@@ -153,7 +158,8 @@ TestSuite* cpp_assertion_tests() {
     set_teardown(suite, teardown);
     add_test(suite, custom_large_classes_are_not_equal);
     add_test(suite, custom_large_classes_are_equal);
-    add_test(suite, stl_string_references_are_not_equal);
+    add_test(suite, same_stl_string_references_are_equal);
+    add_test(suite, different_stl_string_references_are_not_equal);
     add_test(suite, stl_string_reference_and_pointer_are_not_equal);
     add_test(suite, stl_string_pointer_and_reference_are_not_equal);
     add_test(suite, stl_string_reference_and_pointer_are_equal);

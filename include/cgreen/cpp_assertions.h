@@ -8,7 +8,7 @@
     } catch (const exceptionType& ex) {                                 \
         pass_test();                                                    \
     } catch (const exceptionType* ex) {					\
-	pass_test();							\
+        pass_test();							\
     }
 
 #endif
