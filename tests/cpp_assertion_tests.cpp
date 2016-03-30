@@ -169,6 +169,7 @@ TestSuite* cpp_assertion_tests() {
     add_test(suite, different_stl_string_pointer_and_reference_are_not_equal);
     add_test(suite, same_stl_string_reference_and_pointer_are_equal);
     add_test(suite, same_stl_string_pointer_and_reference_are_equal);
+    add_test(suite, stl_string_contains_string);
     add_test(suite, different_stl_string_pointers_are_not_equal);
     add_test(suite, stl_string_pointer_is_not_null);
     add_test(suite, stl_string_pointer_is_null);
