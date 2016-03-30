@@ -119,66 +119,34 @@ else()
   set(LANG c)
 endif()
 
-set(IGNORE_SOURCE_PATH_REGEX s%${CMAKE_CURRENT_SOURCE_DIR}/%%g)
-
 macro_add_test(
     NAME constraint_messsages
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
-            # Run the runner in directory
-            ${CMAKE_CURRENT_BINARY_DIR}/../tools
-            # .. on library
-            $<TARGET_FILE_NAME:${constraint_messages_library}>
-            # ... storing the output in an output file with basename
-            ${constraint_messages_library}
-            # ... then compare it to
-            ${CMAKE_CURRENT_SOURCE_DIR}/${constraint_messages_library}.${LANG}.expected
-            # ... but execute the following extra SED commands on the output before making the comparison
-            ${IGNORE_SOURCE_PATH_REGEX}
-            s/Terminated:.+[0-9]+/Terminated/
-            s/Quit:.+[0-9]+/Quit/
+            constraint_messages_tests       # Name
+            ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
+            ${constraint_messages_library}.${LANG}.expected
 )
 
 macro_add_test(
     NAME mock_messsages
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
-            # Run the runner in directory
-            ${CMAKE_CURRENT_BINARY_DIR}/../tools
-            # .. on library
-            $<TARGET_FILE_NAME:${mock_messages_library}>
-            # ... storing the output in an output file with basename
-            ${mock_messages_library}
-            # ... then compare it to
-            ${CMAKE_CURRENT_SOURCE_DIR}/${mock_messages_library}.${LANG}.expected
-            # ... but execute the following extra SED commands on the output before making the comparison
-            ${IGNORE_SOURCE_PATH_REGEX}
+            mock_messages_tests             # Name
+            ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
+            ${mock_messages_library}.${LANG}.expected
 )
 
 macro_add_test(NAME failure_messages
     COMMAND env "CGREEN_PER_TEST_TIMEOUT=2" ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
-            # Run the runner in directory
-            ${CMAKE_CURRENT_BINARY_DIR}/../tools
-            # .. on library
-            $<TARGET_FILE_NAME:${failure_messages_library}>
-            # ... storing the output in an output file with basename
-            ${failure_messages_library}
-            # ... then compare it to
-            ${CMAKE_CURRENT_SOURCE_DIR}/${failure_messages_library}.${LANG}.expected
-            # ... but execute the following extra SED commands on the output before making the comparison
-            ${IGNORE_SOURCE_PATH_REGEX}
+            failure_messages_tests          # Name
+            ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
+            ${failure_messages_library}.${LANG}.expected
 )
 
 macro_add_test(NAME assertion_messages
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
-            # Run the runner in directory
-            ${CMAKE_CURRENT_BINARY_DIR}/../tools
-            # .. on library
-            $<TARGET_FILE_NAME:${assertion_messages_library}>
-            # ... storing the output in an output file with basename
-            ${assertion_messages_library}
-            # ... then compare it to
-            ${CMAKE_CURRENT_SOURCE_DIR}/${assertion_messages_library}.${LANG}.expected
-            # ... but execute the following extra SED commands on the output before making the comparison
-            ${IGNORE_SOURCE_PATH_REGEX}
+            assertion_messages_tests        # Name
+            ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
+            ${assertion_messages_library}.${LANG}.expected
 )
 
 # add verification that all public api is available as it should
