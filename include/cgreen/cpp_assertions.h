@@ -7,8 +7,8 @@
         fail_test("Expected [" #expr "] to throw [" #exceptionType "]"); \
     } catch (const exceptionType& ex) {                                 \
         pass_test();                                                    \
-    } catch (const exceptionType* ex) {					\
-        pass_test();							\
+    } catch (const exceptionType* ex) {	                                \
+        pass_test();                                                    \
     }
 
 #endif
