@@ -72,6 +72,31 @@ Ensure(stl_string_contains_string) {
     assert_that(bobbob, contains_string("obbo"));
 }
 
+Ensure(string_contains_stl_string) {
+    std::string obbo("obbo");
+    assert_that("bobbob", contains_string(obbo));
+}
+
+Ensure(stl_string_does_not_contain_string) {
+    std::string bobbob("bobbob");
+    assert_that(bobbob, does_not_contain_string("alice"));
+}
+
+Ensure(string_does_not_contain_stl_string) {
+    std::string obbo("obbo");
+    assert_that("alice", does_not_contain_string(obbo));
+}
+
+Ensure(stl_string_begins_with_string) {
+    std::string bobbob("bobbob");
+    assert_that(bobbob, begins_with_string("bob"));
+}
+
+Ensure(string_begins_with_stl_string) {
+    std::string bob("bob");
+    assert_that("bobbob", begins_with_string(bob));
+}
+
 Ensure(different_stl_string_references_are_not_equal) {
     std::string bob("bob");
     std::string alice("alice");
