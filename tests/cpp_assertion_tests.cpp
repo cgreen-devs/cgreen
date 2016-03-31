@@ -77,6 +77,11 @@ Ensure(string_contains_stl_string) {
     assert_that("bobbob", contains_string(obbo));
 }
 
+Ensure(string_contains_stl_string_pointer) {
+    bob_pointer = new std::string("obbo");
+    assert_that("bobbob", contains_string(bob_pointer));
+}
+
 Ensure(stl_string_does_not_contain_string) {
     std::string bobbob("bobbob");
     assert_that(bobbob, does_not_contain_string("alice"));
@@ -201,6 +206,7 @@ TestSuite* cpp_assertion_tests() {
     add_test(suite, same_stl_string_references_are_equal);
     add_test(suite, stl_string_contains_string);
     add_test(suite, string_contains_stl_string);
+    add_test(suite, string_contains_stl_string_pointer);
     add_test(suite, stl_string_does_not_contain_string);
     add_test(suite, string_does_not_contain_stl_string);
     add_test(suite, string_does_not_contain_stl_string_pointer);
