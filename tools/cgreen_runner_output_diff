@@ -11,9 +11,9 @@ expected=$1 ; shift 1
 commandfile=${sourcedir}/normalize_${name}.sed
 
 if [ -z "$CGREEN_PER_TEST_TIMEOUT" ]; then
-    echo "Comparing output of ${name} to expected: \c"
+    printf "Comparing output of ${name} to expected: "
 else
-    echo "Comparing output of ${name} to expected with CGREEN_PER_TEST_TIMEOUT=$CGREEN_PER_TEST_TIMEOUT: \c"
+    printf "Comparing output of ${name} to expected with CGREEN_PER_TEST_TIMEOUT=$CGREEN_PER_TEST_TIMEOUT: "
 fi
 
 # Run runner on library store output and error
