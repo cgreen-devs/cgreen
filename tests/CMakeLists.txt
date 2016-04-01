@@ -18,6 +18,7 @@ set(test_library_SRCS
   breadcrumb_tests.c
   constraint_tests.c
   cute_reporter_tests.c
+  cdash_reporter_tests.c
   messaging_tests.c
   message_formatting_tests.c
   mocks_tests.c

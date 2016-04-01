@@ -10,7 +10,7 @@ namespace cgreen {
 #endif
 
 typedef struct {
-    Printer *printer;
+    CutePrinter *printer;
     int error_count;    // For status within the test case process
     int previous_error; // For status outside the test case process
 } CuteMemo;
@@ -30,7 +30,7 @@ static void cute_reporter_testcase_finished(TestReporter *reporter,
 static void cute_reporter_suite_finished(TestReporter *reporter,
         const char *filename, int line, uint32_t duration_in_milliseconds);
 
-void set_cute_printer(TestReporter *reporter, Printer *printer) {
+void set_cute_printer(TestReporter *reporter, CutePrinter *printer) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     memo->printer = printer;
 }

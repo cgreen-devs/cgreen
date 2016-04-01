@@ -17,13 +17,12 @@
 namespace cgreen {
 #endif
 
-typedef int Printer(FILE *, const char *format, ...);
 typedef time_t Timer(char *strtime);
 typedef double DiffTimer(time_t t1, time_t t2);
 
 typedef struct {
     CDashInfo *cdash;
-    Printer *printer;
+    CDashPrinter *printer;
     Timer *timer;
     DiffTimer *difftimer;
     int  pipe_fd[2];
@@ -52,6 +51,13 @@ static time_t cdash_build_stamp(char *sbuildstamp, size_t sb);
 static time_t cdash_current_time(char *strtime);
 static double cdash_enlapsed_time(time_t t1, time_t t2);
 
+ 
+void set_cdash_printer(TestReporter *reporter, CDashPrinter *printer) {
+    CdashMemo *memo = (CdashMemo *) reporter->memo;
+    memo->printer = printer;
+}
+
+
 TestReporter *create_cdash_reporter(CDashInfo *cdash) {
     TestReporter *reporter;
     CdashMemo *memo;
@@ -60,6 +66,7 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
     char strstart[30];
     char reporter_path[255];
     int rep_dir, strsize;
+
 
     if (!cdash)
         return NULL;
@@ -179,6 +186,7 @@ static void cdash_reporter_suite_started(TestReporter *reporter, const char *nam
 
 static void cdash_reporter_testcase_started(TestReporter *reporter, const char *name) {
     CdashMemo *memo = (CdashMemo *)reporter->memo;
+
     memo->teststarted = memo->timer(NULL);
     reporter_start(reporter, name);
 }
@@ -250,11 +258,39 @@ static void show_passed(TestReporter *reporter, const char *file, int line, cons
 }
 
 static void show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
-    (void)reporter;
-    (void)file;
-    (void)line;
-    (void)message;
-    (void)arguments;
+    const char *name;
+    char buffer[1000];
+    float exectime;
+    CdashMemo *memo;
+
+    memo = (CdashMemo *)reporter->memo;
+
+    memo->testfinished = memo->timer(NULL);
+
+    exectime = (float)memo->difftimer(memo->teststarted, memo->testfinished);
+
+    name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
+
+    memo->printer(memo->f_reporter,
+           "    <Test Status=\"incomplete\">\n");
+    memo->printer(memo->f_reporter,
+           "     <Name>%s</Name>\n"
+           "      <Path>%s</Path>\n"
+           "      <FullName>%s</FullName>\n"
+           "      <FullCommandLine>at [%s] line [%d]</FullCommandLine>\n", name, file, file, file, line);
+    memo->printer(memo->f_reporter,
+           "      <Results>\n"
+           "       <NamedMeasurement type=\"numeric/double\" name=\"Execution Time\"><Value>%f</Value></NamedMeasurement>\n"
+           "       <NamedMeasurement type=\"text/string\" name=\"Completion Status\"><Value>Completed</Value></NamedMeasurement>\n"
+           "       <NamedMeasurement type=\"text/string\" name=\"Command Line\"><Value>%s</Value></NamedMeasurement>\n"
+           "       <Measurement>\n"
+           "        <Value>", exectime, name);
+    vsprintf(buffer, (message == NULL ? "Problem" : message), arguments);
+    memo->printer(memo->f_reporter, "%s", buffer);
+    memo->printer(memo->f_reporter, "</Value>\n"
+           "       </Measurement>\n"
+           "      </Results>\n"
+           "    </Test>\n");
 }
 
 
