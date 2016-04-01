@@ -8,10 +8,11 @@ namespace cgreen {
     extern "C" {
 #endif
 
-typedef int Printer(const char *format, ...);
+typedef int CutePrinter(const char *format, ...);
 
-TestReporter *create_cute_reporter(void);
-void set_cute_printer(TestReporter *reporter, Printer *printer);
+
+extern TestReporter *create_cute_reporter(void);
+extern void set_cute_printer(TestReporter *reporter, CutePrinter *printer);
 
 #ifdef __cplusplus
     }

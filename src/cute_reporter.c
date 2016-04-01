@@ -10,27 +10,27 @@ namespace cgreen {
 #endif
 
 typedef struct {
-    Printer *printer;
+    CutePrinter *printer;
     int error_count;    // For status within the test case process
     int previous_error; // For status outside the test case process
 } CuteMemo;
 
-static void cute_reporter_suite_started(TestReporter *reporter,
+static void cute_suite_started(TestReporter *reporter,
         const char *name, const int number_of_tests);
-static void cute_reporter_testcase_started(TestReporter *reporter,
+static void cute_start_test(TestReporter *reporter,
         const char *name);
-static void assert_failed(TestReporter *reporter, const char *file, int line,
+static void show_fail(TestReporter *reporter, const char *file, int line,
         const char *message, va_list arguments);
-static void assert_passed(TestReporter *reporter, const char *file, int line,
+static void show_pass(TestReporter *reporter, const char *file, int line,
         const char *message, va_list arguments);
-static void testcase_failed_to_complete(TestReporter *reporter,
+static void cute_failed_to_complete(TestReporter *reporter,
         const char *file, int line, const char *message, va_list arguments);
-static void cute_reporter_testcase_finished(TestReporter *reporter,
+static void cute_finish_test(TestReporter *reporter,
         const char *filename, int line, const char *message, uint32_t duration_in_milliseconds);
-static void cute_reporter_suite_finished(TestReporter *reporter,
+static void cute_finish_suite(TestReporter *reporter,
         const char *filename, int line, uint32_t duration_in_milliseconds);
 
-void set_cute_printer(TestReporter *reporter, Printer *printer) {
+void set_cute_printer(TestReporter *reporter, CutePrinter *printer) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     memo->printer = printer;
 }
@@ -52,26 +52,26 @@ TestReporter *create_cute_reporter(void) {
 
     memo->printer = printf;
 
-    reporter->start_suite = &cute_reporter_suite_started;
-    reporter->start_test = &cute_reporter_testcase_started;
-    reporter->show_fail = &assert_failed;
-    reporter->show_pass = &assert_passed;
-    reporter->show_incomplete = &testcase_failed_to_complete;
-    reporter->finish_test = &cute_reporter_testcase_finished;
-    reporter->finish_suite = &cute_reporter_suite_finished;
+    reporter->start_suite = &cute_suite_started;
+    reporter->start_test = &cute_start_test;
+    reporter->show_fail = &show_fail;
+    reporter->show_pass = &show_pass;
+    reporter->show_incomplete = &cute_failed_to_complete;
+    reporter->finish_test = &cute_finish_test;
+    reporter->finish_suite = &cute_finish_suite;
     reporter->memo = memo;
 
     return reporter;
 }
 
-static void cute_reporter_suite_started(TestReporter *reporter,
+static void cute_suite_started(TestReporter *reporter,
         const char *name, const int number_of_tests) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     reporter_start(reporter, name);
     memo->printer("#beginning %s %d\n", name, number_of_tests);
 }
 
-static void cute_reporter_testcase_started(TestReporter *reporter,
+static void cute_start_test(TestReporter *reporter,
         const char *name) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     memo->error_count = reporter->failures + reporter->exceptions;
@@ -80,7 +80,7 @@ static void cute_reporter_testcase_started(TestReporter *reporter,
     memo->printer("#starting %s\n", name);
 }
 
-static void cute_reporter_testcase_finished(TestReporter *reporter, const char *filename, int line, const char *message,
+static void cute_finish_test(TestReporter *reporter, const char *filename, int line, const char *message,
                                             uint32_t duration_in_milliseconds) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
@@ -91,7 +91,7 @@ static void cute_reporter_testcase_finished(TestReporter *reporter, const char *
     }
 }
 
-static void cute_reporter_suite_finished(TestReporter *reporter, const char *filename, int line,
+static void cute_finish_suite(TestReporter *reporter, const char *filename, int line,
                                          uint32_t duration_in_milliseconds) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
@@ -108,7 +108,7 @@ static void cute_reporter_suite_finished(TestReporter *reporter, const char *fil
         memo->printer("\n");
 }
 
-static void assert_failed(TestReporter *reporter, const char *file, int line,
+static void show_fail(TestReporter *reporter, const char *file, int line,
         const char *message, va_list arguments) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     if (!memo->previous_error) {
@@ -123,7 +123,7 @@ static void assert_failed(TestReporter *reporter, const char *file, int line,
     }
 }
 
-static void assert_passed(TestReporter *reporter, const char *file, int line,
+static void show_pass(TestReporter *reporter, const char *file, int line,
         const char *message, va_list arguments) {
     (void) reporter;
     (void) file;
@@ -132,7 +132,7 @@ static void assert_passed(TestReporter *reporter, const char *file, int line,
     (void) arguments;
 }
 
-static void testcase_failed_to_complete(TestReporter *reporter,
+static void cute_failed_to_complete(TestReporter *reporter,
         const char *file, int line, const char *message, va_list arguments) {
     /* TODO: add additional message to output */
     CuteMemo *memo;
