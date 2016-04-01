@@ -15,6 +15,7 @@ TestSuite *parameter_tests();
 TestSuite *mock_tests();
 TestSuite *breadcrumb_tests();
 TestSuite *cute_reporter_tests();
+TestSuite *cdash_reporter_tests();
 TestSuite *unit_tests();
 TestSuite *message_formatting_tests();
 TestSuite *collector_tests();
@@ -37,6 +38,7 @@ int main(int argc, char **argv) {
     add_suite(suite, mock_tests());
     add_suite(suite, breadcrumb_tests());
     add_suite(suite, cute_reporter_tests());
+    add_suite(suite, cdash_reporter_tests());
     add_suite(suite, unit_tests());
     add_suite(suite, reflective_tests());
     add_suite(suite, reflective_no_teardown_tests());
