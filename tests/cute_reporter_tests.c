@@ -130,8 +130,10 @@ Ensure(CuteReporter, will_report_failing_of_test_only_once) {
 
 Ensure(CuteReporter, will_report_finishing_of_suite) {
     // Must indicate test suite completion before calling finish_suite()
-    reporter_start(reporter, "suite_name");
+    reporter->start_suite(reporter, "suite_name", 1);
 
+    clear_output();
+    
     send_reporter_completion_notification(reporter);
     reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
 
@@ -141,7 +143,8 @@ Ensure(CuteReporter, will_report_finishing_of_suite) {
 
 Ensure(CuteReporter, will_report_non_finishing_test) {
     const int line = 666;
-    reporter_start(reporter, "suite_name");
+    reporter->start_suite(reporter, "suite_name", 1);
+    clear_output();
 
     send_reporter_exception_notification(reporter);
     reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
