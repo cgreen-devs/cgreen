@@ -50,26 +50,26 @@ else
 	SUFFIX=.so
 endif
 
-OUTPUT_DIFF=../../tools/cgreen_runner_output_diff tools
-OUTPUT_DIFF_ARGUMENTS = `find tests -name '$(PREFIX)$(1)_messages_tests$(SUFFIX)'` $(1)_messages_tests ../../tests/$(1)_messages_tests.$$d.expected s%$$EXPECTEDDIR%%g
-MOCK_MESSAGES_TESTS=`find tests -name '$(PREFIX)mock_messages$(SUFFIX)'`
-CONSTRAINT_MESSAGES_TESTS=`find tests -name '$(PREFIX)constraint_messages$(SUFFIX)'`
-FAILURE_MESSAGES_TESTS=`find tests -name '$(PREFIX)failure_messages$(SUFFIX)'`
-ASSERTION_MESSAGES_TESTS=`find tests -name '$(PREFIX)assertion_messages$(SUFFIX)'`
+OUTPUT_DIFF=../../../tools/cgreen_runner_output_diff 
+OUTPUT_DIFF_ARGUMENTS = $(1)_messages_tests \
+	../../../tests \
+	$(1)_messages_tests.$$d.expected \
+	s%$$SOURCEDIR%%g
 
 unit: build
-	EXPECTEDDIR=$$PWD/tests/ ; \
+	SOURCEDIR=$$PWD/tests/ ; \
 	for d in c c++ ; do \
 	  cd build/build-$$d ; \
 	  make ; \
 	  export PATH=src:$$PATH ; \
 	  tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_tests$(SUFFIX)` ; \
 	  tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
+	  cd tests ; \
 	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,mock) ; \
-	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint) s/Terminated:.+[0-9]+/Terminated/ s/Quit:.+[0-9]+/Quit/ ; \
+	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint) ; \
 	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,assertion) ; \
 	  CGREEN_PER_TEST_TIMEOUT=2 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure) ; \
-	  cd ../.. ; \
+	  cd ../../.. ; \
 	done
 
 ############# Internal

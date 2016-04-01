@@ -26,7 +26,7 @@ Ensure(FailureMessage, for_CGREEN_PER_TEST_TIMEOUT) {
     // And fail if there is no environment variable set
     assert_that(getenv("CGREEN_PER_TEST_TIMEOUT"), is_not_equal_to(NULL));
     sleep(3);
-    fail_test("This test should have been aborted within CGREEN_PER_TEST_TIMEOUT seconds and not get here.");
+    fail_test("This test should have been aborted within CGREEN_PER_TEST_TIMEOUT seconds and not get here. When running this test you need to define CGREEN_PER_TEST_TIMEOUT=2.");
 }
 
 #ifdef __cplusplus

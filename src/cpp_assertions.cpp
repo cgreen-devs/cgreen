@@ -16,8 +16,7 @@ void assert_that_(const char *file, int line, const char *actual_string,
 		return;
 	}
 
-	assert_that_(file, line, actual_string, (const std::string *) (&actual),
-			constraint);
+	assert_that_(file, line, actual_string, (const std::string *) (&actual), constraint);
 }
 
 void assert_that_(const char *file, int line, const char *actual_string,

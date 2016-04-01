@@ -159,7 +159,7 @@ int main(int argc, const char **argv) {
     if (gopt_arg(options, 'n', &tmp))
         no_run = true;
 
-    if (gopt_arg(options, 'c', &tmp))
+    if (gopt_arg(options, 'c', &tmp) && isatty(fileno(stdout)))
         reporter_options.use_colours = true;
     else
         reporter_options.use_colours = false;

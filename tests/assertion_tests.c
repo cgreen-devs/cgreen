@@ -305,11 +305,13 @@ TestSuite *assertion_tests() {
     add_test(suite, zero_should_assert_char_not_equal_to_one);
     add_test(suite, one_should_assert_unsigned_char_equal_to_one);
     add_test(suite, zero_should_assert_unsigned_char_not_equal_to_one);
+    add_test(suite, different_pointers_with_different_contents_should_not_assert_equal);
+    add_test(suite, different_pointers_with_same_contents_should_assert_equal);
     add_test(suite, one_should_assert_float_equal_to_one);
     add_test(suite, zero_should_assert_float_not_equal_to_one);
     add_test(suite, one_should_assert_double_equal_to_one);
     add_test(suite, zero_should_assert_double_not_equal_to_one);
-    add_test(suite, zero_should_assert_double_not_equal_to_one);
+    add_test(suite, zero_should_assert_double_equal_to_zero);
     add_test(suite, one_should_assert_long_double_equal_to_one);
     add_test(suite, zero_should_assert_long_double_not_equal_to_one);
     add_test(suite, double_differences_do_not_matter_past_significant_figures);
@@ -321,15 +323,13 @@ TestSuite *assertion_tests() {
     add_test(suite, double_assertions_can_have_custom_messages);
     add_test(suite, identical_string_copies_should_match);
     add_test(suite, case_different_strings_should_not_match);
+    add_test(suite, identical_strings_contain_eachother);
     add_test(suite, null_string_should_only_match_another_null_string);
     add_test(suite, null_string_should_only_match_another_null_string_even_with_messages);
-    add_test(suite, different_pointers_with_different_contents_should_not_assert_equal);
-    add_test(suite, different_pointers_with_same_contents_should_assert_equal);
+    add_test(suite, inspecting_contents_of_expected_value_of_null_produces_nice_error_message);
+    add_test(suite, inspecting_contents_of_actual_value_of_null_produces_nice_error_message);
+    add_test(suite, inspecting_contents_of_with_zero_size_produces_nice_error_message);
     add_test(suite, fail_reports_message);
     add_test(suite, return_value_constraints_are_not_allowed);
-    add_test(suite, identical_strings_contain_eachother);
-    add_test(suite, inspecting_contents_of_actual_value_of_null_produces_nice_error_message);
-    add_test(suite, inspecting_contents_of_expected_value_of_null_produces_nice_error_message);
-    add_test(suite, inspecting_contents_of_with_zero_size_produces_nice_error_message);
     return suite;
 }

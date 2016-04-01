@@ -62,41 +62,91 @@ Ensure(custom_large_classes_are_not_equal) {
     assert_that(my_class != other);
 }
 
-Ensure(stl_string_references_are_not_equal) {
+Ensure(same_stl_string_references_are_equal) {
+    std::string bob("bob");
+    assert_that(bob, is_equal_to_string(bob));
+}
+
+Ensure(stl_string_contains_string) {
+    std::string bobbob("bobbob");
+    assert_that(bobbob, contains_string("obbo"));
+}
+
+Ensure(string_contains_stl_string) {
+    std::string obbo("obbo");
+    assert_that("bobbob", contains_string(obbo));
+}
+
+Ensure(string_contains_stl_string_pointer) {
+    bob_pointer = new std::string("obbo");
+    assert_that("bobbob", contains_string(bob_pointer));
+}
+
+Ensure(stl_string_does_not_contain_string) {
+    std::string bobbob("bobbob");
+    assert_that(bobbob, does_not_contain_string("alice"));
+}
+
+Ensure(string_does_not_contain_stl_string) {
+    std::string obbo("obbo");
+    assert_that("alice", does_not_contain_string(obbo));
+}
+
+Ensure(string_does_not_contain_stl_string_pointer) {
+    bob_pointer = new std::string("bob");
+    assert_that("alice", does_not_contain_string(bob_pointer));
+}
+
+Ensure(stl_string_begins_with_string) {
+    std::string bobbob("bobbob");
+    assert_that(bobbob, begins_with_string("bob"));
+}
+
+Ensure(string_begins_with_stl_string) {
+    std::string bob("bob");
+    assert_that("bobbob", begins_with_string(bob));
+}
+
+Ensure(string_begins_with_stl_string_pointer) {
+    bob_pointer = new std::string("bob");
+    assert_that("bobbob", begins_with_string(bob_pointer));
+}
+
+Ensure(different_stl_string_references_are_not_equal) {
     std::string bob("bob");
     std::string alice("alice");
     assert_that(bob, is_not_equal_to_string(alice));
 }
 
-Ensure(stl_string_pointers_are_not_equal) {
+Ensure(different_stl_string_pointers_are_not_equal) {
     bob_pointer = new std::string("bob");
     alice_pointer = new std::string("alice");
 
     assert_that(bob_pointer, is_not_equal_to_string(alice_pointer));
 }
 
-Ensure(stl_string_pointer_and_reference_are_not_equal) {
+Ensure(different_stl_string_pointer_and_reference_are_not_equal) {
     bob_pointer = new std::string("bob");
     std::string alice("alice");
 
     assert_that(bob_pointer, is_not_equal_to_string(alice));
 }
 
-Ensure(stl_string_reference_and_pointer_are_not_equal) {
+Ensure(different_stl_string_reference_and_pointer_are_not_equal) {
     bob_pointer = new std::string("bob");
     std::string alice("alice");
 
     assert_that(alice, is_not_equal_to_string(bob_pointer));
 }
 
-Ensure(stl_string_pointer_and_reference_are_equal) {
+Ensure(same_stl_string_pointer_and_reference_are_equal) {
     alice_pointer = new std::string("alice");
     std::string alice_reference("alice");
 
     assert_that(alice_pointer, is_equal_to_string(alice_reference));
 }
 
-Ensure(stl_string_reference_and_pointer_are_equal) {
+Ensure(same_stl_string_reference_and_pointer_are_equal) {
     alice_pointer = new std::string("alice");
     std::string alice_reference("alice");
 
@@ -151,14 +201,24 @@ TestSuite* cpp_assertion_tests() {
     TestSuite *suite = create_test_suite();
     set_setup(suite, setup);
     set_teardown(suite, teardown);
-    add_test(suite, custom_large_classes_are_not_equal);
     add_test(suite, custom_large_classes_are_equal);
-    add_test(suite, stl_string_references_are_not_equal);
-    add_test(suite, stl_string_reference_and_pointer_are_not_equal);
-    add_test(suite, stl_string_pointer_and_reference_are_not_equal);
-    add_test(suite, stl_string_reference_and_pointer_are_equal);
-    add_test(suite, stl_string_pointer_and_reference_are_equal);
-    add_test(suite, stl_string_pointers_are_not_equal);
+    add_test(suite, custom_large_classes_are_not_equal);
+    add_test(suite, same_stl_string_references_are_equal);
+    add_test(suite, stl_string_contains_string);
+    add_test(suite, string_contains_stl_string);
+    add_test(suite, string_contains_stl_string_pointer);
+    add_test(suite, stl_string_does_not_contain_string);
+    add_test(suite, string_does_not_contain_stl_string);
+    add_test(suite, string_does_not_contain_stl_string_pointer);
+    add_test(suite, stl_string_begins_with_string);
+    add_test(suite, string_begins_with_stl_string);
+    add_test(suite, string_begins_with_stl_string_pointer);
+    add_test(suite, different_stl_string_references_are_not_equal);
+    add_test(suite, different_stl_string_pointers_are_not_equal);
+    add_test(suite, different_stl_string_pointer_and_reference_are_not_equal);
+    add_test(suite, different_stl_string_reference_and_pointer_are_not_equal);
+    add_test(suite, same_stl_string_pointer_and_reference_are_equal);
+    add_test(suite, same_stl_string_reference_and_pointer_are_equal);
     add_test(suite, stl_string_pointer_is_not_null);
     add_test(suite, stl_string_pointer_is_null);
     add_test(suite, stl_string_length_assertion_failure_is_readable);

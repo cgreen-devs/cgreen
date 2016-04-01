@@ -288,7 +288,7 @@ void run_the_test_code(TestSuite *suite, CgreenTest *spec, TestReporter *reporte
 
     run(spec);
     // for historical reasons the suite can have a teardown
-    if (suite->teardown != &do_nothing) {
+    if (has_teardown(suite)) {
         (*suite->teardown)();
     } else {
         if (spec->context->teardown != NULL) {
