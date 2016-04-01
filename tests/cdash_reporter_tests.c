@@ -144,7 +144,10 @@ TestSuite *cdash_reporter_tests() {
     TestSuite *suite = create_test_suite();
     set_setup(suite, setup_cdash_reporter_tests);
 
-    // Add tests here
+    add_test(CDashReporter, will_report_nothing_for_suites);
+    add_test(CDashReporter, will_report_passed_for_test_with_one_pass);
+    add_test(CDashReporter, will_report_failed_once_for_each_fail);
+    add_test(CDashReporter, will_report_non_finishing_test);
     
     set_teardown(suite, cdash_reporter_tests_teardown);
     return suite;
