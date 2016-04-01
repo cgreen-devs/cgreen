@@ -60,9 +60,10 @@ static void setup_cdash_reporter_tests() {
 }
 
 static void cdash_reporter_tests_teardown() {
+    reporter->destroy(reporter);
+
     //bad mojo when running tests in same process, as destroy_reporter also sets
     //context.reporter = NULL, thus breaking the next test to run
-    destroy_reporter(reporter);
     if (NULL != output) {
         free(output);
         //need to set output to NULL to avoid second free in subsequent call to setup_cdash_reporter_tests->clear_output
