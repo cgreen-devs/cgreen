@@ -35,16 +35,16 @@ typedef struct {
 } CdashMemo;
 
 static void cdash_destroy_reporter(TestReporter *reporter);
-static void cdash_reporter_suite_started(TestReporter *reporter, const char *name, const int number_of_tests);
-static void cdash_reporter_testcase_started(TestReporter *reporter, const char *name);
+static void cdash_reporter_start_suite(TestReporter *reporter, const char *name, const int number_of_tests);
+static void cdash_reporter_start_test(TestReporter *reporter, const char *name);
 
-static void show_failed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-static void show_passed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
+static void cdash_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
+static void cdash_show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 
-static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *filename, int line,
+static void cdash_finish_test(TestReporter *reporter, const char *filename, int line,
                                              const char *message, uint32_t duration_in_milliseconds);
-static void cdash_reporter_suite_finished(TestReporter *reporter, const char *filename, int line,
+static void cdash_finish_suite(TestReporter *reporter, const char *filename, int line,
                                           uint32_t duration_in_milliseconds);
 
 static time_t cdash_build_stamp(char *sbuildstamp, size_t sb);
@@ -150,13 +150,13 @@ TestReporter *create_cdash_reporter(CDashInfo *cdash) {
     fflush(memo->f_reporter);
 
     reporter->destroy = &cdash_destroy_reporter;
-    reporter->start_suite = &cdash_reporter_suite_started;
-    reporter->start_test = &cdash_reporter_testcase_started;
-    reporter->show_fail = &show_failed;
-    reporter->show_pass = &show_passed;
+    reporter->start_suite = &cdash_reporter_start_suite;
+    reporter->start_test = &cdash_reporter_start_test;
+    reporter->show_fail = &cdash_show_fail;
+    reporter->show_pass = &cdash_show_pass;
     reporter->show_incomplete = &show_incomplete;
-    reporter->finish_test = &cdash_reporter_testcase_finished;
-    reporter->finish_suite = &cdash_reporter_suite_finished;
+    reporter->finish_test = &cdash_finish_test;
+    reporter->finish_suite = &cdash_finish_suite;
     reporter->memo = memo;
 
     return reporter;
@@ -178,20 +178,20 @@ static void cdash_destroy_reporter(TestReporter *reporter) {
 }
 
 
-static void cdash_reporter_suite_started(TestReporter *reporter, const char *name, const int number_of_tests) {
+static void cdash_reporter_start_suite(TestReporter *reporter, const char *name, const int number_of_tests) {
     (void)number_of_tests;
 
     reporter_start(reporter, name);
 }
 
-static void cdash_reporter_testcase_started(TestReporter *reporter, const char *name) {
+static void cdash_reporter_start_test(TestReporter *reporter, const char *name) {
     CdashMemo *memo = (CdashMemo *)reporter->memo;
 
     memo->teststarted = memo->timer(NULL);
     reporter_start(reporter, name);
 }
 
-static void show_failed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+static void cdash_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     const char *name;
     char buffer[1000];
     float exectime;
@@ -227,7 +227,7 @@ static void show_failed(TestReporter *reporter, const char *file, int line, cons
            "    </Test>\n");
 }
 
-static void show_passed(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+static void cdash_show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     double exectime;
     CdashMemo *memo;
     const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
@@ -294,13 +294,13 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line, 
 }
 
 
-static void cdash_reporter_testcase_finished(TestReporter *reporter, const char *filename, int line,
+static void cdash_finish_test(TestReporter *reporter, const char *filename, int line,
                                              const char *message, uint32_t duration_in_milliseconds) {
     reporter_finish(reporter, filename, line, message, duration_in_milliseconds);
 }
 
 
-static void cdash_reporter_suite_finished(TestReporter *reporter, const char *filename, int line,
+static void cdash_finish_suite(TestReporter *reporter, const char *filename, int line,
                                           uint32_t duration_in_milliseconds) {
     reporter_finish(reporter, filename, line, NULL, duration_in_milliseconds);
 }
