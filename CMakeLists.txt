@@ -79,3 +79,22 @@ else()
     add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} 
         --force-new-ctest-process --output-on-failure)
 endif()
+
+IF(CGREEN_WITH_CXX)
+  set(lang CXX)
+ELSE()
+  set(lang C)
+ENDIF()
+
+IF(CGREEN_INTERNAL_WITH_GCOV)
+  IF(CMAKE_${lang}_COMPILER_ID STREQUAL GNU)
+    add_custom_target(coverage
+        COMMAND ${LCOV_PATH} --directory . --capture --output-file coverage.info
+		COMMAND ${LCOV_PATH} --remove coverage.info '/usr/*' -o coverage.info
+		COMMAND ${GENHTML_PATH} -o coverage coverage.info
+    )
+  ENDIF()
+ELSE()
+  add_custom_target(coverage
+      COMMAND echo "WARNING: Configure CGREEN_INTERNAL_WITH_GCOV to get coverage")
+ENDIF()
