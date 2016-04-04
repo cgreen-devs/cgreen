@@ -4,15 +4,23 @@
 CGREEN_ROOT=../..
 FPIC = -fPIC	# required on Linux
 
-# Local tweaks, you can also override "MYSQL_*={somedir}" on the command line
-MYSQL_INCLUDE=
-MYSQL_LIB=
+# Local tweaks, you can also override "MYSQLROOT={somedir}" on the command line
+MYSQLROOT = 
+MYSQL_INCLUDE = $(MYSQLROOT)/include
+MYSQL_LIB = $(MYSQLROOT)/lib
 
 CGREEN_BIN=$(CGREEN_ROOT)/build/build-c
 CC = gcc -c -g -Wall -I$(CGREEN_ROOT)/include -I$(MYSQL_INCLUDE) -I$(FPIC)
 LINK = gcc -g
 LIBDIRS = -L$(CGREEN_BIN)/src -L$(MYSQL_LIB)
-RUNNER = PATH="$(CGREEN_BIN)/src:$(PATH)" $(CGREEN_BIN)/tools/cgreen-runner
+
+# you might need to fixup the various path issues to get dynamic loading to work
+# MacOSX:
+LDPATH = DYLD_LIBRARY_PATH="$(CGREEN_BIN)/src:$(MYSQL_LIB)"
+# Cygwin?
+#LDPATH = PATH="$(CGREEN_BIN)/src:$(MYSQL_LIB)"
+
+RUNNER = $(LDPATH) $(CGREEN_BIN)/tools/cgreen-runner
 
 all: with_main with_runner special
 
@@ -27,7 +35,7 @@ with_main:  first0 first1 \
 			test_as_xml2 \
 			test_as_xml3 \
 			test_as_xml4
-	for f in $^ ; do echo $$f; LD_LIBRARY_PATH=$(CGREEN_BIN)/src ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
+	for f in $^ ; do echo $$f; $(LDPATH) ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
 
 # Most tests built to run with the runner we can run here, but some need special care
 # They have their output produced directly in the build rules below

@@ -15,7 +15,7 @@ typedef struct {
     int previous_error; // For status outside the test case process
 } CuteMemo;
 
-static void cute_suite_started(TestReporter *reporter,
+static void cute_start_suite(TestReporter *reporter,
         const char *name, const int number_of_tests);
 static void cute_start_test(TestReporter *reporter,
         const char *name);
@@ -52,7 +52,7 @@ TestReporter *create_cute_reporter(void) {
 
     memo->printer = printf;
 
-    reporter->start_suite = &cute_suite_started;
+    reporter->start_suite = &cute_start_suite;
     reporter->start_test = &cute_start_test;
     reporter->show_fail = &show_fail;
     reporter->show_pass = &show_pass;
@@ -64,7 +64,7 @@ TestReporter *create_cute_reporter(void) {
     return reporter;
 }
 
-static void cute_suite_started(TestReporter *reporter,
+static void cute_start_suite(TestReporter *reporter,
         const char *name, const int number_of_tests) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     reporter_start_test(reporter, name);
