@@ -67,7 +67,7 @@ TestReporter *create_cute_reporter(void) {
 static void cute_suite_started(TestReporter *reporter,
         const char *name, const int number_of_tests) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
-    reporter_start(reporter, name);
+    reporter_start_test(reporter, name);
     memo->printer("#beginning %s %d\n", name, number_of_tests);
 }
 
@@ -76,7 +76,7 @@ static void cute_start_test(TestReporter *reporter,
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     memo->error_count = reporter->failures + reporter->exceptions;
     memo->previous_error = 0;
-    reporter_start(reporter, name);
+    reporter_start_test(reporter, name);
     memo->printer("#starting %s\n", name);
 }
 
@@ -85,7 +85,7 @@ static void cute_finish_test(TestReporter *reporter, const char *filename, int l
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 
-    reporter_finish(reporter, filename, line, message, duration_in_milliseconds);
+    reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
     if (memo->error_count == reporter->failures + reporter->exceptions) {
         memo->printer("#success %s, %d ms OK\n", name);
     }
@@ -95,7 +95,7 @@ static void cute_finish_suite(TestReporter *reporter, const char *filename, int 
                                          uint32_t duration_in_milliseconds) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
-    reporter_finish(reporter, filename, line, NULL, duration_in_milliseconds);
+    reporter_finish_test(reporter, filename, line, NULL, duration_in_milliseconds);
 
     memo->printer("#ending %s", name);
     if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0) {

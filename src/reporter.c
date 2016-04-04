@@ -59,12 +59,12 @@ TestReporter *create_reporter() {
 
     reporter->destroy = &destroy_reporter;
     reporter->start_suite = &reporter_start_suite;
-    reporter->start_test = &reporter_start;
+    reporter->start_test = &reporter_start_test;
     reporter->show_pass = &show_pass;
     reporter->show_fail = &show_fail;
     reporter->show_incomplete = &show_incomplete;
     reporter->assert_true = &assert_true;
-    reporter->finish_test = &reporter_finish;
+    reporter->finish_test = &reporter_finish_test;
     reporter->finish_suite = &reporter_finish_suite;
     reporter->passes = 0;
     reporter->failures = 0;
@@ -93,17 +93,17 @@ void destroy_memo(TestReportMemo *memo) {
     }
 }
 
-void reporter_start(TestReporter *reporter, const char *name) {
+void reporter_start_test(TestReporter *reporter, const char *name) {
     push_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, name);
 }
 
 void reporter_start_suite(TestReporter *reporter, const char *name, const int count) {
     (void) count;
-    reporter_start(reporter, name);
+    push_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, name);
 }
 
-void reporter_finish(TestReporter *reporter, const char *filename, int line, const char *message,
-                     uint32_t duration_in_milliseconds) {
+void reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message,
+                          uint32_t duration_in_milliseconds) {
     (void)duration_in_milliseconds;
     int status = read_reporter_results(reporter);
 
