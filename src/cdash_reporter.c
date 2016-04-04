@@ -174,14 +174,14 @@ static void cdash_destroy_reporter(TestReporter *reporter) {
 static void cdash_reporter_start_suite(TestReporter *reporter, const char *name, const int number_of_tests) {
     (void)number_of_tests;
 
-    reporter_start(reporter, name);
+    reporter_start_test(reporter, name);
 }
 
 static void cdash_reporter_start_test(TestReporter *reporter, const char *name) {
     CDashMemo *memo = (CDashMemo *)reporter->memo;
 
     memo->teststarted = cdash_current_time(NULL);
-    reporter_start(reporter, name);
+    reporter_start_test(reporter, name);
 }
 
 
@@ -292,13 +292,13 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line, 
 
 static void cdash_finish_test(TestReporter *reporter, const char *filename, int line,
                                              const char *message, uint32_t duration_in_milliseconds) {
-    reporter_finish(reporter, filename, line, message, duration_in_milliseconds);
+    reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
 }
 
 
 static void cdash_finish_suite(TestReporter *reporter, const char *filename, int line,
                                           uint32_t duration_in_milliseconds) {
-    reporter_finish(reporter, filename, line, NULL, duration_in_milliseconds);
+    reporter_finish_test(reporter, filename, line, NULL, duration_in_milliseconds);
 }
 
 static time_t cdash_build_stamp(char *sbuildstamp, size_t sb) {
