@@ -24,12 +24,16 @@ install:
 
 dirs: build-c build-c++
 
+ifeq ($(shell uname),Darwin)
+ARCH=-DCMAKE_OSX_ARCHITECTURES:string="i386;x86_64"
+endif
+
 build-c:
 	mkdir build-c
-	cd build-c; cmake ../..
+	cd build-c; cmake $(ARCH) ../..
 
 build-c++:
 	mkdir build-c++
-	cd build-c++; cmake -DCGREEN_WITH_CXX:bool=ON ../..
+	cd build-c++; cmake -DCGREEN_WITH_CXX:bool=ON $(ARCH) ../..
 
 .SILENT:
