@@ -17,13 +17,13 @@ static void xml_reporter_start_suite(TestReporter *reporter, const char *name, i
     }
     indent(reporter);
     printf("<suite name=\"%s\">\n", name);
-    reporter_start(reporter, name);
+    reporter_start_suite(reporter, name, count);
 }
 
 static void xml_reporter_start_test(TestReporter *reporter, const char *name) {
     indent(reporter);
     printf("<test name=\"%s\">\n", name);
-    reporter_start(reporter, name);
+    reporter_start_test(reporter, name);
 }
 
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
@@ -49,14 +49,14 @@ static void xml_show_incomplete(TestReporter *reporter, const char *file, int li
 }
 
 
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message) {
-    reporter_finish(reporter, filename, line, message);
+static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message, uint32_t duration_in_milliseconds) {
+    reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
     indent(reporter);
     printf("</test>\n");
 }
 
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line, "");
+static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line, uint32_t duration_in_milliseconds) {
+    reporter_finish_suite(reporter, filename, line, duration_in_milliseconds);
     indent(reporter);
     printf("</suite>\n");
 }

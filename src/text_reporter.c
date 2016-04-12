@@ -50,7 +50,7 @@ static bool have_quiet_mode(TestReporter *reporter) {
 
 static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 		const int number_of_tests) {
-	reporter_start(reporter, name);
+	reporter_start_test(reporter, name);
 	if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 1) {
 		printf("Running \"%s\" (%d tests)%s",
 				get_current_from_breadcrumb(
@@ -62,12 +62,12 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 }
 
 static void text_reporter_start_test(TestReporter *reporter, const char *name) {
-	reporter_start(reporter, name);
+	reporter_start_test(reporter, name);
 }
 
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
 		int line, const char *message, uint32_t duration_in_milliseconds) {
-	reporter_finish(reporter, filename, line, message, duration_in_milliseconds);
+	reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
 }
 
 

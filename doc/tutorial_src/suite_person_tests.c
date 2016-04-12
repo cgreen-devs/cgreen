@@ -1,6 +1,6 @@
 #include <cgreen/cgreen.h>
 #include <stdlib.h>
-#include <mysql/mysql.h>
+#include <mysql.h>
 #include "person.h"
 
 static void create_schema() {
