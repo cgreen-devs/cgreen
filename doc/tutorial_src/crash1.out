@@ -1,5 +1,5 @@
 Running "main" (1 tests)...
 crash_tests.c:8: Exception: seg_faults_for_null_dereference 
-	Test terminated with signal: Segmentation fault
+	Test terminated with signal: Segmentation fault: 11
 
-Completed "main": 0 passes, 0 failures, 1 exception.
+Completed "main": 0 passes, 0 failures, 1 exception in 0ms.

@@ -65,13 +65,13 @@ static void xml_show_incomplete(TestReporter *reporter, const char *name) {
 }
 
 static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line);
+    reporter_finish_test(reporter, filename, line);
     indent(reporter);
     printf("</test>\n");
 }
 
 static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
-    reporter_finish(reporter, filename, line);
+    reporter_finish_suite(reporter, filename, line);
     indent(reporter);
     printf("</suite>\n");
 }

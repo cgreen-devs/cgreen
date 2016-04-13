@@ -71,7 +71,7 @@ static void xml_reporter_start_suite(TestReporter *reporter, const char *suitena
     int segment_count = reporter->breadcrumb->depth;
     walk_breadcrumb(reporter->breadcrumb, pathprinter, &segment_count);
     fprintf(out, "%s\">\n", suitename);
-    reporter_start(reporter, suitename);
+    reporter_start_suite(reporter, suitename, 0);
 }
 
 static void xml_reporter_start_test(TestReporter *reporter, const char *testname) {
@@ -83,7 +83,7 @@ static void xml_reporter_start_test(TestReporter *reporter, const char *testname
 
     // Don't terminate the XML-node now so that we can add the duration later
     fprintf(out, "\" name=\"%s\"", testname);
-    reporter_start(reporter, testname);
+    reporter_start_test(reporter, testname);
 }
 
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
@@ -117,7 +117,7 @@ static void xml_show_incomplete(TestReporter *reporter, const char *filename, in
 static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message,
                                      uint32_t duration_in_milliseconds) {
     FILE *out = file_stack[file_stack_p-1];
-    reporter_finish(reporter, filename, line, message, duration_in_milliseconds);
+    reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
     fprintf(out, " time=\"%.5f\">\n", (double)duration_in_milliseconds/(double)1000);
     indent(out, reporter);
     fprintf(out, "</testcase>\n");

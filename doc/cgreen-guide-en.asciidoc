@@ -4,9 +4,10 @@
 :toc:
 :pp: ++
 
-= Cgreen - Unit Tests for C and C++
+= Cgreen - Unit Tests, Stubbing and Mocking for C and C++
 Marcus Baker <marcus@lastcraft.com>; Thomas Nilsson <thomas@junovagen.se>; João Freitas <joaohf@gmail.com>;
 
+Version: 1.0.0 beta 5
 
 Cgreen Quickstart Guide
 -----------------------
@@ -44,10 +45,10 @@ Here are some of its features:
 - Automatic discovery and running of tests using dynamic library inspection
 
 *Cgreen* also supports the classic xUnit-style assertions for easy
- porting from other frameworks.
+porting from other frameworks.
         
 *Cgreen* was initially developed to support C programming, but there
-is also excellent support for C++. It was initially a spinoff from a
+is also excellent support for C{pp}. It was initially a spinoff from a
 research project at Wordtracker and created by Marcus Baker.
 
 
@@ -65,9 +66,10 @@ made popular by people like Dan North and frameworks like JBehave,
 RSpec, Cucumber and Jasmine.
 
 *Cgreen* follows this trend and has evolved to embrace a BDD-flavoured
-style of testing. Although the fundamental mechanisms in TDD and BDD
-are much the same, the shift in focus by changing wording from 'tests'
-to 'behaviour specifications' is very significant.
+style of testing. Although the fundamental mechanisms in TDD and
+'technical' BDD are much the same, the shift in focus by changing
+wording from 'tests' to 'behaviour specifications' is very
+significant.
 
 This document will present *Cgreen* using the more modern and better
 BDD-style. In a later section you can have a peek at the classic TDD
@@ -81,26 +83,29 @@ There are two ways to install *Cgreen* in your system.
 Installing a package
 ^^^^^^^^^^^^^^^^^^^^
       
-The first way is to use the RPM or DEB package provided by the *Cgreen*
-Team. You can fetch it from http://cgreen.sourceforge.net[Cgreen
-website project]. Download and install it using the normal procedures
-for your system.
+The first way is to use the RPM or DEB package provided by the
+*Cgreen* Team. You can fetch it from
+https://github.com/cgreen-devs/cgreen/releases[Cgreen GitHub
+project]. Download and install it using the normal procedures for your
+system.
 
-NOTE: There is currently no supported packages available.
+NOTE: At this point there are no supported pre-built packages
+available. You'll have to build from source.
 
 Installing from source
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The second way is available for developers and advanced
 users. Basically this consists of fetching the sources of the project
-on https://github.com/cgreen-devs/cgreen[GitHub] and compiling
-them. To do this you need the http://www.cmake.org[CMake] build
-system.
+on https://github.com/cgreen-devs/cgreen[GitHub], just click on
+"Download ZIP", and compiling them. To do this you need the
+http://www.cmake.org[CMake] build system.
 
 When you have the CMake tool, the steps are:
 
 -----------------------------------------
-$ tar -zxpvf cgreen.tar.gz
+$ unzip cgreen-master.zip
+$ cd cgreen-master
 $ make
 $ make test    
 $ make install
@@ -113,7 +118,7 @@ using *CMake*. This is called an 'out of source build'. It compiles
 file organization and enables multi-target builds from the same
 sources by leaving the complete source tree untouched. The top level
 `Makefile` will by default create the two directories, `build/build-c`
-and `build/build-c++`, which houses the __C__ and __C++__ builds
+and `build/build-c{pp}`, which houses the C and C++ builds
 respectively.
 
 TIP: Experienced users may tweak the build configurations by going to
@@ -123,7 +128,7 @@ subdirectory with a name starting with `build-` is also possible. The
 `Makefile` will automatically pick that up and build there too.
 
 The build process will create a library (on unix called `libcgreen.so`
-and `libcgreen++.so` for C++) which can be used in conjunction with the
+and `libcgreen{pp}.so` for C++) which can be used in conjunction with the
 `cgreen.h` header file to compile test code. The created library is
 installed in the system, by default in the `/usr/local/lib/`.
 
@@ -188,8 +193,9 @@ Let's add a meaningless test or two so that you can see how it runs...
 include::tutorial_src/first_tests1.c[]
 -----------------------------
 
-A test is denoted by the macro `Ensure`. You can think of a test as
-having a `void (void)` signature. You add the test to your suite using
+A test is denoted by the macro `Ensure` which takes an optional
+context (`Cgreen`) and a, hopefully descriptive, testname
+(`passes_this_test`). You add the test to your suite using
 `add_test_with_context()`.
 
 On compiling and running, we now get the output...
@@ -212,9 +218,9 @@ Five minutes doing TDD with Cgreen
 
 For a more realistic example we need something to test. We'll pretend
 that we are writing a function to split the words of a sentence in
-place. It does this by replacing any spaces with string terminators
-and returns the number of conversions plus one.  Here is an example of
-what we have in mind...
+place. It would do this by replacing any spaces with string
+terminators and returns the number of conversions plus one.  Here is
+an example of what we have in mind...
 
 [source,c]
 -------------------------------
@@ -331,8 +337,8 @@ The breadcrumb trail following the "Failure" text is the nesting of
 the tests. It goes from the test suites, which can be nested in each
 other, through the test function, and finally to the message from the
 assertion. In the language of *Cgreen*, a "failure" is a mismatched
-assertion, an "exception" occurs when a test fails to complete for any
-reason.
+assertion, or constraint, and an "exception" occurs when a test fails
+to complete for any reason, e.g. a segmentation fault.
 
 We could get this to pass just by returning the value 4. Doing TDD in
 really small steps, you would actually do this, but frankly this
@@ -718,7 +724,7 @@ Legacy style assertions
 Cgreen have been around for a while, developed and matured. There is
 an older style of assertions that was the initial version, a style
 that we now call the 'legacy style', because it was more aligned with
-the original, now old, unit test frameworks. If you are not interested
+the original, now older, unit test frameworks. If you are not interested
 in historical artifacts, I recommend that you skip this section.
 
 But for completeness of documentation, here are the legacy style
@@ -1111,10 +1117,10 @@ can only have one `Describe()` macro in each file. But using this
 strategy you can create composite suites that takes all your tests and
 run them in one go.
 
-CAUTION: Rewrite pending. The next couple section does not reflect the
-current best thinking. They are remnants of the TDD notation. Using
-BDD notation you would create separate contexts, each in its own file,
-with separate names, for each of the fixture cases.
+CAUTION: Rewrite pending. The next couple of sections does not reflect
+the current best thinking. They are remnants of the TDD
+notation. Using BDD notation you would create separate contexts, each
+in its own file, with separate names, for each of the fixture cases.
 
 NOTE: If you use the TDD (non-BDD) notation you can build several test
 suites in the same file, even nesting them.  We can even add mixtures
@@ -2225,7 +2231,7 @@ the name of the suite being entered and the number of tests in that
 suite. The default version keeps track of the stack of tests in the
 `breadcrumb` pointer of `TestReporter`. If you make use of the
 breadcrumb functions, as the defaults do, then you will need to call
-`reporter_start()` to keep the book keeping in sync.
+`reporter_start_suite()` to keep the book keeping in sync.
 
 
 `void (*start_test)(TestReporter *reporter, const char *name)`::
@@ -2234,7 +2240,7 @@ At the start of each test *Cgreen* will call this method on the
 reporter with the name of the test being entered. Again, the default
 version keeps track of the stack of tests in the `breadcrumb` pointer
 of `TestReporter`. If you make use of the breadcrumb functions, as the
-defaults do, then you will need to call `reporter_start()` to keep the
+defaults do, then you will need to call `reporter_start_test()` to keep the
 book keeping in sync.
 
 
@@ -2437,8 +2443,8 @@ navigating the test suite...
 include::tutorial_src/xml_reporter1.c[]
 -----------------------
 
-Although chaining to the underlying `reporter_start()`
-and `reporter_finish()` functions is optional, I want to
+Although chaining to the underlying `reporter_start_*()`
+and `reporter_finish_*()` functions is optional, I want to
 make use of some of the facilities later.
 
 Our output meanwhile, is making its first tentative steps...
@@ -2538,7 +2544,7 @@ and the error messages might not be straight forward to interpret.
 |*Compiler error message*                    |*Probable cause...*
 |`"contextFor<X>" is undeclared here`        |You forgot the `BeforeEach()` function
 |`undefined reference to 'AfterEach_For_<X>'`|You forgot the `AfterEach()` function
-|`CgreenSpec__<X>__<Y>__ is undeclared`      |You forgot to specify the test subject/context in a BDD style test
+|`CgreenSpec__<X>__<Y>__ is undeclared`      |You forgot to specify the test subject/context in the `Ensure` of a BDD style test
 |=========================================================
 
 
