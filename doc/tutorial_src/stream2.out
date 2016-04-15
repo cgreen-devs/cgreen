@@ -4,5 +4,5 @@ stream_tests.c:23: Failure: ParagraphReader -> gives_one_character_line_for_one_
 		actual value:			[""]
 		expected to equal:		["a"]
 
-Completed "ParagraphReader": 1 pass, 1 failure, 0 exceptions in 1ms.
-Completed "stream": 1 pass, 1 failure, 0 exceptions in 1ms.
+Completed "ParagraphReader": 1 pass, 1 failure, 0 exceptions in 23ms.
+Completed "stream": 1 pass, 1 failure, 0 exceptions in 23ms.

@@ -2,12 +2,17 @@
 .SILENT :
 
 CGREEN_ROOT=../..
-FPIC = -fPIC	# required on Linux
+FPIC = -fPIC	# required on Linux, Darwin, ...
 
 # Local tweaks, you can also override "MYSQLROOT={somedir}" on the command line
+ifeq ($(shell uname),Darwin)
+MYSQL_INCLUDE = /opt/local/include/mysql56/mysql
+MYSQL_LIB = /opt/local/lib/mysql56/mysql
+else
 MYSQLROOT = 
 MYSQL_INCLUDE = $(MYSQLROOT)/include
 MYSQL_LIB = $(MYSQLROOT)/lib
+endif
 
 CGREEN_BIN=$(CGREEN_ROOT)/build/build-c
 CC = gcc -c -g -Wall -I$(CGREEN_ROOT)/include -I$(MYSQL_INCLUDE) -I$(FPIC)
@@ -171,7 +176,10 @@ stream4: stream_tests3.o read_paragraph2.o
 # This test generates random characters read from memory so we need to tidy that up
 stream5: stream_tests4.o read_paragraph2.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) $@.so | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' | LANG='' sed -e '/actual value:.*\".*$$/ { n; s/[\x00-\xff]*\"]$$/\"\]/ }' > $@.out
+	$(RUNNER) $@.so | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
+	echo "Removing non-characters from stream5.out, check manually if the following fails:"
+	cp $@.out $@.bak && LANG='' sed -e '/actual value:.*\".*$$/ { n; s/[\x00-\xff]*\"]$$/\"\]/ }' $@.bak > $@.bak2 && mv $@.bak2 $@.out
+	rm $@.bak[2]
 
 .PHONY: stream6
 stream6: stream_tests4.o read_paragraph3.o

@@ -4,5 +4,5 @@ words_tests.c:21: Failure: words_tests -> converts_spaces_to_zeroes
 		actual value:			[-32]
 		expected value:			[0]
 
-Completed "words_tests": 1 pass, 1 failure, 0 exceptions in 1ms.
-Completed "main": 1 pass, 1 failure, 0 exceptions in 1ms.
+Completed "words_tests": 1 pass, 1 failure, 0 exceptions in 2ms.
+Completed "main": 1 pass, 1 failure, 0 exceptions in 2ms.

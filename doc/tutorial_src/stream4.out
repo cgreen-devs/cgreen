@@ -1,3 +1,3 @@
 Running "stream" (3 tests)...
-Completed "ParagraphReader": 3 passes, 0 failures, 0 exceptions in 2ms.
-Completed "stream": 3 passes, 0 failures, 0 exceptions in 2ms.
+Completed "ParagraphReader": 3 passes, 0 failures, 0 exceptions in 40ms.
+Completed "stream": 3 passes, 0 failures, 0 exceptions in 40ms.

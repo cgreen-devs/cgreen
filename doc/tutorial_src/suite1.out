@@ -4,7 +4,7 @@ suite_strlen_tests.c:9: Failure: our_tests -> returns_five_for_hello
 		actual value:			[4]
 		expected value:			[5]
 
-Completed "our_tests": 1 pass, 1 failure, 0 exceptions in 1ms.
+Completed "our_tests": 1 pass, 1 failure, 0 exceptions in 2ms.
 suite_person_tests.c:29: Failure: person_tests -> can_add_person_to_database 
 	Expected [get_person_name(found)] to [equal string] ["Fred"]
 		actual value:			["(null)"]
@@ -13,5 +13,5 @@ suite_person_tests.c:29: Failure: person_tests -> can_add_person_to_database
 suite_person_tests.c:38: Failure: person_tests -> cannot_add_duplicate_person 
 	Expected [save_person(duplicate)] to [be false]
 
-Completed "person_tests": 2 passes, 3 failures, 0 exceptions in 23ms.
-Completed "main": 2 passes, 3 failures, 0 exceptions in 24ms.
+Completed "person_tests": 2 passes, 3 failures, 0 exceptions in 21ms.
+Completed "main": 2 passes, 3 failures, 0 exceptions in 23ms.
