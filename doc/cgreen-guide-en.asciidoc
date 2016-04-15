@@ -212,7 +212,7 @@ presents the expression that you want to assert. We can also see a
 handy short hand form for boolean expressions (`assert_that(1 == 1);`).
 
 [[tdd_with_cgreen]]
-Five minutes doing TDD with Cgreen
+Five Minutes Doing TDD with Cgreen
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For a more realistic example we need something to test. We'll pretend
@@ -409,7 +409,7 @@ it, rather than debugging later when things are more complicated.
 
 That was pretty straight forward. Let's do something more interesting.
 
-What are mock functions?
+What are Mock Functions?
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 The next example is a more realistic extension of our previous
@@ -572,7 +572,7 @@ test harness delivers constant quality assurance.
 
 In other words you'll get less bugs.
 
-Writing basic tests
+Writing Basic Tests
 ~~~~~~~~~~~~~~~~~~~
 
 *Cgreen* tests are simply C, or C++, functions with no parameters and
@@ -715,7 +715,7 @@ of `..with_context()`.
 TIP: You might think of the TDD style as the BDD style with a default
 SUT or context.
 
-Legacy style assertions
+Legacy Style Assertions
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Cgreen have been around for a while, developed and matured. There is
@@ -776,7 +776,7 @@ style test notation.
 IMPORTANT: We strongly recommend the use of BDD Style notation with
 constraints based assertions.
 
-A runner
+A Runner
 ~~~~~~~~
 
 The tests are only run through running a test suite in some form. We
@@ -934,7 +934,7 @@ function may not be run if the test crashes, causing some test
 interference. This brings us nicely onto the next section...
 
 
-Each test in its own process
+Each Test in its Own Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Consider this test method...
@@ -1069,7 +1069,7 @@ Another possibility is the use of an environment variable named
 timeout to every test run. This will apply to all tests in the same
 run.
 
-Building composite test suites
+Building Composite Test Suites
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
 The `TestSuite` is a composite structure.  This means test suites can
@@ -1236,7 +1236,7 @@ This allows the reuse of common fixtures across projects.
 Automatic Test Discovery
 ------------------------
 
-Forgot to add your test?
+Forgot to Add Your Test?
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 When we write a new test we focus on the details about the test we are
@@ -1259,7 +1259,7 @@ But it is still a practice, something we, as humans, might fail to do
 at some point. Usually this happens when we are most stressed and in
 need of certainty.
 
-The solution - the 'cgreen-runner'
+The Solution - the 'cgreen-runner'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 *Cgreen* gives you a tool to avoid not only the risk of this
@@ -1280,7 +1280,7 @@ it, and run every test.
 
 It's automatic, and there is nothing to forget.
 
-Using the runner
+Using the Runner
 ~~~~~~~~~~~~~~~~
 
 Assuming your tests are in `first_test.c` the typical command to
@@ -1397,7 +1397,7 @@ $ cgreen-runner first_set.so second_set.so ...
 -----------------------
 
 
-Setup, Teardown and custom reporters
+Setup, Teardown and Custom Reporters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The cgreen-runner will only run setup and teardown functions if you
@@ -1458,7 +1458,7 @@ is eventually fleshed out.
 The ideal is to have minimal stubs written for each individual test.
 *Cgreen* encourages this approach by making such tests easier to write.
          
-The problem with streams
+The Problem with Streams
 ~~~~~~~~~~~~~~~~~~~~~~~~
             
 How would we test the following code...?
@@ -1506,7 +1506,7 @@ different one for each test. That's a lot of clutter.
 *Cgreen* can handle this clutter for us by letting us write a single
 programmable function for all our tests.
              
-Record and playback
+Record and Playback
 ~~~~~~~~~~~~~~~~~~~
             
 We can redo our example by creating a `stream_stub()` function. We can
@@ -1686,7 +1686,7 @@ Things get more interesting when we think of the traffic going the
 other way, from code to stub. This gets us into the same territory as
 mock objects.
              
-Setting expectations on mock functions
+Setting Expectations on Mock Functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
 To swap the traffic flow, we'll look at an outgoing example instead.
@@ -2149,7 +2149,7 @@ automatic discovery of tests as described in <<runner>>.
 Changing Cgreen Reporting
 -------------------------
 
-Replacing the reporter
+Replacing the Reporter
 ~~~~~~~~~~~~~~~~~~~~~~
             
 In every test suite so far, we have run the tests with this line...
@@ -2175,7 +2175,7 @@ TestReporter *create_text_reporter(void) {
     reporter->start_test = &text_reporter_start_test;
     reporter->show_fail = &show_fail;
     reporter->show_incomplete = &show_incomplete;
-    reporter->finish_test = &text_reporter_finish;
+    reporter->finish_test = &text_reporter_finish_test;
     reporter->finish_suite = &text_reporter_finish;
     return reporter;
 }
@@ -2198,7 +2198,7 @@ output a message and chain to the versions in `reporter.h`.
 To change the reporting mechanism ourselves, we just have to know a little
 about the methods in the `TestReporter` structure.
              
-The TestReporter structure
+The TestReporter Structure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The *Cgreen* `TestReporter` is a pseudo class that looks
@@ -2365,7 +2365,7 @@ used to set options. E.g. the textreporter defines the structure
 use of colors when printing passes and failures. You set it with
 `set_reporter_options(*void)`.
              
-An example XML reporter
+An Example XML Reporter
 ~~~~~~~~~~~~~~~~~~~~~~~
             
 Let's make things real with an example.  Suppose we want to send the
@@ -2489,7 +2489,7 @@ well as `stdio.h`.
 
 This gets us pretty close to what we want...
 
-[source,xml]				
+[source,xml]	
 -----------------------
 include::tutorial_src/test_as_xml2.out[]
 -----------------------
