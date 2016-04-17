@@ -9,9 +9,14 @@ ifeq ($(shell uname),Darwin)
 MYSQL_INCLUDE = /opt/local/include/mysql56/mysql
 MYSQL_LIB = /opt/local/lib/mysql56/mysql
 else
+ifeq ($(shell uname -o),Cygwin)
+MYSQL_INCLUDE = /usr/include/mysql
+MYSQL_LIB = /usr/lib
+else
 MYSQLROOT = 
 MYSQL_INCLUDE = $(MYSQLROOT)/include
 MYSQL_LIB = $(MYSQLROOT)/lib
+endif
 endif
 
 CGREEN_BIN=$(CGREEN_ROOT)/build/build-c
@@ -178,8 +183,8 @@ stream5: stream_tests4.o read_paragraph2.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 	$(RUNNER) $@.so | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
 	echo "Removing non-characters from stream5.out, check manually if the following fails:"
-	cp $@.out $@.bak && LANG='' sed -e '/actual value:.*\".*$$/ { n; s/[\x00-\xff]*\"]$$/\"\]/ }' $@.bak > $@.bak2 && mv $@.bak2 $@.out
-	rm $@.bak[2]
+	cp $@.out $@.bak && LANG='' sed -e 's/^[^[[:space:]].*"]/"]/g' $@.bak > $@.bak2 && mv $@.bak2 $@.out
+	rm $@.bak
 
 .PHONY: stream6
 stream6: stream_tests4.o read_paragraph3.o
