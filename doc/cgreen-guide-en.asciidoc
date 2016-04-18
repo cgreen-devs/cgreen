@@ -6,8 +6,7 @@
 
 = Cgreen - Unit Tests, Stubbing and Mocking for C and C++
 Marcus Baker <marcus@lastcraft.com>; Thomas Nilsson <thomas@junovagen.se>; João Freitas <joaohf@gmail.com>;
-
-Version: 1.0.0 beta 5
+v1.0.0beta5
 
 Cgreen Quickstart Guide
 -----------------------
@@ -18,7 +17,7 @@ What is Cgreen?
 *Cgreen* is a unit tester for the C and C++ software developer, a test
 automation and software quality assurance tool for programmers and
 development teams. The tool is completely open source published under
-the http://www.gnu.org/licenses/lgpl.html[LGPL]
+the http://www.gnu.org/licenses/lgpl.html[LGPL].
 
 Unit testing is a development practice popularised by the agile
 development community.  It is characterised by writing many small
@@ -212,7 +211,7 @@ Of course "0" would never equal "1", but this shows how *Cgreen*
 presents the expression that you want to assert. We can also see a
 handy short hand form for boolean expressions (`assert_that(1 == 1);`).
 
-
+[[tdd_with_cgreen]]
 Five minutes doing TDD with Cgreen
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -260,16 +259,14 @@ test from bringing the whole program down with it. It also ensures
 that one test cannot leave any state to the next, thus forcing you to
 setup the prerequisites for each test correctly and clearly.
 
-But if you want to debug any of your tests the constant `fork()ing`
-can make that difficult or impossible. Cygwin is one example of an
-environment where debugging forks might be very hard.
-
-To make debugging simpler, *Cgreen* does not fork() when only a single
-test is run by name with the function `run_single_test()`. And if you
-want to debug, you can obviously set a breakpoint at that test (but
-note that its actual name probably have been mangled). But since
-*Cgreen* does some book-keeping before actually getting to the test, a
-better function is the one simply called `run()`.
+But if you want to debug any of your tests the constant `fork()`ing
+can make that difficult or impossible. To make debugging simpler,
+*Cgreen* does not fork() when only a single test is run by name with
+the function `run_single_test()`. And if you want to debug, you can
+obviously set a breakpoint at that test (but note that its actual name
+probably have been mangled). But since *Cgreen* does some book-keeping
+before actually getting to the test, a better function is the one
+simply called `run()`.
 
 Building this scaffolding...
 
@@ -784,7 +781,7 @@ A runner
 
 The tests are only run through running a test suite in some form. We
 can create and run one especially for this test like so... (But see
-also <<runner, Automatic Test Discovery>>.)
+also <<runner>>.)
 
 [source,c]
 -----------------------------
@@ -1235,8 +1232,7 @@ TestSuite *connection_fixture(TestSuite *suite) {
 
 This allows the reuse of common fixtures across projects.
              
-[[runner, Automatic Test Discovery]]
-
+[[runner]]
 Automatic Test Discovery
 ------------------------
 
@@ -1339,7 +1335,7 @@ case `Cgreen` so the test should be refered to as
 `Cgreen:this_test_should_fail`.
 
 
-[[options, Cgreen Runner Options]]
+[[runner-options]]
 
 Cgreen Runner Options
 ~~~~~~~~~~~~~~~~~~~~~
@@ -1368,6 +1364,30 @@ an example:
 include::tutorial_src/runner3.out[]
 ------------------------
 
+Selecting Tests To Run
+~~~~~~~~~~~~~~~~~~~~~~
+
+You can name a single test to be run by giving it as the last argument
+on the command line. The name should be in the format
+`<SUT>:<test>`. If not obvious you can get that name by using the
+`--verbose` command option which will show you all tests discovered
+and both there C/C++ and Cgreen names. Coping the Cgreen name from
+that output is an easy way to run only that particular test. When a
+single test is named it is run using `run_single_test()`. As described
+in <<tdd_with_cgreen>> this means that it is __not__ protected by
+running it in its own process.
+
+The `cgreen-runner` supports pattern matching which tests to run. Using
+an asterisk as a simple 'match many' symbol you can say things like
+
+--------------------
+$ cgreen-runner Cgreen:*
+$ cgreen-runner C*:*this*
+--------------------
+
+
+Multiple Test Libraries
+~~~~~~~~~~~~~~~~~~~~~~~
 
 You can also run tests in multiple libraries in one go by adding them
 to the `cgreen-runner` command:
@@ -1375,6 +1395,7 @@ to the `cgreen-runner` command:
 -----------------------
 $ cgreen-runner first_set.so second_set.so ...
 -----------------------
+
 
 Setup, Teardown and custom reporters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1399,14 +1420,14 @@ and `teardown()` and can't understand why they are not run...
 
 So, the runner requires you to use the BDD notation. But since we
 recommend that you do anyway, that's no extra problem if you are
-starting out from scratch. But see <<changing_style, Changing Style>>
+starting out from scratch. But see <<changing_style>>
 for some easy tips on how to get you there if you already have non-BDD
 tests.
 
 You can choose between the TextReporter, which we have been seeing so
 far, and the built-in JUnit/Ant compatible XML-reporter using the
 `--xml` option. But, it is not possible to use custom reporters as
-outlined in <<reporter, Changing Cgreen Reporting>> with the runner.
+outlined in <<reporter>> with the runner.
 
 If you require another custom reporter you need to resort to the
 standard, programatic, way of invoking your tests. For now...
@@ -2085,8 +2106,7 @@ interchangable concepts in *Cgreen* lingo. It's a named group of
 'tests' that share the same `BeforeEach` and `AfterEach` and lives in
 the same source file.
 
-[[changing_style, Changing Style]]
-
+[[changing_style]]
 Changing Style
 --------------
 
@@ -2121,13 +2141,11 @@ file at a time, by just following the recipe above. Everything will
 still work as before but your tests and code will likely improve.
 
 And once you have changed style you can fully benefit from the
-automatic discovery of tests as described in <<runner, Automatic Test
-Discovery>>.
+automatic discovery of tests as described in <<runner>>.
 
 
 
-[[reporter, Changing Cgreen Reporting]]
-
+[[reporter]]
 Changing Cgreen Reporting
 -------------------------
 
@@ -2355,7 +2373,7 @@ output from *Cgreen* in XML format, say for storing in a repository or
 for sending across the network.
 
 NOTE: The `cgreen-runner` already has an XML-reporter that you can
-use. See <<options, Cgreen Runner Options>>.
+use. See <<runner-options>>.
 
 Suppose also that we have come up with the following format...
 
@@ -2531,7 +2549,7 @@ Hints and Tips
 --------------
 
 CAUTION: This chapter is in its infancy. It will contain tips for
-situations that you need some help to get out of.
+situations that you need some help with.
 
 Compiler Error Messages
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -2551,7 +2569,7 @@ and the error messages might not be straight forward to interpret.
 Signed, Unsigned, Hex and Byte
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Cgreen attempts to handle primitive type comparisons with a single
+*Cgreen* attempts to handle primitive type comparisons with a single
 constraint, `is_equal_to()`. This means that it must store the actual
 and expected values in a form that will accomodate all possible values
 that primitive types might take, typically an `intptr_t`.
@@ -2568,7 +2586,7 @@ Ensure(Char, can_compare_byte) {
 ------------------------------
 
 On a system which considers `char` to be signed this will cause the
-following Cgreen assertion error:
+following *Cgreen* assertion error:
 
 ------------------------------
 char_tests.c:11: Failure: Char -> can_compare_byte
@@ -2608,6 +2626,49 @@ char_tests.c:11: Failure: Char -> can_compare_byte
         actual value:                   [0xfffffffffffffaa]
         expected value:                 [0xaa]
 ------------------------------
+
+
+Cgreen and Coverage
+~~~~~~~~~~~~~~~~~~~
+
+*Cgreen* is compatible with coverage tools, in particular
+`gcov`/`lcov`. So generating coverage data for your application should
+be straight forward.
+
+This is what you need to do (using `gcc` or `clang`):
+
+- compile with `-ftest-coverage` and `-fprofile-arcs`
+- run tests
+- `lcov --directory . --capture --output-file coverage.info`
+- `genhtml -o coverage coverage.info`
+
+Your coverage data will be available in `coverage/index.html`.
+
+
+Garbled Output
+~~~~~~~~~~~~~~
+
+If the output from your *Cgreen* based tests appear garbled or
+duplicated, this can be caused by the way *Cgreen* terminates its
+test-running child process. In many unix-like environments the
+termination of a child process should be done with `_exit()`. However,
+this interfers severily with the ability to collect coverage data. As
+this is important for many of us, *Cgreen* instead terminates its
+child process with the much cruder `exit()` (note: no underscore).
+
+Under rare circumstances this might have the unwanted effect of output
+becoming garbled and/or duplicated.
+
+If this happens you can change that behaviour using an environment
+variable `CGREEN_CHILD_EXIT_WITH__EXIT` (note: two underscores). If
+set, *Cgreen* will terminate its test-running child process with the
+more POSIX-compliant `_exit()`. But as mentioned before, this is, at
+least at this point in time, incompatible with collecting coverage
+data.
+
+So, it's coverage __or__ POSIX-correct child exits and guaranteed
+output consistency. You can't have both...
+
 
 
 

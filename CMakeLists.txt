@@ -88,6 +88,7 @@ ENDIF()
 
 IF(CGREEN_INTERNAL_WITH_GCOV)
   IF(CMAKE_${lang}_COMPILER_ID STREQUAL GNU)
+    include(CodeCoverage)
     add_custom_target(coverage
         COMMAND ${LCOV_PATH} --directory . --capture --output-file coverage.info
 		COMMAND ${LCOV_PATH} --remove coverage.info '/usr/*' -o coverage.info

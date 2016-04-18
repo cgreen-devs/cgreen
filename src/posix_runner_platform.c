@@ -91,7 +91,7 @@ static void stop(void) {
 #ifdef CGREEN_INTERNAL_WITH_GCOV
     if (1)
 #else
-    if (NULL != getenv("CGREEN_CHILD_EXIT_WITH_FLUSH"))
+    if (getenv("CGREEN_CHILD_EXIT_WITH__EXIT") == NULL)
 #endif
         exit(EXIT_SUCCESS);
     else

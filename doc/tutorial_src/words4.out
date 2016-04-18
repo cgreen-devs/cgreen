@@ -4,5 +4,5 @@ words_tests.c:13: Failure: words_tests -> returns_word_count
 		actual value:			[2]
 		expected value:			[4]
 
-Completed "words_tests": 1 pass, 1 failure, 0 exceptions in 1ms.
-Completed "main": 1 pass, 1 failure, 0 exceptions in 1ms.
+Completed "words_tests": 1 pass, 1 failure, 0 exceptions in 28ms.
+Completed "main": 1 pass, 1 failure, 0 exceptions in 28ms.
