@@ -10,10 +10,10 @@ char *read_paragraph(int (*read)(void *), void *stream) {
             buffer_size += 100;
             buffer = (char *)realloc(buffer, buffer_size + 1);
         }
-        if ((buffer[length - 1] = ch) == '\n') {
+        if ((buffer[length - 1] = ch) == '\n') {              // <1>
             break;
         }
-        buffer[length] = '\0';
+        buffer[length] = '\0';                                // <2>
     }
     return buffer;
 }
