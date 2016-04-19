@@ -7,4 +7,4 @@ schema_tests.c:30: Failure: can_add_person_to_database
 schema_tests.c:41: Failure: cannot_add_duplicate_person 
 	Expected [save_person(duplicate)] to [be false]
 
-Completed "person_tests": 1 pass, 2 failures, 0 exceptions in 15ms.
+Completed "person_tests": 1 pass, 2 failures, 0 exceptions in 88ms.
