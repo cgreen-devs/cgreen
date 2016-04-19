@@ -65,7 +65,7 @@ else(UNIX)
       win32_runner_platform.c
     )
   else(WIN32)
-    message(FATAL_ERROR "cgreen currently only works on UNIX or Windows. Please file a bug.")
+    message(FATAL_ERROR "cgreen currently only works on UNIX, Cygwin, MacOSX and Windows. Please file a bug.")
   endif(WIN32)
 endif(UNIX)
 

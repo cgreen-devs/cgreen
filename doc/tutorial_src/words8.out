@@ -13,5 +13,5 @@ words_tests.c:40: Failure: words_tests -> invokes_callback_for_each_word_in_a_ph
 words_tests.c:41: Failure: words_tests -> invokes_callback_for_each_word_in_a_phrase 
 	Expected call was not made to mocked function [mocked_callback]
 
-Completed "words_tests": 4 passes, 4 failures, 0 exceptions in 56ms.
-Completed "main": 4 passes, 4 failures, 0 exceptions in 56ms.
+Completed "words_tests": 4 passes, 4 failures, 0 exceptions in 1ms.
+Completed "main": 4 passes, 4 failures, 0 exceptions in 1ms.
