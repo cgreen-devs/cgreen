@@ -6,7 +6,7 @@ This document is incomplete. ??? are placeholders.
 There are several ways to use Cgreen:
 
 1) You want to write some tests for a personal project, but don't need to ship
-   the test suite with the product, or you just want to try out CGreen.
+   the test suite with the product, or you just want to try out Cgreen.
 2) You want to write some tests that will be used by other developers. This
    is the normal way to use Cgreen.
 3) You want to ship working tests with a product and want to bundle Cgreen
@@ -70,7 +70,7 @@ DLL-platform where libraries normally goes in the bin directory. Running
 the self-tests handles this automatically but if you want to use the binaries
 in the 'build'-tree you can either:
 
-1) install before running the tests and also set PATH to include
+1) install before running the tests and also set your PATH to include
 "/usr/local/lib"
 
 2) setting the PATH to include the build directory where the libraries are
