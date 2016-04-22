@@ -3,3 +3,5 @@ build
 CMakeCache.txt
 CMakeFiles
 Testing
+*.exe
+*.stackdump

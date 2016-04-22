@@ -6,9 +6,5 @@ SCons/ by Kevin Fitch <merlin42@users.sourceforge.net>
   Add a sample demonstrating using cgreen with SCons
   http://www.scons.org/
 
-automake/ by Nuno Paiva <npaiva@users.sourceforge.net>
-  configure.ac - commented configure.ac
-  Makefile.am - commented Makefile.am
-  all_tests.sh - a script for running the tests and creating some_stuff
-  README - explains how to proceed with these files 
-  
+upgrade/ by Thomas Nilsson and Colm Dougan
+  Will upgrade a pre-beta version of tests to newer API

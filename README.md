@@ -38,27 +38,23 @@ are some of Cgreens unique selling points:
 
 ## Getting It
 
-Cgreen has recently moved from SourceForge to GitHub so things are in
-a bit of a flux. From [SourceForge](https://sourceforge.net/projects/cgreen/)
-you can get pre-build packages for not-so-old development versions.
-
-But *Cgreen* is approaching a 1.0 release and things are changing, so
-for now an alternative is to download the zip from
+Cgreen is hosted on GitHub. As of now there are no pre-built packages
+to download, so you have to download the source zip from
 [GitHub](http://www.github.org/cgreen-devs/cgreen) and build it
 yourself.
 
 ## Building It
 
-You need [Cmake](http://www.cmake.org) but most standard C/C++
-compilers should work. GCC definitely does.
+You need the [Cmake](http://www.cmake.org) build system. Most standard
+C/C++ compilers should work. GCC definitely does.
 
 In the root directory run ``make``. That will configure and build the C
-version and the C++ version of the libraries.
+and C++ versions of the libraries.
 
 ## Reading Up!
 
-The documentation is fairly up-to-date. You can read the extensive
-tutorial directly on [GitHub](https://cgreen-devs.github.io).
+You can read the extensive tutorial directly on
+[GitHub](https://cgreen-devs.github.io).
 
 You can also build the documentation yourself in HTML and PDF format.
 Generate it using Asciidoctor, which can be done using the Cmake
@@ -78,9 +74,11 @@ Run ``make``. For example
 
 ## License
 
-If there is no licence agreement with this package please download
-a version from the location above. You must read and accept that
-licence to use this software. The file is titled simply LICENSE.
+Cgreen is licensed under the ISC License
+(http://spdx.org/licenses/ISC), sometimes known as the OpenBSD
+license. If there is no licence agreement with this package please
+download a version from the location above. You must read and accept
+that licence to use this software. The file is titled simply LICENSE.
 
 ## The Original, Longer Version
 
