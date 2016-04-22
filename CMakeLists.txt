@@ -24,10 +24,12 @@ set(APPLICATION_VERSION ${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR
 set(LIBRARY_VERSION ${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}.${APPLICATION_VERSION_PATCH})
 set(LIBRARY_SOVERSION ${APPLICATION_VERSION_MAJOR})
 
+include(GNUInstallDirs)
+
 if(MSVC)
   # these have sensible defaults on other platforms
-  set(BIN_INSTALL_DIR ".")
-  set(LIB_INSTALL_DIR ".")
+  set(CMAKE_INSTALL_BINDIR ".")
+  set(CMAKE_INSTALL_LIBDIR ".")
 endif(MSVC)
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
@@ -38,7 +40,7 @@ set(CMAKE_MODULE_PATH
 # add definitions
 include(DefineCMakeDefaults)
 include(DefineCompilerFlags)
-include(DefineInstallationPaths)
+#include(DefineInstallationPaths)
 include(DefineOptions.cmake)
 include(DefineCPackConfig)
 

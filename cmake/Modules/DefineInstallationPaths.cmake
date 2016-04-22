@@ -29,20 +29,20 @@ if (UNIX)
     CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is <prefix>/lib)"
   )
 
-  SET(LIBEXEC_INSTALL_DIR
-    "libexec"
-    CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is <prefix>/libexec)"
-  )
+#  SET(LIBEXEC_INSTALL_DIR
+#    "libexec"
+#    CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is <prefix>/libexec)"
+#  )
 
   SET(INCLUDE_INSTALL_DIR
     "include"
     CACHE PATH "The subdirectory to the header prefix (default <prefix>/include)"
   )
 
-  SET(SHARE_INSTALL_PREFIX
-    "share"
-    CACHE PATH "Base directory for files which go to share/"
-  )
+#  SET(SHARE_INSTALL_PREFIX
+#    "share"
+#    CACHE PATH "Base directory for files which go to share/"
+#  )
 
   SET(HTML_INSTALL_DIR
     "doc/HTML"
