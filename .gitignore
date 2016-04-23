@@ -1,4 +1,7 @@
 build
 .idea
+CMakeCache.txt
+CMakeFiles
+Testing
 *.exe
 *.stackdump

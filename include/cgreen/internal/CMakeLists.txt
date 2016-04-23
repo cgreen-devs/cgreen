@@ -16,7 +16,7 @@ install(
   FILES
     ${cgreen_internal_HDRS}
   DESTINATION
-    ${INCLUDE_INSTALL_DIR}/${APPLICATION_NAME}/internal
+    ${CMAKE_INSTALL_INCLUDEDIR}/${APPLICATION_NAME}/internal
   COMPONENT
     headers
 )

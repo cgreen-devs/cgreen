@@ -45,7 +45,7 @@ yourself.
 
 ## Building It
 
-You need the [Cmake](http://www.cmake.org) build system. Most standard
+You need the [CMake](http://www.cmake.org) build system. Most standard
 C/C++ compilers should work. GCC definitely does.
 
 In the root directory run ``make``. That will configure and build the C
@@ -57,7 +57,7 @@ You can read the extensive tutorial directly on
 [GitHub](https://cgreen-devs.github.io).
 
 You can also build the documentation yourself in HTML and PDF format.
-Generate it using Asciidoctor, which can be done using the Cmake
+Generate it using Asciidoctor, which can be done using the CMake
 configuration. Of course you need
 [Asciidoctor](http://www.asciidoctor.org).
 
