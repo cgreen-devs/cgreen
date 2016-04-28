@@ -1,9 +1,9 @@
-project(cgreen-runner C)
-
 include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${PROJECT_BINARY_DIR})
 
 set(RUNNER_SRCS
     cgreen-runner.c gopt.c xml_reporter.c runner.c)
+set_source_files_properties(${RUNNER_SRCS} PROPERTIES LANGUAGE C)
+add_definitions(-std=gnu99)
 
 add_executable(cgreen-runner ${RUNNER_SRCS})
 target_link_libraries(cgreen-runner ${CGREEN_SHARED_LIBRARY} ${CMAKE_DL_LIBS})
