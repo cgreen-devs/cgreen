@@ -37,7 +37,7 @@ set(c_tests_library_SRCS
   unit_tests.c
   vector_tests.c
 )
-SET_SOURCE_FILES_PROPERTIES({c_tests_SRCS} PROPERTIES LANGUAGE C)
+SET_SOURCE_FILES_PROPERTIES(${c_tests_library_SRCS} PROPERTIES LANGUAGE C)
 
 set(CGREEN_C_TESTS_LIBRARY
   cgreen_c_tests
@@ -52,6 +52,7 @@ set(c_tests_SRCS
   all_c_tests.c
   ${c_tests_library_SRCS}
 )
+SET_SOURCE_FILES_PROPERTIES(${c_tests_SRCS} PROPERTIES LANGUAGE C)
 
 set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
 
