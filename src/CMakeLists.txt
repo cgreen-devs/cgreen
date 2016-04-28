@@ -69,16 +69,12 @@ else(UNIX)
   endif(WIN32)
 endif(UNIX)
 
-if (CGREEN_WITH_CXX)
-  set(CGREEN_LIBRARY_NAME cgreen++)
-  set(cgreen_SRCS ${cgreen_SRCS} 
-    cpp_assertions.cpp
-    cpp_constraint.cpp
-  )
-  SET_SOURCE_FILES_PROPERTIES( ${cgreen_SRCS} PROPERTIES LANGUAGE CXX )
-else (CGREEN_WITH_CXX)
-  set(CGREEN_LIBRARY_NAME cgreen)
-endif (CGREEN_WITH_CXX)
+set(CGREEN_LIBRARY_NAME cgreen)
+set(cgreen_SRCS ${cgreen_SRCS} 
+  cpp_assertions.cpp
+  cpp_constraint.cpp
+)
+SET_SOURCE_FILES_PROPERTIES(cpp_assertions.cpp cpp_constraint.cpp PROPERTIES LANGUAGE CXX )
  
 include_directories(
   ${CGREEN_PUBLIC_INCLUDE_DIRS}
@@ -88,7 +84,6 @@ include_directories(
 ### cgreen
 add_library(${CGREEN_SHARED_LIBRARY} SHARED ${cgreen_SRCS})
 
-if (CGREEN_WITH_CXX)
     target_link_libraries(
       ${CGREEN_SHARED_LIBRARY} 
       ${CGREEN_LINK_LIBRARIES} 
@@ -96,14 +91,6 @@ if (CGREEN_WITH_CXX)
       ${MATH_LIB} 
       ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
     )
-else (CGREEN_WITH_CXX)
-    target_link_libraries(
-      ${CGREEN_SHARED_LIBRARY}
-      ${CGREEN_LINK_LIBRARIES}
-      ${CMAKE_THREAD_LIBS_INIT}
-      ${MATH_LIB} 
-    )
-endif (CGREEN_WITH_CXX)
 
 set_target_properties(
   ${CGREEN_SHARED_LIBRARY}
@@ -134,15 +121,10 @@ if (CGREEN_WITH_STATIC_LIBRARY)
 
   add_library(${CGREEN_STATIC_LIBRARY} STATIC ${cgreen_SRCS})
 
-  if (CGREEN_WITH_CXX)
-    target_link_libraries(${CGREEN_STATIC_LIBRARY} 
-      ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
-    )
-  endif (CGREEN_WITH_CXX)
-
   target_link_libraries(${CGREEN_STATIC_LIBRARY}
     ${CGREEN_LINK_LIBRARIES}
     ${MATH_LIB}
+    ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
   )
 
   set_target_properties(

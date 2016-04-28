@@ -16,7 +16,7 @@ namespace cgreen {
 #endif
 
 
-void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint* constraint) {
+void assert_core_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint* constraint) {
 
     char *failure_message;
     if (NULL != constraint && is_not_comparing(constraint)) {
