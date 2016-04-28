@@ -63,6 +63,7 @@ macro_add_test(NAME test_cgreen_run_named_test COMMAND test_cgreen_c integer_one
 # C++ tests, library to use with runner, and a main program
 set(cpp_tests_library_SRCS
   cpp_assertion_tests.cpp
+  messaging_tests.cpp
 )
 SET_SOURCE_FILES_PROPERTIES(${cpp_tests_library_SRCS} PROPERTIES LANGUAGE CXX)
 

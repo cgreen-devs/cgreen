@@ -2,7 +2,7 @@
 
 using namespace cgreen;
 
-// TestSuite *messaging_tests();
+TestSuite *messaging_tests();
 // TestSuite *assertion_tests();
 TestSuite *cpp_assertion_tests();
 // TestSuite *vector_tests();
@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     TestSuite *suite = create_named_test_suite("all_cpp_tests");
     TestReporter *reporter = create_text_reporter(); 
     add_suite(suite, cpp_assertion_tests());
-    // add_suite(suite, messaging_tests());
+    add_suite(suite, messaging_tests());
     // add_suite(suite, message_formatting_tests());
     // add_suite(suite, assertion_tests());
     // add_suite(suite, vector_tests());
