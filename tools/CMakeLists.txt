@@ -6,7 +6,7 @@ set_source_files_properties(${RUNNER_SRCS} PROPERTIES LANGUAGE C)
 
 if(CYGWIN)
   # -D_XOPEN_SOURCE should work, but doesn't on cygwin
-  set_property(SOURCE cgreen-runner.c APPEND COMPILE_FLAGS -std=gnu99)
+  add_definitions(-std=gnu99)
 endif()
 
 add_executable(cgreen-runner ${RUNNER_SRCS})
