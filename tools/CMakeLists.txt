@@ -2,8 +2,6 @@ project(cgreen-runner C)
 
 include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${PROJECT_BINARY_DIR})
 
-remove_definitions(-Weffc++)
-add_definitions(-std=gnu99)
 set(RUNNER_SRCS
     cgreen-runner.c gopt.c xml_reporter.c runner.c)
 
