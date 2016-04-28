@@ -27,11 +27,10 @@ set(test_library_SRCS
   reflective_runner_no_teardown_tests.c
   unit_tests.c
   vector_tests.c
+  cpp_assertion_tests.cpp
 )
 
-if (CGREEN_WITH_CXX)
-  set(test_library_SRCS ${test_library_SRCS} cpp_assertion_tests.cpp)
-endif(CGREEN_WITH_CXX)
+SET_SOURCE_FILES_PROPERTIES(cpp_assertions.cpp cpp_asssertion_tests.cpp PROPERTIES LANGUAGE CXX )
 
 set(test_SRCS
   all_tests.c
