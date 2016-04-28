@@ -20,7 +20,7 @@ TestSuite *cpp_assertion_tests();
 
 int main(int argc, char **argv) {
     int suite_result;
-    TestSuite *suite = create_test_suite();
+    TestSuite *suite = create_named_test_suite("all_cpp_tests");
     TestReporter *reporter = create_text_reporter(); 
     add_suite(suite, cpp_assertion_tests());
     // add_suite(suite, messaging_tests());
