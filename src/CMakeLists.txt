@@ -68,6 +68,7 @@ else(UNIX)
     message(FATAL_ERROR "cgreen currently only works on UNIX, Cygwin, MacOSX and Windows. Please file a bug.")
   endif(WIN32)
 endif(UNIX)
+SET_SOURCE_FILES_PROPERTIES(${cgreen_SRCS} PROPERTIES LANGUAGE C)
 
 set(CGREEN_LIBRARY_NAME cgreen)
 set(cgreen_SRCS ${cgreen_SRCS} 
