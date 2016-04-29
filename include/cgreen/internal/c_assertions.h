@@ -4,13 +4,18 @@
 #include <cgreen/constraint.h>
 #include <inttypes.h>
 
-#ifdef __cplusplus
-#error "Should only be included when not compiling in C++ mode. Include cpp_assertions.h instead."
+#ifndef __cplusplus
+#define assert_that_constraint(actual, constraint) assert_core_(__FILE__, __LINE__, #actual, (intptr_t)actual, constraint)
 #endif
 
-#define assert_that_constraint(actual, constraint) assert_that_(__FILE__, __LINE__, #actual, (intptr_t)actual, constraint)
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// this isn't declared in assertions.h because you can't have overloads for an extern "C"-declared function, so it seems
-void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint *constraint);
+void assert_core_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint *constraint);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

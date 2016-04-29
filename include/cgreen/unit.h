@@ -1,12 +1,12 @@
 #ifndef UNIT_HEADER
 #define UNIT_HEADER
 
+#include "internal/unit_implementation.h"
+
 #ifdef __cplusplus
 namespace cgreen {
     extern "C" {
 #endif
-
-#include "internal/unit_implementation.h"
 
 /* BDD style: Describe the Subject Under Test, or context, by name */
 #define Describe(subject) DescribeImplementation(subject)

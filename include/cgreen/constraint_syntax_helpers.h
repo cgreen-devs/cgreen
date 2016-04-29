@@ -8,11 +8,6 @@
 #endif
 #include <stdint.h>
 
-#ifdef __cplusplus
-namespace cgreen {
-extern "C" {
-#endif
-
 /* we normally want to favor delegating functions (for namespacing,
  * and to avoid confusing symbol/preprocessor conflicts), but for the
  * intptr_t catch-all type, we need an explicit cast lest we get
@@ -47,6 +42,9 @@ extern "C" {
 #define will_set_contents_of_parameter(parameter_name, value, size) create_set_parameter_value_constraint(#parameter_name, (intptr_t)value, (size_t)size)
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* these constraints don't take arguments, and we don't want to force
  * users to put "()" on the end of every usage.  we also want to avoid
@@ -67,7 +65,6 @@ extern Constraint static_true_constraint;
 extern Constraint *is_true;
 
 #ifdef __cplusplus
-    }
 }
 #endif
 
