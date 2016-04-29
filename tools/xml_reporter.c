@@ -65,20 +65,12 @@ static void strcat_path_segment(const char *segment, void *more_segments) {
     strcat(suite_path, segment);
 }
 
-static void add_suite_name(const char *suite_name) {
-    if (suite_path[0]=='\0')
-        strcat(suite_path, "-");
-    strcat(suite_path, suite_name);        
-}
-
 static void xml_reporter_start_suite(TestReporter *reporter, const char *suitename, int count __attribute__((unused))) {
     char filename[PATH_MAX];
     int segment_decrementer = reporter->breadcrumb->depth;
     
     suite_path[0] = '\0';
     walk_breadcrumb(reporter->breadcrumb, strcat_path_segment, &segment_decrementer);
-    add_suite_name(suitename);
-    printf("filename='%s-%s.xml'\n", file_prefix, suite_path);
 
     snprintf(filename, sizeof(filename), "%s-%s.xml", file_prefix, suite_path);
     FILE *out = fopen(filename, "w");
