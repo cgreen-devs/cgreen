@@ -62,13 +62,13 @@ static char suite_path[PATH_MAX];
 static void strcat_path_segment(const char *segment, void *more_segments) {
     (void)more_segments;
     if (suite_path[0] != '\0') strcat(suite_path, "-");
-    strcat(suite_path, segment);
+    strncat(suite_path, segment, sizeof(suite_path)-strlen(suite_path)-1);
 }
 
 static void add_suite_name(const char *suite_name) {
     if (suite_path[0] != '\0')
         strcat(suite_path, "-");
-    strcat(suite_path, suite_name);        
+    strncat(suite_path, suite_name, sizeof(suite_path)-strlen(suite_path)-1);
 }
 
 static void xml_reporter_start_suite(TestReporter *reporter, const char *suitename, int count __attribute__((unused))) {
