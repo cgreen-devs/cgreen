@@ -41,36 +41,55 @@ static void indent(FILE *out, TestReporter *reporter) {
     }
 }
 
-static void print_separator_if_needed(int *more_segments) {
+static void print_path_separator_if_needed(int *more_segments) {
     if (*more_segments > 0) {
         fprintf(file_stack[file_stack_p-1], "/");
         (*more_segments)--;
     }
 }
 
-static void pathprinter(const char *segment, void *more_segments) {
+static void fprint_path_segment(const char *segment, void *more_segments) {
     fprintf(file_stack[file_stack_p-1], "%s", segment);
-	print_separator_if_needed((int*)more_segments);
+    print_path_separator_if_needed((int*)more_segments);
 }
 
-static void xml_reporter_start_suite(TestReporter *reporter, const char *suitename, int count __attribute__((unused))) {
+
 #ifndef PATH_MAX
 #define PATH_MAX 4096
 #endif
+static char suite_path[PATH_MAX];
+
+static void strcat_path_segment(const char *segment, void *more_segments) {
+    (void)more_segments;
+    if (suite_path[0] != '\0') strcat(suite_path, "-");
+    strncat(suite_path, segment, sizeof(suite_path)-strlen(suite_path)-1);
+}
+
+static void add_suite_name(const char *suite_name) {
+    if (suite_path[0] != '\0')
+        strcat(suite_path, "-");
+    strncat(suite_path, suite_name, sizeof(suite_path)-strlen(suite_path)-1);
+}
+
+static void xml_reporter_start_suite(TestReporter *reporter, const char *suitename, int count __attribute__((unused))) {
     char filename[PATH_MAX];
-    snprintf(filename, sizeof(filename), "%s-%s.xml", file_prefix, suitename);
+    int segment_decrementer = reporter->breadcrumb->depth;
+    
+    suite_path[0] = '\0';
+    walk_breadcrumb(reporter->breadcrumb, strcat_path_segment, &segment_decrementer);
+    add_suite_name(suitename);
+
+    snprintf(filename, sizeof(filename), "%s-%s.xml", file_prefix, suite_path);
     FILE *out = fopen(filename, "w");
     if (!out) {
         fprintf(stderr, "could not open %s: %s\r\n", filename, strerror(errno));
         exit(EXIT_FAILURE);
     }
+
     file_stack[file_stack_p++] = out;
     fprintf(out, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n");
     indent(out, reporter);
-    fprintf(out, "<testsuite name=\"");
-    int segment_count = reporter->breadcrumb->depth;
-    walk_breadcrumb(reporter->breadcrumb, pathprinter, &segment_count);
-    fprintf(out, "%s\">\n", suitename);
+    fprintf(out, "<testsuite name=\"%s\">\n", suite_path);
     reporter_start_suite(reporter, suitename, 0);
 }
 
@@ -79,7 +98,7 @@ static void xml_reporter_start_test(TestReporter *reporter, const char *testname
     indent(out, reporter);
     fprintf(out, "<testcase classname=\"");
     int segment_count = reporter->breadcrumb->depth - 1;
-    walk_breadcrumb(reporter->breadcrumb, pathprinter, &segment_count);
+    walk_breadcrumb(reporter->breadcrumb, fprint_path_segment, &segment_count);
 
     // Don't terminate the XML-node now so that we can add the duration later
     fprintf(out, "\" name=\"%s\"", testname);
