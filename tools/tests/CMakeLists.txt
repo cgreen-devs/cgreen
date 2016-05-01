@@ -25,12 +25,12 @@ target_link_libraries(${CGREEN_RUNNER_TESTS_LIBRARY} ${CGREEN_SHARED_LIBRARY} ${
 SET(CGREEN_RUNNER_TESTS_LIBRARY "$<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests>")
 
 
-macro_add_test(NAME cgreen_runner_usage
-               COMMAND cgreen-runner --help)
-
 macro_add_test(NAME cgreen_runner_unit_tests
               COMMAND cgreen-runner ${CGREEN_RUNNER_TESTS_LIBRARY})
               
+macro_add_test(NAME cgreen_runner_usage
+               COMMAND cgreen-runner --help)
+
 macro_add_test(NAME cgreen_runner_single_explicit_named_test
               COMMAND cgreen-runner $<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests> Runner:can_match_test_name)
 
