@@ -118,30 +118,7 @@ set(assertion_messages_library_SRCS assertion_messages_tests.c)
 add_library(${assertion_messages_library} SHARED ${assertion_messages_library_SRCS})
 target_link_libraries(${assertion_messages_library} ${CGREEN_LIBRARY})
 
-
-
-if (CGREEN_WITH_CXX)
-  SET_SOURCE_FILES_PROPERTIES( ${cpp_tests_SRCS} PROPERTIES LANGUAGE CXX )
-  SET_SOURCE_FILES_PROPERTIES( ${constraint_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
-  SET_SOURCE_FILES_PROPERTIES( ${mock_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
-  SET_SOURCE_FILES_PROPERTIES( ${failure_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
-  SET_SOURCE_FILES_PROPERTIES( ${assertion_messages_library_SRCS} PROPERTIES LANGUAGE CXX )
-endif (CGREEN_WITH_CXX)
-
-
-
-if (CGREEN_WITH_CXX)
-  target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
-  target_link_libraries(${mock_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
-  target_link_libraries(${failure_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
-  target_link_libraries(${assertion_messages_library} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
-endif (CGREEN_WITH_CXX)
-
-if (CGREEN_WITH_CXX)
-  set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
-else()
-  set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
-endif(CGREEN_WITH_CXX)
+set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
 
 macro_add_test(
     NAME constraint_messsages

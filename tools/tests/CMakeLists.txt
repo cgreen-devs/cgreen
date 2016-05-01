@@ -11,11 +11,8 @@ set(CGREEN_RUNNER_TESTS_LIBRARY
 set(RUNNER_TESTS_SRCS
   runnerTests.c)
 
-if (CGREEN_WITH_CXX)
-   set_source_files_properties( ${RUNNER_TESTS_SRCS} PROPERTIES LANGUAGE CXX)
-else()
-   remove_definitions(-Weffc++)
-   add_definitions(-std=gnu99)
+if(CYGWIN)
+  add_definitions(-std=gnu99)
 endif()
 
 add_library(${CGREEN_RUNNER_TESTS_LIBRARY} SHARED ${RUNNER_TESTS_SRCS})
