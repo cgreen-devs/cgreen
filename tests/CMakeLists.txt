@@ -67,7 +67,14 @@ set(cpp_tests_library_SRCS
   breadcrumb_tests.cpp
   constraint_tests.cpp
   cute_reporter_tests.cpp
-  messaging_tests.cpp
+  cdash_reporter_tests.cpp
+  messaging_tests.cpppp
+  mocks_tests.cpp
+  parameters_test.cpp
+  reflective_tests.cpp
+  reflective_runner_no_teardown_tests.cpp
+  unit_tests.cpp
+  vector_tests.cpp
 )
 SET_SOURCE_FILES_PROPERTIES(${cpp_tests_library_SRCS} PROPERTIES LANGUAGE CXX)
 
