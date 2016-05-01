@@ -54,8 +54,7 @@ endif
 OUTPUT_DIFF=../../tools/cgreen_runner_output_diff 
 OUTPUT_DIFF_ARGUMENTS = $(1)_messages_tests \
 	../../tests \
-	$(1)_messages_tests.$$d.expected \
-	s%$$SOURCEDIR%%g
+	$(1)_messages_tests.expected
 
 unit: build
 	SOURCEDIR=$$PWD/tests/ ; \

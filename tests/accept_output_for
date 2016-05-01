@@ -2,20 +2,25 @@
 #
 # Script to accept the current output for some output comparing test as the golden output
 #
-#   Usage: accept <test> <lang>
+#   Usage: accept <test>
 #
-# Will copy build/build-<lang>/tests/<test>.output to tests/<test>.<lang>.expected
+# Will copy build/tests/<test>.output to tests/<test>.expected
 
-if [ "$#" -ne 2 ]
+if [ "$#" -ne 1 ]
 then
-  echo "Usage: accept <test> <lang>"
+  echo "Usage: accept <test>"
   exit 1
 fi
 
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 rootdir=$(dirname $scriptdir)
 
-echo "About to 'cp build/build-$2/tests/$1.output tests/$1.$2.expected'"
+if [[ ! -f $rootdir/build/tests/$1.output ]]
+then
+   echo "Output file does not exist."
+   exit
+fi
+echo "About to 'cp build/tests/$1.output tests/$1.expected'"
 
 read -r -p "Are you sure? [y/N] " response
 if [[ ! $response =~ ^([yY][eE][sS]|[yY])$ ]]
@@ -23,5 +28,5 @@ then
     exit
 fi
 
-cp $rootdir/build/build-$2/tests/$1.output $rootdir/tests/$1.$2.expected
-echo "Copied!"
+cp $rootdir/build/tests/$1.output $rootdir/tests/$1.expected
+echo "Accepted!"

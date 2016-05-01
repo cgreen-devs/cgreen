@@ -7,6 +7,7 @@
 # ...and commands to normalize output which are in the file normalize_{name}.sed
 name=$1; shift 1
 sourcedir=$1 ; shift 1
+sourcedir=$(perl -e 'use Cwd "abs_path"; print abs_path(@ARGV[0])' -- "$sourcedir")
 expected=$1 ; shift 1
 commandfile=${sourcedir}/normalize_${name}.sed
 
@@ -39,9 +40,6 @@ echo s%${sourcedir}/%%g >> $tempfile
 sed -E -f ${tempfile} -f ${commandfile} ${name}.output  > ${name}.output.tmp
 mv ${name}.output.tmp ${name}.output
 
-# Compare normalized output to expected
-cmp --silent ${name}.output ${sourcedir}/${expected}
-
 # Check for color capability
 if test -t 1; then
     ncolors=$(tput colors)
@@ -51,6 +49,9 @@ if test -t 1; then
         normal="$(tput sgr0)"
      fi
 fi
+
+# Compare normalized output to expected
+cmp --silent ${name}.output ${sourcedir}/${expected}
 
 # If not the same, show diff
 rc=$?
