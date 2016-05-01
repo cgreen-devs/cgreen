@@ -68,7 +68,7 @@ set(cpp_tests_library_SRCS
   constraint_tests.cpp
   cute_reporter_tests.cpp
   cdash_reporter_tests.cpp
-  messaging_tests.cpppp
+  messaging_tests.cpp
   mocks_tests.cpp
   parameters_test.cpp
   reflective_tests.cpp
