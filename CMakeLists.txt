@@ -81,12 +81,6 @@ else()
         --force-new-ctest-process --output-on-failure)
 endif()
 
-IF(CGREEN_WITH_CXX)
-  set(lang CXX)
-ELSE()
-  set(lang C)
-ENDIF()
-
 IF(CGREEN_INTERNAL_WITH_GCOV)
   IF(CMAKE_${lang}_COMPILER_ID STREQUAL GNU)
     include(CodeCoverage)
