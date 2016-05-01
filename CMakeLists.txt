@@ -40,7 +40,6 @@ set(CMAKE_MODULE_PATH
 # add definitions
 include(DefineCMakeDefaults)
 include(DefineCompilerFlags)
-#include(DefineInstallationPaths)
 include(DefineOptions.cmake)
 include(DefineCPackConfig)
 
