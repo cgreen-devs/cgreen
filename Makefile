@@ -1,5 +1,5 @@
-# This Makefile ensures that the build is made out of source in a subdirectory called 'build'
-# If it doesn't exist, it is created and a Makefile created there (from Makefile.build)
+# This Makefile ensures that the build is made out of source in a
+# subdirectory called 'build' If it doesn't exist, it is created.
 #
 # This Makefile also contains delegation of the most common make commands
 #
@@ -10,8 +10,8 @@
 #	make install
 #	make package
 #
-# That should build cgreen for C and C++, run some tests, install it locally and
-# generate two distributable packages.
+# That should build Cgreen in the build directory, run some tests,
+# install it locally and generate a distributable package.
 
 all: build
 	cd build; make
@@ -29,8 +29,9 @@ install:
 	cd build; make install
 
 
-# This is kind of a hack to get a quicker and clearer feedback when developing Cgreen
-# Should be updated when new test libraries or output comparisons are added
+# This is kind of a hack to get a quicker and clearer feedback when
+# developing Cgreen Should be updated when new test libraries or
+# output comparisons are added
 
 # Find out if 'uname -o' works, if it does - use it, otherwise use 'uname -s'
 UNAMEOEXISTS=$(shell uname -o 1>&2 2>/dev/null; echo $$?)
@@ -50,34 +51,31 @@ else
 	SUFFIX=.so
 endif
 
-OUTPUT_DIFF=../../../tools/cgreen_runner_output_diff 
+OUTPUT_DIFF=../../tools/cgreen_runner_output_diff 
 OUTPUT_DIFF_ARGUMENTS = $(1)_messages_tests \
-	../../../tests \
+	../../tests \
 	$(1)_messages_tests.$$d.expected \
 	s%$$SOURCEDIR%%g
 
 unit: build
 	SOURCEDIR=$$PWD/tests/ ; \
-	for d in c c++ ; do \
-	  cd build/build-$$d ; \
-	  make ; \
-	  export PATH=src:$$PATH ; \
-	  tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_tests$(SUFFIX)` ; \
-	  tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
-	  cd tests ; \
-	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,mock) ; \
-	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint) ; \
-	  $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,assertion) ; \
-	  CGREEN_PER_TEST_TIMEOUT=2 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure) ; \
-	  cd ../../.. ; \
-	done
+	cd build ; \
+	make ; \
+	export PATH=src:$$PATH ; \
+	tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
+	tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_cpp_tests$(SUFFIX)` ; \
+	tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
+	cd tests ; \
+	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,mock) ; \
+	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint) ; \
+	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,assertion) ; \
+	CGREEN_PER_TEST_TIMEOUT=2 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure) ; \
+	cd ../../..
 
 ############# Internal
 
 build:
 	mkdir build
-	cp Makefile.build build/Makefile
-	cd build; make dirs
-
+	cd build; cmake ..
 
 .SILENT:
