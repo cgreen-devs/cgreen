@@ -5,15 +5,10 @@
 # sources are in $2 for...
 # ...expected output in $3 (includes LANG, xxx.c.expected, which we don't know here)
 # ...and commands to normalize output which are in the file normalize_{name}.sed
-name=$1; shift 1
-sourcedir=$1 ; shift 1
-sourcedir=$(perl -e 'use Cwd "abs_path"; print abs_path(@ARGV[0])' -- "$sourcedir")
-expected=$1 ; shift 1
-commandfile=${sourcedir}/normalize_${name}.sed
 
 # Determine OS
-unameo=`uname -o 1>&2 2>/dev/null; echo $?`
-if [ $unameo == 0 ]; then
+unameo=`uname -o 1>/dev/null 2>/dev/null; echo $?`
+if [ $unameo -eq 0 ]; then
     OS=`uname -o`
 else
     OS=`uname -s`
@@ -25,7 +20,7 @@ Darwin)
     prefix=lib
     extension=dylib
     ;;
-Linux)
+GNU/Linux)
     prefix=lib
     extension=so
     ;;
@@ -33,8 +28,25 @@ Cygwin)
     prefix=cyg
     extension=dll
     ;;
+*)
+    echo "ERROR: $0 can't handle OS=$OS"
+    exit 2
+    ;;
 esac
 
+# Handle arguments
+if [ $# -ne 3 ]; then
+    echo "ERROR: $0 requires exactly 3 arguments"
+    exit 2
+fi
+
+name=$1; shift 1
+sourcedir=$1 ; shift 1
+sourcedir=$(perl -e 'use Cwd "abs_path"; print abs_path(@ARGV[0])' -- "$sourcedir")
+expected=$1 ; shift 1
+commandfile=${sourcedir}/normalize_${name}.sed
+
+# Do it!
 if [ -z "$CGREEN_PER_TEST_TIMEOUT" ]; then
     printf "Comparing output of ${name} to expected: "
 else
