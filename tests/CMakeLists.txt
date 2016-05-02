@@ -63,12 +63,14 @@ macro_add_test(NAME runner_test_cgreen_c COMMAND cgreen-runner -x TEST ${CMAKE_S
 
 # C++ tests, library to use with runner, and a main program
 set(cpp_tests_library_SRCS
+  assertion_tests.cpp
   cpp_assertion_tests.cpp
   breadcrumb_tests.cpp
   constraint_tests.cpp
   cute_reporter_tests.cpp
   cdash_reporter_tests.cpp
   messaging_tests.cpp
+  message_formatting_tests.cpp
   mocks_tests.cpp
   parameters_test.cpp
   reflective_tests.cpp
