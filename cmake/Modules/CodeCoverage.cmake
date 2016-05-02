@@ -21,9 +21,9 @@ IF(NOT GCOV_PATH)
 	MESSAGE(FATAL_ERROR "gcov not found! Aborting...")
 ENDIF() # NOT GCOV_PATH
 
-IF(NOT CMAKE_${lang}_COMPILER_ID STREQUAL GNU)
+IF(NOT CMAKE_C_COMPILER_ID STREQUAL GNU)
 	MESSAGE(FATAL_ERROR "Compiler is not GNU gcc! Aborting...")
-ENDIF() # NOT CMAKE_COMPILER_IS_GNUCXX
+ENDIF()
 
 IF ( NOT CMAKE_BUILD_TYPE STREQUAL "Debug" )
   MESSAGE( WARNING "Code coverage results with an optimised (non-Debug) build may be misleading" )
