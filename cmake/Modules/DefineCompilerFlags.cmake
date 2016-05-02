@@ -17,7 +17,7 @@ if (UNIX)
 
     if (CGREEN_INTERNAL_WITH_GCOV)
       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
-      set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs")
       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
     endif (CGREEN_INTERNAL_WITH_GCOV)
 
