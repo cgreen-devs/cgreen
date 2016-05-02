@@ -11,6 +11,30 @@ sourcedir=$(perl -e 'use Cwd "abs_path"; print abs_path(@ARGV[0])' -- "$sourcedi
 expected=$1 ; shift 1
 commandfile=${sourcedir}/normalize_${name}.sed
 
+# Determine OS
+unameo=`uname -o 1>&2 2>/dev/null; echo $?`
+if [ $unameo == 0 ]; then
+    OS=`uname -o`
+else
+    OS=`uname -s`
+fi
+
+# Set up library prefix and extension
+case "$OS" in
+Darwin)
+    prefix=lib
+    extension=dylib
+    ;;
+Linux)
+    prefix=lib
+    extension=so
+    ;;
+Cygwin)
+    prefix=cyg
+    extension=dll
+    ;;
+esac
+
 if [ -z "$CGREEN_PER_TEST_TIMEOUT" ]; then
     printf "Comparing output of ${name} to expected: "
 else
@@ -18,7 +42,7 @@ else
 fi
 
 # Run runner on library store output and error
-../tools/cgreen-runner ?*${name}?* > ${name}.output 2> ${name}.error
+../tools/cgreen-runner ${prefix}${name}.${extension} > ${name}.output 2> ${name}.error
 cat ${name}.error >> ${name}.output
 
 tempfile=`mktemp`
