@@ -3,8 +3,8 @@
 # Will run the cgreen-runner in directory ../tools
 # on library with name $1 (e.g. 'lib${name}.so')
 # sources are in $2 for...
-# ...expected output in $3 (includes LANG, xxx.c.expected, which we don't know here)
-# ...and commands to normalize output which are in the file normalize_{name}.sed
+# ...expected output file name in $3
+# ...and commands to normalize output (in the file normalize_{name}.sed)
 
 # Determine OS
 unameo=`uname -o 1>/dev/null 2>/dev/null; echo $?`
@@ -41,9 +41,15 @@ if [ $# -ne 3 ]; then
 fi
 
 name=$1; shift 1
+
 sourcedir=$1 ; shift 1
 sourcedir=$(perl -e 'use Cwd "abs_path"; print abs_path(@ARGV[0])' -- "$sourcedir")
+if [ $OS == Cygwin ]; then
+    sourcedir=`echo $sourcedir | sed -e s#/cygdrive/c/Users#/home#`
+fi
+
 expected=$1 ; shift 1
+
 commandfile=${sourcedir}/normalize_${name}.sed
 
 # Do it!
