@@ -125,7 +125,7 @@ macro_add_test(
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
             constraint_messages_tests       # Name
             ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
-            ${constraint_messages_library}.${LANG}.expected
+            ${constraint_messages_library}.expected
 )
 
 macro_add_test(
@@ -133,21 +133,21 @@ macro_add_test(
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
             mock_messages_tests             # Name
             ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
-            ${mock_messages_library}.${LANG}.expected
+            ${mock_messages_library}.expected
 )
 
 macro_add_test(NAME failure_messages
     COMMAND env "CGREEN_PER_TEST_TIMEOUT=2" ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
             failure_messages_tests          # Name
             ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
-            ${failure_messages_library}.${LANG}.expected
+            ${failure_messages_library}.expected
 )
 
 macro_add_test(NAME assertion_messages
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
             assertion_messages_tests        # Name
             ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
-            ${assertion_messages_library}.${LANG}.expected
+            ${assertion_messages_library}.expected
 )
 
 # add verification that all public api is available as it should
