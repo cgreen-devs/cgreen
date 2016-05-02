@@ -83,14 +83,19 @@ There are two ways to install *Cgreen* in your system.
 Installing a package
 ^^^^^^^^^^^^^^^^^^^^
       
-The first way is to use packages provided by the *Cgreen* Team. You
-can fetch it from
-https://github.com/cgreen-devs/cgreen/releases[Cgreen GitHub
-project]. Download and install it using the normal procedures for your
+NOTE: At this point there are no supported pre-built packages
+available. For now you'll have to build from source.
+
+The first way is to use packages provided by the *Cgreen* Team. If
+your system uses a package manager ('apt' or 'port' and so on) there
+might be a prebuilt package that you can just install using your
+systems package manager.
+
+If no *Cgreen* package is distributed for your system you can download
+a package from https://github.com/cgreen-devs/cgreen/releases[Cgreen
+GitHub project]. Install it using the normal procedures for your
 system.
 
-NOTE: At this point there are no supported pre-built packages
-available. You'll have to build from source.
 
 Installing from source
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -116,20 +121,20 @@ create a separate `build` directory before going there and building
 using *CMake*. This is called an 'out of source build'. It compiles
 *Cgreen* from outside the sources directory. This helps the overall
 file organization and enables multi-target builds from the same
-sources by leaving the complete source tree untouched. The top level
-`Makefile` will by default create the two directories, `build/build-c`
-and `build/build-c{pp}`, which houses the C and C++ builds
-respectively.
+sources by leaving the complete source tree untouched.
 
-TIP: Experienced users may tweak the build configurations by going to
-the appropriate build subdirectory and use `ccmake ../..` to modify
-the build configuration in that subtree. Creating an extra build
-subdirectory with a name starting with `build-` is also possible. The
-`Makefile` will then pick that up and automatically build there too.
+TIP: Experienced users may tweak the build configuration by going to
+the build subdirectory and use `ccmake ..` to modify the build
+configuration in that subtree.
 
-The build process will create a library (on unix called `libcgreen.so`
-and `libcgreen{pp}.so` for C++) which can be used in conjunction with the
-`cgreen.h` header file to compile test code. The created library is
+TIP: The Makefile is just there for convenience, it just creates the
+build directory and invokes *CMake* there, so that you don't have
+to. This means that experienced *CMake* users can just do as they
+normally do with a *CMake*-based project instead of invoking `make`.
+
+The build process will create a library (on unix called
+`libcgreen.so`) which can be used in conjunction with the `cgreen.h`
+header file to compile and link your test code. The created library is
 installed in the system, by default in the `/usr/local/lib/`.
 
 
@@ -561,20 +566,18 @@ have to do is
   * Use the `cgreen` name space by adding `using namespace cgreen;` at
     the beginning of the file with your tests
 
-  * Use the C{pp} version of the library when linking (`-lcgreen{pp}` or
-    something similar)
-
 There is also one extra feature when you use C++, the `assert_throws` function.
 
 Building Cgreen test suites
 ---------------------------
 
-*Cgreen* is a tool for building unit tests in the C language. These are
-usually written alongside the production code by the programmer to
-prevent bugs. Even though the test suites are created by software
-developers, they are intended to be human readable C code, as part of
-their function is an executable specification.  Used in this way, the
-test harness delivers constant quality assurance.
+*Cgreen* is a tool for building unit tests in the C or C++
+languages. These are usually written alongside the production code by
+the programmer to prevent bugs. Even though the test suites are
+created by software developers, they are intended to be human readable
+C code, as part of their function is an executable specification.
+Used in this way, the test harness delivers constant quality
+assurance.
 
 In other words you'll get less bugs.
 
