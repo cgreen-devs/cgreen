@@ -57,7 +57,7 @@ SET_SOURCE_FILES_PROPERTIES(${c_tests_SRCS} PROPERTIES LANGUAGE C)
 set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
 
 macro_add_unit_test(test_cgreen_c "${c_tests_SRCS}" "${TEST_TARGET_LIBRARIES}")
-macro_add_test(NAME test_cgreen_run_named_test COMMAND test_cgreen_c integer_one_should_assert_true)
+macro_add_test(NAME test_cgreen_c_run_named_test COMMAND test_cgreen_c integer_one_should_assert_true)
 macro_add_test(NAME runner_test_cgreen_c COMMAND cgreen-runner -x TEST ${CMAKE_SHARED_LIBRARY_PREFIX}${CGREEN_C_TESTS_LIBRARY}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 
@@ -94,6 +94,7 @@ set(cpp_tests_SRCS
 SET_SOURCE_FILES_PROPERTIES(${cpp_tests_SRCS} PROPERTIES LANGUAGE CXX)
 
 macro_add_unit_test(test_cgreen_cpp "${cpp_tests_SRCS}" "${TEST_TARGET_LIBRARIES}" ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
+macro_add_test(NAME test_cgreen_cpp_run_named_test COMMAND test_cgreen_cpp different_pointers_with_same_contents_should_assert_equal)
 macro_add_test(NAME runner_test_cgreen_cpp COMMAND cgreen-runner -x TEST ${CMAKE_SHARED_LIBRARY_PREFIX}${CGREEN_CPP_TESTS_LIBRARY}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 
