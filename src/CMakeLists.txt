@@ -70,7 +70,6 @@ else(UNIX)
 endif(UNIX)
 SET_SOURCE_FILES_PROPERTIES(${cgreen_SRCS} PROPERTIES LANGUAGE C)
 
-set(CGREEN_LIBRARY_NAME cgreen)
 set(cgreen_SRCS ${cgreen_SRCS} 
   cpp_assertions.cpp
   cpp_constraint.cpp
@@ -83,15 +82,16 @@ include_directories(
 )
 
 ### cgreen
+set(CGREEN_LIBRARY_NAME cgreen)
 add_library(${CGREEN_SHARED_LIBRARY} SHARED ${cgreen_SRCS})
 
-    target_link_libraries(
-      ${CGREEN_SHARED_LIBRARY} 
-      ${CGREEN_LINK_LIBRARIES} 
-      ${CMAKE_THREAD_LIBS_INIT}
-      ${MATH_LIB} 
-      ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
-    )
+target_link_libraries(
+  ${CGREEN_SHARED_LIBRARY} 
+  ${CGREEN_LINK_LIBRARIES} 
+  ${CMAKE_THREAD_LIBS_INIT}
+  ${MATH_LIB} 
+  ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
+)
 
 set_target_properties(
   ${CGREEN_SHARED_LIBRARY}
