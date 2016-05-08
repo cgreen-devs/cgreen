@@ -62,15 +62,15 @@ Generate it using Asciidoctor, which can be done using the CMake
 configuration. Of course you need
 [Asciidoctor](http://www.asciidoctor.org).
 
-Navigate to the ``build/build-c`` directory. You need to add the
+Navigate to the ``build`` directory. You need to add the
 ``WITH_HTML`` and/or ``WITH_PDF`` option:
 
-    cmake -DWITH_HTML:bool=ON ../..
+    cmake -DWITH_HTML:bool=ON ..
 
 Run ``make``. For example
 
-    cd build/build-c
-    cmake -DWITH_HTML:bool=ON -DWITH_PDF:bool=ON ../..
+    cd build
+    cmake -DWITH_HTML:bool=ON -DWITH_PDF:bool=ON ..
     make
 
 ## License
