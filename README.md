@@ -48,8 +48,9 @@ yourself.
 You need the [CMake](http://www.cmake.org) build system. Most standard
 C/C++ compilers should work. GCC definitely does.
 
-In the root directory run ``make``. That will configure and build the C
-and C++ versions of the libraries.
+In the root directory run ``make``. That will configure and build the
+library and the `cgreen-runner`, both supporting both C and C++. See
+also the documentation.
 
 ## Reading Up!
 
