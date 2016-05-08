@@ -4,9 +4,6 @@
 #include "internal/assertions_internal.h"
 
 #include <cgreen/constraint.h>
-#ifdef __cplusplus
-#include <cgreen/cpp_assertions.h>
-#endif
 #include <cgreen/reporter.h>
 #include <stdint.h>
 
