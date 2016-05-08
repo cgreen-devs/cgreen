@@ -17,7 +17,7 @@ all: build
 	cd build; make
 
 test: build
-	cd build; make test
+	cd build; make check
 
 clean: build
 	cd build; make clean
