@@ -3,11 +3,6 @@
 
 #include "cgreen/unit.h"
 
-#ifdef __cplusplus
-namespace cgreen {
-    extern "C" {
-#endif
-
 
 enum {test_function, test_suite};
 
@@ -31,6 +26,11 @@ struct TestSuite_ {
 	void (*teardown)(void);
 	int size;
 };
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
 
 void do_nothing(void);
 

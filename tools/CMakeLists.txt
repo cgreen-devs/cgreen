@@ -1,11 +1,13 @@
-project(cgreen-runner C)
-
 include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${PROJECT_BINARY_DIR})
 
-remove_definitions(-Weffc++)
-add_definitions(-std=gnu99)
 set(RUNNER_SRCS
     cgreen-runner.c gopt.c xml_reporter.c runner.c)
+set_source_files_properties(${RUNNER_SRCS} PROPERTIES LANGUAGE C)
+
+if(CYGWIN)
+  # -D_XOPEN_SOURCE should work, but doesn't on cygwin
+  add_definitions(-std=gnu99)
+endif()
 
 add_executable(cgreen-runner ${RUNNER_SRCS})
 target_link_libraries(cgreen-runner ${CGREEN_SHARED_LIBRARY} ${CMAKE_DL_LIBS})

@@ -1,6 +1,0 @@
-Running "assertion_messages_tests" (1 tests)...
-assertion_messages_tests.c: Failure: AssertionMessage -> for_comparing_content_with_negative_length 
-			Wanted to compare contents with [something], but [-4] was given for the comparison size.
-
-Completed "AssertionMessage": 0 passes, 1 failure, 0 exceptions in 0ms.
-Completed "assertion_messages_tests": 0 passes, 1 failure, 0 exceptions in 0ms.

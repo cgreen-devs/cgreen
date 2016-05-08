@@ -13,11 +13,6 @@ set(api_SRCS
   suites_with_context_api.c
 )
 
-if (CGREEN_WITH_CXX)
-  SET_SOURCE_FILES_PROPERTIES( ${api_SRCS} PROPERTIES LANGUAGE CXX )
-endif (CGREEN_WITH_CXX)
-
-
 set(CGREEN_API_TEST_LIBRARY
   cgreen_api
   CACHE INTERNAL "cgreen library of user level api verification source"
@@ -25,11 +20,7 @@ set(CGREEN_API_TEST_LIBRARY
 
 add_library(${CGREEN_API_TEST_LIBRARY} SHARED ${api_SRCS})
 
-if (CGREEN_WITH_CXX)
-   target_link_libraries(${CGREEN_API_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
-else (CGREEN_WITH_CXX)
-   target_link_libraries(${CGREEN_API_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
-endif (CGREEN_WITH_CXX)
+target_link_libraries(${CGREEN_API_TEST_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 
 #macro_add_test(NAME api_compilation_test
 #              COMMAND ${PROJECT_SOURCE_DIR}/tools/compare_test_output_to_expected

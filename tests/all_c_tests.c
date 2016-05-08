@@ -24,7 +24,7 @@ TestSuite *reflective_no_teardown_tests();
 
 int main(int argc, char **argv) {
     int suite_result;
-    TestSuite *suite = create_test_suite();
+    TestSuite *suite = create_named_test_suite("all_c_tests");
     TestReporter *reporter = create_text_reporter(); 
     add_suite(suite, messaging_tests());
     add_suite(suite, message_formatting_tests());
