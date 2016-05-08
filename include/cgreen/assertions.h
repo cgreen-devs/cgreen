@@ -33,6 +33,7 @@ namespace cgreen {
 
 
 /* Utility: */
+int get_significant_figures();
 void significant_figures_for_assert_double_are(int figures);
 
 

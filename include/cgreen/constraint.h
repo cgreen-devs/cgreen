@@ -93,9 +93,6 @@ bool doubles_are_equal(double tried, double expected);
 bool double_is_lesser(double actual, double expected);
 bool double_is_greater(double actual, double expected);
 
-int get_significant_figures();
-void significant_figures_for_assert_double_are(int figures);
-
 #ifdef __cplusplus
     }
 }
