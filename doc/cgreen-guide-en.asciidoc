@@ -166,6 +166,10 @@ technical reasons (actually requirements of the C language), you must
 declare the `BeforeEach()` and `AfterEach()` functions even if they
 are empty. (You will get strange errors if you don't!)
 
+NOTE: We are using the name "Cgreen" as the SUT in these first
+examples, as if *Cgreen* itself was the object or class we wanted to
+test or describe.
+
 I am assuming you have the *Cgreen* folder in the include search
 path to ensure compilation works, otherwise you'll need to add that in
 the compilation command.
