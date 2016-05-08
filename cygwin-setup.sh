@@ -24,5 +24,4 @@ if [[ $_ == $0 ]]; then
 fi
 
 # And here's the meat given that you have the standard build tree
-export PATH="$PWD/build/build-c/src":"$PWD/build/build-c++/src":$PATH
-export PATH="$PWD/build/build-c/tools":"$PWD/build/build-c++/tools":$PATH
+export PATH="$PWD/build/src":"$PWD/build/tools":$PATH

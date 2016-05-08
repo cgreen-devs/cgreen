@@ -5,11 +5,6 @@
 #include <stdint.h>
 #include <cgreen/breadcrumb.h>
 
-#ifdef __cplusplus
-namespace cgreen {
-    extern "C" {
-#endif
-
 typedef struct TestReporter_ TestReporter;
 struct TestReporter_ {
     void (*destroy)(TestReporter *reporter);
@@ -32,6 +27,11 @@ struct TestReporter_ {
 };
 
 typedef void TestReportMemo;
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
 
 TestReporter *create_reporter(void);
 TestReporter *get_test_reporter(void);

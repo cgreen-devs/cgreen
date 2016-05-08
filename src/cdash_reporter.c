@@ -71,7 +71,7 @@ TestReporter *create_cdash_reporter(CDashInfo *info) {
     if (!reporter)
         return NULL;
 
-    memo = (CDashMemo *) malloc(sizeof(CDashMemo));
+    memo = (CDashMemo *) calloc(1, sizeof(CDashMemo));
     if (!memo)
         return NULL;
 
@@ -239,12 +239,12 @@ static void cdash_show_fail(TestReporter *reporter, const char *file, int line, 
     name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 
     print_test_header(memo, "failed", name, file, line);
-	print_results_header(memo, name, exectime);
+    print_results_header(memo, name, exectime);
 
     vsprintf(buffer, (message == NULL ? "Problem" : message), arguments);
-	print_measurement(memo, buffer);
+    print_measurement(memo, buffer);
 
-	print_tail(memo);
+    print_tail(memo);
 }
 
 static void cdash_show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
@@ -258,7 +258,7 @@ static void cdash_show_pass(TestReporter *reporter, const char *file, int line, 
     memo->testfinished = cdash_current_time(NULL);
     exectime = cdash_elapsed_time(memo->teststarted, memo->testfinished);
 
-	print_test_header(memo, "passed", name, file, line);
+    print_test_header(memo, "passed", name, file, line);
     print_results_header(memo, name, exectime);
     print_measurement(memo, "");
     print_tail(memo);
@@ -286,7 +286,7 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line, 
     vsprintf(buffer, (message == NULL ? "Problem" : message), arguments);
     print_measurement(memo, buffer);
 
-	print_tail(memo);
+    print_tail(memo);
 }
 
 

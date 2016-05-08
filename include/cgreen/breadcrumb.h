@@ -1,11 +1,6 @@
 #ifndef BREADCRUMB_HEADER
 #define BREADCRUMB_HEADER
 
-#ifdef __cplusplus
-namespace cgreen {
-    extern "C" {
-#endif
-
 struct CgreenBreadcrumb_ {
     const char **trail;
     int depth;
@@ -13,6 +8,11 @@ struct CgreenBreadcrumb_ {
 };
 
 typedef struct CgreenBreadcrumb_ CgreenBreadcrumb;
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
 
 CgreenBreadcrumb *create_breadcrumb(void);
 void destroy_breadcrumb(CgreenBreadcrumb *breadcrumb);

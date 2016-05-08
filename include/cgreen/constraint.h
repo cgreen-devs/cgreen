@@ -8,11 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
-namespace cgreen {
-    extern "C" {
-#endif
-
 typedef enum {
     VALUE_COMPARER,
     CONTENT_COMPARER,
@@ -40,6 +35,11 @@ struct Constraint_ {
     const char *parameter_name;
     size_t size_of_expected_value;
 };
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
 
 Constraint *create_constraint();
 Constraint *create_parameter_constraint_for(const char *parameter_name);

@@ -81,14 +81,8 @@ else()
         --force-new-ctest-process --output-on-failure)
 endif()
 
-IF(CGREEN_WITH_CXX)
-  set(lang CXX)
-ELSE()
-  set(lang C)
-ENDIF()
-
 IF(CGREEN_INTERNAL_WITH_GCOV)
-  IF(CMAKE_${lang}_COMPILER_ID STREQUAL GNU)
+  IF(CMAKE_C_COMPILER_ID STREQUAL GNU)
     include(CodeCoverage)
     add_custom_target(coverage
         COMMAND ${LCOV_PATH} --directory . --capture --output-file coverage.info

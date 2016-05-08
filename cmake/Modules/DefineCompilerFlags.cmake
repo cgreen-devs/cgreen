@@ -9,18 +9,15 @@ endif (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
 
 if (UNIX)
   if (CMAKE_COMPILER_IS_GNUCC OR COMPILER_IS_CLANG)
+    # add_compile_options(-g -Wall -Wextra -Wunused) # only since CMake 2.8.12, so...
     add_definitions(-g -Wall -Wextra -Wunused)
-    if (CGREEN_WITH_CXX)
-       add_definitions(-Weffc++)
-    else()
-       if (NOT CYGWIN)
-           add_definitions(-std=c99)
-       endif (NOT CYGWIN)
-    endif (CGREEN_WITH_CXX)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -Weffc++")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
     if (CGREEN_INTERNAL_WITH_GCOV)
       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
-      set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs")
       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
     endif (CGREEN_INTERNAL_WITH_GCOV)
 
@@ -33,6 +30,7 @@ if (UNIX)
         # with -fPIC
         check_c_compiler_flag("-fPIC" WITH_FPIC)
         if (WITH_FPIC)
+            # add_compile_options(-fPIC) # Only since CMake 2.8.12, so...
             add_definitions(-fPIC)
         endif (WITH_FPIC)
     endif (NOT CYGWIN)

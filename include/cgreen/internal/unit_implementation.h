@@ -1,6 +1,11 @@
 #ifndef UNIT_IMPLEMENTATION_HEADER
 #define UNIT_IMPLEMENTATION_HEADER
 
+#ifdef __cplusplus
+#include <cstddef>
+#endif
+
+
 typedef struct {
     const char* name;
     const char* filename;
