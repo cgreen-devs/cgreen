@@ -73,8 +73,13 @@ unit: build
 
 ############# Internal
 
+ifeq ($(OS),Darwin)
+ARCHS=-DCMAKE_OSX_ARCHITECTURES:string="i386;x86_64"
+endif
+
+
 build:
 	mkdir build
-	cd build; cmake ..
+	cd build; cmake $(ARCHS) ..
 
 .SILENT:
