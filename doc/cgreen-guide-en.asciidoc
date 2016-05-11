@@ -6,7 +6,7 @@
 
 = Cgreen : Unit Tests, Stubbing and Mocking for C and C++
 Marcus Baker <marcus@lastcraft.com>; Thomas Nilsson <thomas@junovagen.se>; João Freitas <joaohf@gmail.com>;
-v1.0.0beta6
+v1.0.0
 
 
 Cgreen Quickstart Guide
