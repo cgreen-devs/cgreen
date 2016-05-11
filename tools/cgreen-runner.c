@@ -19,7 +19,8 @@ static int file_exists(const char *filename)
 
 /*----------------------------------------------------------------------*/
 static void usage(const char **argv) {
-    printf("Usage: %s [--xml <prefix>] [--suite <name>] [--verbose] [--no-run] [--help] (<library> [<test>])+\n\n", argv[0]);
+    printf("cgreen-runner for Cgreen unittest and mocking framework v%s\n\n", VERSION);
+    printf("Usage:\n    %s [--xml <prefix>] [--suite <name>] [--verbose] [--no-run] [--help] (<library> [<test>])+\n\n", argv[0]);
     printf("Discover and run all or a single named cgreen test(s) from one or multiple\n");
     printf("dynamically loadable library.\n\n");
     printf("A single test can be run using the form [<context>:]<name> where <context> can\n");
