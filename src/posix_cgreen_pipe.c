@@ -6,11 +6,9 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-#ifndef O_ASYNC
-#  define O_ASYNC FASYNC
-#  ifndef FASYNC
-#    error "Your POSIX platform does not support ASYNC pipe reads. Please report a bug to http://github.com/cgreen-devs/cgreen/issues"
-#  endif
+#ifndef O_NONBLOCK
+#    error "Your platform does not support POSIX ASYNC pipe reads. Please report a bug to http://github.com/cgreen-devs/cgreen/issues"
+     /* One way to do it the old way is: ioctl(fd, FIOBIO, &flags); */
 #endif
 
 #ifdef __cplusplus
