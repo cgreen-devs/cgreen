@@ -4,9 +4,6 @@
 #include "internal/assertions_internal.h"
 
 #include <cgreen/constraint.h>
-#ifdef __cplusplus
-#include <cgreen/cpp_assertions.h>
-#endif
 #include <cgreen/reporter.h>
 #include <stdint.h>
 
@@ -36,6 +33,7 @@ namespace cgreen {
 
 
 /* Utility: */
+int get_significant_figures();
 void significant_figures_for_assert_double_are(int figures);
 
 
