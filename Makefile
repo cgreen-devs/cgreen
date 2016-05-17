@@ -51,16 +51,18 @@ else
 	SUFFIX=.so
 endif
 
-OUTPUT_DIFF=../../tools/cgreen_runner_output_diff 
+OUTPUT_DIFF=../../tools/cgreen_runner_output_diff
 OUTPUT_DIFF_ARGUMENTS = $(1)_messages_tests \
 	../../tests \
 	$(1)_messages_tests.expected
 
 unit: build
+	# Ensure the dynamic libraries can be found even on DLL-platforms without altering
+	# user process PATH
+	export PATH=$$PWD/build/src:$$PATH ; \
 	SOURCEDIR=$$PWD/tests/ ; \
 	cd build ; \
 	make ; \
-	export PATH=src:$$PATH ; \
 	tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
 	tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_cpp_tests$(SUFFIX)` ; \
 	tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
