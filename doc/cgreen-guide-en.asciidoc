@@ -18,7 +18,8 @@ What is Cgreen?
 *Cgreen* is a unit tester for the C and C++ software developer, a test
 automation and software quality assurance tool for programmers and
 development teams. The tool is completely open source published under
-the http://www.gnu.org/licenses/lgpl.html[LGPL].
+the https://github.com/cgreen-devs/cgreen/blob/master/LICENSE[ISC,
+OpenBSD, license].
 
 Unit testing is a development practice popularised by the agile
 development community.  It is characterised by writing many small
