@@ -1,8 +1,22 @@
+.mso www.tmac
 .TH CGREEN-RUNNER 1
+
+
 .SH NAME
 cgreen-runner \- an auto-discovering runner for the Cgreen unittest and mocking framework
+
+
 .SH SYNOPSIS
-\fBcgreen\-runner\fR [\fb\-\-colour\fR] [\fB\-\-xml\fR \fIprefix\fR] [\fB\-\-suite\fR \fIname\fR] [\fB\-\-verbose\fR] [\fB\-\-no\-run\fR] [\fB\-\-help\fR] ( \fILIBRARY\fR [\fItest\fR] )+
+.B cgreen\-runner
+[\fb\-\-colour\fR]
+[\fB\-\-xml\fR \fIprefix\fR]
+[\fB\-\-suite\fR \fIname\fR]
+[\fB\-\-verbose\fR]
+[\fB\-\-no\-run\fR]
+[\fB\-\-help\fR]
+( \fILIBRARY\fR [\fItest\fR] )+
+
+
 .SH DESCRIPTION
 .B Cgreen
 is a framework for creating and running compact and easy-to-read
@@ -15,31 +29,50 @@ without having to manually add each and every test that you write to a
 suite programatically.
 .PP
 This makes the TDD cycle even faster and less error-prone, one less thing to remember.
+
+
 .SS "Usage:"
 Discover and run all, or a single named, cgreen test(s) from one or multiple
 dynamically loadable library.
 .PP
 A single test can be run using the form [<context>:]<name> where <context> can
 be omitted if there is no context.
+
+
 .SH OPTIONS
-.IP "\fB\-\-colours/colors, \-c\fR"
+
+.TP
+.BR \-c ", " \-\-colours/colors
 Use colours to emphasis result (requires ANSI\-capable terminal)
-.IP "\fB\-\-xml, \-x\fR <prefix>"
+
+.TP
+.BR \-x ", " \-\-xml " " \fIprefix\fR
 Instead of messages on stdout, write results into one XML\-file per
 suite, compatible with Hudson/Jenkins CI. The filename(s) will
-be '<prefix>\-<suite>.xml'
-.IP "\fB\-\-suite, \-s\fR <name>"
+be '\fIprefix\fR\-<suite>.xml'
+
+.TP
+.BI "\-s, \-\-suite " name
 Give the top level suite
-.B <name>
-instead of the name in the LIBRARY.
-.IP "\fB\-\-no\-run, \-n\fR"
-Don't run the tests
-.IP "\fB\-\-verbose, \-v\fR"
+.I name
+instead of the name in the \fILIBRARY\fR.
+
+.TP
+.B "\-n, \-\-no\-run"
+Don't run the tests.
+
+.TP
+.B "\-v, \-\-verbose"
 Show progress information during run.
-.IP "\fB\-\-version, -V\fR"
+
+.TP
+.B "\-V, \-\-version"
 Show version information and exit.
+
+
 .SH "SEE ALSO"
-cgreen(3)
+cgreen(5)
+
 .PP
 The full documentation for
 .B cgreen-runner
@@ -48,5 +81,5 @@ and
 is in the
 .B Cgreen
 manual available at
-.I https://github.com/cgreen-devs/cgreen
-.
+.URL https://github.com/cgreen-devs/cgreen GitHub .
+
