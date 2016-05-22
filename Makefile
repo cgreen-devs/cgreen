@@ -16,15 +16,19 @@
 all: build
 	cd build; make
 
+.PHONY:test
 test: build
 	cd build; make check
 
+.PHONY:clean
 clean: build
 	cd build; make clean
 
+.PHONY:package
 package: build
 	cd build; make package
 
+.PHONY:install
 install:
 	cd build; make install
 
