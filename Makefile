@@ -74,6 +74,7 @@ unit: build
 	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,mock) ; \
 	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint) ; \
 	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,assertion) ; \
+	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,ignore) ; \
 	CGREEN_PER_TEST_TIMEOUT=2 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure) ; \
 	cd ../../..
 
