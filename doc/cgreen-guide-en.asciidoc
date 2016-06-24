@@ -1305,7 +1305,8 @@ $ gcc -shared -o first_test.so -fPIC first_test.c -lcgreen
 --------------------------
 
 The `-fPIC` means to generate 'position independent code' which is
-required if you want to load the library dynamically.
+required if you want to load the library dynamically. To explicitly
+state this is required on many platforms.
 
 How to build a dynamically loadable shared library might vary a lot
 depending on your platform. Can't really help you there, sorry!
@@ -1324,10 +1325,11 @@ the beginning of this quickstart tutorial. We can see that the top
 level of the tests will be named as the library it was discovered in,
 and the second level is the context for our Subject Under Test, in
 this case 'Cgreen'. We also see that the context is mentioned in the
-failure message, giving a fairly obvious 'Cgreen -> fails_this_test'.
+failure message, giving a fairly obvious `Cgreen -> fails_this_test`.
 
 Now we can actually delete the main function in our source code. We
-don't need all this:
+don't need all this, since the runner will discover all tests
+automatically.
 
 [source,c]
 ------------------------
@@ -1344,11 +1346,12 @@ include::tutorial_src/runner2.out[]
 -------------------------
 
 We recommend the BDD notation to discover tests, and you indicate
-which context the test we want to run is in. In this case `Cgreen` so
-the test should be refered to as `Cgreen:this_test_should_fail`.
+which context the test we want to run is in. In this example it is
+`Cgreen` so the test should be refered to as `Cgreen:this_test_should_fail`.
 
 If you don't use the BDD notation there is actually a context anyway,
 it is called `default`.
+
 
 [[runner-options]]
 
@@ -1424,20 +1427,22 @@ all tests and runs them one by one. The macros required by the BDD-ish
 style ensures that the corresponding `BeforeEach()` and `AfterEach()`
 are run before and after each test.
 
-NOTE: The `cgreen-runner` __will__ discover your tests in a shared library
-even if you don't use the BDD-ish style. But it will not run the
-`setup()` and/or `teardown()` attached to your suite(s). But in case
-you have non-BDD style tests __without__ any `setup()` and/or
+NOTE: The `cgreen-runner` __will__ discover your tests in a shared
+library even if you don't use the BDD-ish style. But it will not be
+able to find and run the `setup()` and/or `teardown()` attached to your
+suite(s).
+
+In case you have non-BDD style tests __without__ any `setup()` and/or
 `teardown()` you can still use the runner. The default suite/context
 where the tests live in this case is called `default`. But why don't
-you convert your tests to BDD notation? This would save you from the
-frustrating trouble-shooting that you risk when you added `setup()`
+you convert your tests to BDD notation? This removes the risk of
+frustrating trouble-shooting when you added `setup()`
 and `teardown()` and can't understand why they are not run...
 
 So, the runner incourages you to use the BDD notation. But since we
 recommend that you do anyway, that's no extra problem if you are
-starting out from scratch. But see <<changing_style>>
-for some easy tips on how to get you there if you already have non-BDD
+starting out from scratch. But see <<changing_style>> for some easy
+tips on how to get you there if you already have non-BDD
 tests.
 
 You can choose between the TextReporter, which we have been seeing so
@@ -1447,6 +1452,35 @@ reporters as outlined in <<reporter>> with the runner.
 
 If you require another custom reporter you need to resort to the
 standard, programatic, way of invoking your tests. For now...
+
+
+Ignoring Tests
+~~~~~~~~~~~~~~
+
+Sometimes you find that you need to temporarily remove a test, perhaps
+to do a refactoring with a failing test. Ignoring it will allow you to do the
+refactoring while still in the green.
+
+An old practice is then to comment it out. That is a slightly cumbersome
+and hazardous habit as there is no indication of a missing test if you
+forget to uncomment it when you are done.
+
+*Cgreen* offers a much better solution. You can just add an 'x' infront
+of the `Ensure` for the test.
+
+[source, C]
+----------------------------
+...
+xEnsure(Reader, ...) {
+  ...
+}
+...
+----------------------------
+
+With this method, it is a one character change to temporarily ignore,
+and un-ignore, a test. It is also easily found using text searches through
+a complete source tree. And in a near future *Cgreen* will also tally the
+ignored tests, so it is visible when you run your tests.
 
 
 Mocking functions with Cgreen
@@ -1935,7 +1969,7 @@ include::tutorial_src/formatter6.out[]
 
 All done.
 
-=== Mocks Are...
+=== Mocks Are... ===
 
 Using mocks is a very handy way to isolate a unit and catch and
 control calls to external units. Depending on your style of coding two
