@@ -17,6 +17,13 @@ static int file_exists(const char *filename)
     return (access(filename, F_OK) == 0);
 }
 
+
+/*----------------------------------------------------------------------*/
+static void version(void) {
+    printf("cgreen-runner for Cgreen unittest and mocking framework v%s\n", VERSION);
+}
+
+
 /*----------------------------------------------------------------------*/
 static void usage(const char **argv) {
     printf("cgreen-runner for Cgreen unittest and mocking framework v%s\n\n", VERSION);
@@ -25,13 +32,14 @@ static void usage(const char **argv) {
     printf("dynamically loadable library.\n\n");
     printf("A single test can be run using the form [<context>:]<name> where <context> can\n");
     printf("be omitted if there is no context.\n\n");
+    printf("--colours/colors\tUse colours to emphasis result (requires ANSI-capable terminal)\n");
     printf("--xml <prefix>\tInstead of messages on stdout, write results into one XML-file\n");
     printf("\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
     printf("\t\twill be '<prefix>-<suite>.xml'\n");
     printf("--suite <name>\tName the top level suite\n");
     printf("--no-run\tDon't run the tests\n");
     printf("--verbose\tShow progress information\n");
-    printf("--colours/colors\tUse colours to emphasis result (requires ANSI-capable terminal)\n");
+    printf("--version\tShow version information\n");
 }
 
 
@@ -82,6 +90,11 @@ static int initialize_option_handling(int argc, const char **argv) {
                                                             GOPT_NOARG,
                                                             gopt_shorts('v'),
                                                             gopt_longs("verbose")
+                                                            ),
+                                                gopt_option('V',
+                                                            GOPT_NOARG,
+                                                            gopt_shorts('V'),
+                                                            gopt_longs("version")
                                                             ),
                                                 gopt_option('c',
                                                             GOPT_NOARG,
@@ -172,6 +185,11 @@ int main(int argc, const char **argv) {
 
     if (gopt_arg(options, 'h', &tmp)) {
         usage(argv);
+        return EXIT_SUCCESS;
+    }
+
+    if (gopt_arg(options, 'V', &tmp)) {
+        version();
         return EXIT_SUCCESS;
     }
 

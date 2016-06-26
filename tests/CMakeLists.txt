@@ -121,6 +121,11 @@ set(assertion_messages_library_SRCS assertion_messages_tests.c)
 add_library(${assertion_messages_library} SHARED ${assertion_messages_library_SRCS})
 target_link_libraries(${assertion_messages_library} ${CGREEN_LIBRARY})
 
+set(ignore_messages_library ignore_messages_tests)
+set(ignore_messages_library_SRCS ignore_messages_tests.c)
+add_library(${ignore_messages_library} SHARED ${ignore_messages_library_SRCS})
+target_link_libraries(${ignore_messages_library} ${CGREEN_LIBRARY})
+
 set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
 
 macro_add_test(
@@ -151,6 +156,13 @@ macro_add_test(NAME assertion_messages
             assertion_messages_tests        # Name
             ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
             ${assertion_messages_library}.expected
+)
+
+macro_add_test(NAME ignore_messages
+    COMMAND env "CGREEN_PER_TEST_TIMEOUT=2" ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
+            ignore_messages_tests           # Name
+            ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
+            ${ignore_messages_library}.expected
 )
 
 # add verification that all public api is available as it should
