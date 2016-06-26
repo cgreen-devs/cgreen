@@ -55,7 +55,7 @@ static void setup_cute_reporter_tests() {
     reporter->ipc = start_cgreen_messaging(666);
 
     clear_output();
-    set_cute_printer(reporter, mocked_printf);
+    set_cute_printer(mocked_printf);
 }
 
 static void cute_reporter_tests_teardown() {

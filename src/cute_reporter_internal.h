@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 typedef int CutePrinter(const char *format, ...);
-extern void set_cute_printer(TestReporter *reporter, CutePrinter *printer);
+extern void set_cute_printer(CutePrinter *printer);
 
 #ifdef __cplusplus
 }

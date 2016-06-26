@@ -4,14 +4,12 @@
 #include <cgreen/reporter.h>
 
 #ifdef __cplusplus
-namespace cgreen {
-    extern "C" {
+extern "C" {
 #endif
 
 extern TestReporter *create_cute_reporter(void);
 
 #ifdef __cplusplus
-    }
 }
 #endif
 
