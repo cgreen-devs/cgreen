@@ -1,5 +1,4 @@
 #include <cgreen/breadcrumb.h>
-#include <cgreen/cdash_reporter.h>
 #include <cgreen/reporter.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -13,9 +12,9 @@
 #include <wincompat.h>
 #endif
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
+#include <cgreen/cdash_reporter.h>
+#include "cdash_reporter_internal.h"
+
 
 typedef time_t Timer(char *strtime);
 
@@ -47,10 +46,10 @@ static time_t cdash_build_stamp(char *sbuildstamp, size_t sb);
 static time_t cdash_current_time(char *strtime);
 static double cdash_elapsed_time(time_t t1, time_t t2);
 
- 
-void set_cdash_printer(TestReporter *reporter, CDashPrinter *printer) {
-    CDashMemo *memo = (CDashMemo *) reporter->memo;
-    memo->printer = printer;
+static CDashPrinter *cdash_print;
+
+void set_cdash_reporter_printer(CDashPrinter *new_printer) {
+    cdash_print = new_printer;
 }
 
 
@@ -76,7 +75,7 @@ TestReporter *create_cdash_reporter(CDashInfo *info) {
         return NULL;
 
     memo->info = info;
-    memo->printer = fprintf;
+    cdash_print = fprintf;
     memo->begin = cdash_build_stamp(sbuildstamp, 15);
 
     rep_dir = mkdir("./Testing", S_IXUSR|S_IRUSR|S_IWUSR|S_IXGRP|S_IRGRP|S_IXOTH);
@@ -122,7 +121,7 @@ TestReporter *create_cdash_reporter(CDashInfo *info) {
 
     memo->startdatetime = cdash_current_time(strstart);
 
-    memo->printer(memo->stream,
+    cdash_print(memo->stream,
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
             " <Site BuildName=\"%s\" BuildStamp=\"%s-%s\" Name=\"%s\" Generator=\"%s\"\n"
             " OSName=\"%s\" Hostname=\"%s\" OSRelease=\"%s\"\n"
@@ -162,7 +161,7 @@ static void cdash_destroy_reporter(TestReporter *reporter) {
 
     memo->enddatetime = cdash_current_time(endtime);
 
-    memo->printer(memo->stream, "  <EndDateTime>%s</EndDateTime>\n"
+    cdash_print(memo->stream, "  <EndDateTime>%s</EndDateTime>\n"
             " <ElapsedMinutes>%.2f</ElapsedMinutes>\n"
             " </Testing>\n"
             "</Site>\n", endtime, cdash_elapsed_time(memo->startdatetime, memo->enddatetime));
@@ -186,7 +185,7 @@ static void cdash_reporter_start_test(TestReporter *reporter, const char *name) 
 
 
 static void print_test_header(CDashMemo *memo, const char* status, const char *name, const char* file, int line) {
-     memo->printer(memo->stream,
+     cdash_print(memo->stream,
                    "    <Test Status=\"%s\">\n"
                    "     <Name>%s</Name>\n"
                    "     <Path>%s</Path>\n"
@@ -196,7 +195,7 @@ static void print_test_header(CDashMemo *memo, const char* status, const char *n
 }
 
 static void print_results_header(CDashMemo *memo, const char *name, float exectime) {
-    memo->printer(memo->stream,
+    cdash_print(memo->stream,
                   "     <Results>\n"
                   "      <NamedMeasurement type=\"numeric/double\" name=\"Execution Time\">\n"
                   "       <Value>%f</Value>\n"
@@ -211,7 +210,7 @@ static void print_results_header(CDashMemo *memo, const char *name, float execti
 }
 
 static void print_measurement(CDashMemo *memo, const char *value) {
-    memo->printer(memo->stream,
+    cdash_print(memo->stream,
                   "       <Measurement>\n"
                   "        <Value>%s</Value>\n"
                   "       </Measurement>\n",
@@ -219,7 +218,7 @@ static void print_measurement(CDashMemo *memo, const char *value) {
 }
 
 static void print_tail(CDashMemo *memo) {
-    memo->printer(memo->stream,
+    cdash_print(memo->stream,
                   "      </Results>\n"
                   "    </Test>\n");
 }
@@ -340,7 +339,3 @@ static double cdash_elapsed_time(time_t t1, time_t t2) {
     diff = difftime(t2, t1);
     return (diff == 0 ? 0 : (diff / 60));
 }
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
