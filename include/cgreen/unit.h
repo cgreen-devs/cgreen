@@ -24,6 +24,9 @@ namespace cgreen {
 /* BDD Style: Ensure(subject, testname) {implementation} */
 #define Ensure(...) Ensure_NARG(__VA_ARGS__)(__VA_ARGS__)
 
+/* Temporarily ignore this test */
+#define xEnsure(CUT, test) void ignored_##CUT##test(void)
+
 #ifdef __cplusplus
     }
 }

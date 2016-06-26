@@ -142,7 +142,7 @@ installed in the system, by default in the `/usr/local/lib/`.
 Your First Test
 ^^^^^^^^^^^^^^^
 
-We will start demonstration the use of *CGreen* by writing some tests
+We will start demonstrating the use of *Cgreen* by writing some tests for *Cgreen* itself
 to confirm that everything is working as it should. Let's start with a
 simple test module with no tests, called `first_test.c`...
 
@@ -168,7 +168,7 @@ declare the `BeforeEach()` and `AfterEach()` functions even if they
 are empty. (You will get strange errors if you don't!)
 
 NOTE: We are using the name "Cgreen" as the SUT in these first
-examples, as if *Cgreen* itself was the object or class we wanted to
+examples, as *Cgreen* itself is the object or class we want to
 test or describe.
 
 I am assuming you have the *Cgreen* folder in the include search
@@ -589,9 +589,9 @@ In other words you'll get less bugs.
 Writing Basic Tests
 ~~~~~~~~~~~~~~~~~~~
 
-*Cgreen* tests are simply C, or C++, functions with no parameters and
+*Cgreen* tests are like C, or C++, functions with no parameters and
 no return value. To signal that they actually are tests we mark them
-with the `Ensure` macro. An example might be...
+with the `Ensure` macro. Here's an example...
 
 [source,c]
 -----------------------------
@@ -612,7 +612,7 @@ long as it fullfills the rules for an identifier in C and C++. A
 typical way to choose the named of the tests is what we see here,
 reading the declaration of the test makes sense since it is almost
 plain english, "Ensure strlen returns five for 'hello'". No problem
-understanding what we aim to test. And it can be viewed as an example
+understanding what we aim to test, or in TDD lingo, test drive. And it can be viewed as an example
 from a description of what strlen should be able to do. In a way,
 extracting all the `Ensure`:s from your test might give you all the
 documentation you'll need.
@@ -620,7 +620,12 @@ documentation you'll need.
 The `assert_that()` call is the primary part of an assertion, which is
 complemented with a constraint, in this case `is_equal_to()`, as a
 parameter. This makes a very fluent interface to the asserts, that
-actually reads like English.
+actually reads like English. The general format is then
+
+[source, C]
+---------------
+assert_that(actual, <assertion>);
+---------------
 
 NOTE: Sometimes you just want to fail the test explicitly, and there
 is a function for that too, `fail_test(const char *message)`. And
@@ -641,6 +646,7 @@ Here are the standard constraints...
 | `is_false` | evaluates to false
 | `is_null` | equals null
 | `is_non_null` | is a non null value
+| `is_not_null` | d:o
 ||
 | `is_equal_to(value)` | '== value'
 | `is_not_equal_to(value)` | '!= value'
@@ -666,12 +672,12 @@ The boolean assertion macros accept an `int` value. The equality
 assertions accept anything that can be cast to `intptr_t` and simply
 perform an `==` operation. The string comparisons are slightly
 different in that they use the `<string.h>` library function
-`strcmp()`.  If `is_equal_to()` is used on `char *` pointers then the
-pointers have to point at the same string to pass.
+`strcmp()`.  If you use `is_equal_to()` with `char *` pointers then it is the value of the pointers themselves that has to be the same, i.e. the
+pointers have to point at the same string for the test to pass.
 
 A cautionary note about the constraints is that you cannot use C/C++
-string literal concatenation (like "don't" "use" "string"
-"concatenation") in the parameters to the constraints. If you do, you
+string literal concatenation (like `"don't" "use" "string"
+"concatenation"`) in the parameters to the constraints. If you do, you
 will get weird error messages about missing arguments to the
 constraint macros. This is caused by the macros using argument strings
 to produce nice failure messages.
@@ -692,8 +698,8 @@ BDD Style vs. TDD Style
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 So far we have encouraged the modern BDD style. It has merits that we
-really want you to benefit from. But you might come across another
-style, the standard TDD style, which is more inline with previous
+really want you to benefit from. But you might come across *Cgreen* test in another
+style, more like the standard TDD style, which is more inline with previous
 thinking and might be more similar to other frameworks.
 
 The only difference, in principle, is the use of the SUT or
