@@ -1,13 +1,11 @@
 #include <cgreen/cute_reporter.h>
-#include <cgreen/reporter.h>
 #include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
+#include "cute_reporter_internal.h"
+
 
 typedef struct {
     CutePrinter *printer;
@@ -145,9 +143,4 @@ static void cute_failed_to_complete(TestReporter *reporter,
     memo->printer("#error %s failed to complete\n",
             get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb));
 }
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
-
 /* vim: set ts=4 sw=4 et cindent: */
