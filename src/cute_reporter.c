@@ -30,7 +30,7 @@ static void cute_finish_suite(TestReporter *reporter,
 
 static CutePrinter *printer;
 
-void set_cute_printer(CutePrinter *new_printer) {
+void set_cute_reporter_printer(CutePrinter *new_printer) {
     printer = new_printer;
 }
 
