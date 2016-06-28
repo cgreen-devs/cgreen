@@ -1,4 +1,3 @@
-#include <cgreen/text_reporter.h>
 #include <cgreen/reporter.h>
 #include <cgreen/breadcrumb.h>
 #include <stdlib.h>
@@ -6,6 +5,10 @@
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
+
+#include <cgreen/text_reporter.h>
+#include "text_reporter_internal.h"
+
 
 #define GREEN "\x1b[32m"
 #define RED "\x1b[31m"
@@ -43,6 +46,9 @@ TestReporter *create_text_reporter(void) {
 	reporter->finish_suite = &text_reporter_finish_suite;
 	return reporter;
 }
+
+extern void set_text_reporter_printer(TextPrinter *printer) {}
+
 
 static bool have_quiet_mode(TestReporter *reporter) {
     return reporter->options&&((TextReporterOptions *)reporter->options)->quiet_mode;
