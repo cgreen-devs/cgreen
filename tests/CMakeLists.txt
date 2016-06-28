@@ -159,12 +159,12 @@ macro_add_test(NAME assertion_messages
             ${assertion_messages_library}.expected
 )
 
-#macro_add_test(NAME ignore_messages
-#    COMMAND env "CGREEN_PER_TEST_TIMEOUT=2" ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
-#            ignore_messages_tests           # Name
-#            ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
-#            ${ignore_messages_library}.expected
-#)
+macro_add_test(NAME ignore_messages
+    COMMAND env "CGREEN_PER_TEST_TIMEOUT=2" ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
+            ignore_messages_tests           # Name
+            ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
+            ${ignore_messages_library}.expected
+)
 
 # add verification that all public api is available as it should
 add_subdirectory(api)
