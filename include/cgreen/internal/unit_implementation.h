@@ -14,6 +14,7 @@ typedef struct {
 } CgreenContext;
 
 typedef struct {
+    int ignore;                 /* Should test be ignored? */
     CgreenContext* context;
     const char* name;
     void(*run)(void);
@@ -29,7 +30,7 @@ typedef struct {
 #define ENSURE_VA_NUM_ARGS(...) ENSURE_VA_NUM_ARGS_IMPL_((__VA_ARGS__, _CALLED_WITH_TOO_MANY_ARGUMENTS,  WithContextAndSpecificationName,  WithSpecificationName))
 #define ENSURE_VA_NUM_ARGS_IMPL_(tuple) ENSURE_VA_NUM_ARGS_IMPL tuple
 
-#define ENSURE_VA_NUM_ARGS_IMPL(_1, _2, _3, N, ...) N
+#define ENSURE_VA_NUM_ARGS_IMPL(_1, _2, _3, _4, N, ...) N
 
 #define ENSURE_macro_dispatcher(func, ...)   ENSURE_macro_dispatcher_(func, ENSURE_VA_NUM_ARGS(__VA_ARGS__))
 
@@ -40,17 +41,17 @@ typedef struct {
 
 #define Ensure_NARG(...) ENSURE_macro_dispatcher(Ensure, __VA_ARGS__)
 
-#define EnsureWithContextAndSpecificationName(contextName, spec, ...) \
-    static void contextName##__##spec (void);\
-    CgreenTest spec_name(contextName, spec) = { &contextFor##contextName, #spec, &contextName##__##spec, __FILE__, __LINE__ };\
-    static void contextName##__##spec (void)
+#define EnsureWithContextAndSpecificationName(ignore, contextName, specName, ...) \
+    static void contextName##__##specName (void);\
+    CgreenTest spec_name(contextName, specName) = { ignore, &contextFor##contextName, #specName, &contextName##__##specName, __FILE__, __LINE__ }; \
+    static void contextName##__##specName (void)
 
 extern CgreenContext defaultContext;
 
-#define EnsureWithSpecificationName(spec, ...) \
-    static void spec (void);\
-    CgreenTest spec_name(default, spec) = { &defaultContext, #spec, &spec, __FILE__, __LINE__ };\
-    static void spec (void)
+#define EnsureWithSpecificationName(ignore, specName, ...)   \
+    static void specName (void);\
+    CgreenTest spec_name(default, specName) = { ignore, &defaultContext, #specName, &specName, __FILE__, __LINE__ }; \
+    static void specName (void)
 
 #define DescribeImplementation(subject) \
         static void setup(void);                \
