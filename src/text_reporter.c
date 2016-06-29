@@ -11,6 +11,7 @@
 
 
 #define GREEN "\x1b[32m"
+#define YELLOW "\x1b[33m"
 #define RED "\x1b[31m"
 #define MAGENTA "\x1b[35m"
 #define RESET "\x1b[0m"
@@ -47,7 +48,12 @@ TestReporter *create_text_reporter(void) {
 	return reporter;
 }
 
-extern void set_text_reporter_printer(TextPrinter *printer) {}
+
+static TextPrinter *printer = printf;
+ 
+void set_text_reporter_printer(TextPrinter *new_printer) {
+    printer = new_printer;
+}
 
 
 static bool have_quiet_mode(TestReporter *reporter) {
@@ -89,6 +95,12 @@ static char *format_passes(int passes, bool use_colors) {
     return buff;
 }
 
+static char *format_ignores(int ignores, bool use_colors) {
+    static char buff[100];
+    format_count(buff, ignores, "ignored", YELLOW, "", use_colors);
+    return buff;
+}
+
 static char *format_failures(int failures, bool use_colors) {
     static char buff[100];
     format_count(buff, failures, "failure", RED, "s", use_colors);
@@ -112,9 +124,10 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
         if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0)
             printf("\n");
     } else {
-        printf("Completed \"%s\": %s, %s, %s in %dms.\n",
+        printf("Completed \"%s\": %s, %s, %s, %s in %dms.\n",
                name,
                format_passes(reporter->passes, use_colors),
+               format_ignores(reporter->ignores, use_colors),
                format_failures(reporter->failures, use_colors),
                format_exceptions(reporter->exceptions, use_colors),
                duration_in_milliseconds);

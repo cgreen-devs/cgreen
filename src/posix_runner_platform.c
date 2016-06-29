@@ -30,9 +30,10 @@ static void allow_ctrl_c(void);
 void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter) {
     uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
 
-    //printf("%s->%s should be ignored: %s\n", test->context->name, test->name, test->ignore?"yes":"no");
-    if (test->ignore)
+    if (test->ignore) {
+        send_reporter_ignored_notification(reporter);
         return;
+    }
     
     (*reporter->start_test)(reporter, test->name);
     if (in_child_process()) {

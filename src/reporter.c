@@ -14,7 +14,7 @@
 namespace cgreen {
 #endif
 
-enum { pass = 1, fail, completion, exception };
+enum { pass = 1, fail, completion, exception, ignored };
 enum { FINISH_NOTIFICATION_RECEIVED = 0, FINISH_NOTIFICATION_NOT_RECEIVED };
 
 struct TestContext_ {
@@ -135,11 +135,15 @@ void send_reporter_exception_notification(TestReporter *reporter) {
     send_cgreen_message(reporter->ipc, exception);
 }
 
+void send_reporter_ignored_notification(TestReporter *reporter) {
+    send_cgreen_message(reporter->ipc, ignored);
+}
+
 void send_reporter_completion_notification(TestReporter *reporter) {
     send_cgreen_message(reporter->ipc, completion);
 }
 
-static void show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+ static void show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     (void)reporter;
     (void)file;
     (void)line;
@@ -187,6 +191,8 @@ static int read_reporter_results(TestReporter *reporter) {
             reporter->failures++;
         } else if (result == exception) {
             reporter->exceptions++;
+        } else if (result == ignored) {
+            reporter->ignores++;
         } else if (result == completion) {
             /* TODO: this should always be the last message; if it's not, there's a bad race */
             return FINISH_NOTIFICATION_RECEIVED;
