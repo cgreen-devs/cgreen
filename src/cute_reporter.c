@@ -114,7 +114,7 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
                 get_current_from_breadcrumb(
                         (CgreenBreadcrumb *) reporter->breadcrumb));
         printer(" %s:%d ", file, line);
-        vsprintf(buffer, (message == NULL ? "Problem" : message), arguments);
+        vsprintf(buffer, (message == NULL ? "<FATAL: NULL for failure message>" : message), arguments);
         printer("%s\n", buffer);
         memo->previous_error = 1;
     }

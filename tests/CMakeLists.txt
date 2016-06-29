@@ -25,16 +25,16 @@ endif()
 set(c_tests_library_SRCS
   assertion_tests.c
   breadcrumb_tests.c
-  constraint_tests.c
-  text_reporter_tests.c
-  cute_reporter_tests.c
   cdash_reporter_tests.c
-  messaging_tests.c
+  constraint_tests.c
+  cute_reporter_tests.c
   message_formatting_tests.c
+  messaging_tests.c
   mocks_tests.c
   parameters_test.c
-  reflective_tests.c
   reflective_runner_no_teardown_tests.c
+  reflective_tests.c
+  text_reporter_tests.c
   unit_tests.c
   vector_tests.c
 )
@@ -44,7 +44,6 @@ set(CGREEN_C_TESTS_LIBRARY
   cgreen_c_tests
   CACHE INTERNAL "cgreen shared library with tests for C"
 )
-
 
 add_library(${CGREEN_C_TESTS_LIBRARY} SHARED ${c_tests_library_SRCS})
 target_link_libraries(${CGREEN_C_TESTS_LIBRARY} ${CGREEN_LIBRARY})
@@ -65,17 +64,18 @@ macro_add_test(NAME runner_test_cgreen_c COMMAND cgreen-runner -x TEST ${CMAKE_S
 # C++ tests, library to use with runner, and a main program
 set(cpp_tests_library_SRCS
   assertion_tests.cpp
-  cpp_assertion_tests.cpp
   breadcrumb_tests.cpp
-  constraint_tests.cpp
-  cute_reporter_tests.cpp
   cdash_reporter_tests.cpp
-  messaging_tests.cpp
+  constraint_tests.cpp
+  cpp_assertion_tests.cpp
+  cute_reporter_tests.cpp
   message_formatting_tests.cpp
+  messaging_tests.cpp
   mocks_tests.cpp
   parameters_test.cpp
-  reflective_tests.cpp
   reflective_runner_no_teardown_tests.cpp
+  reflective_tests.cpp
+  text_reporter_tests.cpp
   unit_tests.cpp
   vector_tests.cpp
 )
@@ -98,6 +98,15 @@ macro_add_unit_test(test_cgreen_cpp "${cpp_tests_SRCS}" "${TEST_TARGET_LIBRARIES
 macro_add_test(NAME test_cgreen_cpp_run_named_test COMMAND test_cgreen_cpp different_pointers_with_same_contents_should_assert_equal)
 macro_add_test(NAME runner_test_cgreen_cpp COMMAND cgreen-runner -x TEST ${CMAKE_SHARED_LIBRARY_PREFIX}${CGREEN_CPP_TESTS_LIBRARY}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
+# Temporary single CUT test library
+set(text_reporter_tests_SRCS
+    text_reporter_tests.c
+)
+set(text_reporter_tests_library
+    text_reporter_tests
+)
+add_library(${text_reporter_tests_library} SHARED ${text_reporter_tests_SRCS})
+target_link_libraries(${text_reporter_tests_library} ${CGREEN_LIBRARY})
 
 
 # Libraries for a set of output comparing tests to run with runner

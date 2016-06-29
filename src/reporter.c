@@ -143,7 +143,7 @@ void send_reporter_completion_notification(TestReporter *reporter) {
     send_cgreen_message(reporter->ipc, completion);
 }
 
- static void show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+static void show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     (void)reporter;
     (void)file;
     (void)line;

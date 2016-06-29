@@ -17,10 +17,6 @@
 #define RESET "\x1b[0m"
 
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
-
 static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 		const int number_of_tests);
 static void text_reporter_start_test(TestReporter *reporter, const char *name);
@@ -34,25 +30,44 @@ static void show_breadcrumb(const char *name, void *memo);
 static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line,
 									   uint32_t duration_in_milliseconds);
 
+
+typedef struct {
+    TextPrinter *printer;
+    int depth;
+} TextMemo;
+
+
+void set_text_reporter_printer(TestReporter *reporter, TextPrinter *new_printer) {
+    TextMemo *memo = (TextMemo *)reporter->memo;
+    memo->printer = new_printer;
+}
+
+
 TestReporter *create_text_reporter(void) {
+    TextMemo *memo;
 	TestReporter *reporter = create_reporter();
+
 	if (reporter == NULL) {
 		return NULL;
 	}
+
+    memo = (TextMemo *)malloc(sizeof(TextMemo));
+    if (memo == NULL) {
+        destroy_reporter(reporter);
+        return NULL;
+    }
+    reporter->memo = memo;
+
 	reporter->start_suite = &text_reporter_start_suite;
 	reporter->start_test = &text_reporter_start_test;
 	reporter->show_fail = &show_fail;
 	reporter->show_incomplete = &show_incomplete;
 	reporter->finish_test = &text_reporter_finish;
 	reporter->finish_suite = &text_reporter_finish_suite;
-	return reporter;
-}
 
+    set_text_reporter_printer(reporter, printf);
 
-static TextPrinter *printer = printf;
- 
-void set_text_reporter_printer(TextPrinter *new_printer) {
-    printer = new_printer;
+    return reporter;
 }
 
 
@@ -62,13 +77,14 @@ static bool have_quiet_mode(TestReporter *reporter) {
 
 static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 		const int number_of_tests) {
+    TextMemo *memo = (TextMemo *)reporter->memo;
+    
 	reporter_start_test(reporter, name);
 	if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 1) {
-		printf("Running \"%s\" (%d tests)%s",
-				get_current_from_breadcrumb(
-						(CgreenBreadcrumb *) reporter->breadcrumb),
-               number_of_tests,
-               have_quiet_mode(reporter)?":":"...\n");
+		memo->printer("Running \"%s\" (%d tests)%s",
+                      get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb),
+                      number_of_tests,
+                      have_quiet_mode(reporter)?":":"...\n");
         fflush(stdout);
 	}
 }
@@ -116,15 +132,16 @@ static char *format_exceptions(int exceptions, bool use_colors) {
 static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line, uint32_t duration_in_milliseconds) {
 	const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb);
     bool use_colors = reporter->options && ((TextReporterOptions *)reporter->options)->use_colours;
-
+    TextMemo *memo = (TextMemo *)reporter->memo;
+    
     reporter_finish_suite(reporter, file, line, duration_in_milliseconds);
 
     if (have_quiet_mode(reporter)) {
-        printf(".");
+        memo->printer(".");
         if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0)
-            printf("\n");
+            memo->printer("\n");
     } else {
-        printf("Completed \"%s\": %s, %s, %s, %s in %dms.\n",
+        memo->printer("Completed \"%s\": %s, %s, %s, %s in %dms.\n",
                name,
                format_passes(reporter->passes, use_colors),
                format_ignores(reporter->ignores, use_colors),
@@ -136,46 +153,51 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
 
 static void show_fail(TestReporter *reporter, const char *file, int line,
 		const char *message, va_list arguments) {
-	int i = 0;
-	printf("%s:%d: ", file, line);
-	printf("Failure: ");
-	walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb,
-			(void *) &i);
-	printf("\n\t");
-	vprintf((message == NULL ? "<NULL for failure message>" : message), arguments);
-	printf("\n");
-	printf("\n");
+    char buffer[1000];
+    TextMemo *memo = (TextMemo *)reporter->memo;
+    
+	memo->printer("%s:%d: ", file, line);
+	memo->printer("Failure: ");
+    memo->depth = 0;
+	walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb, memo);
+	memo->printer("\n\t");
+	vsprintf(buffer, (message == NULL ? "<FATAL: NULL for failure message>" : message), arguments);
+    memo->printer(buffer);
+	memo->printer("\n");
+	memo->printer("\n");
     fflush(NULL);
 }
 
 static void show_incomplete(TestReporter *reporter, const char *file, int line,
 		const char *message, va_list arguments) {
-	int i = 0;
-	printf("%s:%d: ", file, line);
-	printf("Exception: ");
-	walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb,
-			(void *) &i);
+    char buffer[1000];
+    TextMemo *memo = (TextMemo *)reporter->memo;
+    
+	memo->printer("%s:%d: ", file, line);
+	memo->printer("Exception: ");
 
-	printf("\n\t");
-	vprintf(message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
-	printf("\n");
-	printf("\n");
+    memo->depth = 0;
+	walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb,
+                    memo);
+
+	memo->printer("\n\t");
+	vsprintf(buffer, message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
+    memo->printer(buffer);
+	memo->printer("\n");
+	memo->printer("\n");
     fflush(NULL);
 }
 
-static void show_breadcrumb(const char *name, void *memo) {
-	if (*(int *) memo > 1) {
-		printf("-> ");
+static void show_breadcrumb(const char *name, void *memo_ptr) {
+    TextMemo *memo = (TextMemo *)memo_ptr;
+	if (memo->depth > 1) {
+		memo->printer("-> ");
 	}
-	if (*(int *) memo > 0) {
-		printf("%s ", name);
+	if (memo->depth > 0) {
+		memo->printer("%s ", name);
 	}
-	(*(int *) memo)++;
+	memo->depth++;
 }
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */
 /* Local variables: */

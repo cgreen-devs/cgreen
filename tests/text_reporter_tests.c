@@ -58,7 +58,7 @@ static void text_reporter_tests_setup() {
     reporter->ipc = start_cgreen_messaging(666);
 
     clear_output();
-    set_text_reporter_printer(mocked_printer);
+    set_text_reporter_printer(reporter, mocked_printer);
 }
 
 static void text_reporter_tests_teardown() {
@@ -85,28 +85,27 @@ AfterEach(TextReporter) {
     text_reporter_tests_teardown();
 }
 
-Ensure(TextReporter, empty_test) {}
+Ensure(TextReporter, will_report_beginning_and_end_of_suites) {
+    reporter->start_suite(reporter, "suite_name", 2);
+    reporter->finish_suite(reporter, "filename", line, 0);
+    assert_that(output, begins_with_string("Running \"suite_name\""));
+    assert_that(output, contains_string("Completed \"suite_name\""));
+}
 
-/* Ensure(TextReporter, will_report_beginning_of_suites) { */
-/*     reporter->start_suite(reporter, "suite_name", 2); */
-/*     reporter->finish_suite(reporter, "filename", line, 0); */
-/*     assert_that(output, begins_with_string("Running \"suite_name\"")); */
-/* } */
+xEnsure(TextReporter, will_report_passed_for_test_with_one_pass) {
+    va_list arguments;
 
-/* xEnsure(TextReporter, will_report_passed_for_test_with_one_pass) { */
-/*     va_list arguments; */
+    reporter->start_test(reporter, "test_name");
 
-/*     reporter->start_test(reporter, "test_name"); */
+    memset(&arguments, 0, sizeof(va_list));
+    reporter->show_pass(reporter, "file", 2, "test_name", arguments);
 
-/*     memset(&arguments, 0, sizeof(va_list)); */
-/*     reporter->show_pass(reporter, "file", 2, "test_name", arguments); */
+    // Must indicate test case completion before calling finish_test()
+    send_reporter_completion_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds);
 
-/*     // Must indicate test case completion before calling finish_test() */
-/*     send_reporter_completion_notification(reporter); */
-/*     reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds); */
-
-/*     assert_that(output, contains_string("<Test Status=\"passed\">")); */
-/* } */
+    assert_that(output, contains_string("1 passes"));
+}
 
 /* xEnsure(TextReporter, will_report_failed_once_for_each_fail) { */
 /*     va_list arguments; */
@@ -148,11 +147,11 @@ Ensure(TextReporter, empty_test) {}
 /*     assert_that(output, contains_string("<Test Status=\"incomplete\">")); */
 /* } */
 
-TestSuite *test_reporter_tests() {
+TestSuite *text_reporter_tests() {
     TestSuite *suite = create_test_suite();
     set_setup(suite, text_reporter_tests_setup);
 
-    /* add_test_with_context(suite, TextReporter, will_report_nothing_for_suites); */
+    add_test_with_context(suite, TextReporter, will_report_beginning_and_end_of_suites);
     /* add_test_with_context(suite, TextReporter, will_report_passed_for_test_with_one_pass); */
     /* add_test_with_context(suite, TextReporter, will_report_failed_once_for_each_fail); */
     /* add_test_with_context(suite, TextReporter, will_report_non_finishing_test); */
