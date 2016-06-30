@@ -46,10 +46,10 @@ static time_t cdash_build_stamp(char *sbuildstamp, size_t sb);
 static time_t cdash_current_time(char *strtime);
 static double cdash_elapsed_time(time_t t1, time_t t2);
 
-static CDashPrinter *cdash_print;
 
-void set_cdash_reporter_printer(CDashPrinter *new_printer) {
-    cdash_print = new_printer;
+void set_cdash_reporter_printer(TestReporter *reporter, CDashPrinter *new_printer) {
+    CDashMemo *memo = (CDashMemo *)reporter->memo;
+    memo->printer = new_printer;
 }
 
 
@@ -73,10 +73,11 @@ TestReporter *create_cdash_reporter(CDashInfo *info) {
     memo = (CDashMemo *) calloc(1, sizeof(CDashMemo));
     if (!memo)
         return NULL;
-
     memo->info = info;
-    cdash_print = fprintf;
     memo->begin = cdash_build_stamp(sbuildstamp, 15);
+    reporter->memo = memo;
+    
+    set_cdash_reporter_printer(reporter, fprintf);
 
     rep_dir = mkdir("./Testing", S_IXUSR|S_IRUSR|S_IWUSR|S_IXGRP|S_IRGRP|S_IXOTH);
 
@@ -121,24 +122,23 @@ TestReporter *create_cdash_reporter(CDashInfo *info) {
 
     memo->startdatetime = cdash_current_time(strstart);
 
-    cdash_print(memo->stream,
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            " <Site BuildName=\"%s\" BuildStamp=\"%s-%s\" Name=\"%s\" Generator=\"%s\"\n"
-            " OSName=\"%s\" Hostname=\"%s\" OSRelease=\"%s\"\n"
-            " OSVersion=\"%s\" OSPlatform=\"%s\"\n"
-            " Is64Bits=\"\" VendorString=\"\" VendorID=\"\"\n"
-            " FamilyID=\"\" ModelID=\"\" ProcessorCacheSize=\"\" NumberOfLogicalCPU=\"\"\n"
-            " NumberOfPhysicalCPU=\"\" TotalVirtualMemory=\"\" TotalPhysicalMemory=\"\"\n"
-            " LogicalProcessorsPerPhysical=\"\" ProcessorClockFrequency=\"\" >\n"
-            "  <Testing>\n"
-            "   <StartDateTime>%s</StartDateTime>\n"
-            "    <TestList>\n"
-            "     <Test></Test>\n"
-            "    </TestList>\n",
-            memo->info->build, sbuildstamp, memo->info->type, memo->info->name, "Cgreen1.0.0",
-            memo->info->os_name, memo->info->hostname, memo->info->os_release,
-            memo->info->os_version, memo->info->os_platform, strstart);
-
+    memo->printer(memo->stream,
+                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                  " <Site BuildName=\"%s\" BuildStamp=\"%s-%s\" Name=\"%s\" Generator=\"%s\"\n"
+                  " OSName=\"%s\" Hostname=\"%s\" OSRelease=\"%s\"\n"
+                  " OSVersion=\"%s\" OSPlatform=\"%s\"\n"
+                  " Is64Bits=\"\" VendorString=\"\" VendorID=\"\"\n"
+                  " FamilyID=\"\" ModelID=\"\" ProcessorCacheSize=\"\" NumberOfLogicalCPU=\"\"\n"
+                  " NumberOfPhysicalCPU=\"\" TotalVirtualMemory=\"\" TotalPhysicalMemory=\"\"\n"
+                  " LogicalProcessorsPerPhysical=\"\" ProcessorClockFrequency=\"\" >\n"
+                  "  <Testing>\n"
+                  "   <StartDateTime>%s</StartDateTime>\n"
+                  "    <TestList>\n"
+                  "     <Test></Test>\n"
+                  "    </TestList>\n",
+                  memo->info->build, sbuildstamp, memo->info->type, memo->info->name, "Cgreen1.0.0",
+                  memo->info->os_name, memo->info->hostname, memo->info->os_release,
+                  memo->info->os_version, memo->info->os_platform, strstart);
     fflush(memo->stream);
 
     reporter->destroy = &cdash_destroy_reporter;
@@ -161,10 +161,10 @@ static void cdash_destroy_reporter(TestReporter *reporter) {
 
     memo->enddatetime = cdash_current_time(endtime);
 
-    cdash_print(memo->stream, "  <EndDateTime>%s</EndDateTime>\n"
-            " <ElapsedMinutes>%.2f</ElapsedMinutes>\n"
-            " </Testing>\n"
-            "</Site>\n", endtime, cdash_elapsed_time(memo->startdatetime, memo->enddatetime));
+    memo->printer(memo->stream, "  <EndDateTime>%s</EndDateTime>\n"
+                  " <ElapsedMinutes>%.2f</ElapsedMinutes>\n"
+                  " </Testing>\n"
+                  "</Site>\n", endtime, cdash_elapsed_time(memo->startdatetime, memo->enddatetime));
 
     destroy_reporter(reporter);
 }
@@ -185,7 +185,7 @@ static void cdash_reporter_start_test(TestReporter *reporter, const char *name) 
 
 
 static void print_test_header(CDashMemo *memo, const char* status, const char *name, const char* file, int line) {
-     cdash_print(memo->stream,
+     memo->printer(memo->stream,
                    "    <Test Status=\"%s\">\n"
                    "     <Name>%s</Name>\n"
                    "     <Path>%s</Path>\n"
@@ -195,7 +195,7 @@ static void print_test_header(CDashMemo *memo, const char* status, const char *n
 }
 
 static void print_results_header(CDashMemo *memo, const char *name, float exectime) {
-    cdash_print(memo->stream,
+    memo->printer(memo->stream,
                   "     <Results>\n"
                   "      <NamedMeasurement type=\"numeric/double\" name=\"Execution Time\">\n"
                   "       <Value>%f</Value>\n"
@@ -210,7 +210,7 @@ static void print_results_header(CDashMemo *memo, const char *name, float execti
 }
 
 static void print_measurement(CDashMemo *memo, const char *value) {
-    cdash_print(memo->stream,
+    memo->printer(memo->stream,
                   "       <Measurement>\n"
                   "        <Value>%s</Value>\n"
                   "       </Measurement>\n",
@@ -218,7 +218,7 @@ static void print_measurement(CDashMemo *memo, const char *value) {
 }
 
 static void print_tail(CDashMemo *memo) {
-    cdash_print(memo->stream,
+    memo->printer(memo->stream,
                   "      </Results>\n"
                   "    </Test>\n");
 }

@@ -58,7 +58,7 @@ static void setup_cdash_reporter_tests() {
     reporter->ipc = start_cgreen_messaging(666);
 
     clear_output();
-    set_cdash_reporter_printer(mocked_printer);
+    set_cdash_reporter_printer(reporter, mocked_printer);
 }
 
 static void teardown_cdash_reporter_tests() {
