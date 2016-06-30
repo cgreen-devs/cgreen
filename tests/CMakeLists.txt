@@ -31,7 +31,7 @@ set(c_tests_library_SRCS
   message_formatting_tests.c
   messaging_tests.c
   mocks_tests.c
-  parameters_test.c
+  parameters_tests.c
   reflective_runner_no_teardown_tests.c
   reflective_tests.c
   text_reporter_tests.c
@@ -72,7 +72,7 @@ set(cpp_tests_library_SRCS
   message_formatting_tests.cpp
   messaging_tests.cpp
   mocks_tests.cpp
-  parameters_test.cpp
+  parameters_tests.cpp
   reflective_runner_no_teardown_tests.cpp
   reflective_tests.cpp
   text_reporter_tests.cpp
@@ -99,14 +99,35 @@ macro_add_test(NAME test_cgreen_cpp_run_named_test COMMAND test_cgreen_cpp diffe
 macro_add_test(NAME runner_test_cgreen_cpp COMMAND cgreen-runner -x TEST ${CMAKE_SHARED_LIBRARY_PREFIX}${CGREEN_CPP_TESTS_LIBRARY}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 # Temporary single CUT test library
-set(text_reporter_tests_SRCS
-    text_reporter_tests.c
+# Maybe we should do this for all tests instead
+# and then aggregate the DLL/so/dylibs instead...
+# Then this might be possible to turn into a macro
+# which could allow "add_runner_lib(text_reporter)"
+foreach(case
+    assertion
+    breadcrumb
+    cdash_reporter
+    constraint
+    cute_reporter
+    message_formatting
+    messaging
+    mocks
+    parameters
+    reflective
+    reflective_runner_no_teardown
+    text_reporter
+    unit
+    vector
 )
-set(text_reporter_tests_library
-    text_reporter_tests
-)
-add_library(${text_reporter_tests_library} SHARED ${text_reporter_tests_SRCS})
-target_link_libraries(${text_reporter_tests_library} ${CGREEN_LIBRARY})
+  set(${case}_tests_SRCS
+      ${case}_tests.c
+  )
+  set(${case}_tests_library
+      ${case}_tests
+  )
+  add_library(${${case}_tests_library} SHARED ${${case}_tests_SRCS})
+  target_link_libraries(${${case}_tests_library} ${CGREEN_LIBRARY})
+endforeach(case)
 
 
 # Libraries for a set of output comparing tests to run with runner
