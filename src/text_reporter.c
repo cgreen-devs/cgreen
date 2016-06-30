@@ -31,6 +31,13 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
 									   uint32_t duration_in_milliseconds);
 
 
+/* To be able to run a reporter as CUT we need two reporters simultaneously,
+   so the injected printer needs to be local to the reporter which means we
+   must store it in the memo and use that. This requires a single printer
+   function to be used, often printf() or similar, so any other tricks
+   needs to be performed in char buffers so that memo->printer can do
+   the printing.
+ */
 typedef struct {
     TextPrinter *printer;
     int depth;
