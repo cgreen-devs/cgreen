@@ -4,17 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#ifndef __cplusplus
 #include <stdbool.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
-
-enum { pass = 1, fail, completion, exception, ignored };
+enum { pass = 1, fail, ignored ,completion, exception };
 enum { FINISH_NOTIFICATION_RECEIVED = 0, FINISH_NOTIFICATION_NOT_RECEIVED };
 
 struct TestContext_ {
@@ -201,9 +195,5 @@ static int read_reporter_results(TestReporter *reporter) {
 
     return FINISH_NOTIFICATION_NOT_RECEIVED;
 }
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */
