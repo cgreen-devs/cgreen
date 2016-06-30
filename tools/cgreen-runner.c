@@ -27,19 +27,20 @@ static void version(void) {
 /*----------------------------------------------------------------------*/
 static void usage(const char **argv) {
     printf("cgreen-runner for Cgreen unittest and mocking framework v%s\n\n", VERSION);
-    printf("Usage:\n    %s [--xml <prefix>] [--suite <name>] [--verbose] [--no-run] [--help] (<library> [<test>])+\n\n", argv[0]);
+    printf("Usage:\n    %s [--xml <prefix>] [--suite <name>] [--verbose] [--quiet] [--no-run] [--help] (<library> [<test>])+\n\n", argv[0]);
     printf("Discover and run all or a single named cgreen test(s) from one or multiple\n");
     printf("dynamically loadable library.\n\n");
     printf("A single test can be run using the form [<context>:]<name> where <context> can\n");
     printf("be omitted if there is no context.\n\n");
-    printf("--colours/colors\tUse colours to emphasis result (requires ANSI-capable terminal)\n");
-    printf("--xml <prefix>\tInstead of messages on stdout, write results into one XML-file\n");
-    printf("\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
-    printf("\t\twill be '<prefix>-<suite>.xml'\n");
-    printf("--suite <name>\tName the top level suite\n");
-    printf("--no-run\tDon't run the tests\n");
-    printf("--verbose\tShow progress information\n");
-    printf("--version\tShow version information\n");
+    printf("  -c --colours/colors\tUse colours to emphasis result (requires ANSI-capable terminal)\n");
+    printf("  -x --xml <prefix>\tInstead of messages on stdout, write results into one XML-file\n");
+    printf("\t\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
+    printf("\t\t\twill be '<prefix>-<suite>.xml'\n");
+    printf("  -s --suite <name>\tName the top level suite\n");
+    printf("  -n --no-run\t\tDon't run the tests\n");
+    printf("  -v --verbose\t\tShow progress information\n");
+    printf("  -q --quiet\t\tJust output dots for each test\n");
+    printf("     --version\t\tShow version information\n");
 }
 
 
