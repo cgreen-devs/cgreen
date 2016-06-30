@@ -2,9 +2,8 @@
 #include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 #include <stdio.h>
-#ifndef __cplusplus
+#include <string.h>
 #include <stdbool.h>
-#endif
 
 #include <cgreen/text_reporter.h>
 #include "text_reporter_internal.h"
