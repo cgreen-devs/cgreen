@@ -28,8 +28,8 @@ mock_messages_tests.c: Failure: Mocks -> reports_multiple_never_expect
 mock_messages_tests.c: Failure: Mocks -> single_uncalled_expectation_fails_tally 
 	Expected call was not made to mocked function [string_out]
 
-Completed "Mocks": 4 passes, 9 failures, 0 exceptions in 0ms.
-Completed "mock_messages_tests": 4 passes, 9 failures, 0 exceptions in 0ms.
+Completed "Mocks": 4 passes, 9 failures in 0ms.
+Completed "mock_messages_tests": 4 passes, 9 failures in 0ms.
 Mocks -> learning_mocks_emit_none_when_learning_no_mocks : Learned mocks are
 	<none>
 Mocks -> learning_mocks_emit_pastable_code : Learned mocks are
