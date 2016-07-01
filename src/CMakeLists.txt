@@ -50,6 +50,7 @@ set(cgreen_SRCS
   text_reporter.c
   utils.c
   vector.c
+  xml_reporter.c
 )
 
 if (UNIX)

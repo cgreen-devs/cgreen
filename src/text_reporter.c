@@ -21,30 +21,30 @@ namespace cgreen {
 #endif
 
 static void text_reporter_start_suite(TestReporter *reporter, const char *name,
-		const int number_of_tests);
+        const int number_of_tests);
 static void text_reporter_start_test(TestReporter *reporter, const char *name);
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
-		int line, const char *message, uint32_t duration_in_milliseconds);
+        int line, const char *message, uint32_t duration_in_milliseconds);
 static void show_fail(TestReporter *reporter, const char *file, int line,
-		const char *message, va_list arguments);
+        const char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *file, int line,
-		const char *message, va_list arguments);
+        const char *message, va_list arguments);
 static void show_breadcrumb(const char *name, void *memo);
 static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line,
-									   uint32_t duration_in_milliseconds);
+                                       uint32_t duration_in_milliseconds);
 
 TestReporter *create_text_reporter(void) {
-	TestReporter *reporter = create_reporter();
-	if (reporter == NULL) {
-		return NULL;
-	}
-	reporter->start_suite = &text_reporter_start_suite;
-	reporter->start_test = &text_reporter_start_test;
-	reporter->show_fail = &show_fail;
-	reporter->show_incomplete = &show_incomplete;
-	reporter->finish_test = &text_reporter_finish;
-	reporter->finish_suite = &text_reporter_finish_suite;
-	return reporter;
+    TestReporter *reporter = create_reporter();
+    if (reporter == NULL) {
+        return NULL;
+    }
+    reporter->start_suite = &text_reporter_start_suite;
+    reporter->start_test = &text_reporter_start_test;
+    reporter->show_fail = &show_fail;
+    reporter->show_incomplete = &show_incomplete;
+    reporter->finish_test = &text_reporter_finish;
+    reporter->finish_suite = &text_reporter_finish_suite;
+    return reporter;
 }
 
 extern void set_text_reporter_printer(TextPrinter *printer) {}
@@ -55,25 +55,25 @@ static bool have_quiet_mode(TestReporter *reporter) {
 }
 
 static void text_reporter_start_suite(TestReporter *reporter, const char *name,
-		const int number_of_tests) {
-	reporter_start_test(reporter, name);
-	if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 1) {
-		printf("Running \"%s\" (%d tests)%s",
-				get_current_from_breadcrumb(
-						(CgreenBreadcrumb *) reporter->breadcrumb),
+        const int number_of_tests) {
+    reporter_start_test(reporter, name);
+    if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 1) {
+        printf("Running \"%s\" (%d tests)%s",
+                get_current_from_breadcrumb(
+                        (CgreenBreadcrumb *) reporter->breadcrumb),
                number_of_tests,
                have_quiet_mode(reporter)?":":"...\n");
         fflush(stdout);
-	}
+    }
 }
 
 static void text_reporter_start_test(TestReporter *reporter, const char *name) {
-	reporter_start_test(reporter, name);
+    reporter_start_test(reporter, name);
 }
 
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
-		int line, const char *message, uint32_t duration_in_milliseconds) {
-	reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
+        int line, const char *message, uint32_t duration_in_milliseconds) {
+    reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
 }
 
 
@@ -102,7 +102,7 @@ static char *format_exceptions(int exceptions, bool use_colors) {
 }
 
 static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line, uint32_t duration_in_milliseconds) {
-	const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb);
+    const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb);
     bool use_colors = reporter->options && ((TextReporterOptions *)reporter->options)->use_colours;
 
     reporter_finish_suite(reporter, file, line, duration_in_milliseconds);
@@ -122,42 +122,42 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
 }
 
 static void show_fail(TestReporter *reporter, const char *file, int line,
-		const char *message, va_list arguments) {
-	int i = 0;
-	printf("%s:%d: ", file, line);
-	printf("Failure: ");
-	walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb,
-			(void *) &i);
-	printf("\n\t");
-	vprintf((message == NULL ? "<NULL for failure message>" : message), arguments);
-	printf("\n");
-	printf("\n");
+        const char *message, va_list arguments) {
+    int i = 0;
+    printf("%s:%d: ", file, line);
+    printf("Failure: ");
+    walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb,
+            (void *) &i);
+    printf("\n\t");
+    vprintf((message == NULL ? "<NULL for failure message>" : message), arguments);
+    printf("\n");
+    printf("\n");
     fflush(NULL);
 }
 
 static void show_incomplete(TestReporter *reporter, const char *file, int line,
-		const char *message, va_list arguments) {
-	int i = 0;
-	printf("%s:%d: ", file, line);
-	printf("Exception: ");
-	walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb,
-			(void *) &i);
+        const char *message, va_list arguments) {
+    int i = 0;
+    printf("%s:%d: ", file, line);
+    printf("Exception: ");
+    walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb,
+            (void *) &i);
 
-	printf("\n\t");
-	vprintf(message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
-	printf("\n");
-	printf("\n");
+    printf("\n\t");
+    vprintf(message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
+    printf("\n");
+    printf("\n");
     fflush(NULL);
 }
 
 static void show_breadcrumb(const char *name, void *memo) {
-	if (*(int *) memo > 1) {
-		printf("-> ");
-	}
-	if (*(int *) memo > 0) {
-		printf("%s ", name);
-	}
-	(*(int *) memo)++;
+    if (*(int *) memo > 1) {
+        printf("-> ");
+    }
+    if (*(int *) memo > 0) {
+        printf("%s ", name);
+    }
+    (*(int *) memo)++;
 }
 
 #ifdef __cplusplus
