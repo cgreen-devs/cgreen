@@ -22,10 +22,10 @@ namespace cgreen {
 
 /* TDD Style: Ensure(testname) {implementation} */
 /* BDD Style: Ensure(subject, testname) {implementation} */
-#define Ensure(...) Ensure_NARG(__VA_ARGS__)(__VA_ARGS__)
+#define Ensure(...) Ensure_NARG(0, __VA_ARGS__)(0, __VA_ARGS__)
 
 /* Temporarily ignore this test */
-#define xEnsure(CUT, test) void ignored_##CUT##test(void)
+#define xEnsure(...) Ensure_NARG(1, __VA_ARGS__)(1, __VA_ARGS__)
 
 #ifdef __cplusplus
     }
