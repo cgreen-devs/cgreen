@@ -1,10 +1,13 @@
 #include <cgreen/breadcrumb.h>
 #include <cgreen/cgreen.h>
-#include <cgreen/cute_reporter.h>
 #include <cgreen/messaging.h>
 
 #include <stdio.h>
 #include <string.h>
+
+#include <cgreen/cute_reporter.h>
+#include "cute_reporter_internal.h"
+
 
 #ifdef __cplusplus
 using namespace cgreen;
@@ -52,10 +55,10 @@ static void setup_cute_reporter_tests() {
     reporter->ipc = start_cgreen_messaging(666);
 
     clear_output();
-    set_cute_printer(reporter, mocked_printf);
+    set_cute_reporter_printer(mocked_printf);
 }
 
-static void cute_reporter_tests_teardown() {
+static void teardown_cute_reporter_tests() {
     //bad mojo when running tests in same process, as destroy_reporter also sets
     //context.reporter = NULL, thus breaking the next test to run
     destroy_reporter(reporter);
@@ -76,7 +79,7 @@ BeforeEach(CuteReporter) {
     setup_cute_reporter_tests();
 }
 AfterEach(CuteReporter) {
-    cute_reporter_tests_teardown();
+    teardown_cute_reporter_tests();
 }
 
 Ensure(CuteReporter, will_report_beginning_of_suite) {
@@ -163,6 +166,6 @@ TestSuite *cute_reporter_tests() {
     add_test_with_context(suite, CuteReporter, will_report_finishing_of_suite);
     add_test_with_context(suite, CuteReporter, will_report_non_finishing_test);
 
-    set_teardown(suite, cute_reporter_tests_teardown);
+    set_teardown(suite, teardown_cute_reporter_tests);
     return suite;
 }

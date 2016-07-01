@@ -9,8 +9,8 @@ endif (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
 
 if (UNIX)
   if (CMAKE_COMPILER_IS_GNUCC OR COMPILER_IS_CLANG)
-    # add_compile_options(-g -Wall -Wextra -Wunused) # only since CMake 2.8.12, so...
-    add_definitions(-g -Wall -Wextra -Wunused)
+    # add_compile_options(-Wall -Wextra -Wunused) # only since CMake 2.8.12, so...
+    add_definitions(-Wall -Wextra -Wunused)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -Weffc++")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")

@@ -21,9 +21,6 @@ struct CDashInfo_ {
 	char *os_version;
 };
 
-typedef int CDashPrinter(FILE *, const char *format, ...);
-
-extern void set_cdash_printer(TestReporter *reporter, CDashPrinter *printer);
 extern TestReporter *create_cdash_reporter(CDashInfo *cdash);
 
 #ifdef __cplusplus

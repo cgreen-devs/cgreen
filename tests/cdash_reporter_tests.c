@@ -1,10 +1,12 @@
 #include <cgreen/breadcrumb.h>
 #include <cgreen/cgreen.h>
-#include <cgreen/cdash_reporter.h>
 #include <cgreen/messaging.h>
 
 #include <stdio.h>
 #include <string.h>
+
+#include <cgreen/cdash_reporter.h>
+#include "src/cdash_reporter_internal.h"
 
 #ifdef __cplusplus
 using namespace cgreen;
@@ -56,10 +58,10 @@ static void setup_cdash_reporter_tests() {
     reporter->ipc = start_cgreen_messaging(666);
 
     clear_output();
-    set_cdash_printer(reporter, mocked_printer);
+    set_cdash_reporter_printer(mocked_printer);
 }
 
-static void cdash_reporter_tests_teardown() {
+static void teardown_cdash_reporter_tests() {
     reporter->destroy(reporter);
 
     //bad mojo when running tests in same process, as destroy_reporter also sets
@@ -78,7 +80,7 @@ BeforeEach(CDashReporter) {
     setup_cdash_reporter_tests();
 }
 AfterEach(CDashReporter) {
-    cdash_reporter_tests_teardown();
+    teardown_cdash_reporter_tests();
 }
 
 Ensure(CDashReporter, will_report_nothing_for_suites) {
@@ -150,6 +152,6 @@ TestSuite *cdash_reporter_tests() {
     add_test_with_context(suite, CDashReporter, will_report_failed_once_for_each_fail);
     add_test_with_context(suite, CDashReporter, will_report_non_finishing_test);
     
-    set_teardown(suite, cdash_reporter_tests_teardown);
+    set_teardown(suite, teardown_cdash_reporter_tests);
     return suite;
 }

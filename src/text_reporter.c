@@ -1,11 +1,13 @@
-#include <cgreen/text_reporter.h>
 #include <cgreen/reporter.h>
 #include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 #include <stdio.h>
-#ifndef __cplusplus
+#include <string.h>
 #include <stdbool.h>
-#endif
+
+#include <cgreen/text_reporter.h>
+#include "text_reporter_internal.h"
+
 
 #define GREEN "\x1b[32m"
 #define RED "\x1b[31m"
@@ -43,6 +45,9 @@ TestReporter *create_text_reporter(void) {
 	reporter->finish_suite = &text_reporter_finish_suite;
 	return reporter;
 }
+
+extern void set_text_reporter_printer(TextPrinter *printer) {}
+
 
 static bool have_quiet_mode(TestReporter *reporter) {
     return reporter->options&&((TextReporterOptions *)reporter->options)->quiet_mode;
@@ -95,6 +100,13 @@ static char *format_exceptions(int exceptions, bool use_colors) {
     return buff;
 }
 
+
+static void insert_comma(char buf[]) {
+    if (buf[strlen(buf)-1] != ' ')
+        strcat(buf, ", ");
+}
+
+
 static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line, uint32_t duration_in_milliseconds) {
 	const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb);
     bool use_colors = reporter->options && ((TextReporterOptions *)reporter->options)->use_colours;
@@ -106,12 +118,19 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
         if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0)
             printf("\n");
     } else {
-        printf("Completed \"%s\": %s, %s, %s in %dms.\n",
-               name,
-               format_passes(reporter->passes, use_colors),
-               format_failures(reporter->failures, use_colors),
-               format_exceptions(reporter->exceptions, use_colors),
-               duration_in_milliseconds);
+        char buf[1000];
+        sprintf(buf, "Completed \"%s\": ", name);
+        if (reporter->passes)
+            strcat(buf, format_passes(reporter->passes, use_colors));
+        if (reporter->failures) {
+            insert_comma(buf);
+            strcat(buf, format_failures(reporter->failures, use_colors));
+        }
+        if (reporter->exceptions) {
+            insert_comma(buf);
+            strcat(buf, format_exceptions(reporter->exceptions, use_colors));
+        }
+        printf("%s in %dms.\n", buf, duration_in_milliseconds);
     }
 }
 
