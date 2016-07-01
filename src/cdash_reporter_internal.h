@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 typedef int CDashPrinter(FILE *, const char *format, ...);
-void set_cdash_reporter_printer(CDashPrinter *printer);
+void set_cdash_reporter_printer(TestReporter *reporter, CDashPrinter *printer);
 
 #ifdef __cplusplus
 }
