@@ -158,6 +158,10 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
         sprintf(buf, "Completed \"%s\": ", name);
         if (reporter->passes)
             strcat(buf, format_passes(reporter->passes, use_colors));
+        if (reporter->ignores) {
+            insert_comma(buf);
+            strcat(buf, format_ignores(reporter->ignores, use_colors));
+        }
         if (reporter->failures) {
             insert_comma(buf);
             strcat(buf, format_failures(reporter->failures, use_colors));
@@ -166,7 +170,7 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
             insert_comma(buf);
             strcat(buf, format_exceptions(reporter->exceptions, use_colors));
         }
-        printf("%s in %dms.\n", buf, duration_in_milliseconds);
+        memo->printer("%s in %dms.\n", buf, duration_in_milliseconds);
     }
 }
 
