@@ -67,15 +67,15 @@ static char *string_out(int p1) {
 
 Ensure(Mocks, can_stub_a_string_return) {
     expect(string_out, will_return("hello"));
-    assert_string_equal(string_out(1), "hello");
+    assert_that(string_out(1), is_equal_to_string("hello"));
 }
 
 Ensure(Mocks, can_stub_a_string_sequence) {
     expect(string_out, will_return("hello"));
     expect(string_out, will_return("goodbye"));
 
-    assert_string_equal(string_out(2), "hello");
-    assert_string_equal(string_out(3), "goodbye");
+    assert_that(string_out(2), is_equal_to_string("hello"));
+    assert_that(string_out(3), is_equal_to_string("goodbye"));
 }
 
 static void integer_in(int i) {

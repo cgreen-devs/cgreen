@@ -61,6 +61,7 @@ TestReporter *create_reporter() {
     reporter->finish_test = &reporter_finish_test;
     reporter->finish_suite = &reporter_finish_suite;
     reporter->passes = 0;
+    reporter->ignores = 0;
     reporter->failures = 0;
     reporter->exceptions = 0;
     reporter->breadcrumb = breadcrumb;
@@ -73,8 +74,8 @@ void destroy_reporter(TestReporter *reporter) {
     destroy_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
     destroy_memo((TestReportMemo *)reporter->memo);
     free(reporter);
-    //hack to allow destroy_reporter to be called in cute_reporter_tests when
-    //tests are running in same process
+    // hack to allow destroy_reporter to be called in reporter_tests when
+    // tests are running in same process
     if (context.reporter == reporter)
     {
         context.reporter = NULL;

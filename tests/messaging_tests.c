@@ -10,7 +10,7 @@ using namespace cgreen;
 #endif
 
 Ensure(highly_nested_test_suite_should_still_complete) {
-    assert_true(1);
+    assert_that(true);
 }
 
 TestSuite *highly_nested_test_suite() {
@@ -28,7 +28,7 @@ TestSuite *highly_nested_test_suite() {
 Ensure(can_send_message) {
     int messaging = start_cgreen_messaging(33);
     send_cgreen_message(messaging, 99);
-    assert_equal(receive_cgreen_message(messaging), 99);
+    assert_that(receive_cgreen_message(messaging), is_equal_to(99));
 }
 
 static int signal_received = 0;

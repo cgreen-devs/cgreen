@@ -88,23 +88,26 @@ AfterEach(TextReporter) {
 Ensure(TextReporter, will_report_beginning_and_end_of_suites) {
     reporter->start_suite(reporter, "suite_name", 2);
     reporter->finish_suite(reporter, "filename", line, 0);
-    assert_that(output, begins_with_string("Running \"suite_name\""));
+    assert_that(output, begins_with_string("Running \"suite_name\" (2 tests)"));
     assert_that(output, contains_string("Completed \"suite_name\""));
 }
 
-xEnsure(TextReporter, will_report_passed_for_test_with_one_pass) {
+
+Ensure(TextReporter, will_report_passed_for_test_with_one_pass_on_completion) {
     va_list arguments;
 
+    reporter->start_suite(reporter, "suite_name", 15);
     reporter->start_test(reporter, "test_name");
 
     memset(&arguments, 0, sizeof(va_list));
-    reporter->show_pass(reporter, "file", 2, "test_name", arguments);
+    (*reporter->assert_true)(reporter, "file", 2, true, "");
 
     // Must indicate test case completion before calling finish_test()
     send_reporter_completion_notification(reporter);
     reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds);
+    reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
 
-    assert_that(output, contains_string("1 passes"));
+    assert_that(output, contains_string("Completed \"suite_name\": 1 pass"));
 }
 
 /* xEnsure(TextReporter, will_report_failed_once_for_each_fail) { */
