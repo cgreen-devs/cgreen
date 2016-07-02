@@ -1,3 +1,4 @@
+
 #include <cgreen/breadcrumb.h>
 #include <cgreen/cgreen.h>
 #include <cgreen/messaging.h>
@@ -44,7 +45,7 @@ static int mocked_printf(const char *format, ...) {
     return strlen(output);
 }
 
-TestReporter *reporter;
+static TestReporter *reporter;
 
 static void setup_cute_reporter_tests() {
     reporter = create_cute_reporter();

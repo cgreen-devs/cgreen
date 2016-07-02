@@ -1,9 +1,14 @@
-#include <cgreen/breadcrumb.h>
 #include <cgreen/cgreen.h>
+#include <cgreen/breadcrumb.h>
 #include <cgreen/messaging.h>
 
 #include <stdio.h>
 #include <string.h>
+
+#ifdef __cplusplus
+using namespace cgreen;
+#endif
+
 
 #include "xml_reporter_internal.h"
 
@@ -40,7 +45,7 @@ static int mocked_printf(FILE *file, const char *format, ...) {
     return strlen(output);
 }
 
-TestReporter *reporter;
+static TestReporter *reporter;
 
 static void setup_xml_reporter_tests() {
     reporter = create_xml_reporter("PREFIX");

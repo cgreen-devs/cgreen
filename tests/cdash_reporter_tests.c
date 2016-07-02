@@ -47,7 +47,7 @@ static int mocked_printer(FILE *stream, const char *format, ...) {
 
 static TestReporter *reporter;
 
-CDashInfo info;
+static CDashInfo info;
 
 static void setup_cdash_reporter_tests() {
     reporter = create_cdash_reporter(&info);
