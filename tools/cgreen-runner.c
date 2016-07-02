@@ -1,5 +1,5 @@
 #include <cgreen/cgreen.h>
-#include "xml_reporter.h"
+#include <cgreen/xml_reporter.h>
 #include "utils.h"
 
 #include <unistd.h>

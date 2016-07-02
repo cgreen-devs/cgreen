@@ -17,17 +17,17 @@
 
 
 static void text_reporter_start_suite(TestReporter *reporter, const char *name,
-		const int number_of_tests);
+        const int number_of_tests);
 static void text_reporter_start_test(TestReporter *reporter, const char *name);
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
-		int line, const char *message, uint32_t duration_in_milliseconds);
+        int line, const char *message, uint32_t duration_in_milliseconds);
 static void show_fail(TestReporter *reporter, const char *file, int line,
-		const char *message, va_list arguments);
+        const char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *file, int line,
-		const char *message, va_list arguments);
+        const char *message, va_list arguments);
 static void show_breadcrumb(const char *name, void *memo);
 static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line,
-									   uint32_t duration_in_milliseconds);
+                                       uint32_t duration_in_milliseconds);
 
 
 /* To be able to run a reporter as CUT we need two reporters simultaneously,
@@ -96,12 +96,12 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 }
 
 static void text_reporter_start_test(TestReporter *reporter, const char *name) {
-	reporter_start_test(reporter, name);
+    reporter_start_test(reporter, name);
 }
 
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
-		int line, const char *message, uint32_t duration_in_milliseconds) {
-	reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
+        int line, const char *message, uint32_t duration_in_milliseconds) {
+    reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
 }
 
 
@@ -143,7 +143,7 @@ static void insert_comma(char buf[]) {
 
 
 static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line, uint32_t duration_in_milliseconds) {
-	const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb);
+    const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb);
     bool use_colors = reporter->options && ((TextReporterOptions *)reporter->options)->use_colours;
     TextMemo *memo = (TextMemo *)reporter->memo;
     

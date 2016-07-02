@@ -1,4 +1,5 @@
 #include <cgreen/cgreen.h>
+#include <cgreen/xml_reporter.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -13,7 +14,6 @@
 #endif
 
 #include "utils.h"
-#include "xml_reporter.h"
 
 #include "runner.h"
 

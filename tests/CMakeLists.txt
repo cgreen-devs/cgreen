@@ -27,7 +27,9 @@ set(c_tests_library_SRCS
   breadcrumb_tests.c
   cdash_reporter_tests.c
   constraint_tests.c
+#  text_reporter_tests.c
   cute_reporter_tests.c
+  cdash_reporter_tests.c
   message_formatting_tests.c
   messaging_tests.c
   mocks_tests.c
@@ -37,6 +39,7 @@ set(c_tests_library_SRCS
   text_reporter_tests.c
   unit_tests.c
   vector_tests.c
+  xml_reporter_tests.c
 )
 SET_SOURCE_FILES_PROPERTIES(${c_tests_library_SRCS} PROPERTIES LANGUAGE C)
 
@@ -69,6 +72,7 @@ set(cpp_tests_library_SRCS
   constraint_tests.cpp
   cpp_assertion_tests.cpp
   cute_reporter_tests.cpp
+  cdash_reporter_tests.cpp
   message_formatting_tests.cpp
   messaging_tests.cpp
   mocks_tests.cpp
@@ -78,6 +82,7 @@ set(cpp_tests_library_SRCS
   text_reporter_tests.cpp
   unit_tests.cpp
   vector_tests.cpp
+  xml_reporter_tests.cpp
 )
 SET_SOURCE_FILES_PROPERTIES(${cpp_tests_library_SRCS} PROPERTIES LANGUAGE CXX)
 
