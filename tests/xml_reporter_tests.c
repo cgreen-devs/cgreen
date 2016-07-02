@@ -72,9 +72,6 @@ static void teardown_xml_reporter_tests() {
     }
 }
 
-static void assert_no_output() {
-    assert_that(strlen(output), is_equal_to(0));
-}
 
 Describe(XmlReporter);
 BeforeEach(XmlReporter) {
@@ -88,6 +85,30 @@ Ensure(XmlReporter, will_report_beginning_of_suite) {
     reporter->start_suite(reporter, "suite_name", 2);
     assert_that(output, begins_with_string("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n<testsuite name=\"suite_name"));
 }
+
+
+/* Here are a number of tests that I wanted to port from the
+   cute_reporter, but didn't have time for right now.
+
+   If *you* have the time to do some small thing here, we'd be very
+   happy!
+ */
+
+static void assert_no_output() {
+    assert_that(strlen(output), is_equal_to(0));
+}
+
+xEnsure(XmlReporter, will_report_xensure_as_skipped) {
+    reporter->start_suite(reporter, "suite_name", 2);
+    reporter->start_test(reporter, "test_name");
+    send_reporter_ignored_notification(reporter);
+    send_reporter_completion_notification(reporter);
+    reporter->finish_test(reporter, "file", 44, "", 42);
+    reporter->finish_suite(reporter, "file", 44, 42);
+
+    assert_that(output, contains_string("<skipped />"));
+}
+
 
 xEnsure(XmlReporter, will_report_beginning_and_successful_finishing_of_test) {
     va_list arguments;
