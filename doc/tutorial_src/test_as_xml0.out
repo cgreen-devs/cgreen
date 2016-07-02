@@ -2,5 +2,5 @@ Running "Top Level" (2 tests)...
 test_as_xml.c:12: Failure: A Group -> reports_a_test_that_fails 
 	A failure
 
-Completed "A Group": 1 pass, 1 failure, 0 exceptions in 1ms.
-Completed "Top Level": 1 pass, 1 failure, 0 exceptions in 1ms.
+Completed "A Group": 1 pass, 1 failure in 28ms.
+Completed "Top Level": 1 pass, 1 failure in 28ms.

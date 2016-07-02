@@ -1,6 +1,3 @@
 Running "multiple_streams" (1 tests)...
-multiple_streams.c:15: Failure: Streams -> bad_test 
-	Expected call was not made to mocked function [stream_stub]
-
-Completed "Streams": 0 passes, 1 failure, 0 exceptions in 2ms.
-Completed "multiple_streams": 0 passes, 1 failure, 0 exceptions in 2ms.
+Completed "Streams": 1 ignored in 0ms.
+Completed "multiple_streams": 1 ignored in 0ms.
