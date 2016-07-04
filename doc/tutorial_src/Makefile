@@ -19,7 +19,7 @@ MYSQL_LIB = $(MYSQLROOT)/lib
 endif
 endif
 
-CGREEN_BIN=$(CGREEN_ROOT)/build/build-c
+CGREEN_BIN=$(CGREEN_ROOT)/build
 CC = gcc -c -g -Wall -I$(CGREEN_ROOT)/include -I$(MYSQL_INCLUDE) -I$(FPIC)
 LINK = gcc -g
 LIBDIRS = -L$(CGREEN_BIN)/src -L$(MYSQL_LIB)

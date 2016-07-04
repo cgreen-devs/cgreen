@@ -1,18 +1,17 @@
-
-#include <cgreen/breadcrumb.h>
 #include <cgreen/cgreen.h>
+#include <cgreen/breadcrumb.h>
 #include <cgreen/messaging.h>
 
 #include <stdio.h>
 #include <string.h>
 
-#include <cgreen/cute_reporter.h>
-#include "cute_reporter_internal.h"
-
-
 #ifdef __cplusplus
 using namespace cgreen;
 #endif
+
+
+#include "xml_reporter_internal.h"
+
 
 static const int line=666;
 static const uint32_t duration_in_milliseconds = 1;
@@ -34,21 +33,22 @@ static char *concat(char *output, char *buffer) {
     return output;
 }
 
-static int mocked_printf(const char *format, ...) {
+static int mocked_printf(FILE *file, const char *format, ...) {
     char buffer[10000];
     va_list ap;
     va_start(ap, format);
     vsprintf(buffer, format, ap);
     va_end(ap);
 
+    (void)file;
     output = concat(output, buffer);
     return strlen(output);
 }
 
 static TestReporter *reporter;
 
-static void setup_cute_reporter_tests() {
-    reporter = create_cute_reporter();
+static void setup_xml_reporter_tests() {
+    reporter = create_xml_reporter("PREFIX");
 
     // We can not use setup_reporting() since we are running
     // inside a test suite which needs the real reporting
@@ -56,16 +56,17 @@ static void setup_cute_reporter_tests() {
     reporter->ipc = start_cgreen_messaging(666);
 
     clear_output();
-    set_cute_reporter_printer(reporter, mocked_printf);
+    set_xml_reporter_printer(reporter, mocked_printf);
 }
 
-static void teardown_cute_reporter_tests() {
+static void teardown_xml_reporter_tests() {
     //bad mojo when running tests in same process, as destroy_reporter also sets
     //context.reporter = NULL, thus breaking the next test to run
     destroy_reporter(reporter);
     if (NULL != output) {
         free(output);
-        //need to set output to NULL to avoid second free in subsequent call to setup_cute_reporter_tests->clear_output
+        //need to set output to NULL to avoid second free in
+        //subsequent call to setup_xml_reporter_tests->clear_output
         //when running tests in same process
         output = NULL;
     }
@@ -75,21 +76,20 @@ static void assert_no_output() {
     assert_that(strlen(output), is_equal_to(0));
 }
 
-Describe(CuteReporter);
-BeforeEach(CuteReporter) {
-    setup_cute_reporter_tests();
+Describe(XmlReporter);
+BeforeEach(XmlReporter) {
+    setup_xml_reporter_tests();
 }
-AfterEach(CuteReporter) {
-    teardown_cute_reporter_tests();
+AfterEach(XmlReporter) {
+    teardown_xml_reporter_tests();
 }
 
-Ensure(CuteReporter, will_report_beginning_of_suite) {
+Ensure(XmlReporter, will_report_beginning_of_suite) {
     reporter->start_suite(reporter, "suite_name", 2);
-    assert_that(output, begins_with_string("#beginning"));
-    assert_that(output, contains_string("suite_name"));
+    assert_that(output, begins_with_string("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n<testsuite name=\"suite_name"));
 }
 
-Ensure(CuteReporter, will_report_beginning_and_successful_finishing_of_test) {
+xEnsure(XmlReporter, will_report_beginning_and_successful_finishing_of_test) {
     va_list arguments;
 
     reporter->start_test(reporter, "test_name");
@@ -109,7 +109,7 @@ Ensure(CuteReporter, will_report_beginning_and_successful_finishing_of_test) {
     assert_that(output, contains_string("test_name"));
 }
 
-Ensure(CuteReporter, will_report_failing_of_test_only_once) {
+xEnsure(XmlReporter, will_report_failing_of_test_only_once) {
     va_list arguments;
 
     reporter->start_test(reporter, "test_name");
@@ -132,7 +132,7 @@ Ensure(CuteReporter, will_report_failing_of_test_only_once) {
     assert_no_output();
 }
 
-Ensure(CuteReporter, will_report_finishing_of_suite) {
+xEnsure(XmlReporter, will_report_finishing_of_suite) {
     // Must indicate test suite completion before calling finish_suite()
     reporter->start_suite(reporter, "suite_name", 1);
 
@@ -145,7 +145,7 @@ Ensure(CuteReporter, will_report_finishing_of_suite) {
     assert_that(output, contains_string("suite_name"));
 }
 
-Ensure(CuteReporter, will_report_non_finishing_test) {
+xEnsure(XmlReporter, will_report_non_finishing_test) {
     const int line = 666;
     reporter->start_suite(reporter, "suite_name", 1);
     clear_output();
@@ -157,16 +157,16 @@ Ensure(CuteReporter, will_report_non_finishing_test) {
     assert_that(output, contains_string("failed to complete"));
 }
 
-TestSuite *cute_reporter_tests() {
+TestSuite *xml_reporter_tests() {
     TestSuite *suite = create_test_suite();
-    set_setup(suite, setup_cute_reporter_tests);
+    set_setup(suite, setup_xml_reporter_tests);
 
-    add_test_with_context(suite, CuteReporter, will_report_beginning_of_suite);
-    add_test_with_context(suite, CuteReporter, will_report_beginning_and_successful_finishing_of_test);
-    add_test_with_context(suite, CuteReporter, will_report_failing_of_test_only_once);
-    add_test_with_context(suite, CuteReporter, will_report_finishing_of_suite);
-    add_test_with_context(suite, CuteReporter, will_report_non_finishing_test);
+    add_test_with_context(suite, XmlReporter, will_report_beginning_of_suite);
+    add_test_with_context(suite, XmlReporter, will_report_beginning_and_successful_finishing_of_test);
+    add_test_with_context(suite, XmlReporter, will_report_failing_of_test_only_once);
+    add_test_with_context(suite, XmlReporter, will_report_finishing_of_suite);
+    add_test_with_context(suite, XmlReporter, will_report_non_finishing_test);
 
-    set_teardown(suite, teardown_cute_reporter_tests);
+    set_teardown(suite, teardown_xml_reporter_tests);
     return suite;
 }

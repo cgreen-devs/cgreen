@@ -43,7 +43,7 @@ Here are some of its features:
 - BDD-flavoured test declarations with Before and After declarations
 - Extensible reporting mechanism
 - Fully composable test suites
-- An isolated test can be run in a single process for debugging
+- A single test can be run in a single process for easier debugging
 
 *Cgreen* also supports the classic xUnit-style assertions for easy
 porting from other frameworks.
@@ -1460,15 +1460,16 @@ If you require another custom reporter you need to resort to the
 standard, programatic, way of invoking your tests. For now...
 
 
+[[xensure]]
 Ignoring Tests
 ~~~~~~~~~~~~~~
 
 Sometimes you find that you need to temporarily remove a test, perhaps
-to do a refactoring with a failing test. Ignoring it will allow you to do the
-refactoring while still in the green.
+to do a refactoring when you have a failing test. Ignoring that test will
+allow you to do the refactoring while still in the green.
 
-An old practice is then to comment it out. That is a slightly cumbersome
-and hazardous habit as there is no indication of a missing test if you
+An old practice is then to comment it out. That is a slightly cumbersome.
+It is also hazardous habit as there is no indication of a missing test if you
 forget to uncomment it when you are done.
 
 *Cgreen* offers a much better solution. You can just add an 'x' infront
@@ -1485,8 +1486,8 @@ xEnsure(Reader, ...) {
 
 With this method, it is a one character change to temporarily ignore,
 and un-ignore, a test. It is also easily found using text searches through
-a complete source tree. And in a near future *Cgreen* will also tally the
-ignored tests, so it is visible when you run your tests.
+a complete source tree. *Cgreen* will also tally the ignored tests, so
+it is visible when you run your tests.
 
 
 Mocking functions with Cgreen
@@ -1502,7 +1503,7 @@ To create a test chamber for testing code, we have to control any
 outgoing calls from the code under test.  We won't believe our test
 failure if our code is making calls to the internet for example.  The
 internet can fail all by itself.  Not only do we not have total
-control, but it means we have to get dependent components working
+control, but it also means we have to get dependent components working
 before we can test the higher level code.  This makes it difficult to
 code top down.
 
@@ -1977,9 +1978,9 @@ All done.
 
 === Mocks Are... ===
 
-Using mocks is a very handy way to isolate a unit and catch and
-control calls to external units. Depending on your style of coding two
-schools of thinking have emerged. And of course *Cgreen* supports
+Using mocks is a very handy way to isolate a unit by catching and
+controlling calls to external units. Depending on your style of coding
+two schools of thinking have emerged. And of course *Cgreen* supports
 both!
 
 
@@ -2049,7 +2050,7 @@ If we run this, just as we usually run tests, the following will show
 up in our terminal:
 
 // This needs to be copied and pasted from the output of make in tutorial_src
-// At least, I couldn't make make capture it into the output file
+// At least, I couldn't make 'make' capture it into the output file
 // It ought to be:
 // include::tutorial_src/learning_mocks.out[]
 ----
@@ -2069,9 +2070,9 @@ If this was for real we could just copy this and paste it in place of
 the call to `cgreen_mocks_are()` and we have all the expectations
 done.
 
-NOTE: You still need to implement the mock functions, of
-course. I.e. write functions that calls `mock()` and replaces the real
-functions.
+NOTE: Before you can do this you need to implement the mock functions, of
+course. I.e. write functions that replaces the real
+functions and instead calls `mock()`.
 
 
 Context, Subject Under Test & Suites
@@ -2226,7 +2227,50 @@ return run_test_suite(our_tests(), create_text_reporter());
 -----------------------
 
 We can change the reporting mechanism just by changing this
-method.
+call to create another reporter.
+
+[[builtin_reporters]]
+Built-in Reporters
+~~~~~~~~~~~~~~~~~~
+
+*Cgreen* has the following built-in reporters that you can choose from
+when your code runs the test suite.
+
+
+[options="header", cols=4]
+|====================================================================================
+| Reporter  | Purpose                
+ | Signature  | Note
+| Text      | Human readable, with clear messages
+ | `create_text_reporter(void)`                   | 
+| XML       | ANT/Jenkins compatible
+ | `create_xml_reporter(const char *file_prefix)` | `file_prefix` is the prefix of the XML files generated.
+| CUTE      | CUTE Eclipse-plugin (http://cute-test.org) compatible output
+ | `create_cute_reporter(void)`  | 
+| CDash     | CMake (http://cmake.org) dashboard
+ | `create_cdash_reporter(CDashInfo *info)` | `info` is a structure defined in `cdash_reporter.h`
+|====================================================================================
+
+If you write a runner function like in most examples above, you can just substitute which runner to create. If you use the `cgreen-runner` (<<runner>>) to dynamically find all your tests you can force it to use the XML-reporter with the `-x <prefix>` option.
+
+NOTE: Currently `cgreen-runner` does only support the XML built-in reporter.
+
+
+Rolling Our Own
+~~~~~~~~~~~~~~~
+
+Althoug *Cgreen* has a number of options, there are times when you'd like
+a different output from the reporter, the CUTE and CDash  reporters are
+examples that grew out of such a need.
+
+Perhaps your Continuous Integration server want the result in a different
+format, or you just don't like the text reporter...
+
+Writing your own reporter is supported. And we'll go through how that can
+be done using an XML-reporter as an example.
+
+NOTE: *Cgreen* already has an XML-reporter compatible with ANT/Jenkins, see
+<<builtin_reporters>>.
 
 Here is the code for `create_text_reporter()`...
 
@@ -2382,6 +2426,7 @@ can use to liven up the messages...
 
 [horizontal]
 `passes`:: The number of passes so far.
+`ignores`:: The number of tests that has been ignored by the `xEnsure` mechanism (see <<xensure>>)
 `failures`::  The number of failures generated so far.
 `exceptions`:: The number of test functions that have failed to complete so far. 
 `breadcrumb`:: This is a pointer to the list of test names in the stack.

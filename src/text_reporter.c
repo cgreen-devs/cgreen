@@ -17,17 +17,17 @@
 
 
 static void text_reporter_start_suite(TestReporter *reporter, const char *name,
-		const int number_of_tests);
+        const int number_of_tests);
 static void text_reporter_start_test(TestReporter *reporter, const char *name);
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
-		int line, const char *message, uint32_t duration_in_milliseconds);
+        int line, const char *message, uint32_t duration_in_milliseconds);
 static void show_fail(TestReporter *reporter, const char *file, int line,
-		const char *message, va_list arguments);
+        const char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *file, int line,
-		const char *message, va_list arguments);
+        const char *message, va_list arguments);
 static void show_breadcrumb(const char *name, void *memo);
 static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line,
-									   uint32_t duration_in_milliseconds);
+                                       uint32_t duration_in_milliseconds);
 
 
 /* To be able to run a reporter as CUT we need two reporters simultaneously,
@@ -85,23 +85,23 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 		const int number_of_tests) {
     TextMemo *memo = (TextMemo *)reporter->memo;
     
-	reporter_start_test(reporter, name);
-	if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 1) {
-		memo->printer("Running \"%s\" (%d tests)%s",
+    reporter_start_test(reporter, name);
+    if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 1) {
+        memo->printer("Running \"%s\" (%d tests)%s",
                       get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb),
                       number_of_tests,
                       have_quiet_mode(reporter)?":":"...\n");
         fflush(stdout);
-	}
+    }
 }
 
 static void text_reporter_start_test(TestReporter *reporter, const char *name) {
-	reporter_start_test(reporter, name);
+    reporter_start_test(reporter, name);
 }
 
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
-		int line, const char *message, uint32_t duration_in_milliseconds) {
-	reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
+        int line, const char *message, uint32_t duration_in_milliseconds) {
+    reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
 }
 
 
@@ -143,7 +143,7 @@ static void insert_comma(char buf[]) {
 
 
 static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line, uint32_t duration_in_milliseconds) {
-	const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb);
+    const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb);
     bool use_colors = reporter->options && ((TextReporterOptions *)reporter->options)->use_colours;
     TextMemo *memo = (TextMemo *)reporter->memo;
     
@@ -178,16 +178,15 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
 		const char *message, va_list arguments) {
     char buffer[1000];
     TextMemo *memo = (TextMemo *)reporter->memo;
-    
-	memo->printer("%s:%d: ", file, line);
-	memo->printer("Failure: ");
+    memo->printer("%s:%d: ", file, line);
+    memo->printer("Failure: ");
     memo->depth = 0;
-	walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb, memo);
-	memo->printer("\n\t");
-	vsprintf(buffer, (message == NULL ? "<FATAL: NULL for failure message>" : message), arguments);
+    walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb, memo);
+    memo->printer("\n\t");
+    vsprintf(buffer, (message == NULL ? "<FATAL: NULL for failure message>" : message), arguments);
     memo->printer(buffer);
-	memo->printer("\n");
-	memo->printer("\n");
+    memo->printer("\n");
+    memo->printer("\n");
     fflush(NULL);
 }
 
@@ -213,13 +212,13 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line,
 
 static void show_breadcrumb(const char *name, void *memo_ptr) {
     TextMemo *memo = (TextMemo *)memo_ptr;
-	if (memo->depth > 1) {
-		memo->printer("-> ");
-	}
-	if (memo->depth > 0) {
-		memo->printer("%s ", name);
-	}
-	memo->depth++;
+    if (memo->depth > 1) {
+        memo->printer("-> ");
+    }
+    if (memo->depth > 0) {
+        memo->printer("%s ", name);
+    }
+    memo->depth++;
 }
 
 /* vim: set ts=4 sw=4 et cindent: */

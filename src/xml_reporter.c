@@ -1,12 +1,19 @@
-#include "xml_reporter.h"
-#include "cgreen/reporter.h"
-#include "cgreen/breadcrumb.h"
-
+#include <cgreen/breadcrumb.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+
+
+#include "xml_reporter_internal.h"
+
+
+typedef struct {
+    XmlPrinter *printer;
+    int segment_count;
+} XmlMemo;
+
 
 static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count);
 static void xml_reporter_start_test(TestReporter *reporter, const char *name);
@@ -17,10 +24,31 @@ static void xml_reporter_finish_suite(TestReporter *reporter, const char *filena
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void xml_show_incomplete(TestReporter *reporter, const char *filename, int line, const char *message, va_list arguments);
 
+
+void set_xml_reporter_printer(TestReporter *reporter, XmlPrinter *new_printer) {
+    XmlMemo *memo = (XmlMemo *)reporter->memo;
+    memo->printer = new_printer;
+}
+
 static const char *file_prefix;
 
 TestReporter *create_xml_reporter(const char *prefix) {
-    TestReporter *reporter = create_reporter();
+    TestReporter *reporter;
+    XmlMemo *memo;
+    
+    reporter = create_reporter();
+    if (reporter == NULL) {
+        return NULL;
+    }
+
+    memo = (XmlMemo *) malloc(sizeof(XmlMemo));
+    if (memo == NULL) {
+        destroy_reporter(reporter);
+        return NULL;
+    }
+    memo->printer = fprintf;
+    reporter->memo = memo;
+    
     file_prefix = prefix;
     reporter->start_suite = &xml_reporter_start_suite;
     reporter->start_test = &xml_reporter_start_test;
@@ -35,22 +63,25 @@ static int file_stack_p = 0;
 static FILE *file_stack[100];
 
 static void indent(FILE *out, TestReporter *reporter) {
+    XmlMemo *memo = (XmlMemo *)reporter->memo;
     int depth = get_breadcrumb_depth(reporter->breadcrumb);
     while (depth-- > 0) {
-        fprintf(out, "\t");
+        memo->printer(out, "\t");
     }
 }
 
-static void print_path_separator_if_needed(int *more_segments) {
+static void print_path_separator_if_needed(XmlMemo *memo, int *more_segments) {
     if (*more_segments > 0) {
-        fprintf(file_stack[file_stack_p-1], "/");
+        memo->printer(file_stack[file_stack_p-1], "/");
         (*more_segments)--;
     }
 }
 
-static void fprint_path_segment(const char *segment, void *more_segments) {
-    fprintf(file_stack[file_stack_p-1], "%s", segment);
-    print_path_separator_if_needed((int*)more_segments);
+static void print_path_segment_walker(const char *segment, void *void_memo) {
+    XmlMemo *memo = (XmlMemo *)void_memo;
+
+    memo->printer(file_stack[file_stack_p-1], "%s", segment);
+    print_path_separator_if_needed(memo, &memo->segment_count);
 }
 
 
@@ -74,6 +105,7 @@ static void add_suite_name(const char *suite_name) {
 static void xml_reporter_start_suite(TestReporter *reporter, const char *suitename, int count) {
     char filename[PATH_MAX];
     int segment_decrementer = reporter->breadcrumb->depth;
+    XmlMemo *memo = (XmlMemo *)reporter->memo;
 
     (void)count;                /* UNUSED */
     
@@ -84,75 +116,85 @@ static void xml_reporter_start_suite(TestReporter *reporter, const char *suitena
     snprintf(filename, sizeof(filename), "%s-%s.xml", file_prefix, suite_path);
     FILE *out = fopen(filename, "w");
     if (!out) {
-        fprintf(stderr, "could not open %s: %s\r\n", filename, strerror(errno));
+        memo->printer(stderr, "could not open %s: %s\r\n", filename, strerror(errno));
         exit(EXIT_FAILURE);
     }
 
     file_stack[file_stack_p++] = out;
-    fprintf(out, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n");
+    memo->printer(out, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n");
     indent(out, reporter);
-    fprintf(out, "<testsuite name=\"%s\">\n", suite_path);
+    memo->printer(out, "<testsuite name=\"%s\">\n", suite_path);
     reporter_start_suite(reporter, suitename, 0);
 }
 
 static void xml_reporter_start_test(TestReporter *reporter, const char *testname) {
+    XmlMemo *memo = (XmlMemo *)reporter->memo;
     FILE *out = file_stack[file_stack_p-1];
+
     indent(out, reporter);
-    fprintf(out, "<testcase classname=\"");
-    int segment_count = reporter->breadcrumb->depth - 1;
-    walk_breadcrumb(reporter->breadcrumb, fprint_path_segment, &segment_count);
+    memo->printer(out, "<testcase classname=\"");
+    memo->segment_count = reporter->breadcrumb->depth - 1;
+    walk_breadcrumb(reporter->breadcrumb, print_path_segment_walker, memo);
 
     // Don't terminate the XML-node now so that we can add the duration later
-    fprintf(out, "\" name=\"%s\"", testname);
+    memo->printer(out, "\" name=\"%s\"", testname);
     reporter_start_test(reporter, testname);
 }
 
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+    XmlMemo *memo = (XmlMemo *)reporter->memo;
     FILE *out = file_stack[file_stack_p-1];
-    fprintf(out, ">\n");
+
+    memo->printer(out, ">\n");
     indent(out, reporter);
-    fprintf(out, "<failure message=\"");
-    vfprintf(out, message, arguments);
-    fprintf(out, "\">\n");
+    memo->printer(out, "<failure message=\"");
+    memo->printer(out, message, arguments);
+    memo->printer(out, "\">\n");
     indent(out, reporter);
-    fprintf(out, "\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
+    memo->printer(out, "\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
     indent(out, reporter);
-    fprintf(out, "</failure>\n");
+    memo->printer(out, "</failure>\n");
     fflush(out);
 }
 
 static void xml_show_incomplete(TestReporter *reporter, const char *filename, int line, const char *message, va_list arguments) {
+    XmlMemo *memo = (XmlMemo *)reporter->memo;
     FILE *out = file_stack[file_stack_p-1];
-    fprintf(out, ">\n");
+
+    memo->printer(out, ">\n");
     indent(out, reporter);
-    fprintf(out, "<error type=\"Fatal\" message=\"");
-    vfprintf(out, message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
-    fprintf(out, "\">\n");
+    memo->printer(out, "<error type=\"Fatal\" message=\"");
+    memo->printer(out, message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
+    memo->printer(out, "\">\n");
     indent(out, reporter);
-    fprintf(out, "\t<location file=\"%s\" line=\"%d\"/>\n", filename, line);
+    memo->printer(out, "\t<location file=\"%s\" line=\"%d\"/>\n", filename, line);
     indent(out, reporter);
-    fprintf(out, "</error>\n");
+    memo->printer(out, "</error>\n");
     fflush(out);
 }
 
 static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message,
                                      uint32_t duration_in_milliseconds) {
+    XmlMemo *memo = (XmlMemo *)reporter->memo;
     FILE *out = file_stack[file_stack_p-1];
+
     reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
-    fprintf(out, " time=\"%.5f\">\n", (double)duration_in_milliseconds/(double)1000);
+    memo->printer(out, " time=\"%.5f\">\n", (double)duration_in_milliseconds/(double)1000);
     indent(out, reporter);
-    fprintf(out, "</testcase>\n");
+    memo->printer(out, "</testcase>\n");
     fflush(out);
 }
 
 static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line,
                                       uint32_t duration_in_milliseconds) {
+    XmlMemo *memo = (XmlMemo *)reporter->memo;
     FILE *out = file_stack[--file_stack_p];
+
     reporter_finish_suite(reporter, filename, line, duration_in_milliseconds);
 
     // TODO: Here we should backpatch the time for the suite but that's not
     // exactly necessary as Jenkins, at least, seems to sum it up automatically
     indent(out, reporter);
-    fprintf(out, "</testsuite>\n");
+    memo->printer(out, "</testsuite>\n");
     fclose(out);
 }
