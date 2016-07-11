@@ -147,17 +147,17 @@ static void xml_reporter_start_test(TestReporter *reporter, const char *testname
     reporter_start_test(reporter, testname);
 }
 
+static last_was_a_skip = false;
+
 static void xml_show_skip(TestReporter *reporter, const char *file, int line) {
     XmlMemo *memo = (XmlMemo *)reporter->memo;
     FILE *out = file_stack[file_stack_p-1];
 
     (void)file;
     (void)line;
-    memo->printer(out, ">\n");
-    indent(out, reporter);
-    memo->printer(out, "<skipped />");
-    fflush(out);
+    last_was_a_skip = true;
 }
+
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     XmlMemo *memo = (XmlMemo *)reporter->memo;
     FILE *out = file_stack[file_stack_p-1];
@@ -197,6 +197,11 @@ static void xml_reporter_finish_test(TestReporter *reporter, const char *filenam
 
     reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
     memo->printer(out, " time=\"%.5f\">\n", (double)duration_in_milliseconds/(double)1000);
+    if (last_was_a_skip) {
+        indent(out, reporter);
+        memo->printer(out, "\t<skipped />\n");
+        last_was_a_skip = false;
+    }
     indent(out, reporter);
     memo->printer(out, "</testcase>\n");
     fflush(out);
