@@ -26,7 +26,7 @@ struct TestReporter_ {
     int passes;
     int failures;
     int exceptions;
-    int ignores;
+    int skips;
     CgreenBreadcrumb *breadcrumb;
     int ipc;
     void *memo;
@@ -53,7 +53,7 @@ void reporter_finish_test(TestReporter *reporter, const char *filename, int line
 void reporter_finish_suite(TestReporter *reporter, const char *filename, int line, uint32_t duration_in_milliseconds);
 void add_reporter_result(TestReporter *reporter, int result);
 void send_reporter_exception_notification(TestReporter *reporter);
-void send_reporter_ignored_notification(TestReporter *reporter);
+void send_reporter_skipped_notification(TestReporter *reporter);
 void send_reporter_completion_notification(TestReporter *reporter);
 
 #ifdef __cplusplus

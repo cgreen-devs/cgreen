@@ -31,8 +31,8 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
     uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
 
     (*reporter->start_test)(reporter, test->name);
-    if (test->ignore) {
-        send_reporter_ignored_notification(reporter);
+    if (test->skip) {
+        send_reporter_skipped_notification(reporter);
         (*reporter->finish_test)(reporter, test->filename, test->line, NULL, 0);
     } else if (in_child_process()) {
         run_the_test_code(suite, test, reporter);

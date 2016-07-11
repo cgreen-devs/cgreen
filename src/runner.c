@@ -105,12 +105,12 @@ static void run_named_test(TestSuite *suite, const char *name, TestReporter *rep
 
 
 static void run_test_in_the_current_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter) {
-    uint32_t test_duration;
+    uint32_t test_duration = 0;
     uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
 
     (*reporter->start_test)(reporter, test->name);
-    if (test->ignore) {
-        send_reporter_ignored_notification(reporter);
+    if (test->skip) {
+        send_reporter_skipped_notification(reporter);
     } else {
         run_the_test_code(suite, test, reporter);
         test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,

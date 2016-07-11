@@ -132,7 +132,7 @@ Ensure(XmlReporter, will_mark_ignored_test_as_skipped) {
     const int line = 666;
     reporter->start_suite(reporter, "suite_name", 1);
     reporter->start_test(reporter, "skipped_test_name");
-    send_reporter_ignored_notification(reporter);
+    send_reporter_skipped_notification(reporter);
     reporter->finish_test(reporter, "filename", line, "message", duration_in_milliseconds);
     reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
 

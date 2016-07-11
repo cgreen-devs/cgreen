@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-enum { pass = 1, fail, ignored ,completion, exception };
+enum { pass = 1, fail, skipped ,completion, exception };
 enum { FINISH_NOTIFICATION_RECEIVED = 0, FINISH_TEST_SKIPPED, FINISH_NOTIFICATION_NOT_RECEIVED };
 
 struct TestContext_ {
@@ -67,7 +67,7 @@ TestReporter *create_reporter() {
     reporter->finish_test = &reporter_finish_test;
     reporter->finish_suite = &reporter_finish_suite;
     reporter->passes = 0;
-    reporter->ignores = 0;
+    reporter->skips = 0;
     reporter->failures = 0;
     reporter->exceptions = 0;
     reporter->breadcrumb = breadcrumb;
@@ -138,8 +138,8 @@ void send_reporter_exception_notification(TestReporter *reporter) {
     send_cgreen_message(reporter->ipc, exception);
 }
 
-void send_reporter_ignored_notification(TestReporter *reporter) {
-    send_cgreen_message(reporter->ipc, ignored);
+void send_reporter_skipped_notification(TestReporter *reporter) {
+    send_cgreen_message(reporter->ipc, skipped);
 }
 
 void send_reporter_completion_notification(TestReporter *reporter) {
@@ -200,8 +200,8 @@ static int read_reporter_results(TestReporter *reporter) {
     while ((result = receive_cgreen_message(reporter->ipc)) > 0) {
         if (result == pass) {
             reporter->passes++;
-        } else if (result == ignored) {
-            reporter->ignores++;
+        } else if (result == skipped) {
+            reporter->skips++;
             return FINISH_TEST_SKIPPED;
         } else if (result == fail) {
             reporter->failures++;
