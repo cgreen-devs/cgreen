@@ -109,7 +109,6 @@ void reporter_finish_test(TestReporter *reporter, const char *filename, int line
     int status = read_reporter_results(reporter);
 
     if (status == FINISH_TEST_SKIPPED) {
-        reporter->ignores++;
         (*reporter->show_skip)(reporter, filename, line);
     } else if (status == FINISH_NOTIFICATION_NOT_RECEIVED) {
         va_list no_arguments;
