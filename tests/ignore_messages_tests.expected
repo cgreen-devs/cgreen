@@ -1,3 +1,6 @@
 Running "ignore_messages_tests" (5 tests)...
-Completed "IgnoreMessage": 1 ignored in 0ms.
-Completed "ignore_messages_tests": 1 ignored in 0ms.
+ignore_messages_tests.c: Failure: IgnoreMessage -> should_not_count_failing_tests_as_ignored 
+	Expected [0] to [be true]
+
+Completed "IgnoreMessage": 1 pass, 1 ignored, 1 failure in 0ms.
+Completed "ignore_messages_tests": 1 pass, 1 ignored, 1 failure in 0ms.

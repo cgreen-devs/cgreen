@@ -135,6 +135,19 @@ Ensure(XmlReporter, will_report_finishing_of_suite) {
     assert_that(output, begins_with_string("</testsuite>"));
 }
 
+Ensure(XmlReporter, will_mark_ignored_test_as_skipped) {
+    const int line = 666;
+    reporter->start_suite(reporter, "suite_name", 1);
+    clear_output();
+
+    reporter->start_test(reporter, "skipped_test_name");
+    send_reporter_ignored_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, "message", duration_in_milliseconds);
+    reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
+
+    assert_that(output, contains_string("<skipped />"));
+}
+
 Ensure(XmlReporter, will_report_non_finishing_test) {
     const int line = 666;
     reporter->start_suite(reporter, "suite_name", 1);

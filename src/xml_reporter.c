@@ -15,14 +15,19 @@ typedef struct {
 } XmlMemo;
 
 
-static void xml_reporter_start_suite(TestReporter *reporter, const char *name, int count);
+static void xml_reporter_start_suite(TestReporter *reporter, const char *name,
+                                     int count);
 static void xml_reporter_start_test(TestReporter *reporter, const char *name);
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message,
+static void xml_reporter_finish_test(TestReporter *reporter, const char *filename,
+                                     int line, const char *message,
                                      uint32_t duration_in_milliseconds);
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line,
-                                      uint32_t duration_in_milliseconds);
-static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-static void xml_show_incomplete(TestReporter *reporter, const char *filename, int line, const char *message, va_list arguments);
+static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename,
+                                      int line, uint32_t duration_in_milliseconds);
+static void xml_show_skip(TestReporter *reporter, const char *file, int line);
+static void xml_show_fail(TestReporter *reporter, const char *file, int line,
+                          const char *message, va_list arguments);
+static void xml_show_incomplete(TestReporter *reporter, const char *filename,
+                                int line, const char *message, va_list arguments);
 
 
 void set_xml_reporter_printer(TestReporter *reporter, XmlPrinter *new_printer) {
@@ -53,6 +58,7 @@ TestReporter *create_xml_reporter(const char *prefix) {
     reporter->start_suite = &xml_reporter_start_suite;
     reporter->start_test = &xml_reporter_start_test;
     reporter->show_fail = &xml_show_fail;
+    reporter->show_skip = &xml_show_skip;
     reporter->show_incomplete = &xml_show_incomplete;
     reporter->finish_test = &xml_reporter_finish_test;
     reporter->finish_suite = &xml_reporter_finish_suite;
@@ -141,6 +147,17 @@ static void xml_reporter_start_test(TestReporter *reporter, const char *testname
     reporter_start_test(reporter, testname);
 }
 
+static void xml_show_skip(TestReporter *reporter, const char *file, int line) {
+    XmlMemo *memo = (XmlMemo *)reporter->memo;
+    FILE *out = file_stack[file_stack_p-1];
+
+    (void)file;
+    (void)line;
+    memo->printer(out, ">\n");
+    indent(out, reporter);
+    memo->printer(out, "<skipped />");
+    fflush(out);
+}
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     XmlMemo *memo = (XmlMemo *)reporter->memo;
     FILE *out = file_stack[file_stack_p-1];
