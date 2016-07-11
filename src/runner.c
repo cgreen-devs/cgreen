@@ -109,11 +109,15 @@ static void run_test_in_the_current_process(TestSuite *suite, CgreenTest *test, 
     uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
 
     (*reporter->start_test)(reporter, test->name);
-    run_the_test_code(suite, test, reporter);
-    test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
-                                                         cgreen_time_get_current_milliseconds());
+    if (test->ignore) {
+        send_reporter_ignored_notification(reporter);
+    } else {
+        run_the_test_code(suite, test, reporter);
+        test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
+                                                             cgreen_time_get_current_milliseconds());
 
-    send_reporter_completion_notification(reporter);
+        send_reporter_completion_notification(reporter);
+    }
     (*reporter->finish_test)(reporter, test->filename, test->line, NULL, test_duration);
 }
 
