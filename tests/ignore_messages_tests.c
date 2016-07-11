@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 
 #ifdef __cplusplus
 using namespace cgreen;
@@ -24,8 +25,7 @@ Ensure(IgnoreMessage, should_not_count_failing_tests_as_ignored) {
 }
 
 Ensure(IgnoreMessage, should_not_count_exceptions_as_ignored) {
-    int *p = NULL;
-    (*p)++;
+    raise(SIGSEGV);
 }
 
 xEnsure(IgnoreMessage, should_present_this_as_ignored) {

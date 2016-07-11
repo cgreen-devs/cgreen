@@ -1,1 +1,1 @@
-s/Illegal instruction: 4/Illegal instruction/g
+s/Segmentation fault: 11/Segmentation fault/g
