@@ -25,6 +25,7 @@ TestSuite *reflective_tests();
 TestSuite *text_reporter_tests();
 TestSuite *unit_tests();
 TestSuite *vector_tests();
+TestSuite *xml_reporter_tests();
 
 int main(int argc, char **argv) {
     int suite_result;
@@ -48,6 +49,7 @@ int main(int argc, char **argv) {
     add_suite(suite, text_reporter_tests());
     add_suite(suite, unit_tests());
     add_suite(suite, vector_tests());
+    add_suite(suite, xml_reporter_tests());
 
     if (argc > 1) {
         suite_result = run_single_test(suite, argv[1], reporter);
