@@ -72,9 +72,6 @@ static void teardown_xml_reporter_tests() {
     }
 }
 
-static void assert_no_output() {
-    assert_that(strlen(output), is_equal_to(0));
-}
 
 Describe(XmlReporter);
 BeforeEach(XmlReporter) {
@@ -84,86 +81,87 @@ AfterEach(XmlReporter) {
     teardown_xml_reporter_tests();
 }
 
+
 Ensure(XmlReporter, will_report_beginning_of_suite) {
     reporter->start_suite(reporter, "suite_name", 2);
     assert_that(output, begins_with_string("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n<testsuite name=\"suite_name"));
 }
 
-xEnsure(XmlReporter, will_report_beginning_and_successful_finishing_of_test) {
+
+Ensure(XmlReporter, will_report_beginning_and_successful_finishing_of_passing_test) {
     va_list arguments;
 
     reporter->start_test(reporter, "test_name");
-    assert_that(output, begins_with_string("#starting"));
-    assert_that(output, contains_string("test_name"));
+    assert_that(output, begins_with_string("<testcase classname=\"\""));
+    assert_that(output, contains_string("name=\"test_name\""));
 
     clear_output();
 
     memset(&arguments, 0, sizeof(va_list));
     reporter->show_pass(reporter, "file", 2, "test_name", arguments);
-    assert_no_output();
+    assert_that(strlen(output), is_equal_to(0));
 
-    // Must indicate test case completion before calling finish_test()
-    send_reporter_completion_notification(reporter);
     reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds);
-    assert_that(output, begins_with_string("#success"));
-    assert_that(output, contains_string("test_name"));
+    assert_that(output, contains_string("</testcase>"));
 }
 
-xEnsure(XmlReporter, will_report_failing_of_test_only_once) {
+
+Ensure(XmlReporter, will_report_a_failing_test) {
     va_list arguments;
 
     reporter->start_test(reporter, "test_name");
-
-    clear_output();
-    reporter->failures++;   // Simulating a failed assert
     memset(&arguments, 0, sizeof(va_list));
     reporter->show_fail(reporter, "file", 2, "test_name", arguments);
-    assert_that(output, begins_with_string("#failure"));
-    assert_that(output, contains_string("test_name"));
-
-    clear_output();
-    reporter->failures++;   // Simulating another failed assert
-    reporter->show_fail(reporter, "file", 2, "test_name", arguments);
-    assert_no_output();
-
-    // Must indicate test case completion before calling finish_test()
-    send_reporter_completion_notification(reporter);
     reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds);
-    assert_no_output();
+    
+    assert_that(output, contains_string("<failure message=\"test_name\">"));
+    assert_that(output, contains_string("<location file=\"file\" line=\"2\"/>"));
+    assert_that(strstr(output, "time="), is_less_than(strstr(output, "<failure")));
 }
 
-xEnsure(XmlReporter, will_report_finishing_of_suite) {
-    // Must indicate test suite completion before calling finish_suite()
-    reporter->start_suite(reporter, "suite_name", 1);
 
-    clear_output();
-    
-    send_reporter_completion_notification(reporter);
+Ensure(XmlReporter, will_report_finishing_of_suite) {
+    reporter->start_suite(reporter, "suite_name", 1);
     reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
 
-    assert_that(output, begins_with_string("#ending"));
-    assert_that(output, contains_string("suite_name"));
+    assert_that(output, contains_string("</testsuite>"));
 }
 
-xEnsure(XmlReporter, will_report_non_finishing_test) {
+
+Ensure(XmlReporter, will_mark_ignored_test_as_skipped) {
     const int line = 666;
     reporter->start_suite(reporter, "suite_name", 1);
-    clear_output();
-
-    send_reporter_exception_notification(reporter);
+    reporter->start_test(reporter, "skipped_test_name");
+    send_reporter_skipped_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, "message", duration_in_milliseconds);
     reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
 
-    assert_that(output, begins_with_string("#error"));
-    assert_that(output, contains_string("failed to complete"));
+    assert_that(output, contains_string("<skipped />"));
+    assert_that(strstr(output, "time="), is_less_than(strstr(output, "<skipped")));
 }
+
+
+Ensure(XmlReporter, will_report_non_finishing_test) {
+    const int line = 666;
+    reporter->start_suite(reporter, "suite_name", 1);
+    reporter->start_test(reporter, "test_name");
+    send_reporter_exception_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, "message", duration_in_milliseconds);
+    reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
+
+    assert_that(output, contains_string("error type=\"Fatal\""));
+    assert_that(output, contains_string("message=\"message\""));
+}
+
 
 TestSuite *xml_reporter_tests() {
     TestSuite *suite = create_test_suite();
     set_setup(suite, setup_xml_reporter_tests);
 
     add_test_with_context(suite, XmlReporter, will_report_beginning_of_suite);
-    add_test_with_context(suite, XmlReporter, will_report_beginning_and_successful_finishing_of_test);
-    add_test_with_context(suite, XmlReporter, will_report_failing_of_test_only_once);
+    add_test_with_context(suite, XmlReporter, will_report_beginning_and_successful_finishing_of_passing_test);
+    add_test_with_context(suite, XmlReporter, will_report_a_failing_test);
+    add_test_with_context(suite, XmlReporter, will_mark_ignored_test_as_skipped);
     add_test_with_context(suite, XmlReporter, will_report_finishing_of_suite);
     add_test_with_context(suite, XmlReporter, will_report_non_finishing_test);
 

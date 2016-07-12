@@ -27,7 +27,7 @@ set(c_tests_library_SRCS
   breadcrumb_tests.c
   cdash_reporter_tests.c
   constraint_tests.c
-#  text_reporter_tests.c
+  text_reporter_tests.c
   cute_reporter_tests.c
   cdash_reporter_tests.c
   message_formatting_tests.c
@@ -123,6 +123,7 @@ foreach(case
     text_reporter
     unit
     vector
+    xml_reporter
 )
   set(${case}_tests_SRCS
       ${case}_tests.c

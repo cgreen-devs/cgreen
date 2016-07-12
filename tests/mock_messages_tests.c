@@ -105,10 +105,10 @@ Ensure(Mocks, learning_mocks_emit_pastable_code) {
    parent process detects this we need to either start catching
    exceptions in the child or communicate the learned mock calls to
    the parent some other way.
-
-Ensure(Mocks, learning_mocks_survive_termination) {
+*/
+xEnsure(Mocks, learning_mocks_survive_termination) {
     cgreen_mocks_are(learning_mocks);
     string_out(1);
     *(int*)0 = 0;
 }
-*/
+

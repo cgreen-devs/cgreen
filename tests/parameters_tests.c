@@ -16,62 +16,62 @@ void destroy_names() {
 
 Ensure(can_create_vector_of_no_parameters_and_destroy_it) {
     names = create_vector_of_names("");
-    assert_equal(cgreen_vector_size(names), 0);
+    assert_that(cgreen_vector_size(names), is_equal_to(0));
 }
 
 Ensure(can_read_single_parameter) {
     names = create_vector_of_names("a");
-    assert_equal(cgreen_vector_size(names), 1);
-    assert_string_equal((const char *)cgreen_vector_get(names, 0), "a");
+    assert_that(cgreen_vector_size(names), is_equal_to(1));
+    assert_that((const char *)cgreen_vector_get(names, 0), is_equal_to_string("a"));
 }
 
 Ensure(can_read_two_parameters) {
     names = create_vector_of_names("a, b");
-    assert_equal(cgreen_vector_size(names), 2);
-    assert_string_equal((const char *)cgreen_vector_get(names, 0), "a");
-    assert_string_equal((const char *)cgreen_vector_get(names, 1), "b");
+    assert_that(cgreen_vector_size(names), is_equal_to(2));
+    assert_that((const char *)cgreen_vector_get(names, 0), is_equal_to_string("a"));
+    assert_that((const char *)cgreen_vector_get(names, 1), is_equal_to_string("b"));
 }
 
 Ensure(can_read_three_parameters) {
     names = create_vector_of_names("a, b, c");
-    assert_equal(cgreen_vector_size(names), 3);
-    assert_string_equal((const char *)cgreen_vector_get(names, 0), "a");
-    assert_string_equal((const char *)cgreen_vector_get(names, 1), "b");
-    assert_string_equal((const char *)cgreen_vector_get(names, 2), "c");
+    assert_that(cgreen_vector_size(names), is_equal_to(3));
+    assert_that((const char *)cgreen_vector_get(names, 0), is_equal_to_string("a"));
+    assert_that((const char *)cgreen_vector_get(names, 1), is_equal_to_string("b"));
+    assert_that((const char *)cgreen_vector_get(names, 2), is_equal_to_string("c"));
 }
 
 Ensure(can_read_two_parameters_without_spaces) {
     names = create_vector_of_names("a,b");
-    assert_string_equal((const char *)cgreen_vector_get(names, 0), "a");
-    assert_string_equal((const char *)cgreen_vector_get(names, 1), "b");
+    assert_that((const char *)cgreen_vector_get(names, 0), is_equal_to_string("a"));
+    assert_that((const char *)cgreen_vector_get(names, 1), is_equal_to_string("b"));
 }
 
 Ensure(can_read_long_parameters) {
     names = create_vector_of_names("abacus, banana");
-    assert_string_equal((const char *)cgreen_vector_get(names, 0), "abacus");
-    assert_string_equal((const char *)cgreen_vector_get(names, 1), "banana");
+    assert_that((const char *)cgreen_vector_get(names, 0), is_equal_to_string("abacus"));
+    assert_that((const char *)cgreen_vector_get(names, 1), is_equal_to_string("banana"));
 }
 
 Ensure(can_read_long_parameters_with_funky_names) {
     names = create_vector_of_names("a_b-c+d, +a-d_c/d");
-    assert_string_equal((const char *)cgreen_vector_get(names, 0), "a_b-c+d");
-    assert_string_equal((const char *)cgreen_vector_get(names, 1), "+a-d_c/d");
+    assert_that((const char *)cgreen_vector_get(names, 0), is_equal_to_string("a_b-c+d"));
+    assert_that((const char *)cgreen_vector_get(names, 1), is_equal_to_string("+a-d_c/d"));
 }
 
 Ensure(can_read_two_parameters_with_varied_whitespace) {
     names = create_vector_of_names("\ra\t,\nb\t\t\t");
-    assert_string_equal((const char *)cgreen_vector_get(names, 0), "a");
-    assert_string_equal((const char *)cgreen_vector_get(names, 1), "b");
+    assert_that((const char *)cgreen_vector_get(names, 0), is_equal_to_string("a"));
+    assert_that((const char *)cgreen_vector_get(names, 1), is_equal_to_string("b"));
 }
 
 Ensure(can_strip_box_double_to_leave_original_name) {
     names = create_vector_of_names("box_double(a)");
-    assert_string_equal((const char *)cgreen_vector_get(names, 0), "a");
+    assert_that((const char *)cgreen_vector_get(names, 0), is_equal_to_string("a"));
 }
 
 Ensure(can_strip_d_macro_to_leave_original_name) {
     names = create_vector_of_names("d(a)");
-    assert_string_equal((const char *)cgreen_vector_get(names, 0), "a");
+    assert_that((const char *)cgreen_vector_get(names, 0), is_equal_to_string("a"));
 }
 
 TestSuite *parameter_tests() {

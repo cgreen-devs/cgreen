@@ -1461,7 +1461,7 @@ standard, programatic, way of invoking your tests. For now...
 
 
 [[xensure]]
-Ignoring Tests
+Skipping Tests
 ~~~~~~~~~~~~~~
 
 Sometimes you find that you need to temporarily remove a test, perhaps
@@ -1473,7 +1473,7 @@ It is also hazardous habit as there is no indication of a missing test if you
 forget to uncomment it when you are done.
 
 *Cgreen* offers a much better solution. You can just add an 'x' infront
-of the `Ensure` for the test.
+of the `Ensure` for the test and that test will be skipped.
 
 [source, C]
 ----------------------------
@@ -1486,8 +1486,8 @@ xEnsure(Reader, ...) {
 
 With this method, it is a one character change to temporarily ignore,
 and un-ignore, a test. It is also easily found using text searches through
-a complete source tree. *Cgreen* will also tally the ignored tests, so
-it is visible when you run your tests.
+a complete source tree. *Cgreen* will also tally the skipped tests, so
+it is clearly visible that you have some skipped test when you run them.
 
 
 Mocking functions with Cgreen
@@ -1865,11 +1865,11 @@ significant digits to consider a match with a call to
 
 Then there are two ways to return results:
 
-|=================================================================================================
+|===========================================================================================
 |*Macro*                                                      |*Description*
 |`will_return(value)`                                         |Return the value from the mock function (which needs to be declared returning that type
 |`will_set_contents_of_parameter(parameter_name, value, size)`|Writes the value in the referenced parameter
-|=================================================================================================
+|===========================================================================================
 
 You can combine these in various ways:
 
@@ -2284,6 +2284,7 @@ TestReporter *create_text_reporter(void) {
     reporter->start_suite = &text_reporter_start_suite;
     reporter->start_test = &text_reporter_start_test;
     reporter->show_fail = &show_fail;
+    reporter->show_skip = &show_skip;
     reporter->show_incomplete = &show_incomplete;
     reporter->finish_test = &text_reporter_finish_test;
     reporter->finish_suite = &text_reporter_finish;
@@ -2323,6 +2324,7 @@ struct _TestReporter {
     void (*start_test)(TestReporter *reporter, const char *name);
     void (*show_pass)(TestReporter *reporter, const char *file, int line,
                                    const char *message, va_list arguments);
+    void (*show_skip)(TestReporter *reporter, const char *file, int line);
     void (*show_fail)(TestReporter *reporter, const char *file, int line,
                                    const char *message, va_list arguments);
     void (*show_incomplete)(TestReporter *reporter, const char *file, int line,
@@ -2389,6 +2391,11 @@ argument list should match the substitutions.
 The partner of `show_pass()`, and the one you'll likely overload first.
 
 
+`void (*show_skip)(TestReporter *reporter, const char *file, int line)`::
+
+This method will be called when a skipped test is encountered, see <<xensure>>.
+
+
 `void (*show_incomplete)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)`::
 
 When a test fails to complete, this is the handler that is called. As it's an unexpected
@@ -2426,7 +2433,7 @@ can use to liven up the messages...
 
 [horizontal]
 `passes`:: The number of passes so far.
-`ignores`:: The number of tests that has been ignored by the `xEnsure` mechanism (see <<xensure>>)
+`skips`:: The number of tests that has been skipped by the `xEnsure` mechanism (see <<xensure>>)
 `failures`::  The number of failures generated so far.
 `exceptions`:: The number of test functions that have failed to complete so far. 
 `breadcrumb`:: This is a pointer to the list of test names in the stack.

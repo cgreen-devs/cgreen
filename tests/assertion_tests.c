@@ -1,4 +1,6 @@
 #include <cgreen/cgreen.h>
+#include <cgreen/legacy.h>
+
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif

@@ -14,7 +14,7 @@ typedef struct {
 } CgreenContext;
 
 typedef struct {
-    int ignore;                 /* Should test be ignored? */
+    int skip;                 /* Should test be skipped? */
     CgreenContext* context;
     const char* name;
     void(*run)(void);
@@ -41,16 +41,16 @@ typedef struct {
 
 #define Ensure_NARG(...) ENSURE_macro_dispatcher(Ensure, __VA_ARGS__)
 
-#define EnsureWithContextAndSpecificationName(ignore, contextName, specName, ...) \
+#define EnsureWithContextAndSpecificationName(skip, contextName, specName, ...) \
     static void contextName##__##specName (void);\
-    CgreenTest spec_name(contextName, specName) = { ignore, &contextFor##contextName, #specName, &contextName##__##specName, __FILE__, __LINE__ }; \
+    CgreenTest spec_name(contextName, specName) = { skip, &contextFor##contextName, #specName, &contextName##__##specName, __FILE__, __LINE__ }; \
     static void contextName##__##specName (void)
 
 extern CgreenContext defaultContext;
 
-#define EnsureWithSpecificationName(ignore, specName, ...)   \
+#define EnsureWithSpecificationName(skip, specName, ...)   \
     static void specName (void);\
-    CgreenTest spec_name(default, specName) = { ignore, &defaultContext, #specName, &specName, __FILE__, __LINE__ }; \
+    CgreenTest spec_name(default, specName) = { skip, &defaultContext, #specName, &specName, __FILE__, __LINE__ }; \
     static void specName (void)
 
 #define DescribeImplementation(subject) \
