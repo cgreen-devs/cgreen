@@ -35,7 +35,7 @@ static void cdash_reporter_start_test(TestReporter *reporter, const char *name);
 
 static void cdash_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 static void cdash_show_pass(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-static void show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
+static void cdash_show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 
 static void cdash_finish_test(TestReporter *reporter, const char *filename, int line,
                                              const char *message, uint32_t duration_in_milliseconds);
@@ -136,7 +136,7 @@ TestReporter *create_cdash_reporter(CDashInfo *info) {
                   "    <TestList>\n"
                   "     <Test></Test>\n"
                   "    </TestList>\n",
-                  memo->info->build, sbuildstamp, memo->info->type, memo->info->name, "Cgreen1.0.0",
+                  memo->info->build, sbuildstamp, memo->info->type, memo->info->name, "Cgreen" VERSION,
                   memo->info->os_name, memo->info->hostname, memo->info->os_release,
                   memo->info->os_version, memo->info->os_platform, strstart);
     fflush(memo->stream);
@@ -146,7 +146,7 @@ TestReporter *create_cdash_reporter(CDashInfo *info) {
     reporter->start_test = &cdash_reporter_start_test;
     reporter->show_fail = &cdash_show_fail;
     reporter->show_pass = &cdash_show_pass;
-    reporter->show_incomplete = &show_incomplete;
+    reporter->show_incomplete = &cdash_show_incomplete;
     reporter->finish_test = &cdash_finish_test;
     reporter->finish_suite = &cdash_finish_suite;
     reporter->memo = memo;
@@ -265,7 +265,7 @@ static void cdash_show_pass(TestReporter *reporter, const char *file, int line, 
 
 
 
-static void show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
+static void cdash_show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     const char *name;
     char buffer[1000];
     float exectime;

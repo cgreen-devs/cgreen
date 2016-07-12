@@ -30,12 +30,13 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
                                        uint32_t duration_in_milliseconds);
 
 
-/* To be able to run a reporter as CUT we need two reporters simultaneously,
-   so the injected printer needs to be local to the reporter which means we
-   must store it in the memo and use that. This requires a single printer
-   function to be used, often printf() or similar, so any other tricks
-   needs to be performed in char buffers so that memo->printer can do
-   the printing.
+/* To be able to run a reporter as CUT for testing with Cgreen itself
+   we need two reporters simultaneously, so the injected printer needs
+   to be local to the reporter which means we must store it in the
+   memo and use that. This requires a single printer function to be
+   used, often printf() or similar, so any other tricks needs to be
+   performed in char buffers so that memo->printer can do the
+   printing.
  */
 typedef struct {
     TextPrinter *printer;
@@ -117,9 +118,9 @@ static char *format_passes(int passes, bool use_colors) {
     return buff;
 }
 
-static char *format_ignores(int ignores, bool use_colors) {
+static char *format_skips(int skips, bool use_colors) {
     static char buff[100];
-    format_count(buff, ignores, "ignored", YELLOW, "", use_colors);
+    format_count(buff, skips, "skipped", YELLOW, "", use_colors);
     return buff;
 }
 
@@ -158,9 +159,9 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
         sprintf(buf, "Completed \"%s\": ", name);
         if (reporter->passes)
             strcat(buf, format_passes(reporter->passes, use_colors));
-        if (reporter->ignores) {
+        if (reporter->skips) {
             insert_comma(buf);
-            strcat(buf, format_ignores(reporter->ignores, use_colors));
+            strcat(buf, format_skips(reporter->skips, use_colors));
         }
         if (reporter->failures) {
             insert_comma(buf);

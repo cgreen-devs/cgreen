@@ -10,17 +10,23 @@ struct TestReporter_ {
     void (*destroy)(TestReporter *reporter);
     void (*start_suite)(TestReporter *reporter, const char *name, const int count);
     void (*start_test)(TestReporter *reporter, const char *name);
-    void (*show_pass)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-    void (*show_fail)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-    void (*show_incomplete)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
-    void (*assert_true)(TestReporter *reporter, const char *file, int line, int result, const char * message, ...);
-    void (*finish_test)(TestReporter *reporter, const char *file, int line, const char *message,
-                        uint32_t duration_in_milliseconds);
-    void (*finish_suite)(TestReporter *reporter, const char *file, int line, uint32_t milliseconds);
+    void (*show_pass)(TestReporter *reporter, const char *file, int line,
+                      const char *message, va_list arguments);
+    void (*show_skip)(TestReporter *reporter, const char *file, int line);
+    void (*show_fail)(TestReporter *reporter, const char *file, int line,
+                      const char *message, va_list arguments);
+    void (*show_incomplete)(TestReporter *reporter, const char *file, int line,
+                            const char *message, va_list arguments);
+    void (*assert_true)(TestReporter *reporter, const char *file, int line,
+                        int result, const char * message, ...);
+    void (*finish_test)(TestReporter *reporter, const char *file, int line,
+                        const char *message, uint32_t duration_in_milliseconds);
+    void (*finish_suite)(TestReporter *reporter, const char *file, int line,
+                         uint32_t milliseconds);
     int passes;
     int failures;
     int exceptions;
-    int ignores;
+    int skips;
     CgreenBreadcrumb *breadcrumb;
     int ipc;
     void *memo;
@@ -47,7 +53,7 @@ void reporter_finish_test(TestReporter *reporter, const char *filename, int line
 void reporter_finish_suite(TestReporter *reporter, const char *filename, int line, uint32_t duration_in_milliseconds);
 void add_reporter_result(TestReporter *reporter, int result);
 void send_reporter_exception_notification(TestReporter *reporter);
-void send_reporter_ignored_notification(TestReporter *reporter);
+void send_reporter_skipped_notification(TestReporter *reporter);
 void send_reporter_completion_notification(TestReporter *reporter);
 
 #ifdef __cplusplus
