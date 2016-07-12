@@ -82,8 +82,8 @@ There are two ways to install *Cgreen* in your system.
 
 ==== Installing a package
 
-NOTE: At this point there are no supported pre-built packages
-available. For now you'll have to build from source.
+NOTE: At this point there are few supported pre-built packages
+available. For now you'll probably have to build from source.
 
 The first way is to use packages provided by the *Cgreen* Team. If
 your system uses a package manager ('apt' or 'port' and so on) there
