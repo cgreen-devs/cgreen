@@ -34,7 +34,7 @@ script:
 after_success:
   - if [ "$CC" = "gcc" ];
     then
-      lcov -d tests -d src -base-directory .. -c -o coverage.info;
+      lcov -d tests -d src -d tools -base-directory .. -c -o coverage.info;
       lcov --remove coverage.info '/usr/*' -o coverage.info;
       cd ..;
       coveralls-lcov build/coverage.info;
