@@ -60,13 +60,12 @@ OUTPUT_DIFF_ARGUMENTS = $(1)_messages_tests \
 	../../tests \
 	$(1)_messages_tests.expected
 
-unit: build
+unit: build-it
 	# Ensure the dynamic libraries can be found even on DLL-platforms without altering
 	# user process PATH
 	export PATH=$$PWD/build/src:$$PATH ; \
 	SOURCEDIR=$$PWD/tests/ ; \
 	cd build ; \
-	make ; \
 	tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
 	tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_cpp_tests$(SUFFIX)` ; \
 	tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
@@ -84,6 +83,10 @@ ifeq ($(OS),Darwin)
 ARCHS=-DCMAKE_OSX_ARCHITECTURES:string="i386;x86_64"
 endif
 
+
+build-it: build
+	cd build
+	make
 
 build:
 	mkdir build
