@@ -6,7 +6,7 @@
 
 = Cgreen : Unit Tests, Stubbing and Mocking for C and C++
 Marcus Baker <marcus@lastcraft.com>; Thomas Nilsson <thomas@junovagen.se>; João Freitas <joaohf@gmail.com>;
-v1.0.0
+v{VERSION}
 
 
 == Cgreen Quickstart Guide
@@ -606,13 +606,13 @@ long as it fullfills the rules for an identifier in C and C++. A
 typical way to choose the named of the tests is what we see here,
 reading the declaration of the test makes sense since it is almost
 plain english, "Ensure strlen returns five for 'hello'". No problem
-understanding what we aim to test, or in TDD lingo, test drive. And it can be viewed as an example
-from a description of what strlen should be able to do. In a way,
-extracting all the `Ensure`:s from your test might give you all the
-documentation you'll need.
+understanding what we aim to test, or in TDD lingo, test drive. And it
+can be viewed as an example from a description of what strlen should
+be able to do. In a way, extracting all the `Ensure`:s from your test
+might give you all the documentation you'll need.
 
-The `assert_that()` call is the primary part of an assertion, which is
-complemented with a constraint, in this case `is_equal_to()`, as a
+The call to `assert_that()` is the primary part of an assertion, which
+is complemented with a constraint, in this case `is_equal_to()`, as a
 parameter. This makes a very fluent interface to the asserts, that
 actually reads like English. The general format is then
 
