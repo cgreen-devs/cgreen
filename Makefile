@@ -78,6 +78,15 @@ unit: build
 	CGREEN_PER_TEST_TIMEOUT=2 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure) ; \
 	cd ../../..
 
+.PHONY: doc
+doc: build
+	cd build; cmake -DWITH_HTML:bool=TRUE ..; make; cmake -DWITH_HTML:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.html
+
+pdf: build
+	cd build; cmake -DWITH_PDF:bool=TRUE ..; make; cmake -DWITH_PDF:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.pdf
+
+
+
 ############# Internal
 
 ifeq ($(OS),Darwin)
