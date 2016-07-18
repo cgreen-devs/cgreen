@@ -28,6 +28,12 @@ macro_add_test(NAME cgreen_runner_unit_tests
 macro_add_test(NAME cgreen_runner_usage
                COMMAND cgreen-runner --help)
 
+macro_add_test(NAME cgreen_runner_quiet
+               COMMAND cgreen-runner -q ${CGREEN_RUNNER_TESTS_LIBRARY})
+
+macro_add_test(NAME cgreen_runner_verbose
+               COMMAND cgreen-runner -v ${CGREEN_RUNNER_TESTS_LIBRARY})
+
 macro_add_test(NAME cgreen_runner_single_explicit_named_test
               COMMAND cgreen-runner $<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests> Runner:can_match_test_name)
 
