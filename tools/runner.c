@@ -331,8 +331,9 @@ static int discover_tests_in(const char* test_library, TestItem* test_items, con
     int ret = 0;
 
     char cmd[2048];
-    strcpy(cmd, "/usr/bin/nm ");
+    strcpy(cmd, "/usr/bin/nm '");
     strcat(cmd, test_library);
+    strcat(cmd, "'");
 
     /* Open the command for reading. */
     FILE *nm_output_pipe = popen(cmd, "r");
