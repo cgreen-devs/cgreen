@@ -136,7 +136,7 @@ TestReporter *create_cdash_reporter(CDashInfo *info) {
                   "    <TestList>\n"
                   "     <Test></Test>\n"
                   "    </TestList>\n",
-                  memo->info->build, sbuildstamp, memo->info->type, memo->info->name, "Cgreen1.0.0",
+                  memo->info->build, sbuildstamp, memo->info->type, memo->info->name, "Cgreen" VERSION,
                   memo->info->os_name, memo->info->hostname, memo->info->os_release,
                   memo->info->os_version, memo->info->os_platform, strstart);
     fflush(memo->stream);

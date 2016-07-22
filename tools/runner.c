@@ -331,8 +331,9 @@ static int discover_tests_in(const char* test_library, TestItem* test_items, con
     int ret = 0;
 
     char cmd[2048];
-    strcpy(cmd, "/usr/bin/nm ");
+    strcpy(cmd, "/usr/bin/nm '");
     strcat(cmd, test_library);
+    strcat(cmd, "'");
 
     /* Open the command for reading. */
     FILE *nm_output_pipe = popen(cmd, "r");
@@ -391,6 +392,19 @@ void sort_test_items(TestItem test_items[]) {
 }
 
 
+/*----------------------------------------------------------------------*/
+static char *absolute(const char *file_path) {
+    if (strchr("./", file_path[0]) != NULL)
+        return strdup(file_path);
+    else {
+        char *tmp = malloc(strlen(file_path)+3);
+        strcpy(tmp, "./");
+        strcat(tmp, file_path);
+        return tmp;
+    }
+}
+
+
 /*======================================================================*/
 int runner(TestReporter *reporter, const char *test_library_name,
            const char *suite_name, const char *test_name,
@@ -414,17 +428,20 @@ int runner(TestReporter *reporter, const char *test_library_name,
         printf("Discovered %d test(s)\n", count(discovered_tests));
 
     if (!dont_run) {
+        char *absolute_library_name = absolute(test_library_name);
         sort_test_items(discovered_tests);
         if (verbose)
             printf("Opening [%s]", test_library_name);
-        test_library_handle = dlopen(test_library_name, RTLD_NOW);
+        test_library_handle = dlopen(absolute_library_name, RTLD_NOW);
         if (test_library_handle == NULL) {
-            fprintf(stderr, "\nERROR: dlopen failure when trying to run '%s' (error: %s)\n", test_library_name, dlerror());
+            fprintf(stderr, "\nERROR: dlopen failure when trying to run '%s' (error: %s)\n",
+                    absolute_library_name, dlerror());
             status = 2;
         } else {
             status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
             dlclose(test_library_handle);
         }
+        free(absolute_library_name);
     }
 
     reflective_runner_cleanup(discovered_tests);

@@ -6,14 +6,12 @@
 
 = Cgreen : Unit Tests, Stubbing and Mocking for C and C++
 Marcus Baker <marcus@lastcraft.com>; Thomas Nilsson <thomas@junovagen.se>; João Freitas <joaohf@gmail.com>;
-v1.0.0
+v{VERSION}
 
 
-Cgreen Quickstart Guide
------------------------
+== Cgreen Quickstart Guide
 
-What is Cgreen?
-~~~~~~~~~~~~~~~
+=== What is Cgreen?
 
 *Cgreen* is a unit tester for the C and C++ software developer, a test
 automation and software quality assurance tool for programmers and
@@ -26,7 +24,7 @@ development community.  It is characterised by writing many small
 tests alongside the normal code. Often the tests are written before
 the code they are testing, in a tight test-code-refactor loop.  Done
 this way, the practice is known as Test Driven Development. *Cgreen*
-was designed to support this style of development.
+was designed specifically to support this style of development.
 
 Unit tests are written in the same language as the code, in our case
 C or C++. This avoids the mental overhead of constantly switching language,
@@ -50,11 +48,12 @@ porting from other frameworks.
         
 *Cgreen* was initially developed to support C programming, but there
 is also excellent support for C{pp}. It was initially a spinoff from a
-research project at Wordtracker and created by Marcus Baker.
+research project at Wordtracker and created by Marcus Baker. Significant
+additions by Matt Hargett and continuous nurturing by Thomas Nilsson has
+made *Cgreen* what it is today.
 
 
-Cgreen - Vanilla or Chocolate?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=== Cgreen - Vanilla or Chocolate?
 
 Test driven development (TDD) really catched on when the JUnit
 framework for Java spread to other langauges, giving us a family of
@@ -76,16 +75,15 @@ This document will present *Cgreen* using the more modern and better
 BDD-style. In a later section you can have a peek at the classic TDD
 API.
 
-Installing Cgreen
-~~~~~~~~~~~~~~~~~
+
+=== Installing Cgreen
 
 There are two ways to install *Cgreen* in your system.
 
-Installing a package
-^^^^^^^^^^^^^^^^^^^^
-      
-NOTE: At this point there are no supported pre-built packages
-available. For now you'll have to build from source.
+==== Installing a package
+
+NOTE: At this point there are few supported pre-built packages
+available. For now you'll probably have to build from source.
 
 The first way is to use packages provided by the *Cgreen* Team. If
 your system uses a package manager ('apt' or 'port' and so on) there
@@ -98,8 +96,7 @@ GitHub project]. Install it using the normal procedures for your
 system.
 
 
-Installing from source
-^^^^^^^^^^^^^^^^^^^^^^
+==== Installing from source
 
 The second way is available for developers and advanced
 users. Basically this consists of fetching the sources of the project
@@ -139,8 +136,7 @@ header file to compile and link your test code. The created library is
 installed in the system, by default in the `/usr/local/lib/`.
 
 
-Your First Test
-^^^^^^^^^^^^^^^
+==== Your First Test
 
 We will start demonstrating the use of *Cgreen* by writing some tests for *Cgreen* itself
 to confirm that everything is working as it should. Let's start with a
@@ -225,8 +221,7 @@ that you want to assert (`[0 == 1]`). We can also see a handy short
 form for asserting boolean expressions (`assert_that(0 == 1);`).
 
 [[tdd_with_cgreen]]
-Five Minutes Doing TDD with Cgreen
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=== Five Minutes Doing TDD with Cgreen
 
 For a more realistic example we need something to test. We'll pretend
 that we are writing a function to split the words of a sentence in
@@ -422,8 +417,7 @@ it, rather than debugging later when things are more complicated.
 
 That was pretty straight forward. Let's do something more interesting.
 
-What are Mock Functions?
-~~~~~~~~~~~~~~~~~~~~~~~~
+=== What are Mock Functions?
 
 The next example is a more realistic extension of our previous
 attempts. As in real life we first implement something basic and then
@@ -560,8 +554,7 @@ mistakes very obvious. It's taken me far longer to write these
 paragraphs than it has to write the code.
 
 
-Using Cgreen with C{pp}
-~~~~~~~~~~~~~~~~~~~~~~~
+=== Using Cgreen with C{pp}
 
 The above example, as well as most of this guide, shows how to uses
 *CGreen* with C. You can also use *CGreen* with C++. This is actually
@@ -573,8 +566,9 @@ have to do is
 
 There is also one extra feature when you use C++, the `assert_throws` function.
 
-Building Cgreen test suites
----------------------------
+
+
+== Building Cgreen test suites
 
 *Cgreen* is a tool for building unit tests in the C or C++
 languages. These are usually written alongside the production code by
@@ -586,8 +580,8 @@ assurance.
 
 In other words you'll get less bugs.
 
-Writing Basic Tests
-~~~~~~~~~~~~~~~~~~~
+
+=== Writing Basic Tests
 
 *Cgreen* tests are like C, or C++, functions with no parameters and
 no return value. To signal that they actually are tests we mark them
@@ -612,13 +606,13 @@ long as it fullfills the rules for an identifier in C and C++. A
 typical way to choose the named of the tests is what we see here,
 reading the declaration of the test makes sense since it is almost
 plain english, "Ensure strlen returns five for 'hello'". No problem
-understanding what we aim to test, or in TDD lingo, test drive. And it can be viewed as an example
-from a description of what strlen should be able to do. In a way,
-extracting all the `Ensure`:s from your test might give you all the
-documentation you'll need.
+understanding what we aim to test, or in TDD lingo, test drive. And it
+can be viewed as an example from a description of what strlen should
+be able to do. In a way, extracting all the `Ensure`:s from your test
+might give you all the documentation you'll need.
 
-The `assert_that()` call is the primary part of an assertion, which is
-complemented with a constraint, in this case `is_equal_to()`, as a
+The call to `assert_that()` is the primary part of an assertion, which
+is complemented with a constraint, in this case `is_equal_to()`, as a
 parameter. This makes a very fluent interface to the asserts, that
 actually reads like English. The general format is then
 
@@ -635,8 +629,7 @@ Assertions send messages to *Cgreen*, which in turn outputs the
 results.
 
 
-The Standard Constraints
-~~~~~~~~~~~~~~~~~~~~~~~~
+=== The Standard Constraints
 
 Here are the standard constraints...
 
@@ -683,8 +676,7 @@ constraint macros. This is caused by the macros using argument strings
 to produce nice failure messages.
 
 
-Asserting C++ Exceptions
-~~~~~~~~~~~~~~~~~~~~~~~~
+=== Asserting C++ Exceptions
 
 When you use *CGreen* with C++ there is one extra assertion available:
 
@@ -694,13 +686,12 @@ When you use *CGreen* with C++ there is one extra assertion available:
 |=========================================================
 
 
-BDD Style vs. TDD Style
-~~~~~~~~~~~~~~~~~~~~~~~
+=== BDD Style vs. TDD Style
 
 So far we have encouraged the modern BDD style. It has merits that we
-really want you to benefit from. But you might come across *Cgreen* test in another
-style, more like the standard TDD style, which is more inline with previous
-thinking and might be more similar to other frameworks.
+really want you to benefit from. But you might come across *Cgreen* test in 
+another style, more like the standard TDD style, which is more inline with 
+previous thinking and might be more similar to other frameworks.
 
 The only difference, in principle, is the use of the SUT or
 'context'. In the BDD style you have it, in the TDD style you don't.
@@ -735,8 +726,8 @@ of `..with_context()`.
 TIP: You might think of the TDD style as the BDD style with a default
 SUT or context.
 
-Legacy Style Assertions
-~~~~~~~~~~~~~~~~~~~~~~~
+
+=== Legacy Style Assertions
 
 Cgreen have been around for a while, developed and matured. There is
 an older style of assertions that was the initial version, a style
@@ -796,12 +787,12 @@ style test notation.
 IMPORTANT: We strongly recommend the use of BDD Style notation with
 constraints based assertions.
 
-A Runner
-~~~~~~~~
 
-The tests are only run through running a test suite in some form. We
-can create and run one especially for this test like so... (But see
-also <<runner>>.)
+=== A Runner
+
+The tests are only run by running a test suite in some form. (But see
+also <<runner>>.) We can create and run one especially for this test like
+so... 
 
 [source,c]
 -----------------------------
@@ -879,8 +870,8 @@ include::tutorial_src/strlen_tests7.c[lines=12..21]
 
 And so on.
 
-BeforeEach and AfterEach
-~~~~~~~~~~~~~~~~~~~~~~~~
+
+=== BeforeEach and AfterEach
 
 It's common for test suites to have a lot of duplicate code,
 especially when setting up similar tests. Take this database code for
@@ -954,8 +945,7 @@ function may not be run if the test crashes, causing some test
 interference. This brings us nicely onto the next section...
 
 
-Each Test in its Own Process
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=== Each Test in its Own Process
 
 Consider this test method...
 
@@ -1089,8 +1079,8 @@ Another possibility is the use of an environment variable named
 timeout to every test run. This will apply to all tests in the same
 run.
 
-Building Composite Test Suites
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+=== Building Composite Test Suites
             
 The `TestSuite` is a composite structure.  This means test suites can
 be added to test suites, building a tree structure that will be
@@ -1212,7 +1202,7 @@ purpose is to wrap the main test suite in the fixture.  This is our
 'fixture' pointer.  This code is a little confusing, because we have
 two sets of fixtures in the same test script.
 
-We have the MySQL connection fixture.  This is runs
+We have the MySQL connection fixture.  This will run
 `open_connection()` and `close_connection()` just once at the
 beginning and end of the person tests.  This is because the `suite`
 pointer is the only member of `fixture`.
@@ -1251,13 +1241,14 @@ TestSuite *connection_fixture(TestSuite *suite) {
 -----------------------
 
 This allows the reuse of common fixtures across projects.
-             
-[[runner]]
-Automatic Test Discovery
-------------------------
 
-Forgot to Add Your Test?
-~~~~~~~~~~~~~~~~~~~~~~~~
+
+         
+[[runner]]
+== Automatic Test Discovery
+
+
+=== Forgot to Add Your Test?
 
 When we write a new test we focus on the details about the test we are
 trying to write. And writing tests is no trivial matter so this might
@@ -1279,8 +1270,8 @@ But it is still a practice, something we, as humans, might fail to do
 at some point. Usually this happens when we are most stressed and in
 need of certainty.
 
-The Solution - the 'cgreen-runner'
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+=== The Solution - the 'cgreen-runner'
 
 *Cgreen* gives you a tool to avoid not only the risk of this
 happening, but also the extra work and extra code. It is called the
@@ -1300,8 +1291,8 @@ it, and run every test.
 
 It's automatic, and there is nothing to forget.
 
-Using the Runner
-~~~~~~~~~~~~~~~~
+
+=== Using the Runner
 
 Assuming your tests are in `first_test.c` the typical command to
 build your library using `gcc` would be
@@ -1360,9 +1351,7 @@ it is called `default`.
 
 
 [[runner-options]]
-
-Cgreen Runner Options
-~~~~~~~~~~~~~~~~~~~~~
+=== Cgreen Runner Options
 
 Once you get the build set up right for the cgreen-runner everything
 is fairly straight-forward. But you have a few options:
@@ -1388,8 +1377,8 @@ example:
 include::tutorial_src/runner3.out[]
 ------------------------
 
-Selecting Tests To Run
-~~~~~~~~~~~~~~~~~~~~~~
+
+=== Selecting Tests To Run
 
 You can name a single test to be run by giving it as the last argument
 on the command line. The name should be in the format
@@ -1411,10 +1400,9 @@ $ cgreen-runner <library> C*:*this*
 --------------------
 
 
-Multiple Test Libraries
-~~~~~~~~~~~~~~~~~~~~~~~
+=== Multiple Test Libraries
 
-You can also run tests in multiple libraries in one go by adding them
+You can run tests in multiple libraries in one go by adding them
 to the `cgreen-runner` command:
 
 -----------------------
@@ -1422,8 +1410,7 @@ $ cgreen-runner first_set.so second_set.so ...
 -----------------------
 
 
-Setup, Teardown and Custom Reporters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=== Setup, Teardown and Custom Reporters
 
 The `cgreen-runner` will only run setup and teardown functions if you
 use the BDD-ish style with `BeforeEach()` and `AfterEach()` as
@@ -1461,8 +1448,7 @@ standard, programatic, way of invoking your tests. For now...
 
 
 [[xensure]]
-Skipping Tests
-~~~~~~~~~~~~~~
+=== Skipping Tests
 
 Sometimes you find that you need to temporarily remove a test, perhaps
 to do a refactoring when you have a failing test. Ignoring that test will
@@ -1490,8 +1476,8 @@ a complete source tree. *Cgreen* will also tally the skipped tests, so
 it is clearly visible that you have some skipped test when you run them.
 
 
-Mocking functions with Cgreen
------------------------------
+
+== Mocking functions with Cgreen
         
 When testing you want certainty above all else.  Random events destroy
 confidence in your test suite and force needless extra runs "to be
@@ -1516,8 +1502,7 @@ The ideal is to have minimal stubs written for each individual test.
 *Cgreen* encourages this approach by making such tests easier to write.
          
 
-The Problem with Streams
-~~~~~~~~~~~~~~~~~~~~~~~~
+=== The Problem with Streams
             
 How would we test the following code...?
 
@@ -1563,9 +1548,9 @@ different one for each test. That's a lot of clutter.
 
 *Cgreen* can handle this clutter for us by letting us write a single
 programmable function for all our tests.
+
              
-Record and Playback
-~~~~~~~~~~~~~~~~~~~
+=== Record and Playback
             
 We can redo our example by creating a `stream_stub()` function. We can
 call it anything we want, and since I thought we wanted to have a
@@ -1746,9 +1731,9 @@ know that we dispatched the correct information down the line.
 Things get more interesting when we think of the traffic going the
 other way, from code to stub. This gets us into the same territory as
 mock objects.
-             
-Setting Expectations on Mock Functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+=== Setting Expectations on Mock Functions
             
 To swap the traffic flow, we'll look at an outgoing example instead.
 Here is the prewritten production code...
@@ -1976,7 +1961,8 @@ include::tutorial_src/formatter6.out[]
 
 All done.
 
-=== Mocks Are... ===
+
+=== Mocks Are...
 
 Using mocks is a very handy way to isolate a unit by catching and
 controlling calls to external units. Depending on your style of coding
@@ -1984,7 +1970,7 @@ two schools of thinking have emerged. And of course *Cgreen* supports
 both!
 
 
-==== Strict or Loose Mocks ====
+==== Strict or Loose Mocks
 
 The two schools are thinking a bit differently about what mock
 expectations means. Does it mean that all external calls must be
@@ -2000,7 +1986,7 @@ call that was not fullfilled. You might consider this a way to define
 a unit through all its exact behaviours towards its neighbours.
 
 On the other hand, 'loose' mocks are looser. They allow both
-unfullfilled expectations and try to handle unexpected calls in a
+unfulfilled expectations and try to handle unexpected calls in a
 reasonable way.
 
 You can use both with in the same suite of tests using the call
@@ -2010,7 +1996,7 @@ the test, or in a setup or `BeforeEach()` if it applies to all tests
 in a suite.
 
 
-==== Learning Mocks ====
+==== Learning Mocks
 
 Working with legacy code and trying to apply TDD, BDD or even simply
 add some unit tests is not easy. You're working with unknown code that
@@ -2075,8 +2061,8 @@ course. I.e. write functions that replaces the real
 functions and instead calls `mock()`.
 
 
-Context, Subject Under Test & Suites
-------------------------------------
+
+== Context, Subject Under Test & Suites
 
 As mentioned earlier, *Cgreen* promotes the behaviour driven
 style of test driving code. The thinking behind BDD is that we don't
@@ -2091,8 +2077,8 @@ the small change in wording, from `test´ to `behaviour´, from `test
 that´ to `ensure that´, makes a huge difference in thinking, and also
 very often in quality of the resulting code.
 
-The SUT - Subject Under Test
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+=== The SUT - Subject Under Test
 
 Since BDD talks about behaviour, there has to be something that we can
 talk about as having the wanted behaviour. This is usually called the
@@ -2131,8 +2117,8 @@ basically calls a test suite. The suite specifies the behaviour of a
 `class´. (That's why some BDD frameworks draw on 'spec', like
 *RSpec*.)
 
-Contexts and Before and After
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+=== Contexts and Before and After
 
 The complete specification of the behaviour of a SUT might become long
 and require various forms of setup. When using TDD style you
@@ -2173,9 +2159,10 @@ interchangable concepts in *Cgreen* lingo. It's a named group of
 'tests' that share the same `BeforeEach` and `AfterEach` and lives in
 the same source file.
 
+
+
 [[changing_style]]
-Changing Style
---------------
+== Changing Style
 
 If you already have some TDD style *Cgreen* test suites, it is quite
 easy to change them over to BDD-ish style. Here are the steps required
@@ -2213,8 +2200,7 @@ automatic discovery of tests as described in <<runner>>.
 
 
 [[reporter]]
-Changing Cgreen Reporting
--------------------------
+== Changing Cgreen Reporting
 
 Replacing the Reporter
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -2229,9 +2215,9 @@ return run_test_suite(our_tests(), create_text_reporter());
 We can change the reporting mechanism just by changing this
 call to create another reporter.
 
+
 [[builtin_reporters]]
-Built-in Reporters
-~~~~~~~~~~~~~~~~~~
+=== Built-in Reporters
 
 *Cgreen* has the following built-in reporters that you can choose from
 when your code runs the test suite.
@@ -2256,8 +2242,7 @@ If you write a runner function like in most examples above, you can just substit
 NOTE: Currently `cgreen-runner` does only support the XML built-in reporter.
 
 
-Rolling Our Own
-~~~~~~~~~~~~~~~
+=== Rolling Our Own
 
 Althoug *Cgreen* has a number of options, there are times when you'd like
 a different output from the reporter, the CUTE and CDash  reporters are
@@ -2308,9 +2293,9 @@ output a message and chain to the versions in `reporter.h`.
 
 To change the reporting mechanism ourselves, we just have to know a little
 about the methods in the `TestReporter` structure.
-             
-The TestReporter Structure
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+=== The TestReporter Structure
 
 The *Cgreen* `TestReporter` is a pseudo class that looks
 something like...
@@ -2482,16 +2467,17 @@ used to set options. E.g. the textreporter defines the structure
 `TextReporterOptions` which can be used by calling code to define the
 use of colors when printing passes and failures. You set it with
 `set_reporter_options(*void)`.
-             
-An Example XML Reporter
-~~~~~~~~~~~~~~~~~~~~~~~
-            
+
+ 
+=== An Example XML Reporter
+    
 Let's make things real with an example.  Suppose we want to send the
 output from *Cgreen* in XML format, say for storing in a repository or
 for sending across the network.
 
 NOTE: The `cgreen-runner` already has an XML-reporter that you can
-use. See <<runner-options>>.
+use if you need to produce Jenkins/ANT compatible XML output.
+See <<runner-options>>.
 
 Suppose also that we have come up with the following format...
 
@@ -2663,16 +2649,18 @@ Possible other reporter customizations include reporters that write to
 `syslog`, talk to IDE plug-ins, paint pretty printed documents or just
 return a boolean for monitoring purposes.
 
-Hints and Tips
---------------
+
+
+== Hints and Tips
 
 CAUTION: This chapter is in its infancy. It will contain tips for
-situations that you need some help with.
+situations that you need some help with, but it is nowhere near complete
+at this time.
 
-Compiler Error Messages
-~~~~~~~~~~~~~~~~~~~~~~~
 
-Sometimes you can get cryptic and strange error messages from the
+=== Compiler Error Messages
+
+Sometimes you might get cryptic and strange error messages from the
 compiler. Since *Cgreen* uses some C/C++ macro magic this can happen
 and the error messages might not be straight forward to interpret.
 
@@ -2684,8 +2672,7 @@ and the error messages might not be straight forward to interpret.
 |=========================================================
 
 
-Signed, Unsigned, Hex and Byte
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=== Signed, Unsigned, Hex and Byte
 
 *Cgreen* attempts to handle primitive type comparisons with a single
 constraint, `is_equal_to()`. This means that it must store the actual
@@ -2746,8 +2733,7 @@ char_tests.c:11: Failure: Char -> can_compare_byte
 ------------------------------
 
 
-Cgreen and Coverage
-~~~~~~~~~~~~~~~~~~~
+=== Cgreen and Coverage
 
 *Cgreen* is compatible with coverage tools, in particular
 `gcov`/`lcov`. So generating coverage data for your application should
@@ -2763,8 +2749,7 @@ This is what you need to do (using `gcc` or `clang`):
 Your coverage data will be available in `coverage/index.html`.
 
 
-Garbled Output
-~~~~~~~~~~~~~~
+=== Garbled Output
 
 If the output from your *Cgreen* based tests appear garbled or
 duplicated, this can be caused by the way *Cgreen* terminates its
@@ -2791,8 +2776,7 @@ output consistency. You can't have both...
 
 
 [appendix]
-License
--------
+== License
 
 Copyright (c) 2006-2016, Cgreen Development Team and contributors +
 (https://github.com/cgreen-devs/cgreen/graphs/contributors)

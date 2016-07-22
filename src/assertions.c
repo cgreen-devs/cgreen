@@ -25,7 +25,8 @@ void assert_core_(const char *file, int line, const char *actual_string, intptr_
                 file,
                 line,
                 false,
-                "\tGot constraint of type [%s], but they are not allowed for assertions, only in mock expectations.",
+                "Got constraint of type [%s],\n"
+                "\t\tbut they are not allowed for assertions, only in mock expectations.",
                 constraint->name);
 
         constraint->destroy(constraint);
@@ -70,7 +71,8 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
                 file,
                 line,
                 false,
-                "\tGot constraint of type [%s], but they are not allowed for assertions, only in mock expectations.",
+                "Got constraint of type [%s],\n"
+                "\t\tbut they are not allowed for assertions, only in mock expectations.",
                 constraint->name);
 
         constraint->destroy(constraint);

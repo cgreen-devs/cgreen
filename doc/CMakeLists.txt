@@ -24,6 +24,7 @@ IF(WITH_HTML OR WITH_PDF)
         OUTPUT "${_out}-html"
         COMMAND ${ASCIIDOCTOR_EXECUTABLE}
         -a toc
+        -a VERSION=${APPLICATION_VERSION}
         -o ${_out} ${_file}
         DEPENDS ${_file}
         COMMENT "asciidoctor ${_in}"
@@ -38,6 +39,7 @@ IF(WITH_HTML OR WITH_PDF)
         OUTPUT "${_out}-pdf"
         COMMAND ${ASCIIDOCTORPDF_EXECUTABLE}
         -a toc
+        -a VERSION=${APPLICATION_VERSION}
         -a docinfo -o ${_out} ${_file}
         DEPENDS ${_file}
         COMMENT "asciidoctor-pdf ${_in}"

@@ -59,8 +59,11 @@ SET_SOURCE_FILES_PROPERTIES(${c_tests_SRCS} PROPERTIES LANGUAGE C)
 
 set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
 
+# unit test with main program runner
 macro_add_unit_test(test_cgreen_c "${c_tests_SRCS}" "${TEST_TARGET_LIBRARIES}")
 macro_add_test(NAME test_cgreen_c_run_named_test COMMAND test_cgreen_c integer_one_should_assert_true)
+
+# run them with cgreen-runner also
 macro_add_test(NAME runner_test_cgreen_c COMMAND cgreen-runner -x TEST ${CMAKE_SHARED_LIBRARY_PREFIX}${CGREEN_C_TESTS_LIBRARY}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 
