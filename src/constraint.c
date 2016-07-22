@@ -59,7 +59,7 @@ static bool compare_want_substring(Constraint *constraint, intptr_t actual);
 static bool compare_do_not_want_substring(Constraint *constraint, intptr_t actual);
 
 static bool compare_want_beginning_of_string(Constraint *constraint, intptr_t actual);
-
+static bool compare_do_not_want_beginning_of_string(Constraint *constraint, intptr_t actual);
 
 static bool compare_want_double(Constraint *constraint, intptr_t actual);
 static void test_want_double(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
@@ -275,6 +275,18 @@ Constraint *create_begins_with_string_constraint(const char* expected_value, con
     return constraint;
 }
 
+Constraint *create_does_not_begin_with_string_constraint(const char* expected_value, const char *expected_value_name) {
+    Constraint *constraint = create_constraint_expecting((intptr_t)expected_value, expected_value_name);
+    constraint->type = STRING_COMPARER;
+
+    constraint->compare = &compare_do_not_want_beginning_of_string;
+    constraint->execute = &test_want;
+    constraint->name = "not begin with string";
+    constraint->expected_value_message = "\t\texpected to not begin with:\t\t[\"%s\"]";
+
+    return constraint;
+}
+
 Constraint *create_does_not_contain_string_constraint(const char* expected_value, const char *expected_value_name) {
     Constraint *constraint = create_constraint_expecting((intptr_t)expected_value, expected_value_name);
     constraint->type = STRING_COMPARER;
@@ -483,6 +495,10 @@ static int strpos(const char *haystack, const char *needle)
 
 static bool compare_want_beginning_of_string(Constraint *constraint, intptr_t actual) {
     return strpos((const char *)actual, (const char *)constraint->expected_value) == 0;
+}
+
+static bool compare_do_not_want_beginning_of_string(Constraint *constraint, intptr_t actual) {
+    return strpos((const char *)actual, (const char *)constraint->expected_value) != 0;
 }
 
 static bool compare_want_double(Constraint *constraint, intptr_t actual) {
