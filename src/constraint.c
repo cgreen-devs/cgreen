@@ -6,6 +6,7 @@
 #include <cgreen/parameters.h>
 #include <cgreen/vector.h>
 #include <inttypes.h>
+#include <limits.h>
 #include <math.h>
 #ifndef __cplusplus
 #include <stdbool.h>
@@ -501,13 +502,14 @@ static bool compare_want_substring(Constraint *constraint, intptr_t actual) {
     return string_contains((const char *)actual, (const char *)constraint->expected_value);
 }
 
-const int NOT_FOUND = -1;
 
-static int strpos(const char *haystack, const char *needle)
+const unsigned int NOT_FOUND = UINT_MAX;
+
+static unsigned int strpos(const char *haystack, const char *needle)
 {
     const char *offset = strstr(haystack, needle);
     if (offset != NULL) {
-      return (int)(offset - haystack);
+      return offset - haystack;
     }
 
     return NOT_FOUND;

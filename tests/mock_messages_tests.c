@@ -107,8 +107,9 @@ Ensure(Mocks, learning_mocks_emit_pastable_code) {
    the parent some other way.
 */
 xEnsure(Mocks, learning_mocks_survive_termination) {
+    int *ip = 0;
     cgreen_mocks_are(learning_mocks);
     string_out(1);
-    *(int*)0 = 0;
+    *ip = 0;
 }
 

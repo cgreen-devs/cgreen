@@ -165,6 +165,11 @@ void double_all_percent_signs_in(char **original)
 }
 
 
+static bool is_not_equal_to_string_constraint(Constraint *constraint) {
+    return strstr(constraint->name, "not ") != NULL && strstr(constraint->name, "equal ") != NULL;
+}
+
+
 char *failure_message_for(Constraint *constraint, const char *actual_string, intptr_t actual) {
     char actual_value_string[32];
     const char *actual_value_constraint_name = "Expected [%s] to [%s]";
@@ -220,7 +225,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
         snprintf(message + strlen(message), message_size - strlen(message) - 1,
                  actual_value_as_string,
                  (const char *)actual);
-        if (!(strstr(constraint->name, "not ") != NULL && strstr(constraint->name, "equal ") != NULL)) {
+        if (!is_not_equal_to_string_constraint(constraint)) {
             strcat(message, "\n");
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
                      constraint->expected_value_message,
