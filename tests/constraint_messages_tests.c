@@ -96,6 +96,16 @@ Ensure(ConstraintMessage, for_does_not_begin_with_string) {
     assert_that(begins_with_forty_five, does_not_begin_with_string(forty_five));
 }
 
+Ensure(ConstraintMessage, for_ends_with_string) {
+    const char *does_not_end_with_forty_five = "fortyfive is not the end of this string", *forty_five = "fortyfive";
+    assert_that(does_not_end_with_forty_five, ends_with_string(forty_five));
+}
+
+Ensure(ConstraintMessage, for_does_not_end_with_string) {
+    const char *ends_with_forty_five = "this string ends with fortyfive", *forty_five = "fortyfive";
+    assert_that(ends_with_forty_five, does_not_end_with_string(forty_five));
+}
+
 
 // Double
 

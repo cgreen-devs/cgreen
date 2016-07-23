@@ -20,10 +20,6 @@
 
 #include "utils.h"
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
-
 #ifdef max
 #undef max
 #endif
@@ -54,12 +50,12 @@ static void test_true(Constraint *constraint, const char *function, intptr_t act
 
 static bool compare_want_string(Constraint *constraint, intptr_t actual);
 static bool compare_do_not_want_string(Constraint *constraint, intptr_t actual);
-
 static bool compare_want_substring(Constraint *constraint, intptr_t actual);
 static bool compare_do_not_want_substring(Constraint *constraint, intptr_t actual);
-
 static bool compare_want_beginning_of_string(Constraint *constraint, intptr_t actual);
 static bool compare_do_not_want_beginning_of_string(Constraint *constraint, intptr_t actual);
+static bool compare_want_end_of_string(Constraint *constraint, intptr_t actual);
+static bool compare_do_not_want_end_of_string(Constraint *constraint, intptr_t actual);
 
 static bool compare_want_double(Constraint *constraint, intptr_t actual);
 static void test_want_double(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
@@ -282,7 +278,31 @@ Constraint *create_does_not_begin_with_string_constraint(const char* expected_va
     constraint->compare = &compare_do_not_want_beginning_of_string;
     constraint->execute = &test_want;
     constraint->name = "not begin with string";
-    constraint->expected_value_message = "\t\texpected to not begin with:\t\t[\"%s\"]";
+    constraint->expected_value_message = "\t\texpected to not begin with:\t[\"%s\"]";
+
+    return constraint;
+}
+
+Constraint *create_ends_with_string_constraint(const char* expected_value, const char *expected_value_name) {
+    Constraint *constraint = create_constraint_expecting((intptr_t)expected_value, expected_value_name);
+    constraint->type = STRING_COMPARER;
+
+    constraint->compare = &compare_want_end_of_string;
+    constraint->execute = &test_want;
+    constraint->name = "end with string";
+    constraint->expected_value_message = "\t\texpected to end with:\t\t[\"%s\"]";
+
+    return constraint;
+}
+
+Constraint *create_does_not_end_with_string_constraint(const char* expected_value, const char *expected_value_name) {
+    Constraint *constraint = create_constraint_expecting((intptr_t)expected_value, expected_value_name);
+    constraint->type = STRING_COMPARER;
+
+    constraint->compare = &compare_do_not_want_end_of_string;
+    constraint->execute = &test_want;
+    constraint->name = "not end with string";
+    constraint->expected_value_message = "\t\texpected to not end with:\t[\"%s\"]";
 
     return constraint;
 }
@@ -501,6 +521,20 @@ static bool compare_do_not_want_beginning_of_string(Constraint *constraint, intp
     return strpos((const char *)actual, (const char *)constraint->expected_value) != 0;
 }
 
+static bool compare_want_end_of_string(Constraint *constraint, intptr_t actual) {
+    return strpos((const char *)actual, (const char *)constraint->expected_value) ==
+        strlen((const char *)actual) - strlen((const char *)constraint->expected_value);
+}
+
+static bool compare_do_not_want_end_of_string(Constraint *constraint, intptr_t actual) {
+    return strpos((const char *)actual, (const char *)constraint->expected_value) !=
+        strlen((const char *)actual) - strlen((const char *)constraint->expected_value);
+}
+
+
+
+// Double
+ 
 static bool compare_want_double(Constraint *constraint, intptr_t actual) {
     return doubles_are_equal(as_double(constraint->expected_value), as_double(actual));
 }
@@ -654,9 +688,5 @@ void significant_figures_for_assert_double_are(int figures) {
 int get_significant_figures() {
     return significant_figures;
 }
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

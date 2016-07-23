@@ -220,7 +220,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
         snprintf(message + strlen(message), message_size - strlen(message) - 1,
                  actual_value_as_string,
                  (const char *)actual);
-        if (strstr(constraint->name, "not ") == NULL || strstr(constraint->name, "contain ") != NULL) {
+        if (!(strstr(constraint->name, "not ") != NULL && strstr(constraint->name, "equal ") != NULL)) {
             strcat(message, "\n");
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
                      constraint->expected_value_message,
