@@ -34,8 +34,8 @@ install:
 
 
 # This is kind of a hack to get a quicker and clearer feedback when
-# developing Cgreen Should be updated when new test libraries or
-# output comparisons are added
+# developing Cgreen by using 'make unit'. Should be updated when new
+# test libraries or output comparisons are added.
 
 # Find out if 'uname -o' works, if it does - use it, otherwise use 'uname -s'
 UNAMEOEXISTS=$(shell uname -o 1>&2 2>/dev/null; echo $$?)
@@ -89,7 +89,7 @@ pdf: build
 ############# Internal
 
 ifeq ($(OS),Darwin)
-ARCHS=-DCMAKE_OSX_ARCHITECTURES:string="i386;x86_64"
+ARCHS=-DCMAKE_OSX_ARCHITECTURES:string="x86_64;i386"
 endif
 
 

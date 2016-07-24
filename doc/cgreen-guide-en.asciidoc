@@ -635,26 +635,35 @@ Here are the standard constraints...
 
 |=========================================================
 |*Constraint* |*Passes if actual value/expression...*
-| `is_true` | evaluates to true
+| _Basic_ | 
+| `is_true` | evaluates to true, buy you can also just leave out the constraint, like in `assert_that(actual)` if `actual` is of boolean type
 | `is_false` | evaluates to false
 | `is_null` | equals null
 | `is_non_null` | is a non null value
 | `is_not_null` | d:o
 ||
+| _Integer compatible_ |
 | `is_equal_to(value)` | '== value'
+| `is_equal_to_hex(value)` | '== value', but will show values in HEX
 | `is_not_equal_to(value)` | '!= value'
 | `is_greater_than(value)` | '> value'
 | `is_less_than(value)` | '< value'
 ||
+| _Structs and general data_ | 
 | `is_equal_to_contents_of(pointer, size)` | matches the data pointed to by `pointer` to a size of `size` bytes
 | `is_not_equal_to_contents_of(pointer, size)` | does not match the data pointed to by `pointer` to a size of `size` bytes
 ||
+| _Strings_ | 
 | `is_equal_to_string(value)` | are equal when compared using `strcmp()`
 | `is_not_equal_to_string(value)` | are not equal when compared using `strcmp()`
 | `contains_string(value)` | contains `value` when evaluated using `strstr()`
 | `does_not_contain_string(value)` | does not contain `value` when evaluated using `strstr()`
 | `begins_with_string(value)` | starts with the string `value`
+| `does_not_begin_with_string(value)` | does not start with the string `value`
+| `ends_with_string(value)` | ends with the string `value`
+| `does_not_end_with_string(value)` | does not end with the string `value`
 ||
+| _Double floats_ | 
 | `is_equal_to_double(value)` | are equal to `value` within the number of significant digits (which you can set with a call to `significant_figures_for_assert_double_are(int figures)`)
 | `is_not_equal_to_double(value)` | are not equal to `value` within the number of significant digits
 | `is_less_than_double(value)` | `< value` withing the number of significant digits
@@ -1824,7 +1833,6 @@ same as for the assertions we saw earlier):
 |==========================================================================
 |*Constraint*                                             |*Type*
 |`is_equal_to(value)`                                     | Integers
-|`is_equal_to_hex(value)`                                 | Integers
 |`is_not_equal_to(value)`                                 | Integers
 |`is_greater_than(value)`                                 | Integers
 |`is_less_than(value)`                                    | Integers
