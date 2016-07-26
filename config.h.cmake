@@ -32,9 +32,6 @@
 /* Define to 1 if you want to enable ZLIB */
 #cmakedefine WITH_LIBZ 1
 
-/* Define to 1 if you want to compile for W32API instead of *nix */
-#cmakedefine USE_W32API 1
-
 /* Define if building with gcov instrumentation */
 #cmakedefine CGREEN_INTERNAL_WITH_GCOV
 
