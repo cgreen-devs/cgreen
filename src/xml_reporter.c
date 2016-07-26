@@ -113,6 +113,7 @@ static void xml_reporter_start_suite(TestReporter *reporter, const char *suitena
     char filename[PATH_MAX];
     int segment_decrementer = reporter->breadcrumb->depth;
     XmlMemo *memo = (XmlMemo *)reporter->memo;
+    FILE *out;
 
     (void)count;                /* UNUSED */
     
@@ -121,11 +122,15 @@ static void xml_reporter_start_suite(TestReporter *reporter, const char *suitena
     add_suite_name(suitename);
 
     snprintf(filename, sizeof(filename), "%s-%s.xml", file_prefix, suite_path);
-    FILE *out = fopen(filename, "w");
-    if (!out) {
-        memo->printer(stderr, "could not open %s: %s\r\n", filename, strerror(errno));
-        exit(EXIT_FAILURE);
-    }
+    if (memo->printer == fprintf) {
+        // If we're really printing to files, then open one...
+        out = fopen(filename, "w");
+        if (!out) {
+            memo->printer(stderr, "could not open %s: %s\r\n", filename, strerror(errno));
+            exit(EXIT_FAILURE);
+        }
+    } else
+        out = stdout;
 
     file_stack[file_stack_p++] = out;
     memo->printer(out, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n");
