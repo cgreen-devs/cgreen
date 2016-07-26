@@ -1,9 +1,16 @@
 #include <cgreen/cgreen.h>
 #include <cgreen/xml_reporter.h>
+
+#include "config.h"
+
 #include "utils.h"
 
 #include <unistd.h>
 #include <libgen.h>
+
+#ifdef HAVE_CURSES
+#include <term.h>
+#endif
 
 #include "gopt.h"
 
@@ -32,7 +39,7 @@ static void usage(const char **argv) {
     printf("dynamically loadable library.\n\n");
     printf("A single test can be run using the form [<context>:]<name> where <context> can\n");
     printf("be omitted if there is no context.\n\n");
-    printf("  -c --colours/colors\tUse colours to emphasis result (requires ANSI-capable terminal)\n");
+    printf("  -c --colours/colors\tForce use of colours to emphasis result if not autodetected (requires ANSI-capable terminal)\n");
     printf("  -x --xml <prefix>\tInstead of messages on stdout, write results into one XML-file\n");
     printf("\t\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
     printf("\t\t\twill be '<prefix>-<suite>.xml'\n");
@@ -174,10 +181,16 @@ int main(int argc, const char **argv) {
     if (gopt_arg(options, 'n', &tmp))
         no_run = true;
 
+    reporter_options.use_colours = false;
+#ifdef HAVE_CURSES
+    if (isatty(fileno(stdout))) {
+        setupterm((char *)0, 1, (int *)0);
+        if (tigetnum("colors") >= 4)
+            reporter_options.use_colours = true;
+    }
+#endif
     if (gopt_arg(options, 'c', &tmp) && isatty(fileno(stdout)))
         reporter_options.use_colours = true;
-    else
-        reporter_options.use_colours = false;
 
     if (gopt_arg(options, 'q', &tmp))
         reporter_options.quiet_mode = true;
