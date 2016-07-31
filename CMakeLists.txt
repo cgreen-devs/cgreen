@@ -12,8 +12,6 @@ project(cgreen)
 
 find_package (Threads)
 
-include(FindCurses)
-
 enable_testing()
 
 # global needed variables

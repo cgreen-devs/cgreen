@@ -10,7 +10,7 @@ if(CYGWIN)
 endif()
 
 add_executable(cgreen-runner ${RUNNER_SRCS})
-target_link_libraries(cgreen-runner ${CGREEN_SHARED_LIBRARY} ${CMAKE_DL_LIBS} ${CURSES_LIBRARIES})
+target_link_libraries(cgreen-runner ${CGREEN_SHARED_LIBRARY} ${CMAKE_DL_LIBS})
 
 install(TARGETS cgreen-runner 
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

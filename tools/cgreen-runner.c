@@ -1,16 +1,10 @@
 #include <cgreen/cgreen.h>
 #include <cgreen/xml_reporter.h>
 
-#include "config.h"
-
 #include "utils.h"
 
 #include <unistd.h>
 #include <libgen.h>
-
-#ifdef HAVE_CURSES
-#include <term.h>
-#endif
 
 #include "gopt.h"
 
@@ -40,6 +34,7 @@ static void usage(const char **argv) {
     printf("A single test can be run using the form [<context>:]<name> where <context> can\n");
     printf("be omitted if there is no context.\n\n");
     printf("  -c --colours/colors\tUse colours to emphasis result (requires ANSI-capable terminal)\n");
+    printf("  -C --no-colours/no-colors\tUse colours to emphasis result (requires ANSI-capable terminal)\n");
     printf("  -x --xml <prefix>\tInstead of messages on stdout, write results into one XML-file\n");
     printf("\t\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
     printf("\t\t\twill be '<prefix>-<suite>.xml'\n");
