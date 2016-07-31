@@ -39,16 +39,15 @@ static void usage(const char **argv) {
     printf("dynamically loadable library.\n\n");
     printf("A single test can be run using the form [<context>:]<name> where <context> can\n");
     printf("be omitted if there is no context.\n\n");
-    printf("  -c --colours/colors\t\tUse colours to emphasis result (requires ANSI-capable terminal)\n");
-    printf("  -C --no-colours/no-colors\tDon't use colours\n");
-    printf("  -x --xml <prefix>\t\tInstead of messages on stdout, write results into one XML-file\n");
-    printf("\t\t\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
-    printf("\t\t\t\twill be '<prefix>-<suite>.xml'\n");
-    printf("  -s --suite <name>\t\tName the top level suite\n");
-    printf("  -n --no-run\t\t\tDon't run the tests\n");
-    printf("  -v --verbose\t\t\tShow progress information\n");
-    printf("  -q --quiet\t\t\tJust output dots for each test\n");
-    printf("     --version\t\t\tShow version information\n");
+    printf("  -c --colours/colors\tUse colours to emphasis result (requires ANSI-capable terminal)\n");
+    printf("  -x --xml <prefix>\tInstead of messages on stdout, write results into one XML-file\n");
+    printf("\t\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
+    printf("\t\t\twill be '<prefix>-<suite>.xml'\n");
+    printf("  -s --suite <name>\tName the top level suite\n");
+    printf("  -n --no-run\t\tDon't run the tests\n");
+    printf("  -v --verbose\t\tShow progress information\n");
+    printf("  -q --quiet\t\tJust output dots for each test\n");
+    printf("     --version\t\tShow version information\n");
 }
 
 
