@@ -20,10 +20,6 @@
 
 /*************************** LIBRARIES ***************************/
 
-#cmakedefine CURSES_FOUND 1
-#ifdef CURSES_FOUND
-#define HAVE_CURSES 1
-#endif
 
 /**************************** OPTIONS ****************************/
 
