@@ -1,16 +1,10 @@
 #include <cgreen/cgreen.h>
 #include <cgreen/xml_reporter.h>
 
-#include "config.h"
-
 #include "utils.h"
 
 #include <unistd.h>
 #include <libgen.h>
-
-#ifdef HAVE_CURSES
-#include <term.h>
-#endif
 
 #include "gopt.h"
 
