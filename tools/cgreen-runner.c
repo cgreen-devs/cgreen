@@ -39,15 +39,16 @@ static void usage(const char **argv) {
     printf("dynamically loadable library.\n\n");
     printf("A single test can be run using the form [<context>:]<name> where <context> can\n");
     printf("be omitted if there is no context.\n\n");
-    printf("  -c --colours/colors\tForce use of colours to emphasis result if not autodetected (requires ANSI-capable terminal)\n");
-    printf("  -x --xml <prefix>\tInstead of messages on stdout, write results into one XML-file\n");
-    printf("\t\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
-    printf("\t\t\twill be '<prefix>-<suite>.xml'\n");
-    printf("  -s --suite <name>\tName the top level suite\n");
-    printf("  -n --no-run\t\tDon't run the tests\n");
-    printf("  -v --verbose\t\tShow progress information\n");
-    printf("  -q --quiet\t\tJust output dots for each test\n");
-    printf("     --version\t\tShow version information\n");
+    printf("  -c --colours/colors\t\tUse colours to emphasis result (requires ANSI-capable terminal)\n");
+    printf("  -C --no-colours/no-colors\tDon't use colours\n");
+    printf("  -x --xml <prefix>\t\tInstead of messages on stdout, write results into one XML-file\n");
+    printf("\t\t\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
+    printf("\t\t\t\twill be '<prefix>-<suite>.xml'\n");
+    printf("  -s --suite <name>\t\tName the top level suite\n");
+    printf("  -n --no-run\t\t\tDon't run the tests\n");
+    printf("  -v --verbose\t\t\tShow progress information\n");
+    printf("  -q --quiet\t\t\tJust output dots for each test\n");
+    printf("     --version\t\t\tShow version information\n");
 }
 
 
@@ -113,6 +114,16 @@ static int initialize_option_handling(int argc, const char **argv) {
                                                             GOPT_NOARG,
                                                             gopt_shorts('c'),
                                                             gopt_longs("colors")
+                                                            ),
+                                                gopt_option('C',
+                                                            GOPT_NOARG,
+                                                            gopt_shorts('C'),
+                                                            gopt_longs("no-colors")
+                                                            ),
+                                                gopt_option('C',
+                                                            GOPT_NOARG,
+                                                            gopt_shorts('C'),
+                                                            gopt_longs("no-colours")
                                                             ),
                                                 gopt_option('q',
                                                             GOPT_NOARG,
@@ -181,16 +192,14 @@ int main(int argc, const char **argv) {
     if (gopt_arg(options, 'n', &tmp))
         no_run = true;
 
-    reporter_options.use_colours = false;
-#ifdef HAVE_CURSES
+    reporter_options.use_colours = true;
     if (isatty(fileno(stdout))) {
-        setupterm((char *)0, 1, (int *)0);
-        if (tigetnum("colors") >= 4)
-            reporter_options.use_colours = true;
+        if (gopt_arg(options, 'C', &tmp))
+            reporter_options.use_colours = false;
+    } else {
+        if (!gopt_arg(options, 'c', &tmp))
+            reporter_options.use_colours = false;
     }
-#endif
-    if (gopt_arg(options, 'c', &tmp) && isatty(fileno(stdout)))
-        reporter_options.use_colours = true;
 
     if (gopt_arg(options, 'q', &tmp))
         reporter_options.quiet_mode = true;
