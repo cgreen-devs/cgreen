@@ -161,7 +161,7 @@ static void xml_reporter_start_test(TestReporter *reporter, const char *testname
 
 
 static char *concat(char *head, const char *tail) {
-    char *result = realloc(head, strlen(head)+strlen(tail));
+    char *result = realloc(head, strlen(head)+strlen(tail)+1);
     return strcat(result, tail);
 }
 
