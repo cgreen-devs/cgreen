@@ -6,6 +6,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#ifdef __ANDROID__
+#include "cgreen/internal/android_headers/androidcompat.h"
+#endif // #ifdef __ANDROID__
+
 #ifdef _MSC_VER
 #include <wincompat.h>
 //disable warning on windows
