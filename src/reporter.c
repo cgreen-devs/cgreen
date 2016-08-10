@@ -27,7 +27,6 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line,
                             const char *message, va_list arguments);
 static void assert_true(TestReporter *reporter, const char *file, int line,
                         int result, const char *message, ...);
-static int  read_reporter_results(TestReporter *reporter);
 
 TestReporter *get_test_reporter() {
     return context.reporter;
@@ -195,7 +194,11 @@ static void assert_true(TestReporter *reporter, const char *file, int line,
     va_end(arguments);
 }
 
-static int read_reporter_results(TestReporter *reporter) {
+#ifdef __cplusplus
+    int cgreen::read_reporter_results(TestReporter *reporter) {
+#else
+    int read_reporter_results(TestReporter *reporter) {
+#endif
     int result;
     while ((result = receive_cgreen_message(reporter->ipc)) > 0) {
         if (result == pass) {
