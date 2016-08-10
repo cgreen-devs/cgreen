@@ -56,6 +56,10 @@ void send_reporter_exception_notification(TestReporter *reporter);
 void send_reporter_skipped_notification(TestReporter *reporter);
 void send_reporter_completion_notification(TestReporter *reporter);
 
+// Exposing so user code can call this manually to update pass/fail counts
+// for later analysis when running tests singly (instead of complete test suite)
+int read_reporter_results(TestReporter *reporter);
+
 #ifdef __cplusplus
     }
 }
