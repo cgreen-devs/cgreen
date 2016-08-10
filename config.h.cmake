@@ -14,26 +14,14 @@
 
 /************************** HEADER FILES *************************/
 
-/* Define to 1 if you have the <pty.h> header file. */
-#cmakedefine HAVE_PTY_H 1
 
 /*************************** FUNCTIONS ***************************/
 
-/* Define to 1 if you have the `cfmakeraw' function. */
-#cmakedefine HAVE_CFMAKERAW 1
 
 /*************************** LIBRARIES ***************************/
 
-/* Define to 1 if you have the `z' library (-lz). */
-#cmakedefine HAVE_LIBZ 1
 
 /**************************** OPTIONS ****************************/
-
-/* Define to 1 if you want to enable ZLIB */
-#cmakedefine WITH_LIBZ 1
-
-/* Define to 1 if you want to compile for W32API instead of *nix */
-#cmakedefine USE_W32API 1
 
 /* Define if building with gcov instrumentation */
 #cmakedefine CGREEN_INTERNAL_WITH_GCOV

@@ -89,7 +89,8 @@ Ensure(XmlReporter, will_report_beginning_of_suite) {
 
 
 Ensure(XmlReporter, will_report_beginning_and_successful_finishing_of_passing_test) {
-    va_list arguments;
+    va_list null_arguments;
+    memset(&null_arguments, 0, sizeof(null_arguments));
 
     reporter->start_test(reporter, "test_name");
     assert_that(output, begins_with_string("<testcase classname=\"\""));
@@ -97,8 +98,7 @@ Ensure(XmlReporter, will_report_beginning_and_successful_finishing_of_passing_te
 
     clear_output();
 
-    memset(&arguments, 0, sizeof(va_list));
-    reporter->show_pass(reporter, "file", 2, "test_name", arguments);
+    reporter->show_pass(reporter, "file", 2, "test_name", null_arguments);
     assert_that(strlen(output), is_equal_to(0));
 
     reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds);
@@ -107,11 +107,11 @@ Ensure(XmlReporter, will_report_beginning_and_successful_finishing_of_passing_te
 
 
 Ensure(XmlReporter, will_report_a_failing_test) {
-    va_list arguments;
+    va_list null_arguments;
+    memset(&null_arguments, 0, sizeof(null_arguments));
 
     reporter->start_test(reporter, "test_name");
-    memset(&arguments, 0, sizeof(va_list));
-    reporter->show_fail(reporter, "file", 2, "test_name", arguments);
+    reporter->show_fail(reporter, "file", 2, "test_name", null_arguments);
     reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds);
     
     assert_that(output, contains_string("<failure message=\"test_name\">"));
