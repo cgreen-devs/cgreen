@@ -3,12 +3,12 @@ Section: libs
 Priority: optional
 Maintainer: Colm Dougan <colm.dougan@gmail.com>
 Build-Depends: debhelper (>= 7.0.0), cmake
-Standards-Version: 3.8.3
+Standards-Version: 3.9.6
 
 Package: cgreen
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: cgreen unit testing library
+Description: Unit tests and mocking library for C and C++
  A C unit tester. Features include composite test suites, each test
  can be run in it's own process, trapping of hung tests, setup and
  teardown, extensible interface and support for mocking functions.

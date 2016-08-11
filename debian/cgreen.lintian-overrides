@@ -1,0 +1,3 @@
+# We install the -dev libs
+cgreen binary : non-dev-pkg-with-shlib-symlink *
+cgreen binary : package-name-doesnt-match-sonames *

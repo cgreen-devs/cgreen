@@ -25,10 +25,10 @@ configure-stamp:
 build: configure build-stamp
 build-stamp: 
 	$(MAKE) -C $(BUILD)
-ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
-	-(cd $(BUILD) && ctest -DExperimental --force-new-ctest-process -V)
-	rm -rf /tmp/testbed.*
-endif
+#ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
+#	-(cd $(BUILD) && ctest -DExperimental --force-new-ctest-process -V)
+#	rm -rf /tmp/testbed.*
+#endif
 	touch build-stamp
 
 clean:
@@ -42,7 +42,7 @@ install: build
 	dh_installdirs
 
 	$(MAKE) -C $(BUILD) install DESTDIR=$(TARGET)
-	dh_install --sourcedir=$(TARGET) --fail-missing
+	dh_install --sourcedir=$(TARGET) --list-missing
 
 binary-arch: build install
 	dh_installchangelogs
@@ -58,6 +58,7 @@ binary-arch: build install
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
+	dh_lintian
 
 binary-indep: build install
 
