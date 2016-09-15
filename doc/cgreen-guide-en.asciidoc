@@ -2672,12 +2672,15 @@ Sometimes you might get cryptic and strange error messages from the
 compiler. Since *Cgreen* uses some C/C++ macro magic this can happen
 and the error messages might not be straight forward to interpret.
 
+Here are some examples, but the exact messages differ between compilers
+and versions.
+
 |=========================================================
 |*Compiler error message*                    |*Probable cause...*
-|`"contextFor<X>" is undeclared here`        | Missing `BeforeEach(<X>)`
+|`"contextFor<X>" is undeclared here`        | Missing `Describe(<X>);`
 |`undefined reference to 'AfterEach_For_<X>'`| Missing `AfterEach(<X>)`
 |`CgreenSpec__<X>__<Y>__ is undeclared`      | Missing test subject/context in the `Ensure` of a BDD style test
-|`use of undeclared identifier 'contextFor<X>'` | Missing `Describe(<X>)`
+|`use of undeclared identifier 'contextFor<X>'` | Missing `Describe(<X>);`
 |=========================================================
 
 
