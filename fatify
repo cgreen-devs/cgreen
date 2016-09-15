@@ -1,0 +1,45 @@
+#! /bin/sh
+#
+# This script is a part of Cgreen and creates fat versions of cgreen-runner and libcgreen.dylib
+# which is necessary if you are using e.g. MacPorts gcc which don't have suppport for fat binaries
+# built in.
+#
+# It ensures that both architectures are built, saving them under descriptive names and then
+# uses lipo to merge them into fat binaries.
+#
+# At this point there is no way to run this as part of the CMake build and install, and as
+# the install target always rebuilds you can't install them except with manual copying.
+#
+# /thoni56
+#
+function buildfor() {
+    cmake -DCMAKE_OSX_ARCHITECTURES=$1 ..
+    make
+    cp tools/cgreen-runner tools/cgreen-runner.$1
+    cp src/libcgreen.dylib src/libcgreen.$1.dylib
+}
+
+# Ensure there is at least a build directory
+if [ ! -d "build" ]; then
+   mkdir build
+fi
+cd build
+
+buildfor i386
+buildfor x86_64
+
+lipo -create -o tools/cgreen-runner.fat -arch i386 tools/cgreen-runner.i386 -arch x86_64 tools/cgreen-runner.x86_64
+lipo -create -o src/libcgreen.dylib.fat -arch i386 src/libcgreen.i386.dylib -arch x86_64 src/libcgreen.x86_64.dylib
+
+if [ -z "$1" ]; then
+   echo "Fat binaries build for build/tools/cgreen-runner and build/src/libcgreen.dylib"
+   echo "Install with:"
+   echo "    sudo cp build/tools/cgreen-runner.fat <target>/bin/cgreen-runner"
+   echo "    sudo cp src/libcgreen.dylib.fat <target>/lib/libcgreen.dylib"
+   echo
+   echo "If <target> is the same you can give that as an argument next time"
+else
+   echo "Installing in $1..."
+   sudo cp tools/cgreen-runner.fat $1/bin/cgreen-runner
+   sudo cp src/libcgreen.dylib.fat $1/lib/libcgreen.dylib
+fi
