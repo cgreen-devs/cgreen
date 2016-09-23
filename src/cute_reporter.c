@@ -6,6 +6,9 @@
 
 #include "cute_reporter_internal.h"
 
+#ifdef __ANDROID__
+#include "cgreen/internal/android_headers/androidcompat.h"
+#endif // #ifdef __ANDROID__
 
 typedef struct {
     CutePrinter *printer;

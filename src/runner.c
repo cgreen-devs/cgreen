@@ -13,6 +13,10 @@
 
 #include "runner.h"
 
+#ifdef __ANDROID__
+#include "cgreen/internal/android_headers/androidcompat.h"
+#endif // #ifdef __ANDROID__
+
 #ifdef __cplusplus
 #include <stdexcept>
 
