@@ -2,7 +2,9 @@
 #define _GNU_SOURCE
 #endif
 
+#ifndef __ANDROID__
 #include "config.h"
+#endif // #ifdef __ANDROID__
 #include "runner.h"
 #include "cgreen/internal/runner_platform.h"
 #include <stdio.h>
