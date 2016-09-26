@@ -63,6 +63,7 @@ else(UNIX)
   if(WIN32)
     LIST(APPEND cgreen_SRCS 
       win32_cgreen_pipe.c
+      win32_cgreen_time.c
       win32_runner_platform.c
     )
   else(WIN32)

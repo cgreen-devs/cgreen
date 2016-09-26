@@ -4,6 +4,7 @@
 #include "cgreen/internal/runner_platform.h"
 #include "cgreen/messaging.h"
 #include "wincompat.h"
+#include "cgreen/internal/cgreen_time.h"
 
 #ifdef __cplusplus
 namespace cgreen {
@@ -13,7 +14,6 @@ namespace cgreen {
 #include "Strsafe.h"
 #define SECOND  (1000)
 static void run_named_test_child(TestSuite *suite, const char *name, TestReporter *reporter);
-static void run_test_in_its_own_process_child(TestSuite *suite, CgreenTest *test, TestReporter *reporter);
 
 
 static void CALLBACK stop(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
@@ -58,8 +58,15 @@ static void run_named_test_child(TestSuite *suite, const char *name, TestReporte
             //can control the printf that occurs in the first one.
             //This may have undesireable side effects.  Not sure of the best solution
             (*reporter->start_suite)(reporter, newSuite->name, count_tests(newSuite));
+
+            uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
+
             run_named_test_child(newSuite, name, reporter);
-            (*reporter->finish_suite)(reporter, newSuite->filename, newSuite->line);
+
+            uint32_t test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
+                                                                          cgreen_time_get_current_milliseconds());
+
+            (*reporter->finish_suite)(reporter, newSuite->filename, newSuite->line, test_duration);
             (*suite->teardown)();
         }
     }
@@ -77,9 +84,16 @@ void run_specified_test_if_child(TestSuite *suite, TestReporter *reporter){
         //reporter start and finish in order to avoid extraneous prints to the console,
         //but this may cause problems for other types of reporters.  Not sure the
         //best solution for this.
-        reporter_start(reporter, testName);  //add breadcrumb without triggering output to console
+        reporter_start_test(reporter, testName);  //add breadcrumb without triggering output to console
+
+        uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
+
         run_named_test_child(suite, testName, reporter);
-        reporter_finish(reporter, suite->filename, suite->line, NULL);
+
+        uint32_t test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
+                                                                      cgreen_time_get_current_milliseconds());
+
+        reporter_finish_test(reporter, suite->filename, suite->line, NULL, test_duration);
 
         return; //never happens because we call stop inside run_named_test_child
     }
@@ -151,11 +165,18 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
     AddEnvironmentVariable(p_environment, CGREEN_TEST_TO_RUN, test->name);
 
     (*reporter->start_test)(reporter, test->name);
+
+    uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
+
     //success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW , p_environment, NULL, &siStartupInfo, &piProcessInfo);
     success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS , p_environment, NULL, &siStartupInfo, &piProcessInfo);
     dispose_environment(p_environment);
     WaitForSingleObject(piProcessInfo.hProcess,INFINITE);
-    (*reporter->finish_test)(reporter, test->filename, test->line, NULL);
+
+    uint32_t test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
+                                                                  cgreen_time_get_current_milliseconds());
+
+    (*reporter->finish_test)(reporter, test->filename, test->line, NULL, test_duration);
 
     return;
 }

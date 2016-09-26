@@ -9,7 +9,9 @@
 
 typedef int pid_t;
 
-#define snprintf sprintf_s
+#if _MSC_VER < 1900
+   #define snprintf sprintf_s
+#endif
 
 #define sleep(x) Sleep(x*1000)
 #define mkdir(x,y) _mkdir(x)
