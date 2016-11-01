@@ -62,7 +62,7 @@ if (UNIX)
 
     check_c_compiler_flag("-D_FORTIFY_SOURCE=2" WITH_FORTIFY_SOURCE)
     if (WITH_FORTIFY_SOURCE)
-      add_definitions(-D_FORTIFY_SOURCE=2)
+      add_definitions(-D_FORTIFY_SOURCE=2 -O)
     endif (WITH_FORTIFY_SOURCE)
   endif (CMAKE_COMPILER_IS_GNUCC OR COMPILER_IS_CLANG)
 endif (UNIX)
