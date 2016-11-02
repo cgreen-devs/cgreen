@@ -64,7 +64,10 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
     (*reporter->start_suite)(reporter, suite->name, count_tests(suite));
     for (i = 0; i < suite->size; i++) {
         if (suite->tests[i].type == test_function) {
-            run_test_in_its_own_process(suite, suite->tests[i].Runnable.test, reporter);
+            if (getenv("CGREEN_NO_FORK") == NULL)
+                run_test_in_its_own_process(suite, suite->tests[i].Runnable.test, reporter);
+            else
+                run_test_in_the_current_process(suite, suite->tests[i].Runnable.test, reporter);
         } else {
             (*suite->setup)();
             run_every_test(suite->tests[i].Runnable.suite, reporter);
