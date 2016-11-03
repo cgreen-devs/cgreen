@@ -267,15 +267,6 @@ test from bringing the whole program down with it. It also ensures
 that one test cannot leave any state to the next, thus forcing you to
 setup the prerequisites for each test correctly and clearly.
 
-But if you want to debug any of your tests the constant `fork()`-ing
-can make that difficult or impossible. To make debugging simpler,
-*Cgreen* does not `fork()` when only a single test is run by name with
-the function `run_single_test()`. And if you want to debug, you can
-obviously set a breakpoint at that test (but note that its actual name
-probably have been mangled). But since *Cgreen* does some book-keeping
-before actually getting to the test, a better function is the one
-simply called `run()`.
-
 Building this scaffolding...
 
 -------------------------------
@@ -441,9 +432,9 @@ The function under test is the `words()` function and we want to make
 sure it walks the sentence correctly, dispatching individual words as
 it goes. So what calls are made are very important. How to test this?
 
-Let's start with a one word sentence. In this case we would expect the
-callback to be invoked once with the only word, right? Here is the
-test for that...
+Let's start with a one word sentence. In this case we would expect 
+the callback to be invoked once with the only word, right? Here is 
+the test for that...
 
 [source,c]
 ---------------------------------
@@ -456,16 +447,16 @@ include::tutorial_src/words_tests3.c[lines=41..-1]
 
 What is the funny looking `mock()` function?
 
-A mock is basically a programmable object. In C objects are limited to
-functions, so this is a mock function. The macro `mock()` compares the
-incoming parameters with any expected values and dispatches messages
-to the test suite if there is a mismatch. It also returns any values
-that have been preprogrammed in the test.
+A mock is basically a programmable object. In C objects are limited 
+to functions, so this is a mock function. The macro `mock()` compares
+the incoming parameters with any expected values and dispatches 
+messages to the test suite if there is a mismatch. It also returns 
+any values that have been preprogrammed in the test.
  
 The test is `invokes_callback_once_for_single_word_sentence()`. It
 programs the mock function using the `expect()` macro. It expects a
-single call, and that single call should use the parameters `"Word"` and
-`NULL`. If they don't match, we will get a test failure.
+single call, and that single call should use the parameters `"Word"` 
+and `NULL`. If they don't match, we will get a test failure.
 
 So when the code under test (our `words()` function) calls the
 injected `mocked_callback()` it in turn will call `mock()` with the
@@ -474,7 +465,8 @@ actual parameters.
 Of course, we don't add the mock callback to the test suite, it's not
 a test.
 
-For a successful compile and link, the `words.h` file must now look like...
+For a successful compile and link, the `words.h` file must now look 
+like...
 
 [source,c]
 ----------------------------
@@ -494,8 +486,8 @@ This gives us the expected failing test...
 include::tutorial_src/words6.out[]
 ----------------------------
 
-*Cgreen* reports that the callback was never invoked. We can easily get
-the test to pass by filling out the implementation with...
+*Cgreen* reports that the callback was never invoked. We can easily 
+get the test to pass by filling out the implementation with...
 
 [source,c]
 ----------------------------
@@ -519,8 +511,8 @@ add to `words_test.c`...
 include::tutorial_src/words_tests4.c[lines=37..43]
 ----------------------------
 
-Each call is expected in sequence. Any failures, or left-over or extra
-calls, and we get failures. We can see all this when we run the
+Each call is expected in sequence. Any failures, or left-over or 
+extra calls, and we get failures. We can see all this when we run the
 tests...
 
 ----------------------------
@@ -548,9 +540,9 @@ include::tutorial_src/words9.out[]
 
 More work than I like to admit as it took me three goes to get this
 right. I firstly forgot the `+ 1` added on to `strlen()`, then forgot
-to swap `sentence` for `word` in the `(*callback)()` call, and finally
-third time lucky. Of course running the tests each time made these
-mistakes very obvious. It's taken me far longer to write these
+to swap `sentence` for `word` in the `(*callback)()` call, and 
+finally third time lucky. Of course running the tests each time made 
+these mistakes very obvious. It's taken me far longer to write these
 paragraphs than it has to write the code.
 
 
@@ -558,13 +550,45 @@ paragraphs than it has to write the code.
 
 The above example, as well as most of this guide, shows how to uses
 *CGreen* with C. You can also use *CGreen* with C++. This is actually
-quite simple. If you have installed the *Cgreen* library for C{pp} all you
-have to do is
+quite simple. If you have installed the *Cgreen* library for C{pp} 
+all you have to do is
 
-  * Use the `cgreen` name space by adding `using namespace cgreen;` at
-    the beginning of the file with your tests
+  * Use the `cgreen` name space by adding `using namespace cgreen;`
+    at the beginning of the file with your tests
 
-There is also one extra feature when you use C++, the `assert_throws` function.
+There is also one extra feature when you use C++, the `assert_throws`
+function.
+
+
+=== No fork, please
+
+*Cgreen* protects itself from being torn down by an exception in a
+test by `fork()`-ing each test into a separate process. A
+catastrophic error will then only affect the child process and 
+*Cgreen* can catch it, rather than crashing too. It can then report 
+the exception and continue with the next test.
+
+If you want to debug any of your tests the constant `fork()`-ing
+might make that difficult or impossible. There are also other 
+circumstances that might require that you don't use `fork()`.
+
+There are two ways to make *Cgreen* refrain from `fork()`-ing.
+
+*Cgreen* does not `fork()` when only a single test is run by name 
+with the function `run_single_test()`. To debug you can obviously set
+a breakpoint at that test (but note that its actual name probably 
+have been mangled). But since *Cgreen* does some book-keeping before 
+actually getting to the test, a better function is the one simply 
+called `run()`.
+
+The second way is to define the environment variable 
+`CGREEN_NO_FORK`. If *Cgreen* can get that variabel from the 
+environment using `getenv()` it will run the test(s) in the same 
+process.
+
+NOTE: This might bring your whole test suite down if a single test 
+causes an exception. So it is not a recommended setting for normal 
+use.
 
 
 
@@ -573,10 +597,10 @@ There is also one extra feature when you use C++, the `assert_throws` function.
 *Cgreen* is a tool for building unit tests in the C or C++
 languages. These are usually written alongside the production code by
 the programmer to prevent bugs. Even though the test suites are
-created by software developers, they are intended to be human readable
-C code, as part of their function is an executable specification.
-Used in this way, the test harness delivers constant quality
-assurance.
+created by software developers, they are intended to be human 
+readable C code, as part of their function is an executable 
+specification. Used in this way, the test harness delivers constant 
+quality assurance.
 
 In other words you'll get less bugs.
 
@@ -606,15 +630,16 @@ long as it fullfills the rules for an identifier in C and C++. A
 typical way to choose the named of the tests is what we see here,
 reading the declaration of the test makes sense since it is almost
 plain english, "Ensure strlen returns five for 'hello'". No problem
-understanding what we aim to test, or in TDD lingo, test drive. And it
-can be viewed as an example from a description of what strlen should
-be able to do. In a way, extracting all the `Ensure`:s from your test
-might give you all the documentation you'll need.
+understanding what we aim to test, or in TDD lingo, test drive. And 
+it can be viewed as an example from a description of what strlen 
+should be able to do. In a way, extracting all the `Ensure`:s from 
+your test might give you all the documentation you'll need.
 
-The call to `assert_that()` is the primary part of an assertion, which
-is complemented with a constraint, in this case `is_equal_to()`, as a
-parameter. This makes a very fluent interface to the asserts, that
-actually reads like English. The general format is then
+The call to `assert_that()` is the primary part of an assertion, 
+which is complemented with a constraint, in this case 
+`is_equal_to()`, as a parameter. This makes a very fluent interface 
+to the asserts, that actually reads like English. The general format 
+is then
 
 [source, C]
 ---------------
@@ -636,7 +661,7 @@ Here are the standard constraints...
 |=========================================================
 |*Constraint* |*Passes if actual value/expression...*
 | _Basic_ | 
-| `is_true` | evaluates to true, buy you can also just leave out the constraint, like in `assert_that(actual)` if `actual` is of boolean type
+| `is_true` | evaluates to true, buy you can also just leave out the constraint, e.g. `assert_that(found)` if `found` is of boolean type
 | `is_false` | evaluates to false
 | `is_null` | equals null
 | `is_non_null` | is a non null value
@@ -674,15 +699,17 @@ The boolean assertion macros accept an `int` value. The equality
 assertions accept anything that can be cast to `intptr_t` and simply
 perform an `==` operation. The string comparisons are slightly
 different in that they use the `<string.h>` library function
-`strcmp()`.  If you use `is_equal_to()` with `char *` pointers then it is the value of the pointers themselves that has to be the same, i.e. the
-pointers have to point at the same string for the test to pass.
+`strcmp()`.  If you use `is_equal_to()` with `char *` pointers then 
+it is the value of the pointers themselves that has to be the same, 
+i.e. the pointers have to point at the same string for the test to 
+pass.
 
 A cautionary note about the constraints is that you cannot use C/C++
 string literal concatenation (like `"don't" "use" "string"
-"concatenation"`) in the parameters to the constraints. If you do, you
-will get weird error messages about missing arguments to the
-constraint macros. This is caused by the macros using argument strings
-to produce nice failure messages.
+"concatenation"`) in the parameters to the constraints. If you do, 
+you will get weird error messages about missing arguments to the
+constraint macros. This is caused by the macros using argument 
+strings to produce nice failure messages.
 
 
 === Asserting C++ Exceptions
@@ -698,9 +725,10 @@ When you use *CGreen* with C++ there is one extra assertion available:
 === BDD Style vs. TDD Style
 
 So far we have encouraged the modern BDD style. It has merits that we
-really want you to benefit from. But you might come across *Cgreen* test in 
-another style, more like the standard TDD style, which is more inline with 
-previous thinking and might be more similar to other frameworks.
+really want you to benefit from. But you might come across *Cgreen* 
+test in another style, more like the standard TDD style, which is 
+more inline with previous thinking and might be more similar to other
+frameworks.
 
 The only difference, in principle, is the use of the SUT or
 'context'. In the BDD style you have it, in the TDD style you don't.
