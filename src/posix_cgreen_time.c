@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#ifdef __ANDROID__
+#include "cgreen/internal/android_headers/androidcompat.h"
+#endif // #ifdef __ANDROID__
+
 #if defined(__FreeBSD__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
 #  include <sys/time.h>
 #  define HAVE_GETTIMEOFDAY 1

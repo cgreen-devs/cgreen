@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
-#include <cgreen/memory.h>
+// memory.h now co-located w/.c file
+//#include <cgreen/memory.h>
+#include "memory.h"
 
 #ifdef __cplusplus
 namespace cgreen {

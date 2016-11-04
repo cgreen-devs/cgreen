@@ -8,6 +8,9 @@
 #include <cgreen/text_reporter.h>
 #include "text_reporter_internal.h"
 
+#ifdef __ANDROID__
+#include "cgreen/internal/android_headers/androidcompat.h"
+#endif // #ifdef __ANDROID__
 
 #define GREEN "\x1b[32m"
 #define YELLOW "\x1b[33m"
@@ -184,7 +187,12 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
     memo->depth = 0;
     walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb, memo);
     memo->printer("\n\t");
-    vsprintf(buffer, (message == NULL ? "<FATAL: NULL for failure message>" : message), arguments);
+    // Simplify *printf statements for more robust cross-platform logging
+    if (message == NULL) {
+        vsprintf(buffer, "<FATAL: NULL for failure message>", arguments);
+    } else {
+        vsprintf(buffer, message, arguments);
+    }
     memo->printer(buffer);
     memo->printer("\n");
     memo->printer("\n");

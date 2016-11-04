@@ -6,6 +6,10 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+#ifdef __ANDROID__
+#include "cgreen/internal/android_headers/androidcompat.h"
+#endif // #ifdef __ANDROID__
+
 #ifndef O_NONBLOCK
 #    error "Your platform does not support POSIX ASYNC pipe reads. Please report a bug to http://github.com/cgreen-devs/cgreen/issues"
      /* One way to do it the old way is: ioctl(fd, FIOBIO, &flags); */
