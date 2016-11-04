@@ -1,0 +1,4 @@
+# We install the -dev libs
+cgreen: non-dev-pkg-with-shlib-symlink *
+# Don't really understand the reasoning or reason behind this
+cgreen: package-name-doesnt-match-sonames libcgreen1

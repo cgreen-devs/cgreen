@@ -1,8 +1,6 @@
 #!/usr/bin/make -f
-# Based on the multi2 sample debian/rules file:
-# ---
-# Sample debian/rules that uses debhelper.
-# This file is public domain software, originally written by Joey Hess.
+# Don't really know what of all this is necessary,
+# any help to clean this up is appreciated..
 
 #export DH_VERBOSE=1
 
@@ -22,8 +20,10 @@ configure-stamp:
 		-DLIB_INSTALL_DIR=/usr/lib
 	touch configure-stamp
 
-build: configure build-stamp
-build-stamp: 
+build: build-arch build-indep
+build-arch: build-stamp
+build-indep: build-stamp
+build-stamp: configure
 	$(MAKE) -C $(BUILD)
 ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
 	-(cd $(BUILD) && ctest -DExperimental --force-new-ctest-process -V)
@@ -36,13 +36,12 @@ clean:
 	rm -rf $(BUILD)
 	dh_clean
 
-install: 
 install: build
 	dh_prep
 	dh_installdirs
 
 	$(MAKE) -C $(BUILD) install DESTDIR=$(TARGET)
-	dh_install --sourcedir=$(TARGET) --fail-missing
+	dh_install --sourcedir=$(TARGET) --list-missing
 
 binary-arch: build install
 	dh_installchangelogs
@@ -56,10 +55,10 @@ binary-arch: build install
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
+	dh_lintian
 	dh_md5sums
 	dh_builddeb
 
-binary-indep: build install
 
 binary: binary-indep binary-arch
 .PHONY: configure build clean binary-indep binary-arch binary-common binary
