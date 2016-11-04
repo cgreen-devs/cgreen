@@ -2,7 +2,9 @@
 #define _GNU_SOURCE
 #endif
 
+#ifndef __ANDROID__
 #include "config.h"
+#endif // #ifdef __ANDROID__
 #include "runner.h"
 #include "cgreen/internal/runner_platform.h"
 #include <stdio.h>
@@ -13,6 +15,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <cgreen/internal/cgreen_time.h>
+
+#ifdef __ANDROID__
+#include "cgreen/internal/android_headers/androidcompat.h"
+#endif // #ifdef __ANDROID__
 
 #ifdef __cplusplus
 namespace cgreen {

@@ -8,6 +8,10 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef __ANDROID__
+#include "cgreen/internal/android_headers/androidcompat.h"
+#endif // #ifdef __ANDROID__
+
 #ifdef _MSC_VER
 #include <wincompat.h>
 #endif
