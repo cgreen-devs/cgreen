@@ -560,38 +560,6 @@ There is also one extra feature when you use C++, the `assert_throws`
 function.
 
 
-=== No fork, please
-
-*Cgreen* protects itself from being torn down by an exception in a
-test by `fork()`-ing each test into a separate process. A
-catastrophic error will then only affect the child process and 
-*Cgreen* can catch it, rather than crashing too. It can then report 
-the exception and continue with the next test.
-
-If you want to debug any of your tests the constant `fork()`-ing
-might make that difficult or impossible. There are also other 
-circumstances that might require that you don't use `fork()`.
-
-There are two ways to make *Cgreen* refrain from `fork()`-ing.
-
-*Cgreen* does not `fork()` when only a single test is run by name 
-with the function `run_single_test()`. To debug you can obviously set
-a breakpoint at that test (but note that its actual name probably 
-have been mangled). But since *Cgreen* does some book-keeping before 
-actually getting to the test, a better function is the one simply 
-called `run()`.
-
-The second way is to define the environment variable 
-`CGREEN_NO_FORK`. If *Cgreen* can get that variabel from the 
-environment using `getenv()` it will run the test(s) in the same 
-process.
-
-NOTE: This might bring your whole test suite down if a single test 
-causes an exception. So it is not a recommended setting for normal 
-use.
-
-
-
 == Building Cgreen test suites
 
 *Cgreen* is a tool for building unit tests in the C or C++
@@ -1000,9 +968,9 @@ test suites, *Cgreen* runs every test in its own process.
 
 Just before calling the `BeforeEach()` (or `setup`) function, *Cgreen*
 `fork()`:s. The main process waits for the test to complete normally
-or die. This includes the calling the `AfterEach()`(or `teardown`)
+or die. This includes calling the `AfterEach()`(or `teardown`)
 function, if any. If the test process dies, an exception is reported
-and the main test process carries on.
+and the main test process carries on with the next test.
 
 For example...
 
@@ -1017,9 +985,10 @@ When built and run, this gives...
 include::tutorial_src/crash1.out[]
 -----------------------------
 
-The obvious thing to do now is to fire up the debugger. Unfortunately,
-the constant `fork()`:ing of *Cgreen* can be an extra complication too
-many when debugging. It's enough of a problem to find the bug.
+The normal thing to do in this situation is to fire up the
+debugger. Unfortunately, the constant `fork()`:ing of *Cgreen* can be
+one extra complication too many when debugging. It's enough of a
+problem to find the bug.
 
 To get around this, and also to allow the running of one test at a
 time, *Cgreen* has the `run_single_test()` function. The signatures of
@@ -1038,7 +1007,7 @@ crashing test...
 include::tutorial_src/crash_tests2.c[lines=13..17]
 -----------------------------
 
-When run in this way, *Cgreen* will not `fork()`.
+When run in this way, *Cgreen* will not `fork()`. But see also <<no-fork>>.
 
 TIP: The function `run()` is a good place to place a breakpoint.
 
@@ -1115,6 +1084,40 @@ Another possibility is the use of an environment variable named
 `CGREEN_TIMEOUT_PER_TEST` which, if set to a number will apply that
 timeout to every test run. This will apply to all tests in the same
 run.
+
+
+[[no-fork]
+=== No fork, please
+
+*Cgreen* protects itself from being torn down by an exception in a
+test by `fork()`-ing each test into a separate process. A catastrophic
+error will then only affect the child process for that specific test
+and *Cgreen* can catch it, rather than crashing too. It can then
+report the exception and continue with the next test.
+
+If you want to debug any of your tests the constant `fork()`-ing
+might make that difficult or impossible. There are also other 
+circumstances that might require that you don't use `fork()`.
+
+There are two ways to make *Cgreen* refrain from `fork()`-ing.
+
+*Cgreen* does not `fork()` when only a single test is run by name with
+the function `run_single_test()`. To debug you can then obviously set
+a breakpoint at that test (but note that its actual name probably have
+been mangled). *Cgreen* does some book-keeping before actually getting
+to the test, so a function easier to find might be the one simply
+called `run()`.
+
+The second way is to define the environment variable
+`CGREEN_NO_FORK`. If *Cgreen* can get that variable from the
+environment using `getenv()` it will run the test(s) in the same
+process. In this case the non-forking applies to *all* tests run, so
+all test will run in the same process, namely *Cgreen*s main process.
+
+WARNING: This might bring your whole test suite down if a single test 
+causes an exception. So it is not a recommended setting for normal 
+use.
+
 
 
 === Building Composite Test Suites
