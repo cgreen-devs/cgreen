@@ -1,0 +1,6 @@
+
+@PACKAGE_INIT@
+
+check_required_components("@APPLICATION_NAME@")
+
+

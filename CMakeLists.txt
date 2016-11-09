@@ -98,3 +98,34 @@ ELSE()
   add_custom_target(coverage
       COMMAND echo "WARNING: Configure CGREEN_INTERNAL_WITH_GCOV to get coverage")
 ENDIF()
+
+
+#### Begin cgreen package configuration steps. ####
+
+# After install other CMake projects can
+# use find_package( cgreen )
+
+include(CMakePackageConfigHelpers)
+
+
+set(GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+set(CONFIG_INSTALL_DIR "lib/cmake/${APPLICATION_NAME}")
+set(VERSION_CONFIG "${GENERATED_DIR}/${APPLICATION_NAME}-config-version.cmake")
+set(PROJECT_CONFIG "${GENERATED_DIR}/${APPLICATION_NAME}-config.cmake")
+
+write_basic_package_version_file(
+        "${VERSION_CONFIG}" VERSION ${APPLICATION_VERSION} COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+        "${APPLICATION_NAME}-config.cmake.in"
+        "${PROJECT_CONFIG}"
+        INSTALL_DESTINATION "${CONFIG_INSTALL_DIR}"
+)
+
+install(
+        FILES "${PROJECT_CONFIG}" "${VERSION_CONFIG}"
+        DESTINATION "${CONFIG_INSTALL_DIR}"
+)
+
+#### End cgreen package configuration steps. ####
