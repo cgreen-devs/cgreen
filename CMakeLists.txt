@@ -1,5 +1,5 @@
 # Required cmake version
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 2.8.5)
 set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove when CMake >= 2.8.4 is required
 
 if (NOT(CMAKE_MAJOR_VERSION LESS 3) AND APPLE)
@@ -105,27 +105,30 @@ ENDIF()
 # After install other CMake projects can
 # use find_package( cgreen )
 
-include(CMakePackageConfigHelpers)
+set( CONFIG_INSTALL_DIR
+        "lib/cmake/${APPLICATION_NAME}" )
 
+set( PROJECT_CONFIG_IN
+        "${CMAKE_CURRENT_SOURCE_DIR}/cgreen-config.cmake.in" )
 
-set(GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
-set(CONFIG_INSTALL_DIR "lib/cmake/${APPLICATION_NAME}")
-set(VERSION_CONFIG "${GENERATED_DIR}/${APPLICATION_NAME}-config-version.cmake")
-set(PROJECT_CONFIG "${GENERATED_DIR}/${APPLICATION_NAME}-config.cmake")
+set( VERSION_CONFIG_IN
+        "${CMAKE_CURRENT_SOURCE_DIR}/cgreen-version-config.cmake.in" )
 
-write_basic_package_version_file(
-        "${VERSION_CONFIG}" VERSION ${APPLICATION_VERSION} COMPATIBILITY SameMajorVersion
-)
+set( PROJECT_CONFIG
+        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/cgreen-config.cmake" )
 
-configure_package_config_file(
-        "${APPLICATION_NAME}-config.cmake.in"
-        "${PROJECT_CONFIG}"
-        INSTALL_DESTINATION "${CONFIG_INSTALL_DIR}"
-)
+set( VERSION_CONFIG
+        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/cgreen-version-config.cmake" )
 
-install(
-        FILES "${PROJECT_CONFIG}" "${VERSION_CONFIG}"
-        DESTINATION "${CONFIG_INSTALL_DIR}"
-)
+configure_file( ${PROJECT_CONFIG_IN}
+        "${PROJECT_CONFIG}" @ONLY )
+
+configure_file( ${VERSION_CONFIG_IN}
+        "${VERSION_CONFIG}" @ONLY )
+
+install( FILES
+        "${PROJECT_CONFIG}" "${VERSION_CONFIG}"
+        DESTINATION
+        "${CONFIG_INSTALL_DIR}" )
 
 #### End cgreen package configuration steps. ####
