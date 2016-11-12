@@ -26,10 +26,10 @@ set(c_tests_library_SRCS
   assertion_tests.c
   breadcrumb_tests.c
   cdash_reporter_tests.c
-  constraint_tests.c
-  text_reporter_tests.c
-  cute_reporter_tests.c
   cdash_reporter_tests.c
+  constraint_tests.c
+  cute_reporter_tests.c
+  environment_variables_tests.c
   message_formatting_tests.c
   messaging_tests.c
   mocks_tests.c
@@ -68,25 +68,18 @@ macro_add_test(NAME runner_test_cgreen_c COMMAND cgreen-runner -x TEST ${CMAKE_S
 
 
 # C++ tests, library to use with runner, and a main program
+# NOTE that .cpp-versions should be links to .c-versions so we avoid duplication
+# so we just use the same list and add the CPP-specific tests here
+foreach(c_test_file ${c_tests_library_SRCS})
+  string(REGEX REPLACE "\\.c" ".cpp" cpp_test_file ${c_test_file})
+  list(APPEND cpp_tests_library_SRCS ${cpp_test_file})
+endforeach()
+
 set(cpp_tests_library_SRCS
-  assertion_tests.cpp
-  breadcrumb_tests.cpp
-  cdash_reporter_tests.cpp
-  constraint_tests.cpp
+  ${cpp_tests_library_SRCS} 
   cpp_assertion_tests.cpp
-  cute_reporter_tests.cpp
-  cdash_reporter_tests.cpp
-  message_formatting_tests.cpp
-  messaging_tests.cpp
-  mocks_tests.cpp
-  parameters_tests.cpp
-  reflective_runner_no_teardown_tests.cpp
-  reflective_tests.cpp
-  text_reporter_tests.cpp
-  unit_tests.cpp
-  vector_tests.cpp
-  xml_reporter_tests.cpp
-)
+  )
+
 SET_SOURCE_FILES_PROPERTIES(${cpp_tests_library_SRCS} PROPERTIES LANGUAGE CXX)
 
 set(CGREEN_CPP_TESTS_LIBRARY
