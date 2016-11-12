@@ -1,5 +1,5 @@
 # Required cmake version
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.5)
 set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove when CMake >= 2.8.4 is required
 
 if (NOT(CMAKE_MAJOR_VERSION LESS 3) AND APPLE)
@@ -98,3 +98,37 @@ ELSE()
   add_custom_target(coverage
       COMMAND echo "WARNING: Configure CGREEN_INTERNAL_WITH_GCOV to get coverage")
 ENDIF()
+
+
+#### Begin cgreen package configuration steps. ####
+
+# After install other CMake projects can
+# use find_package( cgreen )
+
+set( CONFIG_INSTALL_DIR
+        "lib/cmake/${APPLICATION_NAME}" )
+
+set( PROJECT_CONFIG_IN
+        "${CMAKE_CURRENT_SOURCE_DIR}/cgreen-config.cmake.in" )
+
+set( VERSION_CONFIG_IN
+        "${CMAKE_CURRENT_SOURCE_DIR}/cgreen-version-config.cmake.in" )
+
+set( PROJECT_CONFIG
+        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/cgreen-config.cmake" )
+
+set( VERSION_CONFIG
+        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/cgreen-version-config.cmake" )
+
+configure_file( ${PROJECT_CONFIG_IN}
+        "${PROJECT_CONFIG}" @ONLY )
+
+configure_file( ${VERSION_CONFIG_IN}
+        "${VERSION_CONFIG}" @ONLY )
+
+install( FILES
+        "${PROJECT_CONFIG}" "${VERSION_CONFIG}"
+        DESTINATION
+        "${CONFIG_INSTALL_DIR}" )
+
+#### End cgreen package configuration steps. ####
