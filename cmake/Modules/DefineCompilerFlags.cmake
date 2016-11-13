@@ -61,7 +61,6 @@ if (UNIX)
     endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
 
     if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-      MESSAGE(NOT ${CMAKE_BUILD_TYPE})
       check_c_compiler_flag("-D_FORTIFY_SOURCE=2" WITH_FORTIFY_SOURCE)
       if (WITH_FORTIFY_SOURCE)
         add_definitions(-D_FORTIFY_SOURCE=2 -O)
