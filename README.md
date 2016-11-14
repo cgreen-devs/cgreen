@@ -52,6 +52,13 @@ In the root directory run ``make``. That will configure and build the
 library and the `cgreen-runner`, both supporting both C and C++. See
 also the documentation.
 
+## Using Cgreen in other CMake projects
+Once Cgreen is installed you can use ``find_package(cgreen)`` in your CMake
+projects to get access to useful variables like ``${CGREEN_LIBRARIES}``,
+``${CGREEN_EXECUTABLE}`` and ``${CGREEN_INCLUDE_DIRS}``. Version can be
+specified in ``find_package`` as well. For example, in order to enforce a minimum
+version of Cgreen in your project use ``find_package(cgreen 1.1.0)``
+
 ## Reading Up!
 
 You can read the extensive tutorial directly on
