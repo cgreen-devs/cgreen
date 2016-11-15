@@ -292,13 +292,5 @@ TestSuite *mock_tests() {
     add_test_with_context(suite, Mocks, can_stub_an_out_parameter);
     add_test_with_context(suite, Mocks, string_contains_expectation_is_confirmed);
 
-    /* expected failures. TODO: put these in a separate suite, as per comments above. */
-/*  add_test_with_context(suite, Mocks, failure_reported_when_expect_after_always_expect_for_same_function);
-    add_test_with_context(suite, Mocks, single_uncalled_expectation_fails_tally);
-    add_test_with_context(suite, Mocks, can_declare_function_never_called);
-    add_test_with_context(suite, Mocks, failure_reported_when_expect_after_never_expect_for_same_function);
-    add_test_with_context(suite, Mocks, failure_when_no_presets_for_default_strict_mock);
-    add_test_with_context(suite, Mocks, calls_beyond_expected_sequence_fail_when_mocks_are_strict);
-*/
     return suite;
 }
