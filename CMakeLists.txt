@@ -111,13 +111,13 @@ set( PROJECT_CONFIG_IN
         "${CMAKE_CURRENT_SOURCE_DIR}/cgreen-config.cmake.in" )
 
 set( VERSION_CONFIG_IN
-        "${CMAKE_CURRENT_SOURCE_DIR}/cgreen-version-config.cmake.in" )
+        "${CMAKE_CURRENT_SOURCE_DIR}/cgreen-config-version.cmake.in" )
 
 set( PROJECT_CONFIG
         "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/cgreen-config.cmake" )
 
 set( VERSION_CONFIG
-        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/cgreen-version-config.cmake" )
+        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/cgreen-config-version.cmake" )
 
 configure_file( ${PROJECT_CONFIG_IN}
         "${PROJECT_CONFIG}" @ONLY )
