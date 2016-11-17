@@ -79,10 +79,10 @@ unit: build-it
 
 .PHONY: doc
 doc: build
-	cd build; cmake -DWITH_HTML:bool=TRUE ..; make; cmake -DWITH_HTML:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.html
+	cd build; cmake -DCGREEN_WITH_HTML_DOCS:bool=TRUE ..; make; cmake -DCGREEN_WITH_HTML_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.html
 
 pdf: build
-	cd build; cmake -DWITH_PDF:bool=TRUE ..; make; cmake -DWITH_PDF:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.pdf
+	cd build; cmake -DCGREEN_WITH_PDF_DOCS:bool=TRUE ..; make; cmake -DCGREEN_WITH_PDF_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.pdf
 
 
 

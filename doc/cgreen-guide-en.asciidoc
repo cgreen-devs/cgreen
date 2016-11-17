@@ -1086,7 +1086,7 @@ timeout to every test run. This will apply to all tests in the same
 run.
 
 
-[[no-fork]
+[[no-fork]]
 === No fork, please
 
 *Cgreen* protects itself from being torn down by an exception in a

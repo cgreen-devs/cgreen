@@ -70,14 +70,14 @@ configuration. Of course you need
 [Asciidoctor](http://www.asciidoctor.org).
 
 Navigate to the ``build`` directory. You need to add the
-``WITH_HTML`` and/or ``WITH_PDF`` option:
+``CGREEN_WITH_HTML_DOCS`` and/or ``CGREEN_WITH_PDF_DOCS`` option:
 
-    cmake -DWITH_HTML:bool=ON ..
+    cmake -DCGREEN_WITH_HTML_DOCS:bool=ON ..
 
 Run ``make``. For example
 
     cd build
-    cmake -DWITH_HTML:bool=ON -DWITH_PDF:bool=ON ..
+    cmake -DCGREEN_WITH_HTML_DOCS:bool=ON -DCGREEN_WITH_PDF_DOCS:bool=ON ..
     make
 
 ## License
@@ -88,7 +88,7 @@ license. If there is no licence agreement with this package please
 download a version from the location above. You must read and accept
 that licence to use this software. The file is titled simply LICENSE.
 
-## The Original, Longer Version
+## The Original Version
 
 What is it? It's a framework for unit testing, written in C. A tool
 for C developers writing tests of their own code.
@@ -112,8 +112,8 @@ The other main extra feature is the support for writing mock
 callbacks. This includes generating sequences for return values
 or parameter expectations.
 
-Feedback, queries and request should be put to the cgreen developers through
-https://github.com/cgreen-devs/cgreen.
+Feedback, queries and request should be put to the cgreen developers
+through https://github.com/cgreen-devs/cgreen.
 
 This tool is basically a spin off from a research project at
 Wordtracker and would not have happened without the generous
@@ -121,5 +121,5 @@ financial support of the Wordtracker keyword tool...
 http://www.wordtracker.com/
 
 Substantial inital work by Marcus Baker <marcus@lastcraft.com>. Recent
-additions by Matt Hargett <matt@use.net>, Thomas Nilsson
+additions by Matt Hargett <matt@use.net>, Thomas Nilefalk
 <thomas@junovagen.se>, João Freitas <joaohf@gmail.com> and others.
