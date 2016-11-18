@@ -20,6 +20,7 @@ Constraint static_is_non_null_constraint = {
     /* .actual_value_message */ "",
     /* .expected_value_message */ "",
     /* .stored_value */ (intptr_t)NULL,
+    /* .cgreen_value */ {INTEGER, {0}},
     /* .stored_value_name */ "null",
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
@@ -35,6 +36,7 @@ Constraint static_is_null_constraint = {
     /* .actual_value_message */ "",
     /* .expected_value_message */ "",
     /* .stored_value */ (intptr_t)NULL,
+    /* .cgreen_value */ {INTEGER, {NULL}},
     /* .stored_value_name */ "null",
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
@@ -50,6 +52,7 @@ Constraint static_is_false_constraint = {
     /* .actual_value_message */ "",
     /* .expected_value_message */ "",
     /* .stored_value */ false,
+    /* .cgreen_value */ {INTEGER, {false}},
     /* .stored_value_name */ "false",
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
@@ -65,6 +68,7 @@ Constraint static_is_true_constraint = {
     /* .actual_value_message */ "",
     /* .expected_message */ "",
     /* .stored_value */ true,
+    /* .cgreen_value */ {INTEGER, {true}},
     /* .stored_value_name */ "true",
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0

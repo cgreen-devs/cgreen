@@ -120,7 +120,7 @@ foreach(case
     unit
     vector
     xml_reporter
-)
+  )
   set(${case}_tests_SRCS
       ${case}_tests.c
   )

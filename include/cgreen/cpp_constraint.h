@@ -49,7 +49,7 @@ void test_want_value(CppConstraint<T> *constraint, const char *function, T actua
 #include <stdlib.h>
 // TODO: add create_equal_to_constraint_<T> where operator<< output is used for expected_value name
 template<typename T>
-CppConstraint<T> *create_equal_to_value_constraint(T expected_value, const char *expected_value_name) {
+CppConstraint<T> *create_equal_to_value_constraint(CgreenValue cgreen_value, T expected_value, const char *expected_value_name) {
     CppConstraint<T> *constraint;// = create_cpp_constraint<T>();
     constraint = new CppConstraint<T>();
     constraint->type = VALUE_COMPARER;
