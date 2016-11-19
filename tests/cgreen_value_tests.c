@@ -1,6 +1,6 @@
 #include <cgreen/cgreen.h>
 
-#include "include/cgreen/cgreen_value.h"
+#include "cgreen_value_internal.h"
 
 #ifdef __cplusplus
 using namespace cgreen;

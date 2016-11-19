@@ -19,6 +19,8 @@
 #include "cgreen/internal/android_headers/androidcompat.h"
 #endif // #ifdef __ANDROID__
 
+#include "cgreen_value_internal.h"
+
 #ifdef _MSC_VER
 #include "wincompat.h"
 #endif
