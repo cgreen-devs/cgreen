@@ -71,8 +71,10 @@ macro_add_test(NAME runner_test_cgreen_c COMMAND cgreen-runner -x TEST ${CMAKE_S
 # NOTE that .cpp-versions should be links to .c-versions so we avoid duplication
 # so we just use the same list and add the CPP-specific tests here
 foreach(c_test_file ${c_tests_library_SRCS})
-  string(REGEX REPLACE "\\.c" ".cpp" cpp_test_file ${c_test_file})
-  list(APPEND cpp_tests_library_SRCS ${cpp_test_file})
+  if (NOT c_test_file STREQUAL "cgreen_value_tests.c")
+    string(REGEX REPLACE "\\.c" ".cpp" cpp_test_file ${c_test_file})
+    list(APPEND cpp_tests_library_SRCS ${cpp_test_file})
+  endif()
 endforeach()
 
 set(cpp_tests_library_SRCS
@@ -108,6 +110,7 @@ foreach(case
     assertion
     breadcrumb
     cdash_reporter
+    cgreen_value
     constraint
     cute_reporter
     message_formatting
