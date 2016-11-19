@@ -72,6 +72,7 @@ macro_add_test(NAME runner_test_cgreen_c COMMAND cgreen-runner -x TEST ${CMAKE_S
 # so we just use the same list and add the CPP-specific tests here
 foreach(c_test_file ${c_tests_library_SRCS})
   if (NOT c_test_file STREQUAL "cgreen_value_tests.c")
+    # I can't understand why the cgreen_value_tests cannot run in C++, but don't care right now...
     string(REGEX REPLACE "\\.c" ".cpp" cpp_test_file ${c_test_file})
     list(APPEND cpp_tests_library_SRCS ${cpp_test_file})
   endif()

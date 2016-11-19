@@ -36,7 +36,7 @@ Constraint static_is_null_constraint = {
     /* .actual_value_message */ "",
     /* .expected_value_message */ "",
     /* .stored_value */ (intptr_t)NULL,
-    /* .cgreen_value */ {INTEGER, {NULL}},
+    /* .cgreen_value */ {INTEGER, {(intptr_t)NULL}},
     /* .stored_value_name */ "null",
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
