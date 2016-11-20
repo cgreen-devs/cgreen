@@ -35,6 +35,7 @@ set(cgreen_SRCS
   boxed_double.c
   breadcrumb.c
   cgreen_time.c
+  cgreen_value.c
   constraint.c
   constraint_syntax_helpers.c
   cute_reporter.c

@@ -29,7 +29,7 @@ struct Constraint_ {
     char *(*failure_message)(Constraint *, const char *, intptr_t);
     const char *actual_value_message;
     const char *expected_value_message;
-    CgreenValue expected_cgreen_value; /* Duplication for refactoring of expected_value */
+    CgreenValue expected_value;
     const char *expected_value_name;
 
     /* for PARAMETER constraints */

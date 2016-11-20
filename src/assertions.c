@@ -92,7 +92,7 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
             constraint->expected_value_name,
             get_significant_figures(),
             actual,
-            constraint->expected_cgreen_value.value.double_value);
+            constraint->expected_value.value.double_value);
 
     free(boxed_actual);
     constraint->destroy(constraint);

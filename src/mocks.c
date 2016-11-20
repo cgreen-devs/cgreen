@@ -471,7 +471,7 @@ void print_learned_mocks(void) {
         for (c = 0; c < cgreen_vector_size(expectation->constraints); c++) {
             Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, c);
             fprintf(stderr, ", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name,
-                    constraint->expected_cgreen_value.value.integer_value);
+                    constraint->expected_value.value.integer_value);
         }
         fprintf(stderr, ");\n");
     }
@@ -664,7 +664,7 @@ static CgreenValue stored_result_or_default_for(CgreenVector* constraints) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(constraints, i);
 
         if (constraint->type == RETURN_VALUE) {
-            return constraint->expected_cgreen_value;
+            return constraint->expected_value;
         }
     }
 

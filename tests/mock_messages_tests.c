@@ -50,6 +50,23 @@ Ensure(Mocks, calls_beyond_expected_sequence_fail_when_mocks_are_strict) {
     assert_that(integer_out(), is_equal_to(3));
 }
 
+// These are tentative solutions to mocks returning doubles and
+// trapping type errors when they do.
+
+/* xEnsure(Mocks, traps_double_return_value_for_int_mock) { */
+/*     expect(integer_out, will_return_double(3.1415926)); */
+/*     integer_out(); */
+/* } */
+
+/* static double double_out() { */
+/*     return mock_double(); */
+/* } */
+
+/* xEnsure(Mocks, traps_int_return_value_for_double_mock) { */
+/*     expect(double_out, will_return_double(3.1415926)); */
+/*     assert_that(double_out(), is_equal_to_double(3.1415926)); */
+/* } */
+
 Ensure(Mocks, failure_when_no_presets_for_default_strict_mock) {
     assert_that(integer_out(), is_equal_to(0));
 }
