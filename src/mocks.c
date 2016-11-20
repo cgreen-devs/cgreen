@@ -45,7 +45,7 @@ void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestRepor
 RecordedExpectation *find_expectation(const char *function);
 void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter);
 void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter);
-intptr_t stored_result_or_default_for(CgreenVector* constraints);
+static CgreenValue stored_result_or_default_for(CgreenVector* constraints);
 int number_of_parameter_constraints_in(const CgreenVector* constraints);
 static int number_of_parameters_in(const char *parameter_list);
 bool is_always_call(RecordedExpectation* expectation);
@@ -128,7 +128,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     int failures_before_read_only_constraints_executed;
     int failures_after_read_only_constraints_executed;
     int i;
-    intptr_t stored_result;
+    CgreenValue stored_result;
     RecordedExpectation *expectation = find_expectation(function);
 
     va_start(actuals, parameters);
@@ -154,6 +154,9 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     cgreen_vector_add(successfully_mocked_calls, (void*)function);
 
     stored_result = stored_result_or_default_for(expectation->constraints);
+    // FIXME: Should verify that return value is not a DOUBLE as `mock_()' can not
+    // return them. There should also be a 'mock_double_()' which does the same except
+    // returning a double.
 
     for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
@@ -168,7 +171,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
             destroy_cgreen_vector(actual_values);
             destroy_cgreen_vector(parameter_names);
 
-            return stored_result;
+            return stored_result.value.integer_value;
         }
     }
 
@@ -199,7 +202,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
 
     destroy_expectation_if_time_to_die(expectation);
 
-    return stored_result;
+    return stored_result.value.integer_value;
 }
 
 
@@ -452,7 +455,7 @@ void print_learned_mocks(void) {
     int e, c, i = 0;
     CgreenBreadcrumb *breadcrumb = get_test_reporter()->breadcrumb;
 
-	walk_breadcrumb(breadcrumb, &show_breadcrumb, (void *) &i);
+    walk_breadcrumb(breadcrumb, &show_breadcrumb, (void *) &i);
     
     fprintf(stderr, ": Learned mocks are\n");
 
@@ -467,7 +470,8 @@ void print_learned_mocks(void) {
         fprintf(stderr, "\texpect(%s", function_name);
         for (c = 0; c < cgreen_vector_size(expectation->constraints); c++) {
             Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, c);
-            fprintf(stderr, ", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name, constraint->expected_value);
+            fprintf(stderr, ", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name,
+                    constraint->expected_cgreen_value.value.integer_value);
         }
         fprintf(stderr, ");\n");
     }
@@ -654,17 +658,17 @@ void apply_any_content_setting_parameter_constraints(RecordedExpectation *expect
     }
 }
 
-intptr_t stored_result_or_default_for(CgreenVector* constraints) {
+static CgreenValue stored_result_or_default_for(CgreenVector* constraints) {
     int i;
     for (i = 0; i < cgreen_vector_size(constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(constraints, i);
 
         if (constraint->type == RETURN_VALUE) {
-            return constraint->expected_value;
+            return constraint->expected_cgreen_value;
         }
     }
 
-    return 0;
+    return (CgreenValue){INTEGER, {0}};
 }
 
 bool is_always_call(RecordedExpectation* expectation) {

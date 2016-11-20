@@ -68,13 +68,13 @@ static char *double_all_percent_signs_in(const char *original)
 }
 
 
-static int find_index_of_difference(char *expected, char *actual, size_t size_to_compare) {
+static int find_index_of_difference(void *expected, void *actual, size_t size_to_compare) {
     char *expectedp = expected;
     char *actualp = actual;
 
     while (size_to_compare--) {
         if (*expectedp++ != *actualp++) {
-            return (int)(actualp - actual);
+            return (int)((void *)actualp - actual);
         }
     }
 
@@ -153,7 +153,7 @@ char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
                 return message;
         }
 
-        if ((void *)constraint->expected_value == NULL) {
+        if (constraint->expected_cgreen_value.value.pointer_value == NULL) {
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
             		null_used_for_actual_message,
                     as_string);
@@ -193,7 +193,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
     snprintf(actual_int_value_string, sizeof(actual_int_value_string) - 1, "%" PRIdPTR, actual_value);
 
     if (values_are_strings_in(constraint)) {
-    	message_size += strlen((char *)constraint->expected_value);
+    	message_size += strlen(constraint->expected_cgreen_value.value.string_value);
     	if (actual_value != (intptr_t)NULL) {
     		message_size += strlen((char *)actual_value);
     	}
@@ -237,7 +237,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
             strcat(message, "\n");
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
                      constraint->expected_value_message,
-                     (const char *)constraint->expected_value);
+                     constraint->expected_cgreen_value.value.string_value);
         }
         /* The final string may have percent characters, so, since it is
            later used in a (v)printf, we have to double them
@@ -252,8 +252,8 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
 
     /* show difference for contents as a position */
     if (is_content_comparing(constraint)) {
-        int difference_index = find_index_of_difference((char *)constraint->expected_value,
-                                                        (char *)actual_value,
+        int difference_index = find_index_of_difference(constraint->expected_cgreen_value.value.pointer_value,
+                                                        (void *)actual_value,
                                                         constraint->size_of_expected_value);
         if (difference_index != -1) {
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
@@ -273,7 +273,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
         strcat(message, "\n");
         snprintf(message + strlen(message), message_size - strlen(message) - 1,
                  constraint->expected_value_message,
-                 constraint->expected_value);
+                 constraint->expected_cgreen_value.value.string_value);
     }
 
     return message;
