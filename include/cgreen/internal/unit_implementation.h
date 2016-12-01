@@ -5,6 +5,8 @@
 #include <cstddef>
 #endif
 
+#include "stringify_token.h"
+
 
 typedef struct {
     const char* name;
@@ -43,20 +45,20 @@ typedef struct {
 
 #define EnsureWithContextAndSpecificationName(skip, contextName, specName, ...) \
     static void contextName##__##specName (void);\
-    CgreenTest spec_name(contextName, specName) = { skip, &contextFor##contextName, #specName, &contextName##__##specName, __FILE__, __LINE__ }; \
+    CgreenTest spec_name(contextName, specName) = { skip, &contextFor##contextName, STRINGIFY_TOKEN(specName), &contextName##__##specName, __FILE__, __LINE__ }; \
     static void contextName##__##specName (void)
 
 extern CgreenContext defaultContext;
 
 #define EnsureWithSpecificationName(skip, specName, ...)   \
     static void specName (void);\
-    CgreenTest spec_name(default, specName) = { skip, &defaultContext, #specName, &specName, __FILE__, __LINE__ }; \
+    CgreenTest spec_name(default, specName) = { skip, &defaultContext, STRINGIFY_TOKEN(specName), &specName, __FILE__, __LINE__ }; \
     static void specName (void)
 
 #define DescribeImplementation(subject) \
         static void setup(void);                \
         static void teardown(void);                                     \
-        static CgreenContext contextFor##subject = { #subject, __FILE__, &setup, &teardown }; \
+        static CgreenContext contextFor##subject = { STRINGIFY_TOKEN(subject), __FILE__, &setup, &teardown }; \
         extern void(*BeforeEach_For_##subject)(void);                   \
         extern void(*AfterEach_For_##subject)(void);                    \
         static void setup(void) {                                       \
