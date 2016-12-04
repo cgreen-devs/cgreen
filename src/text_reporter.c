@@ -193,7 +193,7 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
     } else {
         vsprintf(buffer, message, arguments);
     }
-    memo->printer(buffer);
+    memo->printer("%s", buffer);
     memo->printer("\n");
     memo->printer("\n");
     fflush(NULL);
