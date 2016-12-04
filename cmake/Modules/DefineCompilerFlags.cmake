@@ -12,7 +12,7 @@ if (UNIX)
     # add_compile_options(-Wall -Wextra -Wunused) # only since CMake 2.8.12, so...
     add_definitions(-Wall -Wextra -Wunused)
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -Weffc++")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -Weffc++")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
     if (CGREEN_INTERNAL_WITH_GCOV)
