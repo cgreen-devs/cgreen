@@ -263,6 +263,28 @@ Ensure(Mocks, can_stub_an_out_parameter) {
     assert_that(&local, is_equal_to_contents_of(&actual, sizeof(LargerThanIntptr)));
 }
 
+// function which when mocked will be referred to by preprocessor macro
+static void function_macro_mock() {
+    mock();
+}
+
+#define FUNCTION_MACRO function_macro_mock
+
+Ensure(Mocks, can_mock_a_function_macro) {
+
+    // expect to mock by real function name
+    expect(function_macro_mock);
+
+    function_macro_mock();
+
+    // expect to mock by macro function name
+    expect(FUNCTION_MACRO);
+
+    FUNCTION_MACRO();
+}
+
+#undef FUNCTION_MACRO
+
 
 TestSuite *mock_tests() {
     TestSuite *suite = create_test_suite();

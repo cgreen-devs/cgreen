@@ -10,6 +10,7 @@ set(cgreen_internal_HDRS
   cgreen_time.h
   runner_platform.h
   function_macro.h
+  stringify_token.h
 )
 
 install(

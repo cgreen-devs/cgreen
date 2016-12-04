@@ -2,6 +2,7 @@
 #define MOCKS_HEADER
 
 #include <cgreen/internal/mocks_internal.h>
+#include <cgreen/internal/stringify_token.h>
 #include <cgreen/constraint.h>
 #include <cgreen/reporter.h>
 
@@ -16,9 +17,9 @@ namespace cgreen {
 
    expect(<function>, when(<parameter>, <constraint>), will_return(<value>));
 */
-#define expect(f, ...) expect_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
-#define always_expect(f, ...) always_expect_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
-#define never_expect(f, ...) never_expect_(get_test_reporter(), #f, __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
+#define expect(f, ...) expect_(get_test_reporter(), STRINGIFY_TOKEN(f), __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
+#define always_expect(f, ...) always_expect_(get_test_reporter(), STRINGIFY_TOKEN(f), __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
+#define never_expect(f, ...) never_expect_(get_test_reporter(), STRINGIFY_TOKEN(f), __FILE__, __LINE__, (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
 
 
 #ifdef _MSC_VER

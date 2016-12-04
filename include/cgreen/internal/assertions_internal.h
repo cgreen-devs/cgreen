@@ -7,6 +7,7 @@
 #include "cpp_assertions.h"
 #endif
 #include "c_assertions.h"
+#include "stringify_token.h"
 
 
 #ifdef __cplusplus
@@ -32,7 +33,7 @@ namespace cgreen {
 #define assert_that_NARG(...) ASSERT_THAT_macro_dispatcher(assert_that, __VA_ARGS__)
 
 #define assert_that_expression(expression) \
-        assert_core_(__FILE__, __LINE__, #expression, expression, is_true);
+        assert_core_(__FILE__, __LINE__, STRINGIFY_TOKEN(expression), expression, is_true);
 
 void assert_equal_(const char *file, int line, const char *expression, intptr_t tried, intptr_t expected);
 void assert_not_equal_(const char *file, int line, const char *expression, intptr_t tried, intptr_t expected);
