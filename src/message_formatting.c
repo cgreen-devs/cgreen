@@ -201,19 +201,22 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
 
     message = (char *)malloc(message_size);
 
+    /* if the actual value expression contains '%' we want it to survive the final expansion with
+       arguments that happens in assert_true() */
     actual_value_as_string = double_all_percent_signs_in(actual_string);
 
+    /* expand the constraint with the actual value in string format... */
     snprintf(message, message_size - 1,
              constraint_as_string_format,
              actual_value_as_string,
              constraint->name);
 
-    
     if (no_expected_value_in(constraint)) {
         return message;
     } else
         strcat(message, " ");
 
+    /* expand the expected value string for all assertions that have one... */
     snprintf(message + strlen(message), message_size - strlen(message) - 1,
              expected_value_string_format,
              constraint->expected_value_name);
@@ -247,6 +250,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
         return message;
     }
 
+    /* show difference for contents as a position */
     if (is_content_comparing(constraint)) {
         int difference_index = find_index_of_difference((char *)constraint->expected_value,
                                                         (char *)actual_value,
@@ -259,10 +263,12 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
         return message;
     }
 
+    /* add the actual value */
     snprintf(message + strlen(message), message_size - strlen(message) - 1,
              constraint->actual_value_message,
              actual_value);
 
+    /* add the expected value */
     if (strstr(constraint->name, "not ") == NULL) {
         strcat(message, "\n");
         snprintf(message + strlen(message), message_size - strlen(message) - 1,
