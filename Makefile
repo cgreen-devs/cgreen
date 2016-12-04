@@ -67,15 +67,23 @@ unit: build-it
 	SOURCEDIR=$$PWD/tests/ ; \
 	cd build ; \
 	tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
+	r=$$((r + $$?)) ; \
 	tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_cpp_tests$(SUFFIX)` ; \
+	r=$$((r + $$?)) ; \
 	tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
+	r=$$((r + $$?)) ; \
 	cd tests ; \
 	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,mock) ; \
+	r=$$((r + $$?)) ; \
 	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint) ; \
+	r=$$((r + $$?)) ; \
 	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,assertion) ; \
+	r=$$((r + $$?)) ; \
 	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,ignore) ; \
+	r=$$((r + $$?)) ; \
 	CGREEN_PER_TEST_TIMEOUT=1 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure) ; \
-	cd ../../..
+	r=$$((r + $$?)) ; \
+	exit $$r
 
 .PHONY: doc
 doc: build
