@@ -1,4 +1,9 @@
-Running "assertion_messages_tests" (4 tests)...
+Running "assertion_messages_tests" (5 tests)...
+assertion_messages_tests.c: Failure: AssertionMessage -> for_actual_with_percent 
+	Expected [strlen("%d")] to [equal] [3]
+		actual value:			[2]
+		expected value:			[3]
+
 assertion_messages_tests.c: Failure: AssertionMessage -> for_compare_area_to_null 
 	Wanted to compare contents of [null_pointer] but it had a value of NULL.
 		If you want to explicitly check for null, use the is_null constraint instead.
@@ -16,5 +21,5 @@ assertion_messages_tests.c: Failure: AssertionMessage -> return_value_constraint
 	Got constraint of type [return value],
 		but they are not allowed for assertions, only in mock expectations.
 
-Completed "AssertionMessage": 4 failures in 0ms.
-Completed "assertion_messages_tests": 4 failures in 0ms.
+Completed "AssertionMessage": 5 failures in 0ms.
+Completed "assertion_messages_tests": 5 failures in 0ms.

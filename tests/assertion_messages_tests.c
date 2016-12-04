@@ -33,3 +33,7 @@ Ensure(AssertionMessage, for_compare_null_to_area) {
     char area[100];
     assert_that(NULL, is_equal_to_contents_of(area, 1));
 }
+
+Ensure(AssertionMessage, for_actual_with_percent) {
+    assert_that(strlen("%d"), is_equal_to(3)); /* Actually, it's not but should preserve '%' */
+}
