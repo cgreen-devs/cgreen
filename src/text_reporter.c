@@ -91,10 +91,10 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
     
     reporter_start_test(reporter, name);
     if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 1) {
-        memo->printer("Running \"%s\" (%d tests)%s",
-                      get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb),
-                      number_of_tests,
-                      have_quiet_mode(reporter)?":":"...\n");
+        if (!have_quiet_mode(reporter))
+            memo->printer("Running \"%s\" (%d tests)...\n",
+                          get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb),
+                          number_of_tests);
         fflush(stdout);
     }
 }
@@ -155,8 +155,6 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
 
     if (have_quiet_mode(reporter)) {
         memo->printer(".");
-        if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0)
-            memo->printer("\n");
     } else {
         char buf[1000];
         sprintf(buf, "Completed \"%s\": ", name);
