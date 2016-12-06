@@ -54,7 +54,7 @@ static TextReporterOptions reporter_options;
 
 static void cleanup()
 {
-    if (reporter) destroy_reporter(reporter);
+    if (reporter) reporter->destroy(reporter);
     if (options) free(options);
 }
 
@@ -79,14 +79,14 @@ static char* get_a_suite_name(const char *suite_option, const char *test_library
 /*----------------------------------------------------------------------*/
 static int initialize_option_handling(int argc, const char **argv) {
     options = gopt_sort(&argc, argv, gopt_start(
-                                                gopt_option('x', 
-                                                            GOPT_ARG, 
-                                                            gopt_shorts('x'), 
+                                                gopt_option('x',
+                                                            GOPT_ARG,
+                                                            gopt_shorts('x'),
                                                             gopt_longs("xml")
                                                             ),
-                                                gopt_option('s', 
-                                                            GOPT_ARG, 
-                                                            gopt_shorts('s'), 
+                                                gopt_option('s',
+                                                            GOPT_ARG,
+                                                            gopt_shorts('s'),
                                                             gopt_longs("suite")
                                                             ),
                                                 gopt_option('v',
@@ -171,13 +171,13 @@ int main(int argc, const char **argv) {
 
     atexit(cleanup);
 
-	argc = initialize_option_handling(argc, argv);
+    argc = initialize_option_handling(argc, argv);
 
     if (gopt_arg(options, 'x', &prefix_option))
         reporter = create_xml_reporter(prefix_option);
     else
         reporter = create_text_reporter();
-    
+
     gopt_arg(options, 's', &suite_name_option);
 
     if (gopt_arg(options, 'v', &tmp))
@@ -238,6 +238,9 @@ int main(int argc, const char **argv) {
         fail = run_tests_in_library(suite_name_option, test_name, test_library, verbose, no_run);
         if (fail) any_fail = true;
     }
-    
+
+    if (!gopt_arg(options, 'x', &prefix_option) && reporter_options.quiet_mode)
+        printf("\n");
+
     return any_fail?EXIT_FAILURE:EXIT_SUCCESS;
 }
