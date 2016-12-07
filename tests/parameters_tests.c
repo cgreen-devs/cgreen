@@ -75,6 +75,18 @@ Ensure(can_strip_two_box_doubles_to_leave_original_names) {
     assert_that((const char *)cgreen_vector_get(names, 1), is_equal_to_string("b"));
 }
 
+Ensure(can_strip_argument_and_box_double_to_leave_original_names) {
+    names = create_vector_of_names("a, box_double(b)");
+    assert_that((const char *)cgreen_vector_get(names, 0), is_equal_to_string("a"));
+    assert_that((const char *)cgreen_vector_get(names, 1), is_equal_to_string("b"));
+}
+
+Ensure(can_strip_box_double_and_argument_to_leave_original_names) {
+    names = create_vector_of_names("box_double(a), b");
+    assert_that((const char *)cgreen_vector_get(names, 0), is_equal_to_string("a"));
+    assert_that((const char *)cgreen_vector_get(names, 1), is_equal_to_string("b"));
+}
+
 Ensure(can_strip_d_macro_to_leave_original_name) {
     names = create_vector_of_names("d(a)");
     assert_that((const char *)cgreen_vector_get(names, 0), is_equal_to_string("a"));
