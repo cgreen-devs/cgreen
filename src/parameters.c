@@ -1,6 +1,7 @@
 #include <cgreen/parameters.h>
 #include <cgreen/vector.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -16,8 +17,7 @@ namespace cgreen {
 static char *tokenise_by_commas_and_whitespace(char *list);
 static char *skip_nulls_until(char *pointer, char *pointer_end);
 static char *end_of_token(char *token);
-static char *strip_box_double(char *token);
-static char *strip_d_macro(char *token);
+static char *strip_function_from(char *token, const char *function_name);
 
 static char *stringdup(const char *string) {
     return strcpy((char *)malloc(strlen(string)+1), string);
@@ -42,9 +42,12 @@ CgreenVector *create_vector_of_names(const char *parameters) {
     tokens = tokenise_by_commas_and_whitespace(parameters_to_tokenize);
     token = tokens;
     while (token < tokens + strlen(parameters)) {
-        token = strip_d_macro(strip_box_double(skip_nulls_until(token, parameters_end)));
+        token = skip_nulls_until(token, parameters_end);
+        int length_of_token = strlen(token);
+        token = strip_function_from(token, "box_double");
+        token = strip_function_from(token, "d");
         cgreen_vector_add(names, (void*)stringdup(token));
-        token = end_of_token(token);
+        token += length_of_token;
     }
 
     free(tokens);
@@ -75,19 +78,23 @@ static char *end_of_token(char *token) {
     return token + strlen(token);
 }
 
-static char *strip_box_double(char *token) {
-    if ((strncmp("box_double(", token, 11) == 0) && (*(end_of_token(token) - 1) == ')')) {
-        memmove(token, token + 11, strlen(token) - 11 + 1);
-        *(end_of_token(token) - 1) = '\0';
-    }
-
-    return token;
+static char last_char_of(char *token) {
+    return *(end_of_token(token) - 1);
 }
 
-static char *strip_d_macro(char *token) {
-    if ((strncmp("d(", token, 2) == 0) && (*(end_of_token(token) - 1) == ')')) {
-        memmove(token, token + 2, strlen(token) - 2 + 1);
-        *(end_of_token(token) - 1) = '\0';
+static bool begins_with(char *token, const char *beginning) {
+    return strncmp(beginning, token, strlen(beginning)) == 0;
+}
+
+static void move_parameter_to_beginning_of(char *token, char *function_name, int parameter_length) {
+    memmove(token, token + strlen(function_name) + strlen("("), parameter_length+strlen(")")+1);
+    *(end_of_token(token) - 1) = '\0';
+}
+
+static char *strip_function_from(char *token, const char *function_name) {
+    if (begins_with(token, function_name) && token[strlen(function_name)] == '(' && last_char_of(token) == ')') {
+        int parameter_length = strlen(token) - strlen(function_name) - strlen("()");
+	move_parameter_to_beginning_of(token, function_name, parameter_length);
     }
 
     return token;
