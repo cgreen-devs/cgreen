@@ -16,6 +16,10 @@
 all: build
 	cd build; make
 
+.PHONY:debug
+debug: build
+	cd build; cmake -DCMAKE_BUILD_TYPE:string=Debug ..; make
+
 .PHONY:test
 test: build
 	cd build; make check
