@@ -86,7 +86,7 @@ static bool begins_with(char *token, const char *beginning) {
     return strncmp(beginning, token, strlen(beginning)) == 0;
 }
 
-static void move_parameter_to_beginning_of(char *token, char *function_name, int parameter_length) {
+static void move_parameter_to_beginning_of(char *token, const char *function_name, int parameter_length) {
     memmove(token, token + strlen(function_name) + strlen("("), parameter_length+strlen(")")+1);
     *(end_of_token(token) - 1) = '\0';
 }
