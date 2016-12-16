@@ -159,6 +159,11 @@ set(ignore_messages_library_SRCS ignore_messages_tests.c)
 add_library(${ignore_messages_library} SHARED ${ignore_messages_library_SRCS})
 target_link_libraries(${ignore_messages_library} ${CGREEN_LIBRARY})
 
+set(xml_output_library xml_output_tests)
+set(xml_output_library_SRCS xml_output_tests.c)
+add_library(${xml_output_library} SHARED ${xml_output_library_SRCS})
+target_link_libraries(${xml_output_library} ${CGREEN_LIBRARY})
+
 set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
 
 macro_add_test(
@@ -196,6 +201,13 @@ macro_add_test(NAME ignore_messages
             ignore_messages_tests           # Name
             ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
             ${ignore_messages_library}.expected
+)
+
+macro_add_test(NAME xml_output
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_xml_output_diff
+            xml_output_tests                # Name
+            ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
+            ${xml_output_library}.expected
 )
 
 # add verification that all public api is available as it should

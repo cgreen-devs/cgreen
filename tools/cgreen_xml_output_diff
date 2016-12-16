@@ -1,0 +1,112 @@
+#!/bin/sh
+#
+# Will run the cgreen-runner in directory ../tools
+# on library with name $1 (e.g. 'lib${name}.so')
+# generating XML output that will be compared to
+# sources are in $2 for...
+# ...expected output file name in $3
+# ...and commands to normalize output (in the file normalize_{name}.sed)
+
+# Determine OS
+unameo=`uname -o 1>/dev/null 2>/dev/null; echo $?`
+if [ $unameo -eq 0 ]; then
+    OS=`uname -o`
+else
+    OS=`uname -s`
+fi
+
+# Set up library prefix and extension
+case "$OS" in
+Darwin)
+    prefix=lib
+    extension=dylib
+    ;;
+GNU/Linux)
+    prefix=lib
+    extension=so
+    ;;
+Cygwin)
+    prefix=cyg
+    extension=dll
+    ;;
+*)
+    echo "ERROR: $0 can't handle OS=$OS"
+    exit 2
+    ;;
+esac
+
+# Handle arguments
+if [ $# -ne 3 ]; then
+    echo "ERROR: $0 requires exactly 3 arguments"
+    exit 2
+fi
+
+name=$1; shift 1
+
+sourcedir=$1 ; shift 1
+sourcedir=$(perl -e 'use Cwd "abs_path"; print abs_path(@ARGV[0])' -- "$sourcedir")
+if [ "$OS" = Cygwin ]; then
+    # On my Cygwin I have linked /home to c:/Users so absolute paths don't match what compiler prints
+    sourcedir=`echo $sourcedir | sed -e s#/cygdrive/c/Users#/home#`
+fi
+
+expected=$1 ; shift 1
+
+commandfile=${sourcedir}/normalize_${name}.sed
+
+# Do it!
+if [ -z "$CGREEN_PER_TEST_TIMEOUT" ]; then
+    printf "Comparing output of ${name} to expected: "
+else
+    printf "Comparing output of ${name} to expected with CGREEN_PER_TEST_TIMEOUT=$CGREEN_PER_TEST_TIMEOUT: "
+fi
+
+# Run runner on library store output and error
+../tools/cgreen-runner -x X ${prefix}${name}.${extension} > ${name}.output 2> ${name}.error
+cat ${name}.error >> ${name}.output
+cat X-*.xml >> ${name}.output
+
+tempfile=`mktemp`
+
+# sed commands to normalize...
+# - line numbers in error messages
+echo "s/:[0-9]+:/:/g" > $tempfile
+
+# - timing info
+echo "s/in [0-9]+ms\./in 0ms\./g" >> $tempfile
+
+# - library prefix
+echo s/\".*${name}\"/\"${name}\"/g >> $tempfile
+
+# - source path
+echo s%${sourcedir}/%%g >> $tempfile
+
+cp $tempfile xxx
+
+# Do normalization using the commands in the tempfile and the specified commandfile
+sed -E -f ${tempfile} -f ${commandfile} ${name}.output  > ${name}.output.tmp
+mv ${name}.output.tmp ${name}.output
+
+# Check for color capability
+if test -t 1; then
+    ncolors=$(tput colors)
+
+    if test -n "$ncolors" && test $ncolors -ge 8; then
+        green="$(tput setaf 2)"
+        normal="$(tput sgr0)"
+     fi
+fi
+
+# Compare normalized output to expected
+cmp --silent ${name}.output ${sourcedir}/${expected}
+
+# If not the same, show diff
+rc=$?
+if [ $rc -ne 0 ]
+then
+    echo
+    diff -c ${sourcedir}/${expected} ${name}.output
+else
+    echo ${green}Ok${normal}
+fi
+exit $rc
