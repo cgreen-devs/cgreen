@@ -41,7 +41,8 @@ void setup_reporting(TestReporter *reporter) {
 void set_reporter_options(TestReporter *reporter, void *options) {
     /* We should really copy the options locally to avoid caller to
        free the area, but we don't know the size of it... */
-    reporter->options = options; }
+    reporter->options = options;
+}
 
 TestReporter *create_reporter() {
     CgreenBreadcrumb *breadcrumb;

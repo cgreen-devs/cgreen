@@ -49,7 +49,7 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
                                                                       cgreen_time_get_current_milliseconds());
         const int status = wait_for_child_process();
         if (WIFSIGNALED(status)) {
-            /* a C++ exception generates SIGABRT. Only print our special message for different signals. */
+            /* a C++ exception generates SIGABRT. Only print our special message for other signals. */
             const int sig = WTERMSIG(status);
             if (sig != SIGABRT) {
                 char buf[128];
