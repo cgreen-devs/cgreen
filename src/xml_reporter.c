@@ -221,10 +221,10 @@ static void xml_show_incomplete(TestReporter *reporter, const char *filename, in
 }
 
 
-static void transfer_output_from_child(FILE *tmpfile, XmlPrinter printer, FILE *out) {
+static void transfer_output_from(FILE *tmpfile, XmlPrinter printer, FILE *out) {
     fseek(tmpfile, 0, SEEK_SET);
     char buffer[1000];
-    while (fgets(buffer, 1000, child_output_tmpfile) != NULL)
+    while (fgets(buffer, 1000, tmpfile) != NULL)
         printer(out, buffer);
 }
 
@@ -241,7 +241,7 @@ static void xml_reporter_finish_test(TestReporter *reporter, const char *filenam
         output = NULL;
     }
 
-    transfer_output_from_child(child_output_tmpfile, memo->printer, out);
+    transfer_output_from(child_output_tmpfile, memo->printer, out);
 
     memo->printer(out, indent(reporter));
     memo->printer(out, "</testcase>\n");
