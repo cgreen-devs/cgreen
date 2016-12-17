@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #ifdef __cplusplus
 using namespace cgreen;
@@ -53,7 +54,7 @@ static void setup_xml_reporter_tests() {
     // We can not use setup_reporting() since we are running
     // inside a test suite which needs the real reporting
     // So we'll have to set up the messaging explicitly
-    reporter->ipc = start_cgreen_messaging(666);
+    reporter->ipc = start_cgreen_messaging(667);
 
     clear_output();
     set_xml_reporter_printer(reporter, mocked_printf);
@@ -130,6 +131,7 @@ Ensure(XmlReporter, will_report_finishing_of_suite) {
 
 Ensure(XmlReporter, will_mark_ignored_test_as_skipped) {
     const int line = 666;
+
     reporter->start_suite(reporter, "suite_name", 1);
     reporter->start_test(reporter, "skipped_test_name");
     send_reporter_skipped_notification(reporter);
@@ -143,6 +145,7 @@ Ensure(XmlReporter, will_mark_ignored_test_as_skipped) {
 
 Ensure(XmlReporter, will_report_non_finishing_test) {
     const int line = 666;
+
     reporter->start_suite(reporter, "suite_name", 1);
     reporter->start_test(reporter, "test_name");
     send_reporter_exception_notification(reporter);
