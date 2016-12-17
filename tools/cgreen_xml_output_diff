@@ -66,6 +66,7 @@ fi
 cat ${name}.error >> ${name}.output
 cat X-*.xml >> ${name}.output
 
+cp ${name}.output ${name}.pristine
 tempfile=`mktemp`
 
 # sed commands to normalize...
