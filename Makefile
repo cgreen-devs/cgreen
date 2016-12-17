@@ -77,6 +77,8 @@ unit: build-it
 	tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
 	r=$$((r + $$?)) ; \
 	cd tests ; \
+	../../tools/cgreen_xml_output_diff $(call OUTPUT_DIFF_ARGUMENTS,xml_output) ; \
+	r=$$((r + $$?)) ; \
 	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,mock_messages) ; \
 	r=$$((r + $$?)) ; \
 	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint_messages) ; \
@@ -86,8 +88,6 @@ unit: build-it
 	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,ignore_messages) ; \
 	r=$$((r + $$?)) ; \
 	CGREEN_PER_TEST_TIMEOUT=1 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure_messages) ; \
-	r=$$((r + $$?)) ; \
-	../../tools/cgreen_xml_output_diff $(call OUTPUT_DIFF_ARGUMENTS,xml_output) ; \
 	r=$$((r + $$?)) ; \
 	exit $$r
 
