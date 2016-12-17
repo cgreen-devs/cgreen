@@ -64,7 +64,7 @@ fi
 # Run runner on library store output and error
 ../tools/cgreen-runner -x X ${prefix}${name}.${extension} > ${name}.output 2> ${name}.error
 cat ${name}.error >> ${name}.output
-cat X-*.xml >> ${name}.output
+cat X-*${name}.xml X-*${name}-default.xml >> ${name}.output
 
 cp ${name}.output ${name}.pristine
 tempfile=`mktemp`
