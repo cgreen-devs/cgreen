@@ -154,7 +154,15 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
     reporter_finish_suite(reporter, file, line, duration_in_milliseconds);
 
     if (have_quiet_mode(reporter)) {
+        if (use_colors) {
+            memo->printer(GREEN);
+            if (reporter->failures) memo->printer(RED);
+            if (reporter->exceptions) memo->printer(MAGENTA);
+        }
         memo->printer(".");
+        if (use_colors) {
+            memo->printer(RESET);
+        }
     } else {
         char buf[1000];
         sprintf(buf, "Completed \"%s\": ", name);
