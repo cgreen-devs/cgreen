@@ -31,14 +31,14 @@ function contains() {
 
 if contains "$PATH" "$PWD/build/tools" ; then
     echo "You already have the appropriate directories in your PATH and LD_LIBRARY_PATH."
-    exit
+else
+
+    # And here's the meat given that you have the standard build tree
+    export PATH="$PWD/build/tools":$PATH
+
+    # On linux we need LD_LIBRARY_PATH...
+    export LD_LIBRARY_PATH="$PWD/build/src":$PATH
+
+    # ...but on Cygwin DLL:s are searched using the path...
+    export PATH="$PWD/build/src":$PATH
 fi
-
-# And here's the meat given that you have the standard build tree
-export PATH="$PWD/build/tools":$PATH
-
-# On linux we need LD_LIBRARY_PATH...
-export LD_LIBRARY_PATH="$PWD/build/src":$PATH
-
-# ...but on Cygwin DLL:s are searched using the path...
-export PATH="$PWD/build/src":$PATH
