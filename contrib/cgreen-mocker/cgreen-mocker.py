@@ -24,7 +24,7 @@
 #
 # Thanks to @gardenia for the pointer to pycparser!
 #
-# (C) 2016, Thomas Nilsson
+# (C) 2016, Thomas Nilefalk
 #
 # Using pycparser for printing out all the functions defined in a
 # C file.
