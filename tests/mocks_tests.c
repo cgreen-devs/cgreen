@@ -155,6 +155,23 @@ Ensure(Mocks, double_expect_sequence) {
     double_in(2.0);
 }
 
+static double double_out(void) {
+    /* TODO: This should change to "return mock_double();" */
+    return unbox_double(mock());
+}
+
+#ifndef __cplusplus
+/* TODO: This does not work in C++ because of the overloading of
+   assert_that() which currently has no match for double */
+xEnsure(Mocks, can_always_return_double) {
+    always_expect(double_out, will_return_double(4.23));
+    assert_that(double_out(), is_equal_to_double(4.23));
+    assert_that(double_out(), is_equal_to_double(4.23));
+    assert_that(double_out(), is_equal_to_double(4.23));
+}
+#endif
+
+
 static void mixed_parameters(int i, const char *s) {
     mock(i, s);
 }

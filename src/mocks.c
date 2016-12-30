@@ -202,6 +202,16 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
 
     destroy_expectation_if_time_to_die(expectation);
 
+    if (stored_result.type == DOUBLE) {
+        test_reporter->assert_true(
+                                   test_reporter,
+                                   mock_file,
+                                   mock_line,
+                                   false,
+                                   "Mocked function [%s] have a 'will_return_double()' expectation, "
+                                   "but 'mock()' cannot return doubles; Use 'mock_double()' instead",
+                                   function);
+    }
     return stored_result.value.integer_value;
 }
 

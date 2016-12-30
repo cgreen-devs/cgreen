@@ -394,6 +394,18 @@ Constraint *create_return_value_constraint(intptr_t value_to_return) {
     return constraint;
 }
 
+Constraint *create_return_double_value_constraint(double value_to_return) {
+    Constraint* constraint = create_constraint();
+    constraint->type = RETURN_VALUE;
+
+    constraint->compare = &compare_true;
+    constraint->execute = &test_true;
+    constraint->name = "return value";
+    constraint->expected_value = make_cgreen_double_value(value_to_return);
+
+    return constraint;
+}
+
 Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set, size_t size_to_set) {
     Constraint* constraint = create_constraint();
     constraint->type = CONTENT_SETTER;
