@@ -24,8 +24,8 @@ struct Constraint_ {
     ConstraintType type;
     const char *name;
     void (*destroy)(Constraint *);
-    bool (*compare)(Constraint *, intptr_t);
-    void(*execute)(Constraint *, const char *, intptr_t, const char *, int, TestReporter *);
+    bool (*compare)(Constraint *, CgreenValue);
+    void(*execute)(Constraint *, const char *, CgreenValue, const char *, int, TestReporter *);
     char *(*failure_message)(Constraint *, const char *, intptr_t);
     const char *actual_value_message;
     const char *expected_value_message;
@@ -51,9 +51,9 @@ void destroy_double_constraint(Constraint *constraint);
 void destroy_constraint(Constraint *);
 void destroy_constraints(va_list constraints);
  
-bool compare_want_value(Constraint *constraint, intptr_t actual);
-bool compare_do_not_want_value(Constraint *constraint, intptr_t actual);
-void test_want(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
+bool compare_want_value(Constraint *constraint, CgreenValue actual);
+bool compare_do_not_want_value(Constraint *constraint, CgreenValue actual);
+void test_want(Constraint *constraint, const char *function, CgreenValue actual, const char *test_file, int test_line, TestReporter *reporter);
 
 void test_constraint(Constraint *constraint, const char *function, intptr_t actual, const char *test_file, int test_line, TestReporter *reporter);
 

@@ -46,44 +46,44 @@ static int significant_figures = 8;
 
 static double accuracy(int significant_figures, double largest);
 
-static bool compare_want_greater_value(Constraint *constraint, intptr_t actual);
+static bool compare_want_greater_value(Constraint *constraint, CgreenValue actual);
 
-static bool compare_want_lesser_value(Constraint *constraint, intptr_t actual);
+static bool compare_want_lesser_value(Constraint *constraint, CgreenValue actual);
 
-static bool compare_want_contents(Constraint *constraint, intptr_t actual);
+static bool compare_want_contents(Constraint *constraint, CgreenValue actual);
 
-static bool compare_do_not_want_contents(Constraint *constraint, intptr_t actual);
+static bool compare_do_not_want_contents(Constraint *constraint, CgreenValue actual);
 
-static bool compare_true(Constraint *constraint, intptr_t actual);
-static void test_true(Constraint *constraint, const char *function, intptr_t actual,
+static bool compare_true(Constraint *constraint, CgreenValue actual);
+static void test_true(Constraint *constraint, const char *function, CgreenValue actual,
                       const char *test_file, int test_line, TestReporter *reporter);
 
-static bool compare_want_string(Constraint *constraint, intptr_t actual);
-static bool compare_do_not_want_string(Constraint *constraint, intptr_t actual);
-static bool compare_want_substring(Constraint *constraint, intptr_t actual);
-static bool compare_do_not_want_substring(Constraint *constraint, intptr_t actual);
-static bool compare_want_beginning_of_string(Constraint *constraint, intptr_t actual);
-static bool compare_do_not_want_beginning_of_string(Constraint *constraint, intptr_t actual);
-static bool compare_want_end_of_string(Constraint *constraint, intptr_t actual);
-static bool compare_do_not_want_end_of_string(Constraint *constraint, intptr_t actual);
+static bool compare_want_string(Constraint *constraint, CgreenValue actual);
+static bool compare_do_not_want_string(Constraint *constraint, CgreenValue actual);
+static bool compare_want_substring(Constraint *constraint, CgreenValue actual);
+static bool compare_do_not_want_substring(Constraint *constraint, CgreenValue actual);
+static bool compare_want_beginning_of_string(Constraint *constraint, CgreenValue actual);
+static bool compare_do_not_want_beginning_of_string(Constraint *constraint, CgreenValue actual);
+static bool compare_want_end_of_string(Constraint *constraint, CgreenValue actual);
+static bool compare_do_not_want_end_of_string(Constraint *constraint, CgreenValue actual);
 
-static bool compare_want_double(Constraint *constraint, intptr_t actual);
-static void test_want_double(Constraint *constraint, const char *function, intptr_t actual,
+static bool compare_want_double(Constraint *constraint, CgreenValue actual);
+static void test_want_double(Constraint *constraint, const char *function, CgreenValue actual,
                              const char *test_file, int test_line, TestReporter *reporter);
-static bool compare_do_not_want_double(Constraint *constraint, intptr_t actual);
-static void test_do_not_want_double(Constraint *constraint, const char *function, intptr_t actual,
+static bool compare_do_not_want_double(Constraint *constraint, CgreenValue actual);
+static void test_do_not_want_double(Constraint *constraint, const char *function, CgreenValue actual,
                                     const char *test_file, int test_line, TestReporter *reporter);
-static bool compare_want_lesser_double(Constraint *constraint, intptr_t actual);
-static bool compare_want_greater_double(Constraint *constraint, intptr_t actual);
+static bool compare_want_lesser_double(Constraint *constraint, CgreenValue actual);
+static bool compare_want_greater_double(Constraint *constraint, CgreenValue actual);
 
-static void set_contents(Constraint *constraint, const char *function, intptr_t actual,
+static void set_contents(Constraint *constraint, const char *function, CgreenValue actual,
                          const char *test_file, int test_line, TestReporter *reporter);
 
 
 static const char *default_actual_value_message = "\n\t\tactual value:\t\t\t[%" PRIdPTR "]";
 static const char *default_expected_value_message = "\t\texpected value:\t\t\t[%" PRIdPTR "]";
 
-
+ 
 Constraint *create_constraint() {
     Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));
     /* TODO: setting this to NULL as an implicit type check :( */
@@ -132,7 +132,7 @@ void destroy_constraint(Constraint *constraint) {
 void destroy_constraints(va_list constraints) {
     Constraint *constraint = NULL;
     while ((constraint = va_arg(constraints, Constraint *)) != (Constraint *)0) {
-        destroy_constraint(constraint);
+        destroy_constraint(constraint); 
     }
 }
 
@@ -420,49 +420,51 @@ Constraint *create_set_parameter_value_constraint(const char *parameter_name, in
     return constraint;
 }
 
-bool compare_want_value(Constraint *constraint, intptr_t actual) {
-    return constraint->expected_value.value.integer_value == actual;
-    //    return constraint->expected_value == actual;
+bool compare_want_value(Constraint *constraint, CgreenValue actual) {
+    return constraint->expected_value.value.integer_value == actual.value.integer_value;
 }
 
-bool compare_do_not_want_value(Constraint *constraint, intptr_t actual) {
+bool compare_do_not_want_value(Constraint *constraint, CgreenValue actual) {
     return !compare_want_value(constraint, actual);
 }
 
-bool compare_want_greater_value(Constraint *constraint, intptr_t actual) {
-    return actual > constraint->expected_value.value.integer_value ;
+bool compare_want_greater_value(Constraint *constraint, CgreenValue actual) {
+    return actual.value.integer_value > constraint->expected_value.value.integer_value ;
 }
 
-bool compare_want_lesser_value(Constraint *constraint, intptr_t actual) {
-    return actual < constraint->expected_value.value.integer_value;
+bool compare_want_lesser_value(Constraint *constraint, CgreenValue actual) {
+    return actual.value.integer_value < constraint->expected_value.value.integer_value;
 }
 
 
-bool compare_want_contents(Constraint *constraint, intptr_t actual) {
-    /* we can't inspect the contents of a NULL pointer, so comparison always fails */
-    if ((void *)actual == NULL) {
+bool compare_want_contents(Constraint *constraint, CgreenValue actual) {
+    /* We can't inspect the contents of a NULL pointer, so comparison always fails */
+    /* TODO: This should really be .pointer_value */
+    if ((void *)actual.value.integer_value == NULL) {
         return 0;
     }
 
-    return 0 == memcmp(constraint->expected_value.value.pointer_value, (void *)actual, constraint->size_of_expected_value);
+    return 0 == memcmp(constraint->expected_value.value.pointer_value,
+                       (void *)actual.value.integer_value, constraint->size_of_expected_value);
 }
 
-bool compare_do_not_want_contents(Constraint *constraint, intptr_t actual) {
+bool compare_do_not_want_contents(Constraint *constraint, CgreenValue actual) {
     /* we can't inspect the contents of a NULL pointer, so comparison always fails */
-    if ((void *)actual == NULL) {
+    if ((void *)actual.value.integer_value == NULL) {
         return 0;
     }
 
     return !compare_want_contents(constraint, actual);
 }
 
-static void set_contents(Constraint *constraint, const char *function, intptr_t actual,
+static void set_contents(Constraint *constraint, const char *function, CgreenValue actual,
                          const char *test_file, int test_line, TestReporter *reporter) {
     char *message;
     (void)function;
 
-    if (parameters_are_not_valid_for(constraint, actual)) {
-        message = validation_failure_message_for(constraint, actual);
+    /* TODO: should propagate the whole actual */
+    if (parameters_are_not_valid_for(constraint, actual.value.integer_value)) {
+        message = validation_failure_message_for(constraint, actual.value.integer_value);
 
         (*reporter->assert_true)(
                 reporter,
@@ -475,18 +477,18 @@ static void set_contents(Constraint *constraint, const char *function, intptr_t 
         return;
     }
 
-    memmove((void *)actual, constraint->expected_value.value.pointer_value, constraint->size_of_expected_value);
+    memmove((void *)actual.value.integer_value, constraint->expected_value.value.pointer_value, constraint->size_of_expected_value);
 }
 
 
 
-void test_want(Constraint *constraint, const char *function, intptr_t actual,
+void test_want(Constraint *constraint, const char *function, CgreenValue actual,
                const char *test_file, int test_line, TestReporter *reporter) {
     char *message;
     char parameter_name_actual_string[255];
 
-    if (parameters_are_not_valid_for(constraint, actual)) {
-        message = validation_failure_message_for(constraint, actual);
+    if (parameters_are_not_valid_for(constraint, actual.value.integer_value)) {
+        message = validation_failure_message_for(constraint, actual.value.integer_value);
 
         (*reporter->assert_true)(
                 reporter,
@@ -501,7 +503,7 @@ void test_want(Constraint *constraint, const char *function, intptr_t actual,
     }
 
     snprintf(parameter_name_actual_string, sizeof(parameter_name_actual_string) - 1, "[%s] parameter in [%s]", constraint->parameter_name, function);
-    message = constraint->failure_message(constraint, parameter_name_actual_string, actual);
+    message = constraint->failure_message(constraint, parameter_name_actual_string, actual.value.integer_value);
 
     (*reporter->assert_true)(
             reporter,
@@ -513,20 +515,20 @@ void test_want(Constraint *constraint, const char *function, intptr_t actual,
     free(message);
 }
 
-static bool compare_want_string(Constraint *constraint, intptr_t actual) {
-    return strings_are_equal(constraint->expected_value.value.string_value, (const char *)actual);
+static bool compare_want_string(Constraint *constraint, CgreenValue actual) {
+    return strings_are_equal(constraint->expected_value.value.string_value, actual.value.string_value);
 }
 
-static bool compare_do_not_want_string(Constraint *constraint, intptr_t actual) {
+static bool compare_do_not_want_string(Constraint *constraint, CgreenValue actual) {
     return !compare_want_string(constraint, actual);
 }
 
-static bool compare_do_not_want_substring(Constraint *constraint, intptr_t actual) {
+static bool compare_do_not_want_substring(Constraint *constraint, CgreenValue actual) {
     return !compare_want_substring(constraint, actual);
 }
 
-static bool compare_want_substring(Constraint *constraint, intptr_t actual) {
-    return string_contains((const char *)actual, constraint->expected_value.value.string_value);
+static bool compare_want_substring(Constraint *constraint, CgreenValue actual) {
+    return string_contains(actual.value.string_value, constraint->expected_value.value.string_value);
 }
 
 
@@ -542,41 +544,41 @@ static unsigned int strpos(const char *haystack, const char *needle)
     return NOT_FOUND;
 }
 
-static bool compare_want_beginning_of_string(Constraint *constraint, intptr_t actual) {
-    return strpos((const char *)actual, constraint->expected_value.value.string_value) == 0;
+static bool compare_want_beginning_of_string(Constraint *constraint, CgreenValue actual) {
+    return strpos(actual.value.string_value, constraint->expected_value.value.string_value) == 0;
 }
 
-static bool compare_do_not_want_beginning_of_string(Constraint *constraint, intptr_t actual) {
-    return strpos((const char *)actual, constraint->expected_value.value.string_value) != 0;
+static bool compare_do_not_want_beginning_of_string(Constraint *constraint, CgreenValue actual) {
+    return strpos(actual.value.string_value, constraint->expected_value.value.string_value) != 0;
 }
 
-static bool compare_want_end_of_string(Constraint *constraint, intptr_t actual) {
-    return strpos((const char *)actual, constraint->expected_value.value.string_value) ==
-        strlen((const char *)actual) - strlen(constraint->expected_value.value.string_value);
+static bool compare_want_end_of_string(Constraint *constraint, CgreenValue actual) {
+    return strpos(actual.value.string_value, constraint->expected_value.value.string_value) ==
+        strlen(actual.value.string_value) - strlen(constraint->expected_value.value.string_value);
 }
 
-static bool compare_do_not_want_end_of_string(Constraint *constraint, intptr_t actual) {
-    return strpos((const char *)actual, constraint->expected_value.value.string_value) !=
-        strlen((const char *)actual) - strlen(constraint->expected_value.value.string_value);
+static bool compare_do_not_want_end_of_string(Constraint *constraint, CgreenValue actual) {
+    return strpos(actual.value.string_value, constraint->expected_value.value.string_value) !=
+        strlen(actual.value.string_value) - strlen(constraint->expected_value.value.string_value);
 }
 
 
 
 // Double
-
-static bool compare_want_double(Constraint *constraint, intptr_t actual) {
-    return doubles_are_equal(constraint->expected_value.value.double_value, as_double(actual));
+ 
+static bool compare_want_double(Constraint *constraint, CgreenValue actual) {
+    return doubles_are_equal(constraint->expected_value.value.double_value, actual.value.double_value);
 }
 
-static bool compare_want_lesser_double(Constraint *constraint, intptr_t actual) {
-    return double_is_lesser(constraint->expected_value.value.double_value, as_double(actual));
+static bool compare_want_lesser_double(Constraint *constraint, CgreenValue actual) {
+    return double_is_lesser(constraint->expected_value.value.double_value, actual.value.double_value);
 }
 
-static bool compare_want_greater_double(Constraint *constraint, intptr_t actual) {
-    return double_is_greater(constraint->expected_value.value.double_value, as_double(actual));
+static bool compare_want_greater_double(Constraint *constraint, CgreenValue actual) {
+    return double_is_greater(constraint->expected_value.value.double_value, actual.value.double_value);
 }
 
-static void test_want_double(Constraint *constraint, const char *function, intptr_t actual,
+static void test_want_double(Constraint *constraint, const char *function, CgreenValue actual,
                              const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
             reporter,
@@ -585,18 +587,16 @@ static void test_want_double(Constraint *constraint, const char *function, intpt
             (*constraint->compare)(constraint, actual),
             "Wanted [%f], but got [%f] in function [%s] parameter [%s]",
             constraint->expected_value.value.double_value,
-            as_double(actual),
+            actual.value.double_value,
             function,
             constraint->parameter_name);
-
-    (void)unbox_double(actual);
 }
 
-static bool compare_do_not_want_double(Constraint *constraint, intptr_t actual) {
+static bool compare_do_not_want_double(Constraint *constraint, CgreenValue actual) {
     return !compare_want_double(constraint, actual);
 }
 
-static void test_do_not_want_double(Constraint *constraint, const char *function, intptr_t actual,
+static void test_do_not_want_double(Constraint *constraint, const char *function, CgreenValue actual,
                                     const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
             reporter,
@@ -605,25 +605,23 @@ static void test_do_not_want_double(Constraint *constraint, const char *function
             (*constraint->compare)(constraint, actual),
             "Did not want [%f], but got [%f] in function [%s] parameter [%s]",
             constraint->expected_value.value.double_value,
-            as_double(actual),
+            actual.value.double_value,
             function,
             constraint->parameter_name);
-
-    (void)unbox_double(actual);
 }
 
 void destroy_double_constraint(Constraint *constraint) {
     destroy_empty_constraint(constraint);
 }
 
-static bool compare_true(Constraint *constraint, intptr_t actual) {
+static bool compare_true(Constraint *constraint, CgreenValue actual) {
     (void)constraint;
     (void)actual;
 
     return true;
 }
 
-static void test_true(Constraint *constraint, const char *function, intptr_t actual,
+static void test_true(Constraint *constraint, const char *function, CgreenValue actual,
                       const char *test_file, int test_line, TestReporter *reporter) {
     (void)constraint;
     (void)function;
@@ -674,7 +672,7 @@ bool is_not_comparing(const Constraint *constraint) {
 }
 
 bool is_parameter(const Constraint *constraint) {
-    return is_comparing(constraint) || is_content_setting(constraint);
+    return is_comparing(constraint) || is_content_setting(constraint); 
 }
 
 bool constraint_is_for_parameter_in(const Constraint *constraint, const char *names) {
@@ -682,7 +680,7 @@ bool constraint_is_for_parameter_in(const Constraint *constraint, const char *na
     bool found = false;
 
     CgreenVector *parameter_names = create_vector_of_names(names);
-    if (!is_parameter(constraint)) return false;
+    if (!is_parameter(constraint)) return false; 
 
     for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
         const char *mock_parameter_name = (const char *)cgreen_vector_get(parameter_names, i);
