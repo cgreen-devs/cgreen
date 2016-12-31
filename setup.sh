@@ -14,11 +14,11 @@
 #
 
 # Ensure that the script is sourced:
-if [[ $_ == $0 ]]; then
+if [ $_ = $0 ]; then
    echo "You should really source this, like in '. $0'"
 fi
 
-function contains() {
+contains() {
     string="$1"
     substring="$2"
     if test "${string#*$substring}" != "$string"
