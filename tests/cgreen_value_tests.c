@@ -32,5 +32,5 @@ Ensure(CgreenValue, makes_pointer_value) {
 Ensure(CgreenValue, makes_double_value) {
     CgreenValue value = make_cgreen_double_value(3.1415926);
     assert_that(value.type, is_equal_to(DOUBLE));
-    assert_that(box_double(value.value.double_value), is_equal_to_double(3.1415926));
+    assert_that_double(value.value.double_value, is_equal_to_double(3.1415926));
 }
