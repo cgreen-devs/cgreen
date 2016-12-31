@@ -7,7 +7,9 @@
 using namespace cgreen;
 #endif
 
-#define compare_constraint(c, x) (*c->compare)(c, (intptr_t)x)
+#include "../src/cgreen_value_internal.h"
+
+#define compare_constraint(c, x) (*c->compare)(c, make_cgreen_integer_value((intptr_t)x))
 
 Describe(Constraint);
 BeforeEach(Constraint) {}
