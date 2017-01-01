@@ -102,15 +102,19 @@ int number_of_parameter_constraints_in(const CgreenVector* constraints) {
     return parameters;
 }
 
-void learn_mock_call_for(const char *function, const char *mock_file, int mock_line, CgreenVector *parameter_names, CgreenVector *actual_values) {
+static void learn_mock_call_for(const char *function, const char *mock_file, int mock_line,
+                                CgreenVector *parameter_names, CgreenVector *actual_values) {
     CgreenVector *constraints = create_equal_value_constraints_for(parameter_names, actual_values);
 
-    RecordedExpectation *expectation = create_recorded_expectation(function, mock_file, mock_line, constraints);
+    RecordedExpectation *expectation = create_recorded_expectation(function, mock_file, mock_line,
+                                                                   constraints);
     ensure_learned_mock_calls_list_exists();
     cgreen_vector_add(learned_mock_calls, (void*)expectation);
 }
 
-void handle_missing_expectation_for(const char *function, const char *mock_file, int mock_line, CgreenVector *parameter_names, CgreenVector *actual_values, TestReporter *test_reporter) {
+void handle_missing_expectation_for(const char *function, const char *mock_file, int mock_line,
+                                    CgreenVector *parameter_names, CgreenVector *actual_values,
+                                    TestReporter *test_reporter) {
     RecordedExpectation *expectation;
     CgreenVector *no_constraints;
 
@@ -133,7 +137,8 @@ void handle_missing_expectation_for(const char *function, const char *mock_file,
 }
 
 
-static CgreenValue convert_boxed_double_to_cgreen_value_if_needed(CgreenVector *double_markers, int i, CgreenValue actual) {
+static CgreenValue convert_boxed_double_to_cgreen_value_if_needed(CgreenVector *double_markers,
+                                                                  int i, CgreenValue actual) {
     if (*(bool*)cgreen_vector_get(double_markers, i) == true) {
         actual.type = DOUBLE;
         actual.value.double_value = as_double(actual.value.integer_value);
@@ -260,13 +265,15 @@ static CgreenVector *create_vector_of_actuals(va_list actuals, int count) {
 }
 
 
-static CgreenVector *create_equal_value_constraints_for(CgreenVector *parameter_names, CgreenVector *actual_values) {
+static CgreenVector *create_equal_value_constraints_for(CgreenVector *parameter_names,
+                                                        CgreenVector *actual_values) {
     int i;
     CgreenVector *constraints = create_constraints_vector();
     for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
         const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
-        uintptr_t actual = (uintptr_t)cgreen_vector_get(actual_values, i);
-        Constraint *constraint = create_equal_to_value_constraint((intptr_t)actual, parameter_name);
+        CgreenValue actual = *(CgreenValue*)cgreen_vector_get(actual_values, i);
+        Constraint *constraint = create_equal_to_value_constraint(actual.value.integer_value,
+                                                                  parameter_name);
         cgreen_vector_add(constraints, constraint);
     }
     return constraints;
