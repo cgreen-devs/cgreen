@@ -37,3 +37,9 @@ Ensure(AssertionMessage, for_compare_null_to_area) {
 Ensure(AssertionMessage, for_actual_with_percent) {
     assert_that(strlen("%d"), is_equal_to(3)); /* Actually, it's not but should preserve '%' */
 }
+
+Ensure(AssertionMessage, for_using_double_constraints_with_assert_that) {
+    assert_that(3, is_equal_to_double(3.1415926));
+    assert_that(3, is_less_than_double(3.1415926));
+    assert_that(7, is_greater_than_double(3.1415926));
+}

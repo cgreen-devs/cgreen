@@ -1,4 +1,4 @@
-Running "mock_messages_tests" (13 tests)...
+Running "mock_messages_tests" (12 tests)...
 mock_messages_tests.c: Failure: Mocks -> calls_beyond_expected_sequence_fail_when_mocks_are_strict 
 	Mocked function [integer_out] was called too many times
 
@@ -9,24 +9,6 @@ mock_messages_tests.c: Failure: Mocks -> calls_beyond_expected_sequence_fail_whe
 
 mock_messages_tests.c: Failure: Mocks -> can_declare_function_never_called 
 	Mocked function [sample_mock] has an expectation that it will never be called, but it was
-
-mock_messages_tests.c: Failure: Mocks -> can_report_assert_that_double_should_be_used_for_double_constraints 
-	Got constraint of double type [equal double],
-		you should use this with 'assert_that_double()' to ensure proper comparison.
-
-mock_messages_tests.c: Failure: Mocks -> can_report_assert_that_double_should_be_used_for_double_constraints 
-	Expected [3] to [equal double] [3.1415926]
-
-mock_messages_tests.c: Failure: Mocks -> can_report_assert_that_double_should_be_used_for_double_constraints 
-	Got constraint of double type [be less than double],
-		you should use this with 'assert_that_double()' to ensure proper comparison.
-
-mock_messages_tests.c: Failure: Mocks -> can_report_assert_that_double_should_be_used_for_double_constraints 
-	Got constraint of double type [be greater than double],
-		you should use this with 'assert_that_double()' to ensure proper comparison.
-
-mock_messages_tests.c: Failure: Mocks -> can_report_assert_that_double_should_be_used_for_double_constraints 
-	Expected [7] to [be greater than double] [3.1415926]
 
 mock_messages_tests.c: Failure: Mocks -> failure_reported_when_expect_after_always_expect_for_same_function 
 	Mocked function [integer_out] already has an expectation that it will always be called a certain way; any expectations declared after an always expectation are invalid
@@ -46,8 +28,8 @@ mock_messages_tests.c: Failure: Mocks -> reports_multiple_never_expect
 mock_messages_tests.c: Failure: Mocks -> single_uncalled_expectation_fails_tally 
 	Expected call was not made to mocked function [string_out]
 
-Completed "Mocks": 5 passes, 2 skipped, 14 failures in 0ms.
-Completed "mock_messages_tests": 5 passes, 2 skipped, 14 failures in 0ms.
+Completed "Mocks": 4 passes, 2 skipped, 9 failures in 0ms.
+Completed "mock_messages_tests": 4 passes, 2 skipped, 9 failures in 0ms.
 Mocks -> learning_mocks_emit_none_when_learning_no_mocks : Learned mocks are
 	<none>
 Mocks -> learning_mocks_emit_pastable_code : Learned mocks are

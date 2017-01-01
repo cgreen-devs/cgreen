@@ -45,8 +45,8 @@ void assert_core_(const char *file, int line, const char *actual_string, intptr_
                 file,
                 line,
                 false,
-                "Got constraint of double type [%s],\n"
-                "\t\tyou should use this with 'assert_that_double()' to ensure proper comparison.",
+                "Constraints of double type, such as [%s],\n"
+                "\t\tshould only be used with 'assert_that_double()' to ensure proper comparison.",
                 constraint->name);
     }
 
