@@ -6,6 +6,12 @@
 namespace cgreen {
 #endif
 
+    CgreenValue *create_cgreen_value(CgreenValue value) {
+        CgreenValue *ptr = (CgreenValue*)malloc(sizeof(CgreenValue));
+        *ptr = value;
+        return ptr;
+    }
+
     CgreenValue make_cgreen_integer_value(intptr_t integer) {
         CgreenValue value = {INTEGER, {0}};
         value.value.integer_value = integer;
@@ -17,7 +23,7 @@ namespace cgreen {
         value.value.string_value = string;
         return value;
     }
-    
+
     CgreenValue make_cgreen_pointer_value(void *pointer) {
         CgreenValue value = {POINTER, {0}};
         value.value.pointer_value = pointer;
