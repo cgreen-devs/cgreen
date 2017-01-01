@@ -81,6 +81,7 @@ void assert_core_(const char *file, int line, const char *actual_string, intptr_
 
 void assert_that_double_(const char *file, int line, const char *expression, double actual, Constraint* constraint) {
     BoxedDouble* boxed_actual;
+
     if (NULL != constraint && is_not_comparing(constraint)) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
@@ -94,6 +95,17 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
         constraint->destroy(constraint);
 
         return;
+    }
+
+    if (constraint->type != DOUBLE_COMPARER) {
+        (*get_test_reporter()->assert_true)(
+                get_test_reporter(),
+                file,
+                line,
+                false,
+                "Only constraints of double type should be used with 'assert_that_double()'.\n"
+                "\t\tOther types of constraints, such as [%s], will probably fail comparison.",
+                constraint->name);
     }
 
     boxed_actual = (BoxedDouble*)box_double(actual);
