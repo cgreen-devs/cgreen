@@ -247,6 +247,17 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     destroy_expectation_if_time_to_die(expectation);
 
     if (stored_result.type == DOUBLE) {
+#ifdef V2
+        /* TODO: for v2 we should ensure that the user is not trying to return a double
+           through 'mock()' when there is a 'mock_double()' available, which there isn't yet.
+           So then
+
+               return unbox_double(mock(...));
+
+           should be replaced by
+
+               return mock_double(...);
+        */
         test_reporter->assert_true(test_reporter,
                                    mock_file,
                                    mock_line,
@@ -254,8 +265,19 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
                                    "Mocked function [%s] have a 'will_return_double()' expectation, "
                                    "but 'mock()' cannot return doubles; Use 'mock_double()' instead",
                                    function);
-    }
-    return stored_result.value.integer_value;
+        /* But we'll return it anyway, whatever it becomes is what he will get... */
+        return stored_result.value.double_value;
+#else
+        /* ... but for now return a boxed double since the user is probably using
+
+               return unbox_double(mock(...));
+
+           as is the standard way in 1.x
+        */
+        return box_double(stored_result.value.double_value);
+#endif
+    } else
+        return stored_result.value.integer_value;
 }
 
 
