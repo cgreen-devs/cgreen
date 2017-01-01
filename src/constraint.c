@@ -3,7 +3,6 @@
 #include <cgreen/constraint.h>
 #include <cgreen/message_formatting.h>
 #include <cgreen/string_comparison.h>
-#include <cgreen/parameters.h>
 #include <cgreen/vector.h>
 #include <inttypes.h>
 #include <limits.h>
@@ -24,7 +23,7 @@
 #include "wincompat.h"
 #endif
 
-
+#include "parameters.h"
 #include "utils.h"
 #include "cgreen_value_internal.h"
 

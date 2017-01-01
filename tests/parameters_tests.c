@@ -1,7 +1,8 @@
 #include <cgreen/cgreen.h>
 #include <cgreen/vector.h>
-#include <cgreen/parameters.h>
 #include <stdlib.h>
+
+#include "../src/parameters.h"
 
 #ifdef __cplusplus
 using namespace cgreen;

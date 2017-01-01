@@ -1,7 +1,6 @@
 #include <assert.h>
 #include <cgreen/breadcrumb.h>
 #include <cgreen/mocks.h>
-#include <cgreen/parameters.h>
 #include <cgreen/boxed_double.h>
 #include <inttypes.h>
 // TODO: report PC-Lint bug about undeserved 451
@@ -11,6 +10,7 @@
 #include <string.h>
 
 #include "cgreen_value_internal.h"
+#include "parameters.h"
 
 #ifdef __ANDROID__
 #include "cgreen/internal/android_headers/androidcompat.h"
