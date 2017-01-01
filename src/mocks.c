@@ -2,6 +2,7 @@
 #include <cgreen/breadcrumb.h>
 #include <cgreen/mocks.h>
 #include <cgreen/parameters.h>
+#include <cgreen/boxed_double.h>
 #include <inttypes.h>
 // TODO: report PC-Lint bug about undeserved 451
 #include <stdarg.h>
@@ -52,7 +53,10 @@ static void apply_any_read_only_parameter_constraints(RecordedExpectation *expec
                                                       const char *parameter,
                                                       CgreenValue actual,
                                                       TestReporter* test_reporter);
-void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter);
+static void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation,
+                                                     const char *parameter,
+                                                     CgreenValue actual,
+                                                     TestReporter* test_reporter);
 static CgreenValue stored_result_or_default_for(CgreenVector* constraints);
 int number_of_parameter_constraints_in(const CgreenVector* constraints);
 static int number_of_parameters_in(const char *parameter_list);
@@ -128,6 +132,16 @@ void handle_missing_expectation_for(const char *function, const char *mock_file,
     }
 }
 
+
+static CgreenValue convert_boxed_double_to_cgreen_value_if_needed(CgreenVector *double_markers, int i, CgreenValue actual) {
+    if (*(bool*)cgreen_vector_get(double_markers, i) == true) {
+        actual.type = DOUBLE;
+        actual.value.double_value = as_double(actual.value.integer_value);
+    }
+    return actual;
+}
+
+
 intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mock_file, int mock_line, const char *parameters, ...) {
     va_list actuals;
     CgreenVector *actual_values;
@@ -140,11 +154,20 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     RecordedExpectation *expectation = find_expectation(function);
 
     parameter_names = create_vector_of_names(parameters);
-    double_markers = create_vector_of_double_markers_for(parameters);
 
     va_start(actuals, parameters);
     actual_values = create_vector_of_actuals(actuals, number_of_parameters_in(parameters));
     va_end(actuals);
+
+    /* Since the caller must use 'box_double()' to pass doubles as
+       arguments to 'mock()' we can know which ones are such parameters
+       to be able to convert them to CgreenValues here */
+    double_markers = create_vector_of_double_markers_for(parameters);
+    for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
+        CgreenValue *actual = cgreen_vector_get(actual_values, i);
+        *actual = convert_boxed_double_to_cgreen_value_if_needed(double_markers, i, *actual);
+    }
+    destroy_cgreen_vector(double_markers);
 
     if (expectation == NULL) {
         handle_missing_expectation_for(function, mock_file, mock_line, parameter_names, actual_values, test_reporter);
@@ -191,18 +214,19 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
 
     for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
         const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
-        uintptr_t actual = (uintptr_t)cgreen_vector_get(actual_values, i);
+        CgreenValue actual = *(CgreenValue*)cgreen_vector_get(actual_values, i);
         apply_any_read_only_parameter_constraints(expectation, parameter_name, actual, test_reporter);
     }
 
     failures_after_read_only_constraints_executed = test_reporter->failures;
 
-    // FIXME: this comparison doesn't work because only parent processes' pass/fail counts are updated,
-    //        and even then only once they read from the pipe
+    // FIXME: this comparison doesn't work because only parent
+    //        processes' pass/fail counts are updated, and even then
+    //        only once they read from the pipe
     if (failures_before_read_only_constraints_executed == failures_after_read_only_constraints_executed) {
         for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
             const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
-            uintptr_t actual = (uintptr_t)cgreen_vector_get(actual_values, i);
+            CgreenValue actual = *(CgreenValue*)cgreen_vector_get(actual_values, i);
             apply_any_content_setting_parameter_constraints(expectation, parameter_name, actual, test_reporter);
         }
     }
@@ -230,7 +254,7 @@ static CgreenVector *create_vector_of_actuals(va_list actuals, int count) {
     CgreenVector *actual_values = create_cgreen_vector(NULL);
     for (i = 0; i < count; i++) {
         uintptr_t actual = va_arg(actuals, uintptr_t);
-        cgreen_vector_add(actual_values, (void*)actual);
+        cgreen_vector_add(actual_values, (void*)create_cgreen_value(make_cgreen_integer_value(actual)));
     }
     return actual_values;
 }
@@ -657,7 +681,7 @@ static void apply_any_read_only_parameter_constraints(RecordedExpectation *expec
     }
 }
 
-void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter) {
+static void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation, const char *parameter, CgreenValue actual, TestReporter* test_reporter) {
     int i;
     for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
@@ -673,7 +697,7 @@ void apply_any_content_setting_parameter_constraints(RecordedExpectation *expect
         constraint->execute(
             constraint,
             expectation->function,
-            make_cgreen_integer_value(actual),
+            actual,
             expectation->test_file,
             expectation->test_line,
             test_reporter);
