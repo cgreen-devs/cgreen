@@ -104,12 +104,12 @@ Ensure(Mocks, single_uncalled_expectation_fails_tally) {
 }
 
 static double double_out(void) {
-    return unbox_double(mock());
+    return (double)mock();
 }
 
 Ensure(Mocks, reports_mock_cannot_return_double) {
     expect(double_out, will_return_double(4.123));
-    assert_that_double(double_out(), is_equal_to_double(4.123));
+    double_out();
 }
 
 Ensure(Mocks, learning_mocks_emit_none_when_learning_no_mocks) {
@@ -138,4 +138,3 @@ xEnsure(Mocks, learning_mocks_survive_termination) {
     string_out(1);
     *ip = 0;
 }
-

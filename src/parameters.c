@@ -61,7 +61,8 @@ static bool *pointer_to_bool(bool value) {
     return ptr;
 }
 
-/* TODO: This should probably be folded into the 'create_vector_of_names()' above */
+/* TODO: Much duplication ahead. This should probably be folded into
+   the 'create_vector_of_names()' above */
 CgreenVector *create_vector_of_double_markers_for(const char *parameters) {
     char *parameters_to_tokenize;
     char *parameters_end;
