@@ -113,6 +113,12 @@ xEnsure(Mocks, reports_mock_cannot_return_double) {
     double_out();
 }
 
+Ensure(Mocks, can_report_assert_that_double_should_be_used_for_double_constraints) {
+    assert_that(3, is_equal_to_double(3.1415926));
+    assert_that(3, is_less_than_double(3.1415926));
+    assert_that(7, is_greater_than_double(3.1415926));
+}
+
 Ensure(Mocks, learning_mocks_emit_none_when_learning_no_mocks) {
     cgreen_mocks_are(learning_mocks);
 }
