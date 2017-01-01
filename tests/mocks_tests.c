@@ -155,7 +155,10 @@ Ensure(Mocks, double_expect_sequence) {
     double_in(2.0);
 }
 
-static double double_out(void) {
+
+/* non-static to avoid "unused" warning in C++ as long as
+   'can_always_return_double' does not work in C++ */
+double double_out(void) {
     /* TODO: This should change to "return mock_double();" */
     return unbox_double(mock());
 }
@@ -177,12 +180,12 @@ static void mixed_parameters(int i, const char *s) {
 }
 
 Ensure(Mocks, confirming_multiple_parameters_multiple_times) {
-    expect(mixed_parameters, 
-        when(i, is_equal_to(1)), 
+    expect(mixed_parameters,
+        when(i, is_equal_to(1)),
         when(s, is_equal_to_string("Hello"))
     );
-    expect(mixed_parameters, 
-        when(i, is_equal_to(2)), 
+    expect(mixed_parameters,
+        when(i, is_equal_to(2)),
         when(s, is_equal_to_string("Goodbye"))
     );
 

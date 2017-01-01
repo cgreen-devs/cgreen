@@ -16,10 +16,6 @@
 #include "cgreen/internal/android_headers/androidcompat.h"
 #endif // #ifdef __ANDROID__
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
-
 typedef struct RecordedExpectation_ {
     const char *function;
     const char *test_file;
@@ -137,13 +133,31 @@ void handle_missing_expectation_for(const char *function, const char *mock_file,
 }
 
 
-static CgreenValue convert_boxed_double_to_cgreen_value_if_needed(CgreenVector *double_markers,
-                                                                  int i, CgreenValue actual) {
-    if (*(bool*)cgreen_vector_get(double_markers, i) == true) {
-        actual.type = DOUBLE;
-        actual.value.double_value = as_double(actual.value.integer_value);
-    }
+static CgreenValue convert_boxed_double_to_cgreen_value(CgreenValue actual) {
+    actual.type = DOUBLE;
+    actual.value.double_value = unbox_double(actual.value.integer_value);
     return actual;
+}
+
+static bool parameter_is_boxed_double(CgreenVector *double_markers, int i) {
+    return *(bool*)cgreen_vector_get(double_markers, i) == true;
+}
+
+
+static void convert_boxed_doubles_to_cgreen_values(const char *parameters, CgreenVector *actual_values) {
+    CgreenVector *double_markers;
+    int i;
+    /* Since the caller must use 'box_double()' to pass doubles as
+       arguments to 'mock()' we can know which ones are such parameters
+       to be able to convert them to CgreenValues here */
+    double_markers = create_vector_of_double_markers_for(parameters);
+    for (i = 0; i < cgreen_vector_size(double_markers); i++) {
+        if (parameter_is_boxed_double(double_markers, i)) {
+            CgreenValue *actual = cgreen_vector_get(actual_values, i);
+            *actual = convert_boxed_double_to_cgreen_value(*actual);
+        }
+    }
+    destroy_cgreen_vector(double_markers);
 }
 
 
@@ -151,7 +165,6 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     va_list actuals;
     CgreenVector *actual_values;
     CgreenVector *parameter_names;
-    CgreenVector *double_markers;
     int failures_before_read_only_constraints_executed;
     int failures_after_read_only_constraints_executed;
     int i;
@@ -164,15 +177,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     actual_values = create_vector_of_actuals(actuals, number_of_parameters_in(parameters));
     va_end(actuals);
 
-    /* Since the caller must use 'box_double()' to pass doubles as
-       arguments to 'mock()' we can know which ones are such parameters
-       to be able to convert them to CgreenValues here */
-    double_markers = create_vector_of_double_markers_for(parameters);
-    for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
-        CgreenValue *actual = cgreen_vector_get(actual_values, i);
-        *actual = convert_boxed_double_to_cgreen_value_if_needed(double_markers, i, *actual);
-    }
-    destroy_cgreen_vector(double_markers);
+    convert_boxed_doubles_to_cgreen_values(parameters, actual_values);
 
     if (expectation == NULL) {
         handle_missing_expectation_for(function, mock_file, mock_line, parameter_names, actual_values, test_reporter);
@@ -761,9 +766,5 @@ static bool have_never_call_expectation_for(const char* function) {
 
     return false;
 }
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */
