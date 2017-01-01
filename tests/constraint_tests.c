@@ -10,6 +10,7 @@ using namespace cgreen;
 #include "../src/cgreen_value_internal.h"
 
 #define compare_constraint(c, x) (*c->compare)(c, make_cgreen_integer_value((intptr_t)x))
+#define compare_double_constraint(c, x) (*c->compare)(c, make_cgreen_double_value(x))
 
 Describe(Constraint);
 BeforeEach(Constraint) {}
@@ -114,28 +115,22 @@ Ensure(Constraint, matching_against_null_string) {
 Ensure(Constraint, matching_doubles_as_equal_with_default_significance) {
     Constraint *equal_to_double_37 = create_equal_to_double_constraint(37.0, "height");
 
-    intptr_t boxed_37 = box_double(37.0);
-    intptr_t boxed_36 = box_double(36.0);
-    assert_that(compare_constraint(equal_to_double_37, boxed_37), is_true);
-    assert_that(compare_constraint(equal_to_double_37, boxed_36), is_false);
+    assert_that(compare_double_constraint(equal_to_double_37, 37.0), is_true);
+    assert_that(compare_double_constraint(equal_to_double_37, 36.0), is_false);
 
     destroy_constraint(equal_to_double_37);
-    (void)unbox_double(boxed_37);
-    (void)unbox_double(boxed_36);
 }
 
 Ensure(Constraint, matching_doubles_respects_significant_figure_setting) {
     Constraint *want_337 = create_equal_to_double_constraint(337.0, "height");
-    intptr_t boxed_339 = box_double(339.0);
 
     significant_figures_for_assert_double_are(2);
-    assert_that(compare_constraint(want_337, boxed_339), is_true);
+    assert_that(compare_double_constraint(want_337, 339.0), is_true);
 
     significant_figures_for_assert_double_are(3);
-    assert_that(compare_constraint(want_337, boxed_339), is_false);
+    assert_that(compare_double_constraint(want_337, 339.0), is_false);
 
     destroy_constraint(want_337);
-    (void)unbox_double(boxed_339);
 }
 
 // TODO: convert to create_constraint_for_comparator("non-empty string", &is_non_empty_string);
@@ -212,7 +207,7 @@ Ensure(Constraint, can_compare_to_hex) {
     memset(chars, 0xaa, sizeof(chars));
     assert_that((unsigned char)chars[0], is_equal_to_hex(0xaa));
 }
-                                            
+
 TestSuite *constraint_tests() {
     TestSuite *suite = create_test_suite();
     add_test_with_context(suite, Constraint, default_destroy_clears_state);
