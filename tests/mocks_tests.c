@@ -159,18 +159,23 @@ Ensure(Mocks, double_expect_sequence) {
 /* non-static to avoid "unused" warning in C++ as long as
    'can_always_return_double' does not work in C++ */
 double double_out(void) {
-    /* TODO: This should change to "return mock_double();" */
+    /* TODO: For v2 this should change to "return mock_double();" */
     return unbox_double(mock());
 }
 
 #ifndef __cplusplus
 /* TODO: This does not work in C++ because of the overloading of
    assert_that() which currently has no match for double */
-xEnsure(Mocks, can_always_return_double) {
+Ensure(Mocks, can_return_double) {
+    expect(double_out, will_return_double(4.23));
+    assert_that_double(double_out(), is_equal_to_double(4.23));
+}
+
+Ensure(Mocks, can_always_return_double) {
     always_expect(double_out, will_return_double(4.23));
-    assert_that(double_out(), is_equal_to_double(4.23));
-    assert_that(double_out(), is_equal_to_double(4.23));
-    assert_that(double_out(), is_equal_to_double(4.23));
+    assert_that_double(double_out(), is_equal_to_double(4.23));
+    assert_that_double(double_out(), is_equal_to_double(4.23));
+    assert_that_double(double_out(), is_equal_to_double(4.23));
 }
 #endif
 
