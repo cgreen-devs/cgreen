@@ -4,6 +4,14 @@
 :toc:
 :pp: ++
 
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
 = Cgreen : Unit Tests, Stubbing and Mocking for C and C++
 Marcus Baker <marcus@lastcraft.com>; Thomas Nilsson <thomas@junovagen.se>; João Freitas <joaohf@gmail.com>;
 v{VERSION}
