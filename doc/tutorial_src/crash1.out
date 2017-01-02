@@ -2,4 +2,4 @@ Running "main" (1 tests)...
 crash_tests.c:8: Exception: seg_faults_for_null_dereference 
 	Test terminated with signal: Segmentation fault
 
-Completed "main": 1 exception in 1879ms.
+Completed "main": 1 exception in 42ms.

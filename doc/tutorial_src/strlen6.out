@@ -4,4 +4,4 @@ strlen_tests.c:9: Failure: returns_five_for_hello
 		actual value:			[4]
 		expected value:			[5]
 
-Completed "our_tests": 1 failure in 14ms.
+Completed "our_tests": 1 failure in 42ms.

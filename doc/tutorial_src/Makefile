@@ -13,14 +13,14 @@ ifeq ($(shell uname -o),Cygwin)
 MYSQL_INCLUDE = /usr/include/mysql
 MYSQL_LIB = /usr/lib
 else
-MYSQLROOT = 
+MYSQLROOT =
 MYSQL_INCLUDE = $(MYSQLROOT)/include
 MYSQL_LIB = $(MYSQLROOT)/lib
 endif
 endif
 
 CGREEN_BIN=$(CGREEN_ROOT)/build
-CC = gcc -c -g -Wall -I$(CGREEN_ROOT)/include -I$(MYSQL_INCLUDE) -I$(FPIC)
+CC = gcc -c -g -Wall -I$(CGREEN_ROOT)/include -I$(MYSQL_INCLUDE) $(FPIC)
 LINK = gcc -g
 LIBDIRS = -L$(CGREEN_BIN)/src -L$(MYSQL_LIB)
 
@@ -34,6 +34,16 @@ RUNNER = $(LDPATH) $(CGREEN_BIN)/tools/cgreen-runner
 
 all: with_main with_runner special
 
+# Since we have multiple files for the same tutorial example, distinguished by a number,
+# we need to remove that number from all output
+REMOVE_NUMBERS=-e 's/\([a-z]\)[0-9]\+\"/\1\"/' -e 's/\([a-z]\)[0-9]\+\.c/\1\.c/'
+
+# To minimize the diffs we also need to normalize execution times
+NORMALIZE_DURATION=-e 's/\ in\ [0-9]\+ms/\ in\ 42ms/g'
+
+# And batch that together in one symbol
+SED=sed $(REMOVE_NUMBERS) $(NORMALIZE_DURATION)
+
 with_main:  first0 first1 \
 			words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 \
 			strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 \
@@ -45,14 +55,15 @@ with_main:  first0 first1 \
 			test_as_xml2 \
 			test_as_xml3 \
 			test_as_xml4
-	for f in $^ ; do echo $$f; $(LDPATH) ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
+	for f in $^ ; do echo $$f; $(LDPATH) ./$$f | $(SED) > $$f.out; done
 
 # Most tests built to run with the runner we can run here, but some need special care
-# They have their output produced directly in the build rules below
+# They have their output produced directly in their build rules below and are run usint
+# the 'special' rule
 with_runner: stream0 stream1 stream2 stream3 stream4 stream6 \
 			 multiple_streams1 multiple_streams2 \
 			 formatter0 formatter1 formatter2 formatter3 formatter4 formatter5 formatter6
-	for f in $^ ; do echo $$f; $(RUNNER) $$f.so | sed -e 's/[0-9]\"/\"/' -e 's/[0-9]\.c/\.c/' > $$f.out; done
+	for f in $^ ; do echo $$f; $(RUNNER) $$f.so | $(SED) > $$f.out; done
 
 special: runner1 runner2 runner3 stream5 learning_mocks
 
@@ -131,7 +142,7 @@ crash2: crash_tests2.o
 crash3: crash_tests3.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
-suite1: suite1.o suite_person_tests.o suite_strlen_tests.o 
+suite1: suite1.o suite_person_tests.o suite_strlen_tests.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen -lmysqlclient
 
 test_as_xml0: test_as_xml0.o
@@ -181,7 +192,7 @@ stream4: stream_tests3.o read_paragraph2.o
 # This test generates random characters read from memory so we need to tidy that up
 stream5: stream_tests4.o read_paragraph2.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) $@.so | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
+	$(RUNNER) $@.so | $(SED) > $@.out
 	echo "Removing non-characters from stream5.out, check manually if the following fails:"
 	cp $@.out $@.bak && LANG='' sed -e 's/^[^[[:space:]].*"]/"]/g' $@.bak > $@.bak2 && mv $@.bak2 $@.out
 	rm $@.bak
@@ -201,17 +212,17 @@ multiple_streams2: multiple_streams2.o
 .PHONY: runner1
 runner1: first_tests2.o
 	$(LINK) -shared -o first_tests.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) first_tests.so | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
+	$(RUNNER) first_tests.so | $(SED) > $@.out
 
 .PHONY: runner2
 runner2: first_tests2.o
 	$(LINK) -shared -o first_tests.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) first_tests.so Cgreen:fails_this_test | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
+	$(RUNNER) first_tests.so Cgreen:fails_this_test | $(SED) > $@.out
 
 .PHONY: runner3
 runner3: first_tests2.o
 	$(LINK) -shared -o first_tests.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) -v first_tests.so Cgreen:fails_this_test | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
+	$(RUNNER) -v first_tests.so Cgreen:fails_this_test | $(SED) > $@.out
 
 .PHONY: formatter0
 formatter0: stream1.o formatter_tests0.o
@@ -239,4 +250,3 @@ formatter6: stream2.o formatter_tests5.o
 learning_mocks: learning_mocks.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 	$(RUNNER) $@.so
-

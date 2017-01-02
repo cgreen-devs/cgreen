@@ -2,5 +2,5 @@ Running "formatter" (5 tests)...
 formatter_tests.c:59: Failure: Formatter -> ignores_empty_paragraphs 
 	Mocked function [writer] has an expectation that it will never be called, but it was
 
-Completed "Formatter": 9 passes, 1 failure in 73ms.
-Completed "formatter": 9 passes, 1 failure in 73ms.
+Completed "Formatter": 9 passes, 1 failure in 42ms.
+Completed "formatter": 9 passes, 1 failure in 42ms.
