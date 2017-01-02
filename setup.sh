@@ -29,10 +29,10 @@ contains() {
     fi
 }
 
+# Add the appropriate directories in the build tree to PATH et al.
 if contains "$PATH" "$PWD/build/tools" ; then
     echo "You already have the appropriate directories in your PATH and LD_LIBRARY_PATH."
 else
-
     # And here's the meat given that you have the standard build tree
     export PATH="$PWD/build/tools":$PATH
 
@@ -42,3 +42,24 @@ else
     # ...but on Cygwin DLL:s are searched using the path...
     export PATH="$PWD/build/src":$PATH
 fi
+
+# Let's also create symbolic links to build/tools and build/src to emulate typical
+# FHS include/bin/lib structure. This makes it easy to switch between various versions of
+# cgreen. E.g. in a Makefile you can do
+#
+# CGREEN_ROOT=/usr/local
+# CGREEN_INCLUDE=$(CGREEN_ROOT)/include
+# CGREEN_LIB=$(CGREEN_ROOT)/lib
+# CGREEN_BIN=$(CGREEN_ROOT)/bin
+# ...
+#     LD_LIBRARY_PATH=$(CGREEN_LIB):. $(CGREEN_BIN)/bin/cgreen-runner <libs>
+# ...
+# %.so: %.c
+#	g++ -o $@ -shared -g -I$(CGREEN_INCLUDE) -fPIC $^ -L $(CGREEN_LIBDIR) -lcgreen
+#
+# To switch to your current development version just change CGREEN_ROOT.
+#
+# So simulate that build/tools (where cgreen-runner is) is bin, and build/src (where
+# the cgreen library is built) is lib
+[ -f bin ] && ln -s build/tools bin
+[ -f lib ] && ln -s build/src lib
