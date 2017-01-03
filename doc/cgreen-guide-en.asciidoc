@@ -4,6 +4,14 @@
 :toc:
 :pp: ++
 
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
 = Cgreen : Unit Tests, Stubbing and Mocking for C and C++
 Marcus Baker <marcus@lastcraft.com>; Thomas Nilefalk <thomas@junovagen.se>; João Freitas <joaohf@gmail.com>;
 v{VERSION}
@@ -2385,7 +2393,7 @@ the name of the suite being entered and the number of tests in that
 suite. The default version keeps track of the stack of tests in the
 `breadcrumb` pointer of `TestReporter`. If you make use of the
 breadcrumb functions, as the defaults do, then you will need to call
-`reporter_start_suite()` to keep the book keeping in sync.
+`reporter_start_suite()` to keep the book-keeping in sync.
 
 
 `void (*start_test)(TestReporter *reporter, const char *name)`::
@@ -2395,16 +2403,16 @@ reporter with the name of the test being entered. Again, the default
 version keeps track of the stack of tests in the `breadcrumb` pointer
 of `TestReporter`. If you make use of the breadcrumb functions, as the
 defaults do, then you will need to call `reporter_start_test()` to keep the
-book keeping in sync.
+book-keeping in sync.
 
 
 `void (*show_pass)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)`::
 
-This method is initially empty as there most reporters see little
-point in reporting passing tests (but you might do), so there is no
-need to chain the call to any other function. Besides the pointer to
-the reporter structure, *Cgreen* also passes the file name of the
-test, the line number of failed assertion, the message to show and any
+This method is initially empty as most reporters see little point in
+reporting passing tests (but you might do), so there is no need to
+chain the call to any other function. Besides the pointer to the
+reporter structure, *Cgreen* also passes the file name of the test,
+the line number of failed assertion, the message to show and any
 additional parameters to substitute into the message. The message
 comes in as `printf()` style format string, and so the variable
 argument list should match the substitutions.
@@ -2422,10 +2430,10 @@ This method will be called when a skipped test is encountered, see <<xensure>>.
 
 `void (*show_incomplete)(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments)`::
 
-When a test fails to complete, this is the handler that is called. As it's an unexpected
-outcome, no message is received, but we do get the name of the
-test. The text reporter combines this with the breadcrumb to produce
-the exception report.
+When a test fails to complete, this is the handler that is called. As
+it's an unexpected outcome, no message is received, but we do get the
+name of the test. The text reporter combines this with the breadcrumb
+to produce the exception report.
 
 
 `void (*assert_true)(TestReporter *reporter, const char *file, int line, int result, const char * message, ...)`::
@@ -2451,6 +2459,14 @@ both this and `(*finish_test)()` to the same function where it figures
 out if it is the end of the top level suite. If so, it prints the
 familiar summary of passes and fails.
 
+NOTE: The `show_fail()` and `show_pass()` functions are called from
+the child process, i.e. the isolated process that is `fork()`:ed to
+run a single test case. All others, notably `start_...()`,
+`finish_...()`, `show_incomplete()` and `show_skip()` are run in the
+main (parent) process. This fact might be important since the
+processes do not share memory. Information is passed from the child to
+the parent using messaging performed within the `show_...()`
+functions.
 
 The second block is simply resources and book keeping that the reporter
 can use to liven up the messages...

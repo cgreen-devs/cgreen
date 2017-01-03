@@ -143,8 +143,13 @@ static void xml_reporter_start_suite(TestReporter *reporter, const char *suitena
 }
 
 
-// Accumulate output from test
+/* Accumulate output from the actual test (the "<testcase>" nodes) in
+   a file since the tests usually are run in a child processes, so
+   there is no simple way to save output from it and then use it in
+   the parent (start_test() and finish_test() are run from parent) */
+
 static char *output = NULL;
+static FILE *child_output_tmpfile;
 
 static void xml_reporter_start_test(TestReporter *reporter, const char *testname) {
     XmlMemo *memo = (XmlMemo *)reporter->memo;
@@ -160,6 +165,8 @@ static void xml_reporter_start_test(TestReporter *reporter, const char *testname
     memo->printer(out, "\" name=\"%s\"", testname);
     reporter_start_test(reporter, testname);
     output = strdup("");
+
+    child_output_tmpfile = tmpfile();
 }
 
 
@@ -174,6 +181,8 @@ static void xml_show_skip(TestReporter *reporter, const char *file, int line) {
 
     output = concat(output, indent(reporter));
     output = concat(output, "\t<skipped />\n");
+
+    fputs(output, child_output_tmpfile);
 }
 
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
@@ -181,14 +190,18 @@ static void xml_show_fail(TestReporter *reporter, const char *file, int line, co
     
     output = concat(output, indent(reporter));
     output = concat(output, "<failure message=\"");
+
     vsprintf(buffer, message, arguments);
     output = concat(output, buffer);
     output = concat(output, "\">\n");
     output = concat(output, indent(reporter));
+
     sprintf(buffer, "\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
     output = concat(output, buffer);
     output = concat(output, indent(reporter));
     output = concat(output, "</failure>\n");
+
+    fputs(output, child_output_tmpfile);
 }
 
 static void xml_show_incomplete(TestReporter *reporter, const char *filename, int line, const char *message, va_list arguments) {
@@ -207,6 +220,15 @@ static void xml_show_incomplete(TestReporter *reporter, const char *filename, in
     fflush(out);
 }
 
+
+static void transfer_output_from(FILE *tmpfile, XmlPrinter printer, FILE *out) {
+    fseek(tmpfile, 0, SEEK_SET);
+    char buffer[1000];
+    while (fgets(buffer, 1000, tmpfile) != NULL)
+        printer(out, buffer);
+}
+
+
 static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message,
                                      uint32_t duration_in_milliseconds) {
     XmlMemo *memo = (XmlMemo *)reporter->memo;
@@ -214,11 +236,13 @@ static void xml_reporter_finish_test(TestReporter *reporter, const char *filenam
 
     reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
     memo->printer(out, " time=\"%.5f\">\n", (double)duration_in_milliseconds/(double)1000);
-    if (output && strlen(output) > 0) {
-        memo->printer(out, output);
+    if (output && strlen(output) == 0) {
         free(output);
         output = NULL;
     }
+
+    transfer_output_from(child_output_tmpfile, memo->printer, out);
+
     memo->printer(out, indent(reporter));
     memo->printer(out, "</testcase>\n");
     fflush(out);
@@ -235,5 +259,6 @@ static void xml_reporter_finish_suite(TestReporter *reporter, const char *filena
     // exactly necessary as Jenkins, at least, seems to sum it up automatically
     memo->printer(out, indent(reporter));
     memo->printer(out, "</testsuite>\n");
-    fclose(out);
+    if (file_stack_p != 0)
+        fclose(out);
 }

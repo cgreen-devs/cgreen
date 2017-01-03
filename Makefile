@@ -60,9 +60,9 @@ else
 endif
 
 OUTPUT_DIFF=../../tools/cgreen_runner_output_diff
-OUTPUT_DIFF_ARGUMENTS = $(1)_messages_tests \
+OUTPUT_DIFF_ARGUMENTS = $(1)_tests \
 	../../tests \
-	$(1)_messages_tests.expected
+	$(1)_tests.expected
 
 unit: build-it
 	# Ensure the dynamic libraries can be found even on DLL-platforms without altering
@@ -77,15 +77,17 @@ unit: build-it
 	tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
 	r=$$((r + $$?)) ; \
 	cd tests ; \
-	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,mock) ; \
+	../../tools/cgreen_xml_output_diff $(call OUTPUT_DIFF_ARGUMENTS,xml_output) ; \
 	r=$$((r + $$?)) ; \
-	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint) ; \
+	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,mock_messages) ; \
 	r=$$((r + $$?)) ; \
-	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,assertion) ; \
+	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint_messages) ; \
 	r=$$((r + $$?)) ; \
-	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,ignore) ; \
+	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,assertion_messages) ; \
 	r=$$((r + $$?)) ; \
-	CGREEN_PER_TEST_TIMEOUT=1 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure) ; \
+	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,ignore_messages) ; \
+	r=$$((r + $$?)) ; \
+	CGREEN_PER_TEST_TIMEOUT=1 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure_messages) ; \
 	r=$$((r + $$?)) ; \
 	exit $$r
 

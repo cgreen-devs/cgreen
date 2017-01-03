@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<testsuite name="xml_output_tests">
+</testsuite>
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+	<testsuite name="xml_output_tests-default">
+		<testcase classname="xml_output_tests/default" name="failing_test_is_listed_by_xml_reporter" time="0.00000">
+			<failure message="Expected [0] to [be true]">
+				<location file="xml_output_tests.c" line="0"/>
+			</failure>
+		</testcase>
+		<testcase classname="xml_output_tests/default" name="passing_test_is_listed_by_xml_reporter" time="0.00000">
+		</testcase>
+	</testsuite>
