@@ -118,6 +118,18 @@ Ensure(Vector, vector_size_of_null_pointer_is_zero) {
     assert_that(cgreen_vector_size(NULL), is_equal_to(0));
 }
 
+Ensure(Vector, returns_null_for_get_on_illegal_index) {
+    CgreenVector *vector = create_cgreen_vector(NULL);
+    fprintf(stderr, "Expected output:");
+    assert_that(cgreen_vector_get(vector, -1), is_equal_to(NULL));
+}
+
+Ensure(Vector, returns_null_for_remove_from_illegal_index) {
+    CgreenVector *vector = create_cgreen_vector(NULL);
+    fprintf(stderr, "Expected output:");
+    assert_that(cgreen_vector_remove(vector, 1), is_equal_to(NULL));
+}
+
 TestSuite *vector_tests() {
     TestSuite *suite = create_test_suite();
     set_setup(suite, set_up_vector);
@@ -135,5 +147,7 @@ TestSuite *vector_tests() {
     add_test_with_context(suite, Vector, destructor_is_not_called_on_empty_vector);
     add_test_with_context(suite, Vector, destructor_is_called_three_times_on_three_item_vector);
     add_test_with_context(suite, Vector, vector_size_of_null_pointer_is_zero);
+    add_test_with_context(suite, Vector, returns_null_for_get_on_illegal_index);
+    add_test_with_context(suite, Vector, returns_null_for_remove_from_illegal_index);
     return suite;
 }

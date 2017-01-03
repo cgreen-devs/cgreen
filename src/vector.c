@@ -57,8 +57,8 @@ void *cgreen_vector_remove(CgreenVector *vector, int position) {
     void *item;
     int i;
 
-    if (position < 0) {
-        fprintf(stderr, "negative position disallowed in vector operation\n");
+    if (position < 0 || position > cgreen_vector_size(vector)) {
+        fprintf(stderr, "\tCGREEN INTERNAL ERROR: illegal position (%d) in vector operation\n", position);
         return NULL;
     }
 
@@ -75,6 +75,10 @@ void *cgreen_vector_remove(CgreenVector *vector, int position) {
 }
 
 void *cgreen_vector_get(const CgreenVector *vector, int position) {
+    if (position < 0 || position > cgreen_vector_size(vector)) {
+        fprintf(stderr, "\tCGREEN INTERNAL ERROR: illegal position (%d) in vector operation\n", position);
+        return NULL;
+    }
     return vector->items[position];
 }
 
