@@ -2885,9 +2885,6 @@ CgreenValue make_cgreen_string_value(const char *string) {
 }
 ----------------------------
 
-WARNING: `cgreen-mocker` cannot manage the special handling that
-`double` values require. (See <<double_mock>> for details.)
-
 To use `cgreen-mocker` you need Python and `pycparser`. The latter
 can be found at [https://github.com/eliben/pycparser] or can easily
 be installed with
