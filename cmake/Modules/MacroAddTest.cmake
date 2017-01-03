@@ -4,7 +4,7 @@
 # directory where the Cgreen library is generated to the path so that it will
 # be used when running the test
 #
-# @thoni56/Thomas Nilsson 2015-09-13
+# @thoni56/Thomas Nilefalk 2015-09-13
 
 macro (macro_add_test)
   add_test(${ARGN})

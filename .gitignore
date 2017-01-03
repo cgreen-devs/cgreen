@@ -8,3 +8,7 @@ Testing
 build-stamp
 configure-stamp
 *~
+#*#
+.#*
+bin
+lib

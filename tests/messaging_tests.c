@@ -45,6 +45,7 @@ Ensure(failure_reported_and_exception_thrown_when_messaging_would_block) {
 
     signal_received = 0;
     signal(SIGPIPE, catch_signal);
+    fprintf(stderr, "Expected output: ");
     for (loop = 0; loop < LOOPS; loop++) {
         send_cgreen_message(messaging, 99);
         if (signal_received == 1)
