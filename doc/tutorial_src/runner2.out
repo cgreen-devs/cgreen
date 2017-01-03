@@ -2,5 +2,5 @@ Running "first_tests" (1 tests)...
 first_tests.c:12: Failure: Cgreen -> fails_this_test 
 	Expected [0 == 1] to [be true]
 
-Completed "Cgreen": 1 failure in 0ms.
-Completed "first_tests": 1 failure in 0ms.
+Completed "Cgreen": 1 failure in 42ms.
+Completed "first_tests": 1 failure in 42ms.

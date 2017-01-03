@@ -1,4 +1,4 @@
-Running "stream"" (5 tests)...
+Running "stream" (5 tests)...
 stream_tests.c:40: Failure: ParagraphReader -> drops_line_ending_from_word_and_stops 
 	Expected [read_paragraph(&stream_stub, ((void *)0))] to [equal string] ["the"]
 		actual value:			["the
@@ -11,5 +11,5 @@ stream_tests.c:45: Failure: ParagraphReader -> gives_empty_line_for_single_line_
 "]
 		expected to equal:		[""]
 
-Completed "ParagraphReader": 3 passes, 2 failures in 73ms.
-Completed "stream"": 3 passes, 2 failures in 73ms.
+Completed "ParagraphReader": 3 passes, 2 failures in 42ms.
+Completed "stream": 3 passes, 2 failures in 42ms.
