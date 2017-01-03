@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <cgreen/breadcrumb.h>
 #include <cgreen/mocks.h>
-#include <cgreen/parameters.h>
+#include <cgreen/boxed_double.h>
 #include <inttypes.h>
 // TODO: report PC-Lint bug about undeserved 451
 #include <stdarg.h>
@@ -9,13 +9,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cgreen_value_internal.h"
+#include "parameters.h"
+
 #ifdef __ANDROID__
 #include "cgreen/internal/android_headers/androidcompat.h"
 #endif // #ifdef __ANDROID__
-
-#ifdef __cplusplus
-namespace cgreen {
-#endif
 
 typedef struct RecordedExpectation_ {
     const char *function;
@@ -26,35 +25,43 @@ typedef struct RecordedExpectation_ {
 } RecordedExpectation;
 
 const int UNLIMITED_TIME_TO_LIVE = 0x0f314159;
+
 static CgreenMockMode cgreen_mocks_are_ = strict_mocks;
 static CgreenVector *learned_mock_calls = NULL;
 static CgreenVector *successfully_mocked_calls = NULL;
 static CgreenVector *global_expectation_queue = NULL;
 
 static CgreenVector *create_vector_of_actuals(va_list actuals, int count);
-static CgreenVector *create_equal_value_constraints_for(CgreenVector *parameter_names, CgreenVector *actual_values);
+static CgreenVector *create_equal_value_constraints_for(CgreenVector *parameter_names,
+                                                        CgreenVector *actual_values);
 static CgreenVector *create_constraints_vector(void);
-static RecordedExpectation *create_recorded_expectation(const char *function, const char *test_file, int test_line, CgreenVector *constraints);
+static RecordedExpectation *create_recorded_expectation(const char *function, const char *test_file,
+                                                        int test_line, CgreenVector *constraints);
 static CgreenVector *constraints_vector_from_va_list(va_list constraints);
 static void destroy_expectation(RecordedExpectation *expectation);
 static void ensure_expectation_queue_exists(void);
 static void ensure_learned_mock_calls_list_exists(void);
 static void ensure_successfully_mocked_calls_list_exists(void);
-void remove_expectation_for(const char *function);
-void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestReporter *reporter);
-RecordedExpectation *find_expectation(const char *function);
-void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter);
-void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter);
-intptr_t stored_result_or_default_for(CgreenVector* constraints);
+static void remove_expectation_for(const char *function);
+static void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestReporter *reporter);
+static RecordedExpectation *find_expectation(const char *function);
+static void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation,
+                                                      const char *parameter,
+                                                      CgreenValue actual,
+                                                      TestReporter* test_reporter);
+static void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation,
+                                                     const char *parameter,
+                                                     CgreenValue actual,
+                                                     TestReporter* test_reporter);
+static CgreenValue stored_result_or_default_for(CgreenVector* constraints);
 int number_of_parameter_constraints_in(const CgreenVector* constraints);
 static int number_of_parameters_in(const char *parameter_list);
-bool is_always_call(RecordedExpectation* expectation);
-bool have_always_expectation_for(const char* function);
+static bool is_always_call(RecordedExpectation* expectation);
+static bool have_always_expectation_for(const char* function);
+static bool is_never_call(RecordedExpectation* expectation);
+static bool have_never_call_expectation_for(const char* function);
 
-bool is_never_call(RecordedExpectation* expectation);
-bool have_never_call_expectation_for(const char* function);
-
-void report_violated_never_call(TestReporter*, RecordedExpectation*);
+static void report_violated_never_call(TestReporter*, RecordedExpectation*);
 void report_unexpected_call(TestReporter*, RecordedExpectation*);
 void report_mock_parameter_name_not_found(TestReporter *test_reporter, RecordedExpectation *expectation, const char *parameter);
 void destroy_expectation_if_time_to_die(RecordedExpectation *expectation);
@@ -91,15 +98,19 @@ int number_of_parameter_constraints_in(const CgreenVector* constraints) {
     return parameters;
 }
 
-void learn_mock_call_for(const char *function, const char *mock_file, int mock_line, CgreenVector *parameter_names, CgreenVector *actual_values) {
+static void learn_mock_call_for(const char *function, const char *mock_file, int mock_line,
+                                CgreenVector *parameter_names, CgreenVector *actual_values) {
     CgreenVector *constraints = create_equal_value_constraints_for(parameter_names, actual_values);
 
-    RecordedExpectation *expectation = create_recorded_expectation(function, mock_file, mock_line, constraints);
+    RecordedExpectation *expectation = create_recorded_expectation(function, mock_file, mock_line,
+                                                                   constraints);
     ensure_learned_mock_calls_list_exists();
     cgreen_vector_add(learned_mock_calls, (void*)expectation);
 }
 
-void handle_missing_expectation_for(const char *function, const char *mock_file, int mock_line, CgreenVector *parameter_names, CgreenVector *actual_values, TestReporter *test_reporter) {
+void handle_missing_expectation_for(const char *function, const char *mock_file, int mock_line,
+                                    CgreenVector *parameter_names, CgreenVector *actual_values,
+                                    TestReporter *test_reporter) {
     RecordedExpectation *expectation;
     CgreenVector *no_constraints;
 
@@ -121,6 +132,35 @@ void handle_missing_expectation_for(const char *function, const char *mock_file,
     }
 }
 
+
+static CgreenValue convert_boxed_double_to_cgreen_value(CgreenValue actual) {
+    actual.type = DOUBLE;
+    actual.value.double_value = unbox_double(actual.value.integer_value);
+    return actual;
+}
+
+static bool parameter_is_boxed_double(CgreenVector *double_markers, int i) {
+    return *(bool*)cgreen_vector_get(double_markers, i) == true;
+}
+
+
+static void convert_boxed_doubles_to_cgreen_values(const char *parameters, CgreenVector *actual_values) {
+    CgreenVector *double_markers;
+    int i;
+    /* Since the caller must use 'box_double()' to pass doubles as
+       arguments to 'mock()' we can know which ones are such parameters
+       to be able to convert them to CgreenValues here */
+    double_markers = create_vector_of_double_markers_for(parameters);
+    for (i = 0; i < cgreen_vector_size(double_markers); i++) {
+        if (parameter_is_boxed_double(double_markers, i)) {
+            CgreenValue *actual = cgreen_vector_get(actual_values, i);
+            *actual = convert_boxed_double_to_cgreen_value(*actual);
+        }
+    }
+    destroy_cgreen_vector(double_markers);
+}
+
+
 intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mock_file, int mock_line, const char *parameters, ...) {
     va_list actuals;
     CgreenVector *actual_values;
@@ -128,13 +168,16 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     int failures_before_read_only_constraints_executed;
     int failures_after_read_only_constraints_executed;
     int i;
-    intptr_t stored_result;
+    CgreenValue stored_result;
     RecordedExpectation *expectation = find_expectation(function);
+
+    parameter_names = create_vector_of_names(parameters);
 
     va_start(actuals, parameters);
     actual_values = create_vector_of_actuals(actuals, number_of_parameters_in(parameters));
     va_end(actuals);
-    parameter_names = create_vector_of_names(parameters);
+
+    convert_boxed_doubles_to_cgreen_values(parameters, actual_values);
 
     if (expectation == NULL) {
         handle_missing_expectation_for(function, mock_file, mock_line, parameter_names, actual_values, test_reporter);
@@ -154,6 +197,9 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     cgreen_vector_add(successfully_mocked_calls, (void*)function);
 
     stored_result = stored_result_or_default_for(expectation->constraints);
+    // FIXME: Should verify that return value is not a DOUBLE as `mock_()' can not
+    // return them. There should also be a 'mock_double_()' which does the same except
+    // returning a double.
 
     for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
@@ -168,28 +214,29 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
             destroy_cgreen_vector(actual_values);
             destroy_cgreen_vector(parameter_names);
 
-            return stored_result;
+            return stored_result.value.integer_value;
         }
     }
 
     // if read-only constraints aren't matching, content-setting ones might corrupt memory
-    // apply read-only ones first, and if they don't fail, then do the deeper constraints
+    // so apply read-only ones first, and if they don't fail, then do the deeper constraints
     failures_before_read_only_constraints_executed = test_reporter->failures;
 
     for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
         const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
-        uintptr_t actual = (uintptr_t)cgreen_vector_get(actual_values, i);
+        CgreenValue actual = *(CgreenValue*)cgreen_vector_get(actual_values, i);
         apply_any_read_only_parameter_constraints(expectation, parameter_name, actual, test_reporter);
     }
 
     failures_after_read_only_constraints_executed = test_reporter->failures;
 
-    // FIXME: this comparison doesn't work because only parent processes' pass/fail counts are updated,
-    //        and even then only once they read from the pipe
+    // FIXME: this comparison doesn't work because only parent
+    //        processes' pass/fail counts are updated, and even then
+    //        only once they read from the pipe
     if (failures_before_read_only_constraints_executed == failures_after_read_only_constraints_executed) {
         for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
             const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
-            uintptr_t actual = (uintptr_t)cgreen_vector_get(actual_values, i);
+            CgreenValue actual = *(CgreenValue*)cgreen_vector_get(actual_values, i);
             apply_any_content_setting_parameter_constraints(expectation, parameter_name, actual, test_reporter);
         }
     }
@@ -199,7 +246,38 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
 
     destroy_expectation_if_time_to_die(expectation);
 
-    return stored_result;
+    if (stored_result.type == DOUBLE) {
+#ifdef V2
+        /* TODO: for v2 we should ensure that the user is not trying to return a double
+           through 'mock()' when there is a 'mock_double()' available, which there isn't yet.
+           So then
+
+               return unbox_double(mock(...));
+
+           should be replaced by
+
+               return mock_double(...);
+        */
+        test_reporter->assert_true(test_reporter,
+                                   mock_file,
+                                   mock_line,
+                                   false,
+                                   "Mocked function [%s] have a 'will_return_double()' expectation, "
+                                   "but 'mock()' cannot return doubles; Use 'mock_double()' instead",
+                                   function);
+        /* But we'll return it anyway, whatever it becomes is what he will get... */
+        return stored_result.value.double_value;
+#else
+        /* ... but for now return a boxed double since the user is probably using
+
+               return unbox_double(mock(...));
+
+           as is the standard way in 1.x
+        */
+        return box_double(stored_result.value.double_value);
+#endif
+    } else
+        return stored_result.value.integer_value;
 }
 
 
@@ -208,19 +286,21 @@ static CgreenVector *create_vector_of_actuals(va_list actuals, int count) {
     CgreenVector *actual_values = create_cgreen_vector(NULL);
     for (i = 0; i < count; i++) {
         uintptr_t actual = va_arg(actuals, uintptr_t);
-        cgreen_vector_add(actual_values, (void*)actual);
+        cgreen_vector_add(actual_values, (void*)create_cgreen_value(make_cgreen_integer_value(actual)));
     }
     return actual_values;
 }
 
 
-static CgreenVector *create_equal_value_constraints_for(CgreenVector *parameter_names, CgreenVector *actual_values) {
+static CgreenVector *create_equal_value_constraints_for(CgreenVector *parameter_names,
+                                                        CgreenVector *actual_values) {
     int i;
     CgreenVector *constraints = create_constraints_vector();
     for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
         const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
-        uintptr_t actual = (uintptr_t)cgreen_vector_get(actual_values, i);
-        Constraint *constraint = create_equal_to_value_constraint((intptr_t)actual, parameter_name);
+        CgreenValue actual = *(CgreenValue*)cgreen_vector_get(actual_values, i);
+        Constraint *constraint = create_equal_to_value_constraint(actual.value.integer_value,
+                                                                  parameter_name);
         cgreen_vector_add(constraints, constraint);
     }
     return constraints;
@@ -377,7 +457,7 @@ void never_expect_(TestReporter* test_reporter, const char *function, const char
 }
 
 
-void report_violated_never_call(TestReporter *test_reporter, RecordedExpectation* expectation) {
+static void report_violated_never_call(TestReporter *test_reporter, RecordedExpectation* expectation) {
     test_reporter->assert_true(
             test_reporter,
             expectation->test_file,
@@ -452,7 +532,7 @@ void print_learned_mocks(void) {
     int e, c, i = 0;
     CgreenBreadcrumb *breadcrumb = get_test_reporter()->breadcrumb;
 
-	walk_breadcrumb(breadcrumb, &show_breadcrumb, (void *) &i);
+    walk_breadcrumb(breadcrumb, &show_breadcrumb, (void *) &i);
     
     fprintf(stderr, ": Learned mocks are\n");
 
@@ -467,7 +547,8 @@ void print_learned_mocks(void) {
         fprintf(stderr, "\texpect(%s", function_name);
         for (c = 0; c < cgreen_vector_size(expectation->constraints); c++) {
             Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, c);
-            fprintf(stderr, ", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name, constraint->expected_value);
+            fprintf(stderr, ", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name,
+                    constraint->expected_value.value.integer_value);
         }
         fprintf(stderr, ");\n");
     }
@@ -542,7 +623,7 @@ static void ensure_expectation_queue_exists(void) {
     }
 }
 
-void remove_expectation_for(const char *function) {
+static void remove_expectation_for(const char *function) {
     int i;
     for (i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
         RecordedExpectation *expectation = (RecordedExpectation *)cgreen_vector_get(global_expectation_queue, i);
@@ -559,7 +640,7 @@ void remove_expectation_for(const char *function) {
     }
 }
 
-void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestReporter *reporter) {
+static void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestReporter *reporter) {
     int i;
     for (i = 0; i < cgreen_vector_size(expectation_queue); i++) {
         RecordedExpectation *expectation = (RecordedExpectation *)cgreen_vector_get(expectation_queue, i);
@@ -582,7 +663,7 @@ void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestRepor
     }
 }
 
-RecordedExpectation *find_expectation(const char *function) {
+static RecordedExpectation *find_expectation(const char *function) {
     int i;
     for (i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
         RecordedExpectation *expectation =
@@ -607,7 +688,10 @@ void report_mock_parameter_name_not_found(TestReporter *test_reporter, RecordedE
         constraint_parameter_name);
 }
 
-void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter) {
+static void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation,
+                                                      const char *parameter,
+                                                      CgreenValue actual,
+                                                      TestReporter* test_reporter) {
     int i;
 
     for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
@@ -631,7 +715,7 @@ void apply_any_read_only_parameter_constraints(RecordedExpectation *expectation,
     }
 }
 
-void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation, const char *parameter, intptr_t actual, TestReporter* test_reporter) {
+static void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation, const char *parameter, CgreenValue actual, TestReporter* test_reporter) {
     int i;
     for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
@@ -654,7 +738,7 @@ void apply_any_content_setting_parameter_constraints(RecordedExpectation *expect
     }
 }
 
-intptr_t stored_result_or_default_for(CgreenVector* constraints) {
+static CgreenValue stored_result_or_default_for(CgreenVector* constraints) {
     int i;
     for (i = 0; i < cgreen_vector_size(constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(constraints, i);
@@ -664,14 +748,14 @@ intptr_t stored_result_or_default_for(CgreenVector* constraints) {
         }
     }
 
-    return 0;
+    return (CgreenValue){INTEGER, {0}};
 }
 
-bool is_always_call(RecordedExpectation* expectation) {
+static bool is_always_call(RecordedExpectation* expectation) {
     return expectation->time_to_live == UNLIMITED_TIME_TO_LIVE;
 }
 
-bool have_always_expectation_for(const char* function) {
+static bool have_always_expectation_for(const char* function) {
     int i;
     for (i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
         RecordedExpectation *expectation =
@@ -686,11 +770,11 @@ bool have_always_expectation_for(const char* function) {
     return false;
 }
 
-bool is_never_call(RecordedExpectation* expectation) {
+static bool is_never_call(RecordedExpectation* expectation) {
     return expectation->time_to_live == -UNLIMITED_TIME_TO_LIVE;
 }
 
-bool have_never_call_expectation_for(const char* function) {
+static bool have_never_call_expectation_for(const char* function) {
     int i;
     for (i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
         RecordedExpectation *expectation =
@@ -704,9 +788,5 @@ bool have_never_call_expectation_for(const char* function) {
 
     return false;
 }
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

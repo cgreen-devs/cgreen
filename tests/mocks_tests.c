@@ -155,17 +155,42 @@ Ensure(Mocks, double_expect_sequence) {
     double_in(2.0);
 }
 
+
+/* non-static to avoid "unused" warning in C++ as long as
+   'can_always_return_double' does not work in C++ */
+double double_out(void) {
+    /* TODO: For v2 this should change to "return mock_double();" */
+    return unbox_double(mock());
+}
+
+#ifndef __cplusplus
+/* TODO: This does not work in C++ because of the overloading of
+   assert_that() which currently has no match for double */
+Ensure(Mocks, can_return_double) {
+    expect(double_out, will_return_double(4.23));
+    assert_that_double(double_out(), is_equal_to_double(4.23));
+}
+
+Ensure(Mocks, can_always_return_double) {
+    always_expect(double_out, will_return_double(4.23));
+    assert_that_double(double_out(), is_equal_to_double(4.23));
+    assert_that_double(double_out(), is_equal_to_double(4.23));
+    assert_that_double(double_out(), is_equal_to_double(4.23));
+}
+#endif
+
+
 static void mixed_parameters(int i, const char *s) {
     mock(i, s);
 }
 
 Ensure(Mocks, confirming_multiple_parameters_multiple_times) {
-    expect(mixed_parameters, 
-        when(i, is_equal_to(1)), 
+    expect(mixed_parameters,
+        when(i, is_equal_to(1)),
         when(s, is_equal_to_string("Hello"))
     );
-    expect(mixed_parameters, 
-        when(i, is_equal_to(2)), 
+    expect(mixed_parameters,
+        when(i, is_equal_to(2)),
         when(s, is_equal_to_string("Goodbye"))
     );
 

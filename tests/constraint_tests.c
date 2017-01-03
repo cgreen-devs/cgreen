@@ -7,7 +7,12 @@
 using namespace cgreen;
 #endif
 
-#define compare_constraint(c, x) (*c->compare)(c, (intptr_t)x)
+#include "../src/cgreen_value_internal.h"
+
+#define compare_integer_constraint(c, x) (*c->compare)(c, make_cgreen_integer_value(x))
+#define compare_pointer_constraint(c, x) (*c->compare)(c, make_cgreen_pointer_value(x))
+#define compare_string_constraint(c, x) (*c->compare)(c, make_cgreen_string_value(x))
+#define compare_double_constraint(c, x) (*c->compare)(c, make_cgreen_double_value(x))
 
 Describe(Constraint);
 BeforeEach(Constraint) {}
@@ -48,8 +53,8 @@ Ensure(Constraint, compare_contents_is_correct_on_larger_than_intptr_array) {
     		create_equal_to_contents_constraint(content, sizeof(content), "content");
 
     int not_content[] = { 0, 1, 2, 3, 4, 5, 6, 7, 108, 109, 110, 111, 112, 113, 114, 115 };
-    assert_that(compare_constraint(is_equal_to_contents_constraint, also_content), is_true);
-    assert_that(compare_constraint(is_equal_to_contents_constraint, not_content), is_false);
+    assert_that(compare_pointer_constraint(is_equal_to_contents_constraint, also_content), is_true);
+    assert_that(compare_pointer_constraint(is_equal_to_contents_constraint, not_content), is_false);
 
     destroy_constraint(is_equal_to_contents_constraint);
 }
@@ -57,8 +62,8 @@ Ensure(Constraint, compare_contents_is_correct_on_larger_than_intptr_array) {
 Ensure(Constraint, compare_is_correct_when_using_integers) {
     Constraint *is_equal_to_37 = create_equal_to_value_constraint(37, "37");
 
-    assert_that(compare_constraint(is_equal_to_37, 37), is_true);
-    assert_that(compare_constraint(is_equal_to_37, 36), is_false);
+    assert_that(compare_integer_constraint(is_equal_to_37, 37), is_true);
+    assert_that(compare_integer_constraint(is_equal_to_37, 36), is_false);
 
     destroy_constraint(is_equal_to_37);
 }
@@ -84,8 +89,8 @@ Ensure(Constraint, matching_strings_as_equal) {
     Constraint *equals_string_hello_constraint =
     		create_equal_to_string_constraint("Hello", "user_greeting");
 
-    assert_that(compare_constraint(equals_string_hello_constraint, "Hello"), is_true);
-    assert_that(compare_constraint(equals_string_hello_constraint, "Goodbye"), is_false);
+    assert_that(compare_string_constraint(equals_string_hello_constraint, "Hello"), is_true);
+    assert_that(compare_string_constraint(equals_string_hello_constraint, "Goodbye"), is_false);
 
     destroy_constraint(equals_string_hello_constraint);
 }
@@ -94,7 +99,7 @@ Ensure(Constraint, matching_null_string_against_non_null_string) {
     Constraint *equals_string_hello_constraint =
     		create_equal_to_string_constraint("Hello", "user_greeting");
 
-    assert_that(compare_constraint(equals_string_hello_constraint, NULL), is_false);
+    assert_that(compare_string_constraint(equals_string_hello_constraint, NULL), is_false);
 
     destroy_constraint(equals_string_hello_constraint);
 }
@@ -103,8 +108,8 @@ Ensure(Constraint, matching_against_null_string) {
     Constraint *equals_null_string_constraint =
     		create_equal_to_string_constraint((const char *)NULL, "user_greeting");
 
-    assert_that(compare_constraint(equals_null_string_constraint, NULL), is_true);
-    assert_that(compare_constraint(equals_null_string_constraint, "Hello"), is_false);
+    assert_that(compare_string_constraint(equals_null_string_constraint, NULL), is_true);
+    assert_that(compare_string_constraint(equals_null_string_constraint, "Hello"), is_false);
 
     destroy_constraint(equals_null_string_constraint);
 }
@@ -112,28 +117,22 @@ Ensure(Constraint, matching_against_null_string) {
 Ensure(Constraint, matching_doubles_as_equal_with_default_significance) {
     Constraint *equal_to_double_37 = create_equal_to_double_constraint(37.0, "height");
 
-    intptr_t boxed_37 = box_double(37.0);
-    intptr_t boxed_36 = box_double(36.0);
-    assert_that(compare_constraint(equal_to_double_37, boxed_37), is_true);
-    assert_that(compare_constraint(equal_to_double_37, boxed_36), is_false);
+    assert_that(compare_double_constraint(equal_to_double_37, 37.0), is_true);
+    assert_that(compare_double_constraint(equal_to_double_37, 36.0), is_false);
 
     destroy_constraint(equal_to_double_37);
-    (void)unbox_double(boxed_37);
-    (void)unbox_double(boxed_36);
 }
 
 Ensure(Constraint, matching_doubles_respects_significant_figure_setting) {
     Constraint *want_337 = create_equal_to_double_constraint(337.0, "height");
-    intptr_t boxed_339 = box_double(339.0);
 
     significant_figures_for_assert_double_are(2);
-    assert_that(compare_constraint(want_337, boxed_339), is_true);
+    assert_that(compare_double_constraint(want_337, 339.0), is_true);
 
     significant_figures_for_assert_double_are(3);
-    assert_that(compare_constraint(want_337, boxed_339), is_false);
+    assert_that(compare_double_constraint(want_337, 339.0), is_false);
 
     destroy_constraint(want_337);
-    (void)unbox_double(boxed_339);
 }
 
 // TODO: convert to create_constraint_for_comparator("non-empty string", &is_non_empty_string);
@@ -190,7 +189,7 @@ Ensure(Constraint, compare_equal_to_contents_is_false_on_null) {
     Constraint *is_equal_to_contents_constraint =
         create_equal_to_contents_constraint(content, sizeof(content), "content");
 
-    assert_that(compare_constraint(is_equal_to_contents_constraint, NULL), is_false);
+    assert_that(compare_pointer_constraint(is_equal_to_contents_constraint, NULL), is_false);
 
     destroy_constraint(is_equal_to_contents_constraint);
 }
@@ -200,7 +199,7 @@ Ensure(Constraint, compare_not_equal_to_contents_is_false_on_null) {
     Constraint *is_not_equal_to_contents =
         create_not_equal_to_contents_constraint(content, sizeof(content), "content");
 
-    assert_that(compare_constraint(is_not_equal_to_contents, NULL), is_false);
+    assert_that(compare_pointer_constraint(is_not_equal_to_contents, NULL), is_false);
 
     destroy_constraint(is_not_equal_to_contents);
 }
@@ -210,7 +209,7 @@ Ensure(Constraint, can_compare_to_hex) {
     memset(chars, 0xaa, sizeof(chars));
     assert_that((unsigned char)chars[0], is_equal_to_hex(0xaa));
 }
-                                            
+
 TestSuite *constraint_tests() {
     TestSuite *suite = create_test_suite();
     add_test_with_context(suite, Constraint, default_destroy_clears_state);

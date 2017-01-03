@@ -24,7 +24,10 @@ CC = gcc -c -g -Wall -I$(CGREEN_ROOT)/include -I$(MYSQL_INCLUDE) -I$(FPIC)
 LINK = gcc -g
 LIBDIRS = -L$(CGREEN_BIN)/src -L$(MYSQL_LIB)
 
-# you might need to fixup the various path issues to get dynamic loading to work
+# You might need to fixup the various path issues to get dynamic loading to work.
+# You could try the script ../setup.sh to ensure that the bins & libs in this
+# development tree is used
+
 # MacOSX:
 LDPATH = DYLD_LIBRARY_PATH="$(CGREEN_BIN)/src:$(MYSQL_LIB)"
 # Cygwin?
@@ -37,6 +40,7 @@ all: with_main with_runner special
 with_main:  first0 first1 \
 			words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 \
 			strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 \
+			double1 \
 			schema1 schema2 \
 			crash1 crash2 crash3 \
 			suite1 \
@@ -114,6 +118,9 @@ strlen6: strlen_tests6.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
 strlen7: strlen_tests7.o
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+
+double1: double_tests1.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
 schema1: schema_tests1.o person.h

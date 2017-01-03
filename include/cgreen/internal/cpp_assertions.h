@@ -14,6 +14,7 @@ namespace cgreen {
 
 	void assert_that_(const char *file, int line, const char *actual_string, const std::string& actual, Constraint *constraint);
 	void assert_that_(const char *file, int line, const char *actual_string, const std::string *actual, Constraint *constraint);
+	void assert_that_(const char *file, int line, const char *actual_string, double actual, Constraint *constraint);
 
 	// this isn't declared in assertions.h because you can't have overloads for an extern "C"-declared function, so it seems
 	void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint *constraint);

@@ -1,4 +1,3 @@
-#include <cgreen/parameters.h>
 #include <cgreen/suite.h>
 #include <cgreen/unit.h>
 #include <cgreen/vector.h>
@@ -9,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "parameters.h"
 
 #ifdef __cplusplus
 namespace cgreen {

@@ -1,5 +1,5 @@
 set(CGREEN_TEST_INCLUDE_DIRS
-  ${CGREEN_PUBLIC_INCLUDE_DIRS} 
+  ${CGREEN_PUBLIC_INCLUDE_DIRS}
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
@@ -76,7 +76,7 @@ foreach(c_test_file ${c_tests_library_SRCS})
 endforeach()
 
 set(cpp_tests_library_SRCS
-  ${cpp_tests_library_SRCS} 
+  ${cpp_tests_library_SRCS}
   cpp_assertion_tests.cpp
   )
 
@@ -108,6 +108,7 @@ foreach(case
     assertion
     breadcrumb
     cdash_reporter
+    cgreen_value
     constraint
     cute_reporter
     message_formatting
@@ -120,7 +121,7 @@ foreach(case
     unit
     vector
     xml_reporter
-)
+  )
   set(${case}_tests_SRCS
       ${case}_tests.c
   )

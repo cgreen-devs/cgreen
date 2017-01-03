@@ -19,7 +19,7 @@ Constraint static_is_non_null_constraint = {
     /* .format_failure_message_for */ failure_message_for,
     /* .actual_value_message */ "",
     /* .expected_value_message */ "",
-    /* .stored_value */ (intptr_t)NULL,
+    /* .expected_value */ {INTEGER, {0}},
     /* .stored_value_name */ "null",
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
@@ -34,7 +34,7 @@ Constraint static_is_null_constraint = {
     /* .format_failure_message_for */ failure_message_for,
     /* .actual_value_message */ "",
     /* .expected_value_message */ "",
-    /* .stored_value */ (intptr_t)NULL,
+    /* .expected_value */ {INTEGER, {(intptr_t)NULL}},
     /* .stored_value_name */ "null",
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
@@ -49,7 +49,7 @@ Constraint static_is_false_constraint = {
     /* .format_failure_message_for */ failure_message_for,
     /* .actual_value_message */ "",
     /* .expected_value_message */ "",
-    /* .stored_value */ false,
+    /* .expected_value */ {INTEGER, {false}},
     /* .stored_value_name */ "false",
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
@@ -64,7 +64,7 @@ Constraint static_is_true_constraint = {
     /* .format_failure_message_for */ failure_message_for,
     /* .actual_value_message */ "",
     /* .expected_message */ "",
-    /* .stored_value */ true,
+    /* .expected_value */ {INTEGER, {true}},
     /* .stored_value_name */ "true",
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0

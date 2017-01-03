@@ -6,8 +6,6 @@
 using namespace cgreen;
 #endif
 
-#define compare_constraint(c, x) (*c->compare)(c, (intptr_t)x)
-
 Describe(MessageFormatting);
 BeforeEach(MessageFormatting) {}
 AfterEach(MessageFormatting) {}

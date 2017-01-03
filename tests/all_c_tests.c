@@ -16,6 +16,7 @@ TestSuite *constraint_tests();
 TestSuite *cpp_assertion_tests();
 #endif
 TestSuite *cute_reporter_tests();
+TestSuite *cgreen_value_tests();
 TestSuite *message_formatting_tests();
 TestSuite *messaging_tests();
 TestSuite *mock_tests();

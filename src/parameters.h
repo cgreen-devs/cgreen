@@ -9,6 +9,7 @@ namespace cgreen {
 #endif
 
 CgreenVector *create_vector_of_names(const char *parameters);
+CgreenVector *create_vector_of_double_markers_for(const char *parameters);
 
 #ifdef __cplusplus
     }

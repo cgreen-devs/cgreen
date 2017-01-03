@@ -4,12 +4,15 @@
 #include <cgreen/message_formatting.h>
 #include <cgreen/reporter.h>
 #include <cgreen/string_comparison.h>
+
 #include <stdint.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
+
+#include "cgreen_value_internal.h"
 
 #ifdef __cplusplus
 namespace cgreen {
@@ -20,6 +23,7 @@ void assert_core_(const char *file, int line, const char *actual_string, intptr_
                   Constraint* constraint) {
 
     char *failure_message;
+
     if (NULL != constraint && is_not_comparing(constraint)) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
@@ -33,6 +37,17 @@ void assert_core_(const char *file, int line, const char *actual_string, intptr_
         constraint->destroy(constraint);
 
         return;
+    }
+
+    if (constraint->type == DOUBLE_COMPARER) {
+        (*get_test_reporter()->assert_true)(
+                get_test_reporter(),
+                file,
+                line,
+                false,
+                "Constraints of double type, such as [%s],\n"
+                "\t\tshould only be used with 'assert_that_double()' to ensure proper comparison.",
+                constraint->name);
     }
 
     if (parameters_are_not_valid_for(constraint, actual)) {
@@ -56,7 +71,7 @@ void assert_core_(const char *file, int line, const char *actual_string, intptr_
                                         get_test_reporter(),
                                         file,
                                         line,
-                                        (*constraint->compare)(constraint, actual),
+                                        (*constraint->compare)(constraint, make_cgreen_integer_value(actual)),
                                         failure_message
                                         );
 
@@ -66,6 +81,7 @@ void assert_core_(const char *file, int line, const char *actual_string, intptr_
 
 void assert_that_double_(const char *file, int line, const char *expression, double actual, Constraint* constraint) {
     BoxedDouble* boxed_actual;
+
     if (NULL != constraint && is_not_comparing(constraint)) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
@@ -81,9 +97,21 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
         return;
     }
 
+    if (constraint->type != DOUBLE_COMPARER) {
+        (*get_test_reporter()->assert_true)(
+                get_test_reporter(),
+                file,
+                line,
+                false,
+                "Only constraints of double type should be used with 'assert_that_double()'.\n"
+                "\t\tOther types of constraints, such as [%s], will probably fail comparison.",
+                constraint->name);
+    }
+
     boxed_actual = (BoxedDouble*)box_double(actual);
 
-    (*get_test_reporter()->assert_true)(get_test_reporter(), file, line, (*constraint->compare)(constraint, (intptr_t)boxed_actual),
+    (*get_test_reporter()->assert_true)(get_test_reporter(), file, line,
+            (*constraint->compare)(constraint, make_cgreen_double_value(actual)),
             "Expected [%s] to [%s] [%s] within [%d] significant figures\n"
             "\t\tactual value:\t%08f\n"
             "\t\texpected value:\t%08f",
@@ -92,7 +120,7 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
             constraint->expected_value_name,
             get_significant_figures(),
             actual,
-            as_double(constraint->expected_value));
+            constraint->expected_value.value.double_value);
 
     free(boxed_actual);
     constraint->destroy(constraint);

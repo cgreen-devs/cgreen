@@ -15,6 +15,7 @@ extern "C" {
 #endif
 
 void assert_core_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint *constraint);
+void assert_that_double_(const char *file, int line, const char *expression, double actual, Constraint* constraint);
 
 #ifdef __cplusplus
 }
