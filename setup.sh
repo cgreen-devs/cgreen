@@ -61,5 +61,5 @@ fi
 #
 # So simulate that build/tools (where cgreen-runner is) is bin, and build/src (where
 # the cgreen library is built) is lib
-[ -f bin ] && ln -s build/tools bin
-[ -f lib ] && ln -s build/src lib
+[ -f bin ] || ln -s build/tools bin
+[ -f lib ] || ln -s build/src lib
