@@ -59,19 +59,31 @@ class FuncDefVisitor(c_ast.NodeVisitor):
 
 def arg_list(args):
     if len(args.params) > 0:
-        return [el for el in map(lambda n: n.name, args.params) if el is not None]
+        return [el for el in map(parameter_name_or_box_double, args.params) if el is not None]
     else:
         return []
-    
+
+def parameter_name_or_box_double(node):
+    if isdouble_decl(node):
+        return "box_double({})".format(node.name)
+    else:
+        return node.name
+
 def should_return(node):
-    if not isvoid(node):
+    if isdouble_decl(node):
+        print("  return unbox_double(", end="")
+    elif not isvoid_decl(node):
         print("  return ", end="")
     else:
         print("  ", end="")
 
-def isvoid(node):
+def isvoid_decl(node):
     type = node.type
     return isinstance(type, c_ast.TypeDecl) and type.type.names == ['void']
+
+def isdouble_decl(node):
+    type = node.type
+    return isinstance(type, c_ast.TypeDecl) and type.type.names == ['double']
 
 def show_func_defs(args):
     # Note that cpp is used. Provide a path to your own cpp or
@@ -87,11 +99,11 @@ def usage():
 Usage:
     cgreen-mocker.py <headerfile> { <cpp_directive> }
 
-<headerfile>:    file with function declarations that you want
-                 to mock
-<cpp_directive>: any 'cpp' directive but most useful are e.g.
-                 "-I <directory>" to ensure cpp finds files and
-                 "-D <define>" to create an inline define""")
+    <headerfile>:    file with function declarations that you want
+                     to mock
+    <cpp_directive>: any 'cpp' directive but most useful are e.g.
+                     "-I <directory>" to ensure cpp finds files and
+                     "-D <define>" to create an inline define""")
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
