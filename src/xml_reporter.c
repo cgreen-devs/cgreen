@@ -43,7 +43,7 @@ static const char *file_prefix;
 TestReporter *create_xml_reporter(const char *prefix) {
     TestReporter *reporter;
     XmlMemo *memo;
-    
+
     reporter = create_reporter();
     if (reporter == NULL) {
         return NULL;
@@ -56,7 +56,7 @@ TestReporter *create_xml_reporter(const char *prefix) {
     }
     memo->printer = fprintf;
     reporter->memo = memo;
-    
+
     file_prefix = prefix;
     reporter->start_suite = &xml_reporter_start_suite;
     reporter->start_test = &xml_reporter_start_test;
@@ -119,7 +119,7 @@ static void xml_reporter_start_suite(TestReporter *reporter, const char *suitena
     FILE *out;
 
     (void)count;                /* UNUSED */
-    
+
     suite_path[0] = '\0';
     walk_breadcrumb(reporter->breadcrumb, strcat_path_segment, &segment_decrementer);
     add_suite_name(suitename);
@@ -186,17 +186,18 @@ static void xml_show_skip(TestReporter *reporter, const char *file, int line) {
 }
 
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
-    char buffer[100];
-    
+    char buffer[1000];
+
     output = concat(output, indent(reporter));
     output = concat(output, "<failure message=\"");
 
-    vsprintf(buffer, message, arguments);
+    vsnprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), message, arguments);
     output = concat(output, buffer);
     output = concat(output, "\">\n");
     output = concat(output, indent(reporter));
 
-    sprintf(buffer, "\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
+    snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]),
+             "\t<location file=\"%s\" line=\"%d\"/>\n", file, line);
     output = concat(output, buffer);
     output = concat(output, indent(reporter));
     output = concat(output, "</failure>\n");
