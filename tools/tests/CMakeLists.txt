@@ -11,13 +11,6 @@ set(RUNNER_TESTS_SRCS
   runnerTests.c)
 add_library(${CGREEN_RUNNER_TESTS_LIBRARY} SHARED ${RUNNER_TESTS_SRCS})
 
-set(EMPTY_TESTS_LIBRARY
-  cgreen_empty_tests
-  CACHE INTERNAL "empty test suite for cgreen-runner tests")
-set(EMPTY_TESTS_SRCS
-  empty_tests.c)
-add_library(${EMPTY_TESTS_LIBRARY} SHARED ${EMPTY_TESTS_SRCS})
-
 target_link_libraries(${CGREEN_RUNNER_TESTS_LIBRARY} ${CGREEN_SHARED_LIBRARY} ${CMAKE_DL_LIBS})
 
 SET(CGREEN_RUNNER_TESTS_LIBRARY "$<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests>")
