@@ -42,6 +42,7 @@
 
 
 #define will_return(value) create_return_value_constraint((intptr_t)value)
+#define will_return_double(value) create_return_double_value_constraint(value)
 #define will_set_contents_of_parameter(parameter_name, value, size) create_set_parameter_value_constraint(#parameter_name, (intptr_t)value, (size_t)size)
 
 

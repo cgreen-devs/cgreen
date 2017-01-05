@@ -1,7 +1,8 @@
 #include <cgreen/cgreen.h>
 #include <cgreen/vector.h>
-#include <cgreen/parameters.h>
 #include <stdlib.h>
+
+#include "../src/parameters.h"
 
 #ifdef __cplusplus
 using namespace cgreen;
@@ -119,6 +120,33 @@ Ensure(can_strip_multiple_mixed_parameters_to_leave_original_names) {
     assert_that((const char *)cgreen_vector_get(names, 4), is_equal_to_string("e"));
     assert_that((const char *)cgreen_vector_get(names, 5), is_equal_to_string("f"));
     assert_that((const char *)cgreen_vector_get(names, 6), is_equal_to_string("g"));
+}
+
+Ensure(can_create_empty_vector_of_double_markers) {
+    CgreenVector *markers = create_vector_of_double_markers_for("");
+    assert_that(cgreen_vector_size(markers), is_equal_to(0));
+}
+
+Ensure(can_create_markers_for_single_non_double) {
+    CgreenVector *markers = create_vector_of_double_markers_for("a");
+    assert_that(cgreen_vector_size(markers), is_equal_to(1));
+    assert_that(!*(bool*)cgreen_vector_get(markers, 0));
+}
+
+Ensure(can_create_markers_for_single_double) {
+    CgreenVector *markers = create_vector_of_double_markers_for("box_double(a)");
+    assert_that(cgreen_vector_size(markers), is_equal_to(1));
+    assert_that(*(bool*)cgreen_vector_get(markers, 0));
+}
+
+Ensure(can_create_markers_for_mixed_parameters) {
+    CgreenVector *markers = create_vector_of_double_markers_for("a, box_double(b), c,d,box_double(e)");
+    assert_that(cgreen_vector_size(markers), is_equal_to(5));
+    assert_that(!*(bool*)cgreen_vector_get(markers, 0));
+    assert_that(*(bool*)cgreen_vector_get(markers, 1));
+    assert_that(!*(bool*)cgreen_vector_get(markers, 2));
+    assert_that(!*(bool*)cgreen_vector_get(markers, 3));
+    assert_that(*(bool*)cgreen_vector_get(markers, 4));
 }
 
 TestSuite *parameter_tests() {

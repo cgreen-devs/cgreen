@@ -13,6 +13,11 @@ void assert_that_(const char *file, int line, const char *actual_string,
 }
 
 void assert_that_(const char *file, int line, const char *actual_string,
+		double actual, Constraint* constraint) {
+    assert_that_double_(file, line, actual_string, actual, constraint);
+}
+
+void assert_that_(const char *file, int line, const char *actual_string,
 		const std::string& actual, Constraint* constraint) {
 
 	// if they are using a string constraint, they are almost certainly meaning to do a deep comparison

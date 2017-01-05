@@ -37,3 +37,17 @@ Ensure(AssertionMessage, for_compare_null_to_area) {
 Ensure(AssertionMessage, for_actual_with_percent) {
     assert_that(strlen("%d"), is_equal_to(3)); /* Actually, it's not but should preserve '%' */
 }
+
+/* CAUTION: These two tests outputs the expected warning messages, but
+   also fails the comparisons, obviously, since that is what they try
+   to warn against. So the output of those failed constraints might
+   change unintentionally. */
+Ensure(AssertionMessage, for_using_double_constraints_with_assert_that) {
+    assert_that(3, is_equal_to_double(3.1415926));
+    assert_that(0, is_less_than_double(3.1415926));
+    assert_that(7, is_greater_than_double(3.1415926));
+}
+
+Ensure(AssertionMessage, for_using_non_double_constraints_with_assert_that_double) {
+    assert_that_double(3, is_equal_to(3));
+}

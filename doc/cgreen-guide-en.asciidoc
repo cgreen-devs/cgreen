@@ -55,9 +55,9 @@ Here are some of its features:
 porting from other frameworks.
         
 *Cgreen* was initially developed to support C programming, but there
-is also excellent support for C{pp}. It was initially a spinoff from a
+is also some support for C{pp}. It was initially a spinoff from a
 research project at Wordtracker and created by Marcus Baker. Significant
-additions by Matt Hargett and continuous nurturing by Thomas Nilsson has
+additions by Matt Hargett and continuous nurturing by Thomas Nilefalk has
 made *Cgreen* what it is today.
 
 
@@ -161,10 +161,10 @@ smallest one I could think of. The only complication is the `cgreen.h`
 header file and the mysterious looking "declarations" at the beginning
 of the file.
 
-The BDD flavoured *Cgreen* notation calls for a Subject Under Test
+The BDD flavoured *Cgreen* notation calls for a System Under Test
 (SUT), or a 'context'. The declarations give a context to the tests
 and it also makes it more natural to talk about which module or class,
-the subject under test, is actually responsible for the functionality
+the system under test, is actually responsible for the functionality
 we are expressing. In one way we are 'describing', or spec'ing, the
 functionality of the SUT. That's what the `Describe();` does. And for
 technical reasons (actually requirements of the C language), you must
@@ -554,19 +554,6 @@ these mistakes very obvious. It's taken me far longer to write these
 paragraphs than it has to write the code.
 
 
-=== Using Cgreen with C{pp}
-
-The above example, as well as most of this guide, shows how to uses
-*CGreen* with C. You can also use *CGreen* with C++. This is actually
-quite simple. If you have installed the *Cgreen* library for C{pp} 
-all you have to do is
-
-  * Use the `cgreen` name space by adding `using namespace cgreen;`
-    at the beginning of the file with your tests
-
-There is also one extra feature when you use C++, the `assert_throws`
-function.
-
 
 == Building Cgreen test suites
 
@@ -593,7 +580,7 @@ include::tutorial_src/strlen_tests1.c[lines=8..10]
 -----------------------------
 
 The `Ensure` macro takes two arguments (in the BDD style) where the
-first is the Subject Under Test (SUT) which must be declared with the
+first is the System Under Test (SUT) which must be declared with the
 `Describe` macro.
 
 [source,c]
@@ -619,7 +606,7 @@ is then
 
 [source, C]
 ---------------
-assert_that(actual, <assertion>);
+assert_that(actual, <constraint>);
 ---------------
 
 NOTE: Sometimes you just want to fail the test explicitly, and there
@@ -637,7 +624,8 @@ Here are the standard constraints...
 |=========================================================
 |*Constraint* |*Passes if actual value/expression...*
 | _Basic_ | 
-| `is_true` | evaluates to true, buy you can also just leave out the constraint, e.g. `assert_that(found)` if `found` is of boolean type
+| `is_true` | evaluates to true, buy you can also just leave out the constraint,
+              e.g. `assert_that(found)` if `found` is of boolean type
 | `is_false` | evaluates to false
 | `is_null` | equals null
 | `is_non_null` | is a non null value
@@ -651,22 +639,30 @@ Here are the standard constraints...
 | `is_less_than(value)` | '< value'
 ||
 | _Structs and general data_ | 
-| `is_equal_to_contents_of(pointer, size)` | matches the data pointed to by `pointer` to a size of `size` bytes
-| `is_not_equal_to_contents_of(pointer, size)` | does not match the data pointed to by `pointer` to a size of `size` bytes
+| `is_equal_to_contents_of(pointer, size)` | matches the data pointed
+                                             to by `pointer` to a size
+                                             of `size` bytes
+| `is_not_equal_to_contents_of(pointer, size)` | does not match the data
+                                                 pointed to by `pointer`
+                                                 to a size of `size` bytes
 ||
 | _Strings_ | 
 | `is_equal_to_string(value)` | are equal when compared using `strcmp()`
 | `is_not_equal_to_string(value)` | are not equal when compared using `strcmp()`
 | `contains_string(value)` | contains `value` when evaluated using `strstr()`
-| `does_not_contain_string(value)` | does not contain `value` when evaluated using `strstr()`
+| `does_not_contain_string(value)` | does not contain `value` when evaluated
+                                     using `strstr()`
 | `begins_with_string(value)` | starts with the string `value`
 | `does_not_begin_with_string(value)` | does not start with the string `value`
 | `ends_with_string(value)` | ends with the string `value`
 | `does_not_end_with_string(value)` | does not end with the string `value`
 ||
 | _Double floats_ | 
-| `is_equal_to_double(value)` | are equal to `value` within the number of significant digits (which you can set with a call to `significant_figures_for_assert_double_are(int figures)`)
-| `is_not_equal_to_double(value)` | are not equal to `value` within the number of significant digits
+| `is_equal_to_double(value)` | are equal to `value` within the number of
+                                significant digits (which you can set with a call
+                                to `significant_figures_for_assert_double_are(int figures)`)
+| `is_not_equal_to_double(value)` | are not equal to `value` within the number of
+                                    significant digits
 | `is_less_than_double(value)` | `< value` withing the number of significant digits
 | `is_greater_than_double(value)` | `> value` within the number of significant digits
 |=========================================================
@@ -680,12 +676,25 @@ it is the value of the pointers themselves that has to be the same,
 i.e. the pointers have to point at the same string for the test to 
 pass.
 
-A cautionary note about the constraints is that you cannot use C/C++
-string literal concatenation (like `"don't" "use" "string"
-"concatenation"`) in the parameters to the constraints. If you do, 
-you will get weird error messages about missing arguments to the
-constraint macros. This is caused by the macros using argument 
-strings to produce nice failure messages.
+The constraints above should be used as the second argument to one of the
+assertion functions:
+
+|=========================================================
+|*Assertion* |*Description*
+| `assert_that(expected, constraint)` | Passes if `expected` fullfulls `constraint`,
+                                        to be used for all assertions except `double`
+                                        type values
+| `assert_that_double(expected, constraint)` | Passes if `expected` fullfulls `constraint`,
+                                               only to be used for assertions on `double`
+                                               type values
+|=========================================================
+
+
+WARNING: You cannot use C/C++ string literal concatenation (like
+`"don't" "use" "string" "concatenation"`) in the parameters to the
+constraints. If you do, you will get weird error messages about missing
+arguments to the constraint macros. This is caused by the macros using
+argument  strings to produce nice failure messages.
 
 
 === Asserting C++ Exceptions
@@ -753,12 +762,14 @@ assertion macros:
 
 |=========================================================
 |*Assertion* |*Description*
-| `assert_true(boolean)` |Passes if boolean evaluates true
-| `assert_false(boolean)` |Fails if boolean evaluates true
-| `assert_equal(first, second)` |Passes if 'first == second'
-| `assert_not_equal(first, second)` |Passes if 'first != second'
-| `assert_string_equal(char *, char *)` |Uses 'strcmp()' and passes if the strings are equal
-| `assert_string_not_equal(char *, char *)` |Uses 'strcmp()' and fails if the strings are equal
+| `assert_true(boolean)` | Passes if boolean evaluates true
+| `assert_false(boolean)` | Fails if boolean evaluates true
+| `assert_equal(first, second)` | Passes if 'first == second'
+| `assert_not_equal(first, second)` | Passes if 'first != second'
+| `assert_string_equal(char *, char *)` | Uses 'strcmp()' and passes if
+                                          the strings are equal
+| `assert_string_not_equal(char *, char *)` | Uses 'strcmp()' and fails
+                                              if the strings are equal
 |=========================================================
 
 Each assertion has a default message comparing the two values. If you
@@ -1291,245 +1302,11 @@ TestSuite *connection_fixture(TestSuite *suite) {
 This allows the reuse of common fixtures across projects.
 
 
-         
-[[runner]]
-== Automatic Test Discovery
-
-
-=== Forgot to Add Your Test?
-
-When we write a new test we focus on the details about the test we are
-trying to write. And writing tests is no trivial matter so this might
-well take a lot of brain power.
-
-So, it comes as no big surprise, that sometimes you write your test
-and then forget to add it to the suite. When we run it it appears that it
-passed on the first try! Although this *should* really make you
-suspicious, sometimes you get so happy that you just continue with
-churning out more tests and more code. It's not until some (possibly
-looong) time later that you realize, after much headache and
-debugging, that the test did not actually pass. It was never even run!
-
-There are practices to minimize the risk of this happening, such as
-always running the test as soon as you can set up the test. This way
-you will see it fail before trying to get it to pass.
-
-But it is still a practice, something we, as humans, might fail to do
-at some point. Usually this happens when we are most stressed and in
-need of certainty.
-
-
-=== The Solution - the 'cgreen-runner'
-
-*Cgreen* gives you a tool to avoid not only the risk of this
-happening, but also the extra work and extra code. It is called the
-`cgreen-runner`.
-
-The `cgreen-runner` should come with your *Cgreen* installation if
-your platform supports the technique that is required, which is
-'programatic access to dynamic loading of libraries'. This means
-that a program can load an external library of code into memory and
-inspect it. Kind of self-inspection, or reflexion.
-
-So all you have to do is to build a dynamically loadable library of
-all tests (and of course your objects under test and other necessary
-code). Then you can run the `cgreen-runner` and point it to the
-library. The runner will then load the library, enumerate all tests in
-it, and run every test.
-
-It's automatic, and there is nothing to forget.
-
-
-=== Using the Runner
-
-Assuming your tests are in `first_test.c` the typical command to
-build your library using `gcc` would be
-
---------------------------
-$ gcc -shared -o first_test.so -fPIC first_test.c -lcgreen
---------------------------
-
-The `-fPIC` means to generate 'position independent code' which is
-required if you want to load the library dynamically. To explicitly
-state this is required on many platforms.
-
-How to build a dynamically loadable shared library might vary a lot
-depending on your platform. Can't really help you there, sorry!
-
-As soon as we have linked it we can run the tests using the
-`cgreen-runner` by just giving it the shared, dynamically loadable,
-object library as an argument:
-
--------------------------
-$ cgreen-runner first_test.so
-include::tutorial_src/runner1.out[]
--------------------------
-
-More or less exactly the same output as when we ran our first test in
-the beginning of this quickstart tutorial. We can see that the top
-level of the tests will be named as the library it was discovered in,
-and the second level is the context for our Subject Under Test, in
-this case 'Cgreen'. We also see that the context is mentioned in the
-failure message, giving a fairly obvious `Cgreen -> fails_this_test`.
-
-Now we can actually delete the main function in our source code. We
-don't need all this, since the runner will discover all tests
-automatically.
-
-[source,c]
-------------------------
-include::tutorial_src/first_tests1.c[lines=15..20]
-------------------------
-
-It always feel good to delete code, right?
-
-We can also select which test to run:
-
--------------------------
-$ cgreen-runner first_test.so Cgreen:this_test_should_fail
-include::tutorial_src/runner2.out[]
--------------------------
-
-We recommend the BDD notation to discover tests, and you indicate
-which context the test we want to run is in. In this example it is
-`Cgreen` so the test should be refered to as `Cgreen:this_test_should_fail`.
-
-If you don't use the BDD notation there is actually a context anyway,
-it is called `default`.
-
-
-[[runner-options]]
-=== Cgreen Runner Options
-
-Once you get the build set up right for the cgreen-runner everything
-is fairly straight-forward. But you have a few options:
-
---xml <prefix>:: Instead of messages on stdout with the TextReporter,
-      		     write results into one XML-file per suite or context,
-		         compatible with Hudson/Jenkins CI. The filename(s)
-		         will be `<prefix>-<suite>.xml`
---suite <name>:: Name the top level suite
---no-run::       Don't run the tests
---verbose::      Show progress information and list discovered tests
---colours::      Use colours (or colors) to emphasis result (requires ANSI-capable terminal)
---quiet::        Be more quiet
-
-The `verbose` option is particularly handy since it will give you the
-actual names of all tests discovered. So if you have long test names
-you can avoid mistyping them by copying and pasting from the output of
-`cgreen-runner --verbose`. It will also give the mangled name of the
-test which should make it easier to find in the debugger. Here's an
-example:
-
-------------------------
-include::tutorial_src/runner3.out[]
-------------------------
-
-
-=== Selecting Tests To Run
-
-You can name a single test to be run by giving it as the last argument
-on the command line. The name should be in the format
-`<SUT>:<test>`. If not obvious you can get that name by using the
-`--verbose` command option which will show you all tests discovered
-and both there C/C++ and Cgreen names. Copying the Cgreen name from
-that output is an easy way to run only that particular test. When a
-single test is named it is run using `run_single_test()`. As described
-in <<tdd_with_cgreen>> this means that it is __not__ protected by
-`fork()`-ing it to run in its own process.
-
-The `cgreen-runner` supports selecting tests with limited pattern
-matching. Using an asterisk as a simple 'match many' symbol you can
-say things like
-
---------------------
-$ cgreen-runner <library> Cgreen:*
-$ cgreen-runner <library> C*:*this*
---------------------
-
-
-=== Multiple Test Libraries
-
-You can run tests in multiple libraries in one go by adding them
-to the `cgreen-runner` command:
-
------------------------
-$ cgreen-runner first_set.so second_set.so ...
------------------------
-
-
-=== Setup, Teardown and Custom Reporters
-
-The `cgreen-runner` will only run setup and teardown functions if you
-use the BDD-ish style with `BeforeEach()` and `AfterEach()` as
-described above. The runner does not pickup `setup()` and `teardown()`
-added to suites, because it actually doesn't run suites. It discovers
-all tests and runs them one by one. The macros required by the BDD-ish
-style ensures that the corresponding `BeforeEach()` and `AfterEach()`
-are run before and after each test.
-
-NOTE: The `cgreen-runner` __will__ discover your tests in a shared
-library even if you don't use the BDD-ish style. But it will not be
-able to find and run the `setup()` and/or `teardown()` attached to your
-suite(s).
-
-In case you have non-BDD style tests __without__ any `setup()` and/or
-`teardown()` you can still use the runner. The default suite/context
-where the tests live in this case is called `default`. But why don't
-you convert your tests to BDD notation? This removes the risk of
-frustrating trouble-shooting when you added `setup()`
-and `teardown()` and can't understand why they are not run...
-
-So, the runner incourages you to use the BDD notation. But since we
-recommend that you do anyway, that's no extra problem if you are
-starting out from scratch. But see <<changing_style>> for some easy
-tips on how to get you there if you already have non-BDD
-tests.
-
-You can choose between the TextReporter, which we have been seeing so
-far, and the built-in JUnit/Ant compatible XML-reporter using the
-`--xml` option. But it is not currently possible to use custom
-reporters as outlined in <<reporter>> with the runner.
-
-If you require another custom reporter you need to resort to the
-standard, programatic, way of invoking your tests. For now...
-
-
-[[xensure]]
-=== Skipping Tests
-
-Sometimes you find that you need to temporarily remove a test, perhaps
-to do a refactoring when you have a failing test. Ignoring that test will
-allow you to do the refactoring while still in the green.
-
-An old practice is then to comment it out. That is a slightly cumbersome.
-It is also hazardous habit as there is no indication of a missing test if you
-forget to uncomment it when you are done.
-
-*Cgreen* offers a much better solution. You can just add an 'x' infront
-of the `Ensure` for the test and that test will be skipped.
-
-[source, C]
-----------------------------
-...
-xEnsure(Reader, ...) {
-  ...
-}
-...
-----------------------------
-
-With this method, it is a one character change to temporarily ignore,
-and un-ignore, a test. It is also easily found using text searches through
-a complete source tree. *Cgreen* will also tally the skipped tests, so
-it is clearly visible that you have some skipped test when you run them.
-
-
-
 == Mocking functions with Cgreen
         
 When testing you want certainty above all else.  Random events destroy
 confidence in your test suite and force needless extra runs "to be
-sure".  A good test places the subject under test into a tightly
+sure".  A good test places the system under test into a tightly
 controlled environment.  A test chamber if you like.  This makes the
 tests fast, repeatable and reliable.
 
@@ -2107,9 +1884,126 @@ NOTE: Before you can do this you need to implement the mock functions, of
 course. I.e. write functions that replaces the real
 functions and instead calls `mock()`.
 
+TIP: You can try the `cgreen-mocker` for this, as described in
+<<cgreen-mocker>>.
 
 
-== Context, Subject Under Test & Suites
+
+== Special Cases
+
+=== Working with `doubles` 
+
+We are not talking about
+http://www.hostettler.net/blog/2014/05/18/fakes-stubs-dummy-mocks-doubles-and-all-that/[test doubles]
+here, but about values of C/C++ ``double`` type (a.k.a double float.)
+
+*Cgreen* is designed to make it easy and natural to write assertions and
+expectations. Many functions can be used for multiple data types, e.g.
+`is_equal_to()` applies to all integer type values.
+
+But the C language has its quirks. One of them is the fact that it is
+impossible to inspect the datatypes of values during run-time. This has e.g.
+forced the introduction of `is_equal_to_string()` to enable string comparisons.
+
+==== Assertions and Constraints
+
+When it comes to double typed values this has spilled over even further. For
+double typed values we have
+
+|==========================================================================
+| *Constraint*
+| `is_equal_to_double(value)`
+| `is_not_equal_to_double(value)`
+| `is_less_than_double(value)`
+| `is_greater_than_double(value)`
+|==========================================================================
+
+But there is also the special assert
+
+|=========================================================
+| *Assertion*
+| `assert_that_double(expected, constraint)`
+|=========================================================
+
+and the utility function
+
+|====================
+| *Utility*
+| `significant_figures_for_assert_double_are(int figures)` 
+|====================
+
+And of course they are designed to go together. So, if you want to assert
+an expression yeilding a `double` typed value, you need to combine them:
+
+[source,c]
+-----------------------------
+include::tutorial_src/double_tests1.c[lines=11..14]
+-----------------------------
+
+NOTE: You have to use `assert_that_double()` and `is_equal_to_double()`
+together.
+
+and you would get
+
+-----------------------------
+include::tutorial_src/double1.out[lines=2..5]
+-----------------------------
+
+
+[[double_mocks]]
+==== Mocks
+
+When you are using mocks with double typed values there are two different
+issues to remember:
+
+1. To use `double` as arguments to `mock()` you must "box" them
+2. A `double` return value from `mock()` needs to be "unboxed"
+
+So, what is this "boxing" and "unboxing" then?
+
+Since a `double float` will not fit into the same memory space as
+an integer *Cgreen* handles that by encapsulating ("boxing") the
+`double` into an area which is represented by the pointer to it.
+And that pointer can fit into the integer type value that *Cgreen*
+uses to transport values into and out of `mock()`.
+To get the value back you "unbox" it.
+
+|=================================================================
+|*Boxing*                          | *Description*
+| `box_double(double value)`       | Wrap the value in an allocated
+                                     memory area and return a pointer
+                                     to it
+| `unbox_double(BoxedDouble *box)` | Unwrap the value by freeing the
+                                     area and returning the value 
+|=================================================================
+
+Here's an example of that:
+
+[source,c]
+-----------------------------
+include::tutorial_src/double_tests1.c[lines=16..26]
+-----------------------------
+
+
+
+=== Using Cgreen with C{pp}
+
+The examples in this guide uses the C langauge to shows how to use
+*CGreen*. You can also use *CGreen* with C++.
+
+NOTE: The following needs expansion and more details as the support
+for C++ is extended.
+
+All you have to do is
+
+  * Use the `cgreen` namespace by adding `using namespace cgreen;`
+    at the beginning of the file with your tests
+
+There is also one extra feature when you use C++, the `assert_throws`
+function.
+
+
+== Context, System Under Test & Suites
 
 As mentioned earlier, *Cgreen* promotes the behaviour driven
 style of test driving code. The thinking behind BDD is that we don't
@@ -2125,12 +2019,14 @@ that´ to `ensure that´, makes a huge difference in thinking, and also
 very often in quality of the resulting code.
 
 
-=== The SUT - Subject Under Test
+=== The SUT - System Under Test
 
 Since BDD talks about behaviour, there has to be something that we can
-talk about as having the wanted behaviour. This is usually called the
-SUT, the Subject Under Test. *Cgreen* in BDD-ish mode requires that you
-define a name for it.
+talk about as having that wanted behaviour. This is usually called the
+SUT, the System Under Test. The "system" might be whatever we are testing,
+such as a C module ("MUT"), class ("CUT"), object ("OUT"), function ("FUT")
+or method ("MUT"). We will stick with SUT in this document. To use *Cgreen*
+in BDD-ish mode you must define a name for it.
 
 [source, c]
 -----------------------
@@ -2201,10 +2097,243 @@ Ensure(shopping_basket_for_returning_customer, allows_use_of_discounts) {
 The 'context' would then be `shopping_basket_for_returning_customer`,
 with the SUT being the shopping basket 'class'.
 
-So 'context', 'subject under test' and 'suite' are mostly
+So 'context', 'system under test' and 'suite' are mostly
 interchangable concepts in *Cgreen* lingo. It's a named group of
 'tests' that share the same `BeforeEach` and `AfterEach` and lives in
 the same source file.
+
+
+
+[[runner]]
+== Automatic Test Discovery
+
+
+=== Forgot to Add Your Test?
+
+When we write a new test we focus on the details about the test we are
+trying to write. And writing tests is no trivial matter so this might
+well take a lot of brain power.
+
+So, it comes as no big surprise, that sometimes you write your test
+and then forget to add it to the suite. When we run it it appears that it
+passed on the first try! Although this *should* really make you
+suspicious, sometimes you get so happy that you just continue with
+churning out more tests and more code. It's not until some (possibly
+looong) time later that you realize, after much headache and
+debugging, that the test did not actually pass. It was never even run!
+
+There are practices to minimize the risk of this happening, such as
+always running the test as soon as you can set up the test. This way
+you will see it fail before trying to get it to pass.
+
+But it is still a practice, something we, as humans, might fail to do
+at some point. Usually this happens when we are most stressed and in
+need of certainty.
+
+
+=== The Solution - the 'cgreen-runner'
+
+*Cgreen* gives you a tool to avoid not only the risk of this
+happening, but also the extra work and extra code. It is called the
+`cgreen-runner`.
+
+The `cgreen-runner` should come with your *Cgreen* installation if
+your platform supports the technique that is required, which is
+'programatic access to dynamic loading of libraries'. This means
+that a program can load an external library of code into memory and
+inspect it. Kind of self-inspection, or reflexion.
+
+So all you have to do is to build a dynamically loadable library of
+all tests (and of course your objects under test and other necessary
+code). Then you can run the `cgreen-runner` and point it to the
+library. The runner will then load the library, enumerate all tests in
+it, and run every test.
+
+It's automatic, and there is nothing to forget.
+
+
+=== Using the Runner
+
+Assuming your tests are in `first_test.c` the typical command to
+build your library using `gcc` would be
+
+--------------------------
+$ gcc -shared -o first_test.so -fPIC first_test.c -lcgreen
+--------------------------
+
+The `-fPIC` means to generate 'position independent code' which is
+required if you want to load the library dynamically. To explicitly
+state this is required on many platforms.
+
+How to build a dynamically loadable shared library might vary a lot
+depending on your platform. Can't really help you there, sorry!
+
+As soon as we have linked it we can run the tests using the
+`cgreen-runner` by just giving it the shared, dynamically loadable,
+object library as an argument:
+
+-------------------------
+$ cgreen-runner first_test.so
+include::tutorial_src/runner1.out[]
+-------------------------
+
+More or less exactly the same output as when we ran our first test in
+the beginning of this quickstart tutorial. We can see that the top
+level of the tests will be named as the library it was discovered in,
+and the second level is the context for our System Under Test, in
+this case 'Cgreen'. We also see that the context is mentioned in the
+failure message, giving a fairly obvious `Cgreen -> fails_this_test`.
+
+Now we can actually delete the main function in our source code. We
+don't need all this, since the runner will discover all tests
+automatically.
+
+[source,c]
+------------------------
+include::tutorial_src/first_tests1.c[lines=15..20]
+------------------------
+
+It always feel good to delete code, right?
+
+We can also select which test to run:
+
+-------------------------
+$ cgreen-runner first_test.so Cgreen:this_test_should_fail
+include::tutorial_src/runner2.out[]
+-------------------------
+
+We recommend the BDD notation to discover tests, and you indicate
+which context the test we want to run is in. In this example it is
+`Cgreen` so the test should be refered to as `Cgreen:this_test_should_fail`.
+
+If you don't use the BDD notation there is actually a context anyway,
+it is called `default`.
+
+
+[[runner-options]]
+=== Cgreen Runner Options
+
+Once you get the build set up right for the cgreen-runner everything
+is fairly straight-forward. But you have a few options:
+
+--xml <prefix>:: Instead of messages on stdout with the TextReporter,
+      		     write results into one XML-file per suite or context,
+		         compatible with Hudson/Jenkins CI. The filename(s)
+		         will be `<prefix>-<suite>.xml`
+--suite <name>:: Name the top level suite
+--no-run::       Don't run the tests
+--verbose::      Show progress information and list discovered tests
+--colours::      Use colours (or colors) to emphasis result (requires ANSI-capable terminal)
+--quiet::        Be more quiet
+
+The `verbose` option is particularly handy since it will give you the
+actual names of all tests discovered. So if you have long test names
+you can avoid mistyping them by copying and pasting from the output of
+`cgreen-runner --verbose`. It will also give the mangled name of the
+test which should make it easier to find in the debugger. Here's an
+example:
+
+------------------------
+include::tutorial_src/runner3.out[]
+------------------------
+
+
+=== Selecting Tests To Run
+
+You can name a single test to be run by giving it as the last argument
+on the command line. The name should be in the format
+`<SUT>:<test>`. If not obvious you can get that name by using the
+`--verbose` command option which will show you all tests discovered
+and both there C/C++ and Cgreen names. Copying the Cgreen name from
+that output is an easy way to run only that particular test. When a
+single test is named it is run using `run_single_test()`. As described
+in <<tdd_with_cgreen>> this means that it is __not__ protected by
+`fork()`-ing it to run in its own process.
+
+The `cgreen-runner` supports selecting tests with limited pattern
+matching. Using an asterisk as a simple 'match many' symbol you can
+say things like
+
+--------------------
+$ cgreen-runner <library> Cgreen:*
+$ cgreen-runner <library> C*:*this*
+--------------------
+
+
+=== Multiple Test Libraries
+
+You can run tests in multiple libraries in one go by adding them
+to the `cgreen-runner` command:
+
+-----------------------
+$ cgreen-runner first_set.so second_set.so ...
+-----------------------
+
+
+=== Setup, Teardown and Custom Reporters
+
+The `cgreen-runner` will only run setup and teardown functions if you
+use the BDD-ish style with `BeforeEach()` and `AfterEach()` as
+described above. The runner does not pickup `setup()` and `teardown()`
+added to suites, because it actually doesn't run suites. It discovers
+all tests and runs them one by one. The macros required by the BDD-ish
+style ensures that the corresponding `BeforeEach()` and `AfterEach()`
+are run before and after each test.
+
+NOTE: The `cgreen-runner` __will__ discover your tests in a shared
+library even if you don't use the BDD-ish style. But it will not be
+able to find and run the `setup()` and/or `teardown()` attached to your
+suite(s).
+
+In case you have non-BDD style tests __without__ any `setup()` and/or
+`teardown()` you can still use the runner. The default suite/context
+where the tests live in this case is called `default`. But why don't
+you convert your tests to BDD notation? This removes the risk of
+frustrating trouble-shooting when you added `setup()`
+and `teardown()` and can't understand why they are not run...
+
+So, the runner incourages you to use the BDD notation. But since we
+recommend that you do anyway, that's no extra problem if you are
+starting out from scratch. But see <<changing_style>> for some easy
+tips on how to get you there if you already have non-BDD
+tests.
+
+You can choose between the TextReporter, which we have been seeing so
+far, and the built-in JUnit/Ant compatible XML-reporter using the
+`--xml` option. But it is not currently possible to use custom
+reporters as outlined in <<reporter>> with the runner.
+
+If you require another custom reporter you need to resort to the
+standard, programatic, way of invoking your tests. For now...
+
+
+[[xensure]]
+=== Skipping Tests
+
+Sometimes you find that you need to temporarily remove a test, perhaps
+to do a refactoring when you have a failing test. Ignoring that test will
+allow you to do the refactoring while still in the green.
+
+An old practice is then to comment it out. That is a slightly cumbersome.
+It is also hazardous habit as there is no indication of a missing test if you
+forget to uncomment it when you are done.
+
+*Cgreen* offers a much better solution. You can just add an 'x' infront
+of the `Ensure` for the test and that test will be skipped.
+
+[source, C]
+----------------------------
+...
+xEnsure(Reader, ...) {
+  ...
+}
+...
+----------------------------
+
+With this method, it is a one character change to temporarily ignore,
+and un-ignore, a test. It is also easily found using text searches through
+a complete source tree. *Cgreen* will also tally the skipped tests, so
+it is clearly visible that you have some skipped test when you run them.
 
 
 
@@ -2708,9 +2837,67 @@ return a boolean for monitoring purposes.
 
 == Hints and Tips
 
-CAUTION: This chapter is in its infancy. It will contain tips for
+CAUTION: This chapter is intended to contain tips for
 situations that you need some help with, but it is nowhere near complete
 at this time.
+
+[[cgreen-mocker]]
+=== `cgreen-mocker` - Automated Mocking
+
+Are you starting out with *Cgreen* on a largish legacy system? And there
+are loads and loads of functions to mock to get a unit under test?
+
+You could try the `cgreen-mocker` that is supplied as a contributed
+part of the *Cgreen* source distribution.
+
+It is a Python program that parses C language header files and tries
+to create a corresponding `.mock` file where each function declaration
+is replaced with a call to `mock()`.
+
+-----------------
+Usage:
+  cgreen-mocker.py <headerfile> { <cpp_directive> }
+     <headerfile>: file with function declarations that you want
+                   to mock
+     <cpp_directive>: any 'cpp' directive but most useful is e.g.
+                      "-I <directory>" to ensure cpp finds files.
+-----------------
+
+So give a header file containg lines like
+
+[source,c]
+----------------------------
+extern CgreenValue make_cgreen_integer_value(intptr_t integer);
+extern CgreenValue make_cgreen_string_value(const char *string);
+----------------------------
+
+`cgreen-mocker` will, give that there are no errors, print something
+like this on the screen:
+
+[source,c]
+----------------------------
+CgreenValue make_cgreen_integer_value(intptr_t integer) {
+  return mock(integer);
+}
+
+CgreenValue make_cgreen_string_value(const char *string) {
+  return mock(string);
+}
+----------------------------
+
+WARNING: `cgreen-mocker` cannot manage the special handling that
+`double` values require. (See <<double_mock>> for details.)
+
+To use `cgreen-mocker` you need Python and `pycparser`. The latter
+can be found at [https://github.com/eliben/pycparser] or can easily
+be installed with
+
+----------------
+$ pip install pycparser
+----------------
+
+NOTE: `cgreen-mocker` is an unsupported contribution to the *Cgreen*
+project by Thomas Nilefalk.
 
 
 === Compiler Error Messages
