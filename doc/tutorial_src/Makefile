@@ -10,6 +10,7 @@ MYSQL_INCLUDE = /opt/local/include/mysql56/mysql
 MYSQL_LIB = /opt/local/lib/mysql56/mysql
 else
 ifeq ($(shell uname -o),Cygwin)
+FPIC=
 MYSQL_INCLUDE = /usr/include/mysql
 MYSQL_LIB = /usr/lib
 else
