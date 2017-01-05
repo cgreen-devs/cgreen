@@ -1,3 +1,11 @@
+# This Makefile generates source and output that is part of Cgreen documentation
+# Files here are included in the asciidoc source so be careful with what you
+# commit, it might thrash the documentation. In particular, be aware that
+# non-UTF-8 characters in them (usually) makes generation of PDF impossible.
+# 'stream2' and 'stream5' might generate random data as actual in the output
+# file. This is the way it is supposed to be to work as documentation examples.
+#
+
 .IGNORE :
 .SILENT :
 
@@ -37,6 +45,11 @@ LDPATH = DYLD_LIBRARY_PATH="$(CGREEN_BIN)/src:$(MYSQL_LIB)"
 RUNNER = $(LDPATH) $(CGREEN_BIN)/tools/cgreen-runner
 
 all: with_main with_runner special
+	echo
+	echo "NOTE: 'stream2.out' and 'stream5.out' should contain a simulation"
+	echo "NOTE: of random memory as the actual. Don't commit changes that do"
+	echo "NOTE: not. But also note that PDF generation of the documentation"
+	echo "NOTE: will fail if there are real non-UTF-8 in it."
 
 # Since we have multiple files for the same tutorial example, distinguished by a number,
 # we need to remove that number from all output
@@ -73,13 +86,19 @@ with_runner: stream0 stream1 stream2 stream3 stream4 stream6 \
 special: runner1 runner2 runner3 stream5 learning_mocks
 
 clean:
-	rm *.exe *.o *.out *.so *.stackdump *~
+	rm -f *.exe *.o *.out *.so *.stackdump *~
+
+first_tests0.o: first_tests0.c
+	$(CC) -o $@ -c $^ $(CFLAGS) -Wno-unused-variable
 
 first0: first_tests0.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
 first1: first_tests1.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+
+words_tests0.o: words_tests0.c
+	$(CC) -o $@ -c $^ $(CFLAGS) -Wno-unused-variable
 
 words0: all_tests.o words_tests0.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
@@ -201,7 +220,8 @@ stream4: stream_tests3.o read_paragraph2.o
 stream5: stream_tests4.o read_paragraph2.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 	$(RUNNER) $@.so | $(SED) > $@.out
-	echo "Removing non-characters from stream5.out, check manually if the following fails:"
+	echo "Trying to remove non-characters from stream5.out"
+	echo "Check manually if the following sed fails:"
 	cp $@.out $@.bak && LANG='' sed -e 's/^[^[[:space:]].*"]/"]/g' $@.bak > $@.bak2 && mv $@.bak2 $@.out
 	rm $@.bak
 
