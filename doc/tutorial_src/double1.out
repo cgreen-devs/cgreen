@@ -4,4 +4,4 @@ double_tests.c:13: Failure: can_assert_double_values
 		actual value:	3.140000
 		expected value:	5.000000
 
-Completed "main": 3 passes, 1 failure in 31ms.
+Completed "main": 3 passes, 1 failure in 42ms.

@@ -1,3 +1,11 @@
+# This Makefile generates source and output that is part of Cgreen documentation
+# Files here are included in the asciidoc source so be careful with what you
+# commit, it might thrash the documentation. In particular, be aware that
+# non-UTF-8 characters in them (usually) makes generation of PDF impossible.
+# 'stream2' and 'stream5' might generate random data as actual in the output
+# file. This is the way it is supposed to be to work as documentation examples.
+#
+
 .IGNORE :
 .SILENT :
 
@@ -10,17 +18,18 @@ MYSQL_INCLUDE = /opt/local/include/mysql56/mysql
 MYSQL_LIB = /opt/local/lib/mysql56/mysql
 else
 ifeq ($(shell uname -o),Cygwin)
+FPIC=
 MYSQL_INCLUDE = /usr/include/mysql
 MYSQL_LIB = /usr/lib
 else
-MYSQLROOT = 
+MYSQLROOT =
 MYSQL_INCLUDE = $(MYSQLROOT)/include
 MYSQL_LIB = $(MYSQLROOT)/lib
 endif
 endif
 
 CGREEN_BIN=$(CGREEN_ROOT)/build
-CC = gcc -c -g -Wall -I$(CGREEN_ROOT)/include -I$(MYSQL_INCLUDE) -I$(FPIC)
+CC = gcc -c -g -Wall -I$(CGREEN_ROOT)/include -I$(MYSQL_INCLUDE) $(FPIC)
 LINK = gcc -g
 LIBDIRS = -L$(CGREEN_BIN)/src -L$(MYSQL_LIB)
 
@@ -36,6 +45,21 @@ LDPATH = DYLD_LIBRARY_PATH="$(CGREEN_BIN)/src:$(MYSQL_LIB)"
 RUNNER = $(LDPATH) $(CGREEN_BIN)/tools/cgreen-runner
 
 all: with_main with_runner special
+	echo
+	echo "NOTE: 'stream2.out' and 'stream5.out' should contain a simulation"
+	echo "NOTE: of random memory as the actual. Don't commit changes that do"
+	echo "NOTE: not. But also note that PDF generation of the documentation"
+	echo "NOTE: will fail if there are real non-UTF-8 in it."
+
+# Since we have multiple files for the same tutorial example, distinguished by a number,
+# we need to remove that number from all output
+REMOVE_NUMBERS=-e 's/\([a-z]\)[0-9]\+\"/\1\"/' -e 's/\([a-z]\)[0-9]\+\.c/\1\.c/'
+
+# To minimize the diffs we also need to normalize execution times
+NORMALIZE_DURATION=-e 's/\ in\ [0-9]\+ms/\ in\ 42ms/g'
+
+# And batch that together in one symbol
+SED=sed $(REMOVE_NUMBERS) $(NORMALIZE_DURATION)
 
 with_main:  first0 first1 \
 			words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 \
@@ -49,25 +73,32 @@ with_main:  first0 first1 \
 			test_as_xml2 \
 			test_as_xml3 \
 			test_as_xml4
-	for f in $^ ; do echo $$f; $(LDPATH) ./$$f | sed 's/[0-9]*\.c/.c/g' > $$f.out; done
+	for f in $^ ; do echo $$f; $(LDPATH) ./$$f | $(SED) > $$f.out; done
 
 # Most tests built to run with the runner we can run here, but some need special care
-# They have their output produced directly in the build rules below
+# They have their output produced directly in their build rules below and are run usint
+# the 'special' rule
 with_runner: stream0 stream1 stream2 stream3 stream4 stream6 \
 			 multiple_streams1 multiple_streams2 \
 			 formatter0 formatter1 formatter2 formatter3 formatter4 formatter5 formatter6
-	for f in $^ ; do echo $$f; $(RUNNER) $$f.so | sed -e 's/[0-9]\"/\"/' -e 's/[0-9]\.c/\.c/' > $$f.out; done
+	for f in $^ ; do echo $$f; $(RUNNER) $$f.so | $(SED) > $$f.out; done
 
 special: runner1 runner2 runner3 stream5 learning_mocks
 
 clean:
-	rm *.exe *.o *.out *.so *.stackdump *~
+	rm -f *.exe *.o *.out *.so *.stackdump *~
+
+first_tests0.o: first_tests0.c
+	$(CC) -o $@ -c $^ $(CFLAGS) -Wno-unused-variable
 
 first0: first_tests0.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
 first1: first_tests1.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+
+words_tests0.o: words_tests0.c
+	$(CC) -o $@ -c $^ $(CFLAGS) -Wno-unused-variable
 
 words0: all_tests.o words_tests0.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
@@ -138,7 +169,7 @@ crash2: crash_tests2.o
 crash3: crash_tests3.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
-suite1: suite1.o suite_person_tests.o suite_strlen_tests.o 
+suite1: suite1.o suite_person_tests.o suite_strlen_tests.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen -lmysqlclient
 
 test_as_xml0: test_as_xml0.o
@@ -188,8 +219,9 @@ stream4: stream_tests3.o read_paragraph2.o
 # This test generates random characters read from memory so we need to tidy that up
 stream5: stream_tests4.o read_paragraph2.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) $@.so | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
-	echo "Removing non-characters from stream5.out, check manually if the following fails:"
+	$(RUNNER) $@.so | $(SED) > $@.out
+	echo "Trying to remove non-characters from stream5.out"
+	echo "Check manually if the following sed fails:"
 	cp $@.out $@.bak && LANG='' sed -e 's/^[^[[:space:]].*"]/"]/g' $@.bak > $@.bak2 && mv $@.bak2 $@.out
 	rm $@.bak
 
@@ -208,17 +240,17 @@ multiple_streams2: multiple_streams2.o
 .PHONY: runner1
 runner1: first_tests2.o
 	$(LINK) -shared -o first_tests.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) first_tests.so | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
+	$(RUNNER) first_tests.so | $(SED) > $@.out
 
 .PHONY: runner2
 runner2: first_tests2.o
 	$(LINK) -shared -o first_tests.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) first_tests.so Cgreen:fails_this_test | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
+	$(RUNNER) first_tests.so Cgreen:fails_this_test | $(SED) > $@.out
 
 .PHONY: runner3
 runner3: first_tests2.o
 	$(LINK) -shared -o first_tests.so $^ $(LIBDIRS) -lcgreen
-	$(RUNNER) -v first_tests.so Cgreen:fails_this_test | sed -e 's/[0-9]\"/\"\"/' -e 's/[0-9]\.c/\.c/' > $@.out
+	$(RUNNER) -v first_tests.so Cgreen:fails_this_test | $(SED) > $@.out
 
 .PHONY: formatter0
 formatter0: stream1.o formatter_tests0.o
@@ -246,4 +278,3 @@ formatter6: stream2.o formatter_tests5.o
 learning_mocks: learning_mocks.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 	$(RUNNER) $@.so
-
