@@ -1,14 +1,9 @@
 #include <cgreen/constraint_syntax_helpers.h>
 #include <cgreen/constraint.h>
 #include <cgreen/message_formatting.h>
-#ifndef __cplusplus
 #include <stdbool.h>
-#endif
 #include <stddef.h>
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
 
 Constraint static_is_non_null_constraint = {
     /* .type */ VALUE_COMPARER,
@@ -74,9 +69,5 @@ Constraint *is_non_null = &static_is_non_null_constraint;
 Constraint *is_null = &static_is_null_constraint;
 Constraint *is_false = &static_is_false_constraint;
 Constraint *is_true = &static_is_true_constraint;
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

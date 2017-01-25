@@ -6,10 +6,6 @@
 #include "wincompat.h"
 #include "cgreen/internal/cgreen_time.h"
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
-
 
 #include "Strsafe.h"
 #define SECOND  (1000)
@@ -180,11 +176,6 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
 
     return;
 }
-
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 #endif
 /* vim: set ts=4 sw=4 et cindent: */

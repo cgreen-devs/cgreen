@@ -17,11 +17,6 @@
 #include "cgreen/internal/android_headers/androidcompat.h"
 #endif // #ifdef __ANDROID__
 
-#ifdef __cplusplus
-#include <stdexcept>
-
-namespace cgreen {
-#endif
 
 static const char* CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE = "CGREEN_PER_TEST_TIMEOUT";
 
@@ -317,9 +312,5 @@ void die(const char *message, ...) {
     va_end(arguments);
     exit(EXIT_FAILURE);
 }
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

@@ -17,9 +17,6 @@
 #include "wincompat.h"
 #endif
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
 
 // Handling of percent signs
 static const char *next_percent_sign(const char *s) {
@@ -278,7 +275,3 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
 
     return message;
 }
-
-#ifdef __cplusplus
-}
-#endif

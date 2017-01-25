@@ -1,12 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-// memory.h now co-located w/.c file
-//#include <cgreen/memory.h>
 #include "memory.h"
-
-#ifdef __cplusplus
-namespace cgreen {
-#endif
 
 #define MEMORY_INCREMENT 1024
 
@@ -75,14 +69,10 @@ static int move_to_front(MemoryPool *pool, void *pointer) {
     return 0;
 }
 
-static void move_up_one(void **blocks, long amount) {
-    if (amount == 0) {
-        return;
-    }
-    // FIXME: this doesn't compile and the smenatics might be wrong
-    //memmove(blocks[0], blocks[1], (size_t)(blocks[amount] - blocks[1]));
-}
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
+/* static void move_up_one(void **blocks, long amount) { */
+/*     if (amount == 0) { */
+/*         return; */
+/*     } */
+/*     // FIXME: this doesn't compile and the semantics might be wrong */
+/*     //memmove(blocks[0], blocks[1], (size_t)(blocks[amount] - blocks[1])); */
+/* } */

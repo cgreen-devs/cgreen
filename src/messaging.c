@@ -19,9 +19,6 @@
 #include <sched.h>
 #endif
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
 
 #define message_content_size(Type) (sizeof(Type) - sizeof(long))
 
@@ -143,9 +140,5 @@ static void clean_up_messaging(void) {
     queues = NULL;
     queue_count = 0;
 }
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

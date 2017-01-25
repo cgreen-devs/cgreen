@@ -20,9 +20,6 @@
 #include "cgreen/internal/android_headers/androidcompat.h"
 #endif // #ifdef __ANDROID__
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
 
 typedef void (*sighandler_t)(int);
 
@@ -114,9 +111,5 @@ static void ignore_ctrl_c(void) {
 static void allow_ctrl_c(void) {
     signal(SIGINT, SIG_DFL);
 }
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

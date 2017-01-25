@@ -15,10 +15,6 @@
 #  error "Your POSIX platform does not support gettimeofday(). Please report a bug to http://github.com/cgreen-devs/cgreen/issues"
 #endif
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
-
 #if defined(HAVE_GETTIMEOFDAY)
 uint32_t cgreen_time_get_current_milliseconds() {
 #ifdef __CYGWIN__
@@ -41,8 +37,5 @@ uint32_t cgreen_time_get_current_milliseconds() {
 }
 #endif
 
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

@@ -6,9 +6,6 @@
 
 #include "parameters.h"
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
 #ifdef _MSC_VER
 //disable warning on windows
 //'strdup': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _strdup.
@@ -143,9 +140,5 @@ static char *strip_function_from(char *token, const char *function_name) {
 
     return token;
 }
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

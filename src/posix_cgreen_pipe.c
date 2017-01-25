@@ -15,10 +15,6 @@
      /* One way to do it the old way is: ioctl(fd, FIOBIO, &flags); */
 #endif
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
-
 
 int cgreen_pipe_open(int pipes[2])
 {
@@ -71,10 +67,5 @@ ssize_t cgreen_pipe_write(int p, const void *buf, size_t count)
     }
     return pipe_write_result;
 }
-
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

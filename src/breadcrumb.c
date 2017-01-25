@@ -1,9 +1,6 @@
 #include <cgreen/breadcrumb.h>
 #include <stdlib.h>
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
 
 CgreenBreadcrumb *create_breadcrumb(void) {
     CgreenBreadcrumb *breadcrumb = (CgreenBreadcrumb *) malloc(sizeof(CgreenBreadcrumb));
@@ -60,9 +57,5 @@ void walk_breadcrumb(CgreenBreadcrumb *breadcrumb, void (*walker)(const char *, 
         (*walker)(breadcrumb->trail[i], memo);
     }
 }
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */
