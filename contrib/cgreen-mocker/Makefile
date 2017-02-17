@@ -1,14 +1,15 @@
 all:
 	@echo "With the command:"
-	@echo
+	@echo "-----------------"
 	./cgreen-mocker.py double.h > double.mock
-	@echo
+	@echo "-----------------"
 	@echo "'cgreen-mocker' reads a C header file and transforms any"
 	@echo "function declarations into corresponding Cgreen mocks."
 	@echo "Here's the input:"
-	@echo
+	@echo "-----------------"
 	@cat double.h
-	@echo
+	@echo "-----------------"
 	@echo "And here's the resulting mock declaration:"
-	@echo
+	@echo "------------------------------------------"
 	@cat double.mock
+	@echo "------------------------------------------"
