@@ -18,7 +18,9 @@
 # Since it uses pycparser it will only handle C functions
 # and you will probably need the pycparsers "fake_libc_include"
 # to avoid parsing the whole world of libc headers. You can
-# point to it using a command line 'cpp_directive' arg.
+# make a soft link in your directory to a copy of the pycparser
+# source, and cgreen-mocker will pick it up or you can point
+# to it using a command line 'cpp_directive' arg.
 #
 # You can find pycparser at https://github.com/eliben/pycparser
 #
@@ -58,7 +60,7 @@ class FuncDefVisitor(c_ast.NodeVisitor):
         print()
 
 def arg_list(args):
-    if len(args.params) > 0:
+    if args != None and len(args.params) > 0:
         return [el for el in map(parameter_name_or_box_double, args.params) if el is not None]
     else:
         return []
@@ -70,10 +72,15 @@ def parameter_name_or_box_double(node):
         return node.name
 
 def should_return(node):
+    generator = c_generator.CGenerator()
     if isdouble_decl(node):
         print("  return unbox_double(", end="")
     elif not isvoid_decl(node):
-        print("  return ", end="")
+        print("  return (", end="")
+        print(generator.visit(node.type), end="")
+        if isinstance(node.type, c_ast.PtrDecl):
+            print(" *", end="")
+        print(") ", end="")
     else:
         print("  ", end="")
 

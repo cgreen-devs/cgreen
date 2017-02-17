@@ -20,6 +20,15 @@ all: build
 debug: build
 	cd build; cmake -DCMAKE_BUILD_TYPE:string=Debug ..; make
 
+# TODO: verify that we're not already on CygwinXX, in that case "make" should suffice
+.PHONY:cygwin32
+cygwin32: build
+	cd build; cmake -DCMAKE_C_COMPILER=i686-pc-cygwin-gcc -DCMAKE_CXX_COMPILER=i686-pc-cygwin-g++ -DCMAKE_INSTALL_BINDIR:string=bin32 -DCMAKE_INSTALL_LIBDIR:string=lib32 ..; make
+
+.PHONY:cygwin64
+cygwin64: build
+	cd build; cmake -DCMAKE_C_COMPILER=i686-pc-cygwin-gcc -DCMAKE_CXX_COMPILER=i686-pc-cygwin-g++ ..; make
+
 .PHONY:test
 test: build
 	cd build; make check
