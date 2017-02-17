@@ -18,7 +18,9 @@
 # Since it uses pycparser it will only handle C functions
 # and you will probably need the pycparsers "fake_libc_include"
 # to avoid parsing the whole world of libc headers. You can
-# point to it using a command line 'cpp_directive' arg.
+# make a soft link in your directory to a copy of the pycparser
+# source, and cgreen-mocker will pick it up or you can point
+# to it using a command line 'cpp_directive' arg.
 #
 # You can find pycparser at https://github.com/eliben/pycparser
 #
