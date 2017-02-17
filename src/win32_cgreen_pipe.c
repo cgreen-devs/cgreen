@@ -7,11 +7,6 @@
 #include <wincompat.h>
 
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
-
-
 ssize_t cgreen_pipe_read(int p, void *buf, size_t count)
 {
     DWORD bytesRead;
@@ -84,11 +79,6 @@ void cgreen_pipe_close(int p)
 {
     CloseHandle((HANDLE)p);
 }
-
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 #endif
 /* vim: set ts=4 sw=4 et cindent: */

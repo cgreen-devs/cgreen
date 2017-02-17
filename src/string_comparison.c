@@ -5,9 +5,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
 
 bool strings_are_equal(const char* actual, const char* expected) {
     /* TODO: if expected is null, warn user to use appropriate non-string assert instead */
@@ -30,8 +27,3 @@ bool string_contains(const char* actual, const char* expected) {
 
     return (strstr(actual, expected) != NULL);
 }
-
-
-#ifdef __cplusplus
-}
-#endif

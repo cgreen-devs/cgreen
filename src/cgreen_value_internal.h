@@ -3,6 +3,7 @@
 
 #include <cgreen/cgreen_value.h>
 
+/* CgreenValues are used from some user level tests so must be compilable in C++ */
 #ifdef __cplusplus
 namespace cgreen {
     extern "C" {

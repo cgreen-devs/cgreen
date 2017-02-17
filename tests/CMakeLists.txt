@@ -22,6 +22,13 @@ endif()
 
 
 # C tests, library to use with runner, and a main program
+# NOTE that some of these are "pure" unit tests which only
+# need to work in C, since Cgreen's internal is C.
+# Some others are actually testing user level functionality
+# which must work both for C and C++ compiles.
+# TODO: separate out those into separate dirs? Or just
+# two lists of files, one which should go into C++ compilation
+# too.
 set(c_tests_library_SRCS
   assertion_tests.c
   breadcrumb_tests.c

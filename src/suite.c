@@ -10,10 +10,6 @@
 
 #include "parameters.h"
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
-
 
 CgreenContext defaultContext = {
     /* name     */ "",
@@ -126,6 +122,3 @@ int count_tests(TestSuite *suite) {
     return count;
 }
 
-#ifdef __cplusplus
-}
-#endif

@@ -7,10 +7,9 @@
 #include <stack>
 #include <vector>
 #include <typeinfo>
-#ifdef __cplusplus
+
 namespace cgreen {
     extern "C" {
-#endif
 
 #define message_content_size(Type) (sizeof(Type) - sizeof(long))
 
@@ -81,10 +80,7 @@ int receive_cgreen_message(int messaging) {
 static void clean_up_messaging() {
     queue_count = 0;
 }
-
-#ifdef __cplusplus
 }
 } // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

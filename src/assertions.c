@@ -14,10 +14,6 @@
 
 #include "cgreen_value_internal.h"
 
-#ifdef __cplusplus
-namespace cgreen {
-#endif
-
 
 void assert_core_(const char *file, int line, const char *actual_string, intptr_t actual,
                   Constraint* constraint) {
@@ -184,9 +180,5 @@ const char *show_null_as_the_string_null(const char *string) {
     return (string == NULL ? "NULL" : string);
 }
 
-
-#ifdef __cplusplus
-} // namespace cgreen
-#endif
 
 /* vim: set ts=4 sw=4 et cindent: */

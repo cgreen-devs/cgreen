@@ -68,6 +68,11 @@ Ensure(Constraint, compare_is_correct_when_using_integers) {
     destroy_constraint(is_equal_to_37);
 }
 
+Ensure(Constraint, compare_to_is_null_correctly) {
+    assert_that(NULL, is_null);
+    assert_that(14, is_not_null);
+}
+
 Ensure(Constraint, string_constraint_destroy_clears_state) {
     Constraint *string_constraint =
     		create_equal_to_string_constraint("Hello", "user_greeting");
