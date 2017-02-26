@@ -69,7 +69,7 @@ Ensure(Constraint, compare_is_correct_when_using_integers) {
 }
 
 Ensure(Constraint, compare_to_is_null_correctly) {
-    assert_that(NULL, is_null);
+    assert_that(0, is_null);
     assert_that(14, is_not_null);
 }
 
