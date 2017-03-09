@@ -4,8 +4,10 @@
 #define CB_TYPE int
 
 struct CircularBuffer_ {
-    int length;
     CB_TYPE* buffer;
+    CB_TYPE* buffer_end;
+    CB_TYPE* head;
+    CB_TYPE* tail;
 };
 
 typedef struct CircularBuffer_ CircularBuffer;

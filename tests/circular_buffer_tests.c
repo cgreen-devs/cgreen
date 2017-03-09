@@ -14,8 +14,8 @@ Ensure(CircularBuffer, created_and_correctly_initialized) {
     int length=100;
     CircularBuffer* instance = create_circular_buffer(length);
     assert_that(instance, is_non_null);
-    assert_that(instance->length, is_equal_to(length));
     assert_that(instance->buffer, is_non_null);
+    assert_that(instance->buffer_end, is_equal_to( (instance->buffer + length) ));
 }
 
 
@@ -27,3 +27,4 @@ TestSuite *circular_buffer_tests() {
     return suite;
 }
 
+/* vim: set ts=4 sw=4 et cindent: */
