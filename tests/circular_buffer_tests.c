@@ -15,7 +15,7 @@ Ensure(CircularBuffer, created_and_correctly_initialized) {
     CircularBuffer* instance = create_circular_buffer(length);
     assert_that(instance, is_non_null);
     assert_that(instance->buffer, is_non_null);
-    assert_that(instance->buffer_end, is_equal_to( (instance->buffer + length) ));
+    assert_that(instance->buffer_end >= (instance->buffer + length));
     assert_that(instance->head, is_equal_to( instance->buffer ));
     assert_that(instance->tail, is_equal_to( instance->head ));
 }
