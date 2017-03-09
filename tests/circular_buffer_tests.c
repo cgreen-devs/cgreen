@@ -10,16 +10,19 @@ Describe(CircularBuffer);
 BeforeEach(CircularBuffer) {}
 AfterEach(CircularBuffer) {}
 
-Ensure(CircularBuffer, can_be_created) {
+Ensure(CircularBuffer, created_and_correctly_initialized) {
     int length=100;
-    assert_that(create_circular_buffer(length), is_non_null);
+    CircularBuffer* instance = create_circular_buffer(length);
+    assert_that(instance, is_non_null);
+    assert_that(instance->length, is_equal_to(length));
+    assert_that(instance->buffer, is_non_null);
 }
 
 
 TestSuite *circular_buffer_tests() {
     TestSuite *suite = create_test_suite();
 
-    add_test_with_context(suite, CircularBuffer, can_be_created);
+    add_test_with_context(suite, CircularBuffer, created_and_correctly_initialized);
 
     return suite;
 }
