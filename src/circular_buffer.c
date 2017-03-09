@@ -33,4 +33,13 @@ int write_to_circular_buffer(CircularBuffer* cb, CB_TYPE data) {
         return 0;
 }
 
+int read_from_circular_buffer(CircularBuffer* cb, CB_TYPE* pdata) {
+    if(cb->tail == cb->head)
+        return 0;
+    *pdata = *(cb->tail++);
+    if(cb->tail+1 == cb-> buffer_end)
+        cb->tail = cb-> buffer;
+    return 1;
+}
+
 /* vim: set ts=4 sw=4 et cindent: */

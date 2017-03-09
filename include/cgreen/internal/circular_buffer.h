@@ -20,6 +20,7 @@ namespace cgreen {
 CircularBuffer* create_circular_buffer(int len);
 void destroy_circular_buffer(CircularBuffer* cb);
 int write_to_circular_buffer(CircularBuffer* cb, CB_TYPE data);
+int read_from_circular_buffer(CircularBuffer* cb, CB_TYPE* pdata);
 
 #ifdef __cplusplus
     }

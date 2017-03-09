@@ -31,12 +31,24 @@ Ensure(CircularBuffer, accepts_data) {
     assert_that(write_to_circular_buffer(instance, 100), is_equal_to(0)); // full
 }
 
+Ensure(CircularBuffer, gives_data_back) {
+    int c;
+    for(int i=0; i<50; i++)
+        write_to_circular_buffer(instance, i*2);
+    for(int i=0; i<50; i++) {
+        assert_that(read_from_circular_buffer(instance, &c), is_equal_to(1));
+        assert_that(c, is_equal_to(i*2));
+    }
+    assert_that(read_from_circular_buffer(instance, &c), is_equal_to(0));
+}
+
 
 TestSuite *circular_buffer_tests() {
     TestSuite *suite = create_test_suite();
 
     add_test_with_context(suite, CircularBuffer, created_and_correctly_initialized);
     add_test_with_context(suite, CircularBuffer, accepts_data);
+    add_test_with_context(suite, CircularBuffer, gives_data_back);
 
     return suite;
 }
