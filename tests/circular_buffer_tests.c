@@ -26,7 +26,7 @@ Ensure(CircularBuffer, created_and_correctly_initialized) {
 }
 
 Ensure(CircularBuffer, accepts_data) {
-    for(int i=0; i<100; i++)
+    for(int i=0; i<length; i++)
         assert_that(write_to_circular_buffer(instance, i), is_equal_to(1));
     assert_that(write_to_circular_buffer(instance, 100), is_equal_to(0)); // full
 }
