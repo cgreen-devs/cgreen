@@ -20,11 +20,20 @@ Ensure(CircularBuffer, created_and_correctly_initialized) {
     assert_that(instance->tail, is_equal_to( instance->head ));
 }
 
+Ensure(CircularBuffer, accepts_data) {
+    int length=100;
+    CircularBuffer* instance = create_circular_buffer(length);
+    for(int i=0; i<99; i++)
+        assert_that(write_to_circular_buffer(instance, i), is_equal_to(1));
+    assert_that(write_to_circular_buffer(instance, 99), is_equal_to(0)); // full
+}
+
 
 TestSuite *circular_buffer_tests() {
     TestSuite *suite = create_test_suite();
 
     add_test_with_context(suite, CircularBuffer, created_and_correctly_initialized);
+    add_test_with_context(suite, CircularBuffer, accepts_data);
 
     return suite;
 }
