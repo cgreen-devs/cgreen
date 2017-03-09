@@ -7,12 +7,12 @@ CircularBuffer* create_circular_buffer(int len) {
     result = malloc(sizeof(CircularBuffer));
     if(!result)
         return NULL;
-    result->buffer = malloc(len*sizeof(CB_TYPE));
+    result->buffer = malloc((len+1)*sizeof(CB_TYPE));
     if(!result) {
         free(result);
         return NULL;
     }
-    result->buffer_end = result->buffer + len;
+    result->buffer_end = result->buffer + (len+1);
     result->head = result->tail = result->buffer;
     return result;
 }
