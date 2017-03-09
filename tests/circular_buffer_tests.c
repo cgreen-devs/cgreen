@@ -13,7 +13,9 @@ static const int length=100;
 BeforeEach(CircularBuffer) {
     instance = create_circular_buffer(length);
 }
-AfterEach(CircularBuffer) {}
+AfterEach(CircularBuffer) {
+    destroy_circular_buffer(instance);
+}
 
 Ensure(CircularBuffer, created_and_correctly_initialized) {
     assert_that(instance, is_non_null);

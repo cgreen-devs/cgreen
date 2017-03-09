@@ -17,6 +17,12 @@ CircularBuffer* create_circular_buffer(int len) {
     return result;
 }
 
+void destroy_circular_buffer(CircularBuffer* cb) {
+    free(cb->buffer);
+    cb->buffer = NULL;
+    free(cb);
+}
+
 int write_to_circular_buffer(CircularBuffer* cb, CB_TYPE data) {
     CB_TYPE* next = (cb->head+1 != cb->buffer_end) ? cb->head+1 : cb->buffer;
     if(next != cb->tail) {
