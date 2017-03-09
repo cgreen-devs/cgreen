@@ -7,12 +7,15 @@ using namespace cgreen;
 
 Describe(CircularBuffer);
 
-BeforeEach(CircularBuffer) {}
+static CircularBuffer* instance;
+static const int length=100;
+
+BeforeEach(CircularBuffer) {
+    instance = create_circular_buffer(length);
+}
 AfterEach(CircularBuffer) {}
 
 Ensure(CircularBuffer, created_and_correctly_initialized) {
-    int length=100;
-    CircularBuffer* instance = create_circular_buffer(length);
     assert_that(instance, is_non_null);
     assert_that(instance->buffer, is_non_null);
     assert_that(instance->buffer_end >= (instance->buffer + length));
@@ -21,8 +24,6 @@ Ensure(CircularBuffer, created_and_correctly_initialized) {
 }
 
 Ensure(CircularBuffer, accepts_data) {
-    int length=100;
-    CircularBuffer* instance = create_circular_buffer(length);
     for(int i=0; i<100; i++)
         assert_that(write_to_circular_buffer(instance, i), is_equal_to(1));
     assert_that(write_to_circular_buffer(instance, 100), is_equal_to(0)); // full
