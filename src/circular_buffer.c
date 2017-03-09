@@ -13,6 +13,7 @@ CircularBuffer* create_circular_buffer(int len) {
         return NULL;
     }
     result->buffer_end = result->buffer + len;
+    result->head = result->tail = result->buffer;
     return result;
 }
 
