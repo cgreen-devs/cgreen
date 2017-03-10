@@ -34,6 +34,7 @@ set(cgreen_SRCS
   assertions.c
   boxed_double.c
   breadcrumb.c
+  circular_buffer.c
   cgreen_time.c
   cgreen_value.c
   constraint.c
