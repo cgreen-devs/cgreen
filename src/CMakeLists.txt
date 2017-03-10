@@ -34,7 +34,6 @@ set(cgreen_SRCS
   assertions.c
   boxed_double.c
   breadcrumb.c
-  circular_buffer.c
   cgreen_time.c
   cgreen_value.c
   constraint.c
@@ -69,7 +68,18 @@ else(UNIX)
       win32_runner_platform.c
     )
   else(WIN32)
+    if(${CMAKE_SYSTEM_NAME} STREQUAL "Generic") # embedded systems, like MCUs
+      set (CGREEN_WITH_STATIC_LIBRARY ON)
+#    list (REMOVE_ITEM cgreen_SRCS cdash_reporter.c)
+      LIST(APPEND cgreen_SRCS 
+        circular_buffer.c
+        circular_buffer_messaging.c
+        generic_runner_platform.c
+      )
+      LIST(REMOVE_ITEM cgreen_SRCS messaging.c)
+    else() #Generic
     message(FATAL_ERROR "cgreen currently only works on UNIX, Cygwin, MacOSX and Windows. Please file a bug.")
+    endif() #Generic
   endif(WIN32)
 endif(UNIX)
 SET_SOURCE_FILES_PROPERTIES(${cgreen_SRCS} PROPERTIES LANGUAGE C)
