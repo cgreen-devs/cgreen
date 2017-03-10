@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include <cgreen/internal/circular_buffer.h>
+#include <stdlib.h>
 
 CircularBuffer* create_circular_buffer(int len) {
     CircularBuffer* result;

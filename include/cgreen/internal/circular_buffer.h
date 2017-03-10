@@ -1,7 +1,9 @@
 #ifndef CIRCULAR_BUFFER_HEADER
 #define CIRCULAR_BUFFER_HEADER
 
+#ifndef CB_TYPE
 #define CB_TYPE int
+#endif
 
 struct CircularBuffer_ {
     CB_TYPE* buffer;
