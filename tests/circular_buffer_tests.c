@@ -42,6 +42,19 @@ Ensure(CircularBuffer, gives_data_back) {
     assert_that(read_from_circular_buffer(instance, &c), is_equal_to(0));
 }
 
+Ensure(CircularBuffer, is_really_circular) {
+    int c;
+    for(int i=1; i<16*length; i++) {
+        for(int j=0; j<(length/2+3); j++)
+            assert_that(write_to_circular_buffer(instance, i*j), is_equal_to(1));
+        for(int j=0; j<(length/2+3); j++) {
+            assert_that(read_from_circular_buffer(instance, &c), is_equal_to(1));
+            assert_that(c, is_equal_to(i*j));
+        }
+        assert_that(read_from_circular_buffer(instance, &c), is_equal_to(0));
+    }
+}
+
 
 TestSuite *circular_buffer_tests() {
     TestSuite *suite = create_test_suite();
@@ -49,6 +62,7 @@ TestSuite *circular_buffer_tests() {
     add_test_with_context(suite, CircularBuffer, created_and_correctly_initialized);
     add_test_with_context(suite, CircularBuffer, accepts_data);
     add_test_with_context(suite, CircularBuffer, gives_data_back);
+    add_test_with_context(suite, CircularBuffer, is_really_circular);
 
     return suite;
 }

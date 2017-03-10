@@ -37,7 +37,7 @@ int read_from_circular_buffer(CircularBuffer* cb, CB_TYPE* pdata) {
     if(cb->tail == cb->head)
         return 0;
     *pdata = *(cb->tail++);
-    if(cb->tail+1 == cb-> buffer_end)
+    if(cb->tail == cb-> buffer_end)
         cb->tail = cb-> buffer;
     return 1;
 }
