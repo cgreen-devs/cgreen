@@ -1,6 +1,8 @@
 #include <cgreen/cgreen.h>
 #include <cgreen/internal/circular_buffer.h>
 
+#include <stdlib.h>
+
 #ifdef __cplusplus
 using namespace cgreen;
 #endif
@@ -44,7 +46,7 @@ Ensure(CircularBuffer, gives_data_back) {
 
 Ensure(CircularBuffer, is_really_circular) {
     int c;
-    for(int i=1; i<16*length; i++) {
+    for(int i=0; i<16; i++) {
         for(int j=0; j<(length/2+3); j++)
             assert_that(write_to_circular_buffer(instance, i*j), is_equal_to(1));
         for(int j=0; j<(length/2+3); j++) {
@@ -52,6 +54,24 @@ Ensure(CircularBuffer, is_really_circular) {
             assert_that(c, is_equal_to(i*j));
         }
         assert_that(read_from_circular_buffer(instance, &c), is_equal_to(0));
+    }
+}
+
+Ensure(CircularBuffer, withstands_stress_test) {
+    int msgs_in_buffer = 0, rx = 0, tx = 0;
+    int c;
+    for(int i=0; i<length; i++) {
+        do
+            for(int j=0; j<random()/(RAND_MAX/(length-msgs_in_buffer)); j++,msgs_in_buffer++)
+                assert_that(write_to_circular_buffer(instance, tx++), is_equal_to(1));
+        while(msgs_in_buffer == 0);
+
+        do
+            for(int j=0; j<random()/(RAND_MAX/msgs_in_buffer); j++,msgs_in_buffer--) {
+                assert_that(read_from_circular_buffer(instance, &c), is_equal_to(1));
+                assert_that(c, is_equal_to(rx++));
+            }
+        while(msgs_in_buffer == length);
     }
 }
 
@@ -63,6 +83,7 @@ TestSuite *circular_buffer_tests() {
     add_test_with_context(suite, CircularBuffer, accepts_data);
     add_test_with_context(suite, CircularBuffer, gives_data_back);
     add_test_with_context(suite, CircularBuffer, is_really_circular);
+    add_test_with_context(suite, CircularBuffer, withstands_stress_test);
 
     return suite;
 }
