@@ -36,6 +36,7 @@ set(cgreen_SRCS
   breadcrumb.c
   cgreen_time.c
   cgreen_value.c
+  circular_buffer.c
   constraint.c
   constraint_syntax_helpers.c
   cute_reporter.c
@@ -72,7 +73,6 @@ else(UNIX)
       set (CGREEN_WITH_STATIC_LIBRARY ON)
 #    list (REMOVE_ITEM cgreen_SRCS cdash_reporter.c)
       LIST(APPEND cgreen_SRCS 
-        circular_buffer.c
         circular_buffer_messaging.c
         generic_runner_platform.c
       )
