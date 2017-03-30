@@ -54,6 +54,8 @@ CppConstraint<T> *create_equal_to_value_constraint(CgreenValue cgreen_value, T e
     constraint = new CppConstraint<T>();
     constraint->type = VALUE_COMPARER;
 
+    (void)cgreen_value;         /* Avoid warnings for UNUSED, which it is for now */
+    
     constraint->Constraint::compare = &compare_want_value;
     constraint->execute = &test_want;
     constraint->name = "equal";
