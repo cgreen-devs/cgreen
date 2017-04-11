@@ -61,7 +61,7 @@ else
 fi
 
 # Run runner on library store output and error
-../tools/cgreen-runner ${prefix}${name}.${extension} > ${name}.output 2> ${name}.error
+../tools/cgreen-runner ./${prefix}${name}.${extension} > ${name}.output 2> ${name}.error
 cat ${name}.error >> ${name}.output
 
 tempfile=`mktemp`
