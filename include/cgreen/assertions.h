@@ -27,7 +27,7 @@ namespace cgreen {
 
 */
 #define assert_that(...) assert_that_NARG(__VA_ARGS__)(__VA_ARGS__)
-#define assert_that_double(actual, constraint) assert_that_double_(__FILE__, __LINE__, STRINGIFY_TOKEN(actual), (double)actual, constraint)
+#define assert_that_double(actual, constraint) assert_that_double_(__FILE__, __LINE__, STRINGIFY_TOKEN(actual), (double)(actual), (constraint))
 
 #define pass_test() assert_true(true)
 #define fail_test(...) assert_true_with_message(false, __VA_ARGS__)
