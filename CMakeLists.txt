@@ -1,13 +1,19 @@
 # Required cmake version
 cmake_minimum_required(VERSION 2.8.5)
 
+project(cgreen)
+
+if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    message (STATUS "CMake think we are compiling for 64-bit")
+else ()
+    message (STATUS "CMake think we are compiling for something not 64-bit")
+endif()
+
 if (NOT(CMAKE_MAJOR_VERSION LESS 3) AND APPLE)
   if(POLICY CMP0042)
     cmake_policy(SET CMP0042 NEW) # CMake 3.0 to use @rpath on MacOSX libraries
   endif()
 endif()
-
-project(cgreen)
 
 find_package (Threads)
 
