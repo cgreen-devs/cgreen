@@ -3,12 +3,6 @@ cmake_minimum_required(VERSION 2.8.5)
 
 project(cgreen)
 
-if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-    message (STATUS "CMake think we are compiling for 64-bit")
-else ()
-    message (STATUS "CMake think we are compiling for something not 64-bit")
-endif()
-
 if (NOT(CMAKE_MAJOR_VERSION LESS 3) AND APPLE)
   if(POLICY CMP0042)
     cmake_policy(SET CMP0042 NEW) # CMake 3.0 to use @rpath on MacOSX libraries
@@ -31,7 +25,6 @@ add_definitions(-DVERSION="${APPLICATION_VERSION}")
 
 set(LIBRARY_VERSION ${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}.${APPLICATION_VERSION_PATCH})
 set(LIBRARY_SOVERSION ${APPLICATION_VERSION_MAJOR})
-
 
 include(GNUInstallDirs)
 
@@ -82,11 +75,11 @@ endif (CGREEN_WITH_UNIT_TESTS)
 
 # add custom 'check' target to run tests with output-on-failure
 if (CMAKE_CONFIGURATION_TYPES)
-    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} 
-        --force-new-ctest-process --output-on-failure 
+    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
+        --force-new-ctest-process --output-on-failure
         --build-config "$<CONFIGURATION>")
 else()
-    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} 
+    add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
         --force-new-ctest-process --output-on-failure)
 endif()
 
