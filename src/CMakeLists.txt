@@ -1,7 +1,3 @@
-if (UNIX)
-  find_library(MATH_LIB m)
-endif(UNIX)
-
 set(CGREEN_PUBLIC_INCLUDE_DIRS
   ${PROJECT_SOURCE_DIR}/
   ${PROJECT_SOURCE_DIR}/include
@@ -55,14 +51,14 @@ set(cgreen_SRCS
 )
 
 if (UNIX)
-  LIST(APPEND cgreen_SRCS 
+  LIST(APPEND cgreen_SRCS
     posix_cgreen_pipe.c
     posix_cgreen_time.c
     posix_runner_platform.c
   )
 else(UNIX)
   if(WIN32)
-    LIST(APPEND cgreen_SRCS 
+    LIST(APPEND cgreen_SRCS
       win32_cgreen_pipe.c
       win32_cgreen_time.c
       win32_runner_platform.c
@@ -73,12 +69,12 @@ else(UNIX)
 endif(UNIX)
 SET_SOURCE_FILES_PROPERTIES(${cgreen_SRCS} PROPERTIES LANGUAGE C)
 
-set(cgreen_SRCS ${cgreen_SRCS} 
+set(cgreen_SRCS ${cgreen_SRCS}
   cpp_assertions.cpp
   cpp_constraint.cpp
 )
 SET_SOURCE_FILES_PROPERTIES(cpp_assertions.cpp cpp_constraint.cpp PROPERTIES LANGUAGE CXX )
- 
+
 include_directories(
   ${CGREEN_PUBLIC_INCLUDE_DIRS}
   ${CGREEN_PRIVATE_INCLUDE_DIRS}
@@ -89,10 +85,10 @@ set(CGREEN_LIBRARY_NAME cgreen)
 add_library(${CGREEN_SHARED_LIBRARY} SHARED ${cgreen_SRCS})
 
 target_link_libraries(
-  ${CGREEN_SHARED_LIBRARY} 
-  ${CGREEN_LINK_LIBRARIES} 
+  ${CGREEN_SHARED_LIBRARY}
+  ${CGREEN_LINK_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
-  ${MATH_LIB} 
+  ${MATH_LIB}
   ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
 )
 
