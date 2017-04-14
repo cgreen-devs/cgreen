@@ -7,7 +7,7 @@
 #include "stringify_token.h"
 
 #ifndef __cplusplus
-#define assert_that_constraint(actual, constraint) assert_core_(__FILE__, __LINE__, STRINGIFY_TOKEN(actual), (intptr_t)actual, constraint)
+#define assert_that_constraint(actual, constraint) assert_core_(__FILE__, __LINE__, STRINGIFY_TOKEN(actual), (intptr_t)(actual), (constraint))
 #endif
 
 #ifdef __cplusplus
