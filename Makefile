@@ -20,6 +20,9 @@ all: build
 debug: build
 	cd build; cmake -DCMAKE_BUILD_TYPE:string=Debug ..; make
 
+32bit: build
+	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" ..; make
+
 # TODO: verify that we're not already on CygwinXX, in that case "make" should suffice
 .PHONY:cygwin32
 cygwin32: build
