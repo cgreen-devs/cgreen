@@ -2,10 +2,10 @@
 
 include(CheckCCompilerFlag)
 
-set (COMPILER_IS_CLANG FALSE) 
-if (${CMAKE_C_COMPILER_ID} MATCHES "Clang") 
+set (COMPILER_IS_CLANG FALSE)
+if (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
   set (COMPILER_IS_CLANG TRUE)
-endif (${CMAKE_C_COMPILER_ID} MATCHES "Clang") 
+endif (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
 
 if (UNIX)
   if (CMAKE_COMPILER_IS_GNUCC OR COMPILER_IS_CLANG)
@@ -35,31 +35,6 @@ if (UNIX)
         endif (WITH_FPIC)
     endif (NOT CYGWIN)
 
-    if (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      # with large file support
-      execute_process(
-        COMMAND
-          getconf LFS64_CFLAGS
-        OUTPUT_VARIABLE
-          _lfs_CFLAGS
-        ERROR_QUIET
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-      )
-    else (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      # with large file support
-      execute_process(
-        COMMAND
-          getconf LFS_CFLAGS
-        OUTPUT_VARIABLE
-          _lfs_CFLAGS
-        ERROR_QUIET
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-      )
-      string(REGEX REPLACE "[\r\n]" " " "${_lfs_CFLAGS}" "${${_lfs_CFLAGS}}")
-
-      add_definitions(${_lfs_CFLAGS})
-    endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
-
     check_c_compiler_flag("-D_FORTIFY_SOURCE=2" WITH_FORTIFY_SOURCE)
     if (WITH_FORTIFY_SOURCE)
       add_definitions(-D_FORTIFY_SOURCE=2)
@@ -81,4 +56,3 @@ if (WIN32)
         add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)
     endif (MSVC)
 endif (WIN32)
-
