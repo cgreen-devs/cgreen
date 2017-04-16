@@ -1,0 +1,15 @@
+CGreen can now be built (and even work) in the embedded environments including
+microcontrollers (aka MCU)
+
+Building is very easy (for STM32 MCUs):
+	cmake -DSTM32_CHIP=stm32f103c8 \
+	-DCMAKE_TOOLCHAIN_FILE=/path/to/stm32-cmake/cmake/gcc_stm32.cmake \
+	-DCMAKE_MODULE_PATH=/path/to/stm32-cmake/cmake \
+	-DTOOLCHAIN_PREFIX=/path/to/arm_gcc_with_newlib \
+	/path/to/cgreen/ && make
+
+That wont build all of CGreen but libcgreen.a is enough.
+
+The Proof-Of-Concept can be found here:
+https://github.com/ildar/stm32-tests/tree/xUnit
+or: https://github.com/ildar/stm32-tests/commit/29707fd67ce1418fa385371e09888d0ba84809aa

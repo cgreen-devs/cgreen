@@ -34,6 +34,7 @@ set(c_tests_library_SRCS
   breadcrumb_tests.c
   cdash_reporter_tests.c
   cdash_reporter_tests.c
+  circular_buffer_tests.c
   constraint_tests.c
   cute_reporter_tests.c
   environment_variables_tests.c

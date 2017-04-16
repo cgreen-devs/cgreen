@@ -10,6 +10,7 @@ using namespace cgreen;
 TestSuite *assertion_tests();
 TestSuite *breadcrumb_tests();
 TestSuite *cdash_reporter_tests();
+TestSuite *circular_buffer_tests();
 TestSuite *collector_tests();
 TestSuite *constraint_tests();
 #ifdef __cplusplus
@@ -36,6 +37,7 @@ int main(int argc, char **argv) {
     add_suite(suite, assertion_tests());
     add_suite(suite, breadcrumb_tests());
     add_suite(suite, cdash_reporter_tests());
+    add_suite(suite, circular_buffer_tests());
     add_suite(suite, constraint_tests());
 #ifdef __cplusplus
     add_suite(suite, cpp_assertion_tests());
