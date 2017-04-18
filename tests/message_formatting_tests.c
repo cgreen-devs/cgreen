@@ -24,7 +24,7 @@ Ensure(MessageFormatting, can_show_failure_message_containing_percent_sign) {
     destroy_constraint(constraint);
 }
 
-TestSuite *message_formatting_tests() {
+TestSuite *message_formatting_tests(void) {
     TestSuite *suite = create_test_suite();
     add_test_with_context(suite, MessageFormatting, can_show_failure_message_containing_percent_sign);
     return suite;

@@ -23,7 +23,7 @@ Ensure(ReflectiveNoTeardownTest, second_test_unaffected_by_first) {
     assert_that(counter, is_equal_to(5));
 }
 
-TestSuite *reflective_no_teardown_tests() {
+TestSuite *reflective_no_teardown_tests(void) {
     TestSuite *suite = create_test_suite();
 
     add_test_with_context(suite, ReflectiveNoTeardownTest, before_called_implicitly_before_each_test);

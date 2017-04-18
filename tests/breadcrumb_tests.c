@@ -9,11 +9,11 @@ using namespace cgreen;
 
 static CgreenBreadcrumb* breadcrumb;
 
-static void breadcrumb_tests_setup() {
+static void breadcrumb_tests_setup(void) {
     breadcrumb = create_breadcrumb();
 }
 
-static void breadcrumb_tests_teardown() {
+static void breadcrumb_tests_teardown(void) {
     destroy_breadcrumb(breadcrumb);
 }
 
@@ -80,7 +80,7 @@ Ensure(Breadcrumb, double_item_breadcrumb_does_calls_walker_only_once) {
     walk_breadcrumb(breadcrumb, &mock_walker, NULL);
 }
 
-TestSuite *breadcrumb_tests() {
+TestSuite *breadcrumb_tests(void) {
     TestSuite *suite = create_test_suite();
     set_setup(suite, breadcrumb_tests_setup);
 

@@ -10,7 +10,7 @@ using namespace cgreen;
 
 static CgreenVector *names = NULL;
 
-void destroy_names() {
+void destroy_names(void) {
     destroy_cgreen_vector(names);
     names = NULL;
 }
@@ -149,7 +149,7 @@ Ensure(can_create_markers_for_mixed_parameters) {
     assert_that(*(bool*)cgreen_vector_get(markers, 4));
 }
 
-TestSuite *parameter_tests() {
+TestSuite *parameter_tests(void) {
     TestSuite *suite = create_test_suite();
     set_teardown(suite, destroy_names);
     add_test(suite, can_create_vector_of_no_parameters_and_destroy_it);

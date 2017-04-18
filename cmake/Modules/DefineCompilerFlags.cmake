@@ -13,7 +13,7 @@ if (UNIX)
     add_definitions(-Wall -Wextra -Wunused)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -Weffc++")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wstrict-prototypes")
 
     if (CGREEN_INTERNAL_WITH_GCOV)
       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")

@@ -41,7 +41,7 @@ bool has_teardown(TestSuite *suite) {
 	return (suite->teardown != &do_nothing);
 }
 
-void do_nothing() {
+void do_nothing(void) {
 }
 
 TestSuite *create_named_test_suite_(const char *name, const char *filename, int line) {
@@ -101,11 +101,11 @@ void add_suite_(TestSuite *owner, const char *name, TestSuite *suite) {
     owner->tests[owner->size - 1].Runnable.suite = suite;
 }
 
-void set_setup(TestSuite *suite, void (*set_up)()) {
+void set_setup(TestSuite *suite, void (*set_up)(void)) {
     suite->setup = set_up;
 }
 
-void set_teardown(TestSuite *suite, void (*tear_down)()) {
+void set_teardown(TestSuite *suite, void (*tear_down)(void)) {
     suite->teardown = tear_down;
 }
 

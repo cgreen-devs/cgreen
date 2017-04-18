@@ -19,7 +19,7 @@ static const int line=666;
 static const uint32_t duration_in_milliseconds = 1;
 static char *output = NULL;
 
-static void clear_output()
+static void clear_output(void)
 {
     if (NULL != output) {
         free(output);
@@ -49,7 +49,7 @@ static int mocked_printer(const char *format, ...) {
 static TestReporter *reporter;
 
 
-static void text_reporter_tests_setup() {
+static void text_reporter_tests_setup(void) {
     reporter = create_text_reporter();
 
     // We can not use setup_reporting() since we are running
@@ -61,7 +61,7 @@ static void text_reporter_tests_setup() {
     set_text_reporter_printer(reporter, mocked_printer);
 }
 
-static void text_reporter_tests_teardown() {
+static void text_reporter_tests_teardown(void) {
     reporter->destroy(reporter);
 
     // bad mojo when running tests in same process, as destroy_reporter
@@ -142,7 +142,7 @@ Ensure(TextReporter, will_report_non_finishing_test) {
     assert_that(output, contains_string("1 exception"));
 }
 
-TestSuite *text_reporter_tests() {
+TestSuite *text_reporter_tests(void) {
     TestSuite *suite = create_test_suite();
     set_setup(suite, text_reporter_tests_setup);
 

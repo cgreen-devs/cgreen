@@ -18,7 +18,7 @@ static const int line=666;
 static const uint32_t duration_in_milliseconds = 1;
 static char *output = NULL;
 
-static void clear_output()
+static void clear_output(void)
 {
     if (NULL != output) {
         free(output);
@@ -47,7 +47,7 @@ static int mocked_printf(const char *format, ...) {
 
 static TestReporter *reporter;
 
-static void setup_cute_reporter_tests() {
+static void setup_cute_reporter_tests(void) {
     reporter = create_cute_reporter();
 
     // We can not use setup_reporting() since we are running
@@ -59,7 +59,7 @@ static void setup_cute_reporter_tests() {
     set_cute_reporter_printer(reporter, mocked_printf);
 }
 
-static void teardown_cute_reporter_tests() {
+static void teardown_cute_reporter_tests(void) {
     //bad mojo when running tests in same process, as destroy_reporter also sets
     //context.reporter = NULL, thus breaking the next test to run
     destroy_reporter(reporter);
@@ -71,7 +71,7 @@ static void teardown_cute_reporter_tests() {
     }
 }
 
-static void assert_no_output() {
+static void assert_no_output(void) {
     assert_that(strlen(output), is_equal_to(0));
 }
 
@@ -157,7 +157,7 @@ Ensure(CuteReporter, will_report_non_finishing_test) {
     assert_that(output, contains_string("failed to complete"));
 }
 
-TestSuite *cute_reporter_tests() {
+TestSuite *cute_reporter_tests(void) {
     TestSuite *suite = create_test_suite();
     set_setup(suite, setup_cute_reporter_tests);
 
