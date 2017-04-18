@@ -16,7 +16,7 @@ static const int line=666;
 static const uint32_t duration_in_milliseconds = 1;
 static char *output = NULL;
 
-static void clear_output()
+static void clear_output(void)
 {
     if (NULL != output) {
         free(output);
@@ -49,7 +49,7 @@ static TestReporter *reporter;
 
 static CDashInfo info;
 
-static void setup_cdash_reporter_tests() {
+static void setup_cdash_reporter_tests(void) {
     reporter = create_cdash_reporter(&info);
 
     // We can not use setup_reporting() since we are running
@@ -61,7 +61,7 @@ static void setup_cdash_reporter_tests() {
     set_cdash_reporter_printer(reporter, mocked_printer);
 }
 
-static void teardown_cdash_reporter_tests() {
+static void teardown_cdash_reporter_tests(void) {
     reporter->destroy(reporter);
 
     //bad mojo when running tests in same process, as destroy_reporter also sets
@@ -143,7 +143,7 @@ Ensure(CDashReporter, will_report_non_finishing_test) {
     assert_that(output, contains_string("<Test Status=\"incomplete\">"));
 }
 
-TestSuite *cdash_reporter_tests() {
+TestSuite *cdash_reporter_tests(void) {
     TestSuite *suite = create_test_suite();
     set_setup(suite, setup_cdash_reporter_tests);
 

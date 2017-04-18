@@ -42,7 +42,7 @@ namespace cgreen {
     extern "C" {
 #endif
 
-Constraint *create_constraint();
+Constraint *create_constraint(void);
 Constraint *create_parameter_constraint_for(const char *parameter_name);
 
 void destroy_empty_constraint(Constraint *constraint);

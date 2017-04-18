@@ -12,7 +12,7 @@ Describe(Mocks);
 BeforeEach(Mocks) {}
 AfterEach(Mocks) {}
 
-static int integer_out() {
+static int integer_out(void) {
     return (int)mock();
 }
 
@@ -289,7 +289,7 @@ Ensure(Mocks, can_stub_an_out_parameter) {
 }
 
 // function which when mocked will be referred to by preprocessor macro
-static void function_macro_mock() {
+static void function_macro_mock(void) {
     mock();
 }
 
@@ -311,7 +311,7 @@ Ensure(Mocks, can_mock_a_function_macro) {
 #undef FUNCTION_MACRO
 
 
-TestSuite *mock_tests() {
+TestSuite *mock_tests(void) {
     TestSuite *suite = create_test_suite();
     add_test_with_context(suite, Mocks, default_return_value_when_no_presets_for_loose_mock);
     add_test_with_context(suite, Mocks, can_stub_an_integer_return);

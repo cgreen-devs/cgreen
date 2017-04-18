@@ -12,7 +12,7 @@ Describe(Mocks);
 BeforeEach(Mocks) {}
 AfterEach(Mocks) {}
 
-static int integer_out() {
+static int integer_out(void) {
     return (int)mock();
 }
 
