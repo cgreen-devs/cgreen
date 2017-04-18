@@ -7,26 +7,26 @@
 using namespace cgreen;
 #endif
 
-TestSuite *assertion_tests();
-TestSuite *breadcrumb_tests();
-TestSuite *cdash_reporter_tests();
-TestSuite *collector_tests();
-TestSuite *constraint_tests();
+TestSuite *assertion_tests(void);
+TestSuite *breadcrumb_tests(void);
+TestSuite *cdash_reporter_tests(void);
+TestSuite *collector_tests(void);
+TestSuite *constraint_tests(void);
 #ifdef __cplusplus
-TestSuite *cpp_assertion_tests();
+TestSuite *cpp_assertion_tests(void);
 #endif
-TestSuite *cute_reporter_tests();
-TestSuite *cgreen_value_tests();
-TestSuite *message_formatting_tests();
-TestSuite *messaging_tests();
-TestSuite *mock_tests();
-TestSuite *parameter_tests();
-TestSuite *reflective_no_teardown_tests();
-TestSuite *reflective_tests();
-TestSuite *text_reporter_tests();
-TestSuite *unit_tests();
-TestSuite *vector_tests();
-TestSuite *xml_reporter_tests();
+TestSuite *cute_reporter_tests(void);
+TestSuite *cgreen_value_tests(void);
+TestSuite *message_formatting_tests(void);
+TestSuite *messaging_tests(void);
+TestSuite *mock_tests(void);
+TestSuite *parameter_tests(void);
+TestSuite *reflective_no_teardown_tests(void);
+TestSuite *reflective_tests(void);
+TestSuite *text_reporter_tests(void);
+TestSuite *unit_tests(void);
+TestSuite *vector_tests(void);
+TestSuite *xml_reporter_tests(void);
 
 int main(int argc, char **argv) {
     int suite_result;

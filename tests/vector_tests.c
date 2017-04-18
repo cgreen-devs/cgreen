@@ -10,12 +10,12 @@ static CgreenVector *vector;
 static char a = 'a', b = 'b', c = 'c';
 static int times_called = 0;
 
-static void set_up_vector() {
+static void set_up_vector(void) {
     vector = create_cgreen_vector(NULL);
     times_called = 0;
 }
 
-static void tear_down_vector() {
+static void tear_down_vector(void) {
     destroy_cgreen_vector(vector);
 }
 
@@ -130,7 +130,7 @@ Ensure(Vector, returns_null_for_remove_from_illegal_index) {
     assert_that(cgreen_vector_remove(vector, 1), is_equal_to(NULL));
 }
 
-TestSuite *vector_tests() {
+TestSuite *vector_tests(void) {
     TestSuite *suite = create_test_suite();
     set_setup(suite, set_up_vector);
     set_teardown(suite, tear_down_vector);

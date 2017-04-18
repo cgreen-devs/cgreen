@@ -52,7 +52,7 @@ static void *options = NULL;
 static TestReporter *reporter = NULL;
 static TextReporterOptions reporter_options;
 
-static void cleanup()
+static void cleanup(void)
 {
     if (reporter) reporter->destroy(reporter);
     if (options) free(options);

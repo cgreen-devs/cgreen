@@ -34,7 +34,7 @@ namespace cgreen {
 
 
 /* Utility: */
-int get_significant_figures();
+int get_significant_figures(void);
 void significant_figures_for_assert_double_are(int figures);
 
 #include <cgreen/legacy.h>

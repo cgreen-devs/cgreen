@@ -285,7 +285,7 @@ Ensure(return_value_constraints_are_not_allowed) {
 //    assert_that(0, will_return(1));
 }
 
-TestSuite *assertion_tests() {
+TestSuite *assertion_tests(void) {
     TestSuite *suite = create_test_suite();
     add_test(suite, integer_one_should_assert_true);
     add_test(suite, integer_zero_should_assert_false);

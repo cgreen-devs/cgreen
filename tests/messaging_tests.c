@@ -13,7 +13,7 @@ Ensure(highly_nested_test_suite_should_still_complete) {
     assert_that(true);
 }
 
-TestSuite *highly_nested_test_suite() {
+TestSuite *highly_nested_test_suite(void) {
     int i;
     TestSuite *suite = create_test_suite();
     add_test(suite, highly_nested_test_suite_should_still_complete);
@@ -56,7 +56,7 @@ Ensure(failure_reported_and_exception_thrown_when_messaging_would_block) {
     assert_that(loop, is_less_than(LOOPS));
 }
 
-TestSuite *messaging_tests() {
+TestSuite *messaging_tests(void) {
     TestSuite *suite = create_test_suite();
     add_suite(suite, highly_nested_test_suite());
     add_test(suite, can_send_message);

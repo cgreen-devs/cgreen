@@ -215,7 +215,7 @@ Ensure(Constraint, can_compare_to_hex) {
     assert_that((unsigned char)chars[0], is_equal_to_hex(0xaa));
 }
 
-TestSuite *constraint_tests() {
+TestSuite *constraint_tests(void) {
     TestSuite *suite = create_test_suite();
     add_test_with_context(suite, Constraint, default_destroy_clears_state);
     add_test_with_context(suite, Constraint, parameter_name_matches_correctly);

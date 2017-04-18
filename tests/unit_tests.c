@@ -10,11 +10,11 @@ using namespace cgreen;
 
 static TestSuite* suite;
 
-static void unit_tests_setup() {
+static void unit_tests_setup(void) {
     suite = create_test_suite();
 }
 
-static void unit_tests_teardown() {
+static void unit_tests_teardown(void) {
     destroy_test_suite(suite);
 }
 
@@ -49,7 +49,7 @@ Ensure(Unittests, count_tests_return_four_for_four_nested_suite_with_one_testcas
 	assert_that(count_tests(suite), is_equal_to(4));
 }
 
-TestSuite *unit_tests() {
+TestSuite *unit_tests(void) {
 	TestSuite *suite = create_test_suite();
 	set_setup(suite, unit_tests_setup);
 
