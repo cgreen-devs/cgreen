@@ -164,23 +164,25 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
             memo->printer(RESET);
         }
     } else {
-        char buf[1000];
-        sprintf(buf, "Completed \"%s\": ", name);
-        if (reporter->passes)
-            strcat(buf, format_passes(reporter->passes, use_colors));
-        if (reporter->skips) {
-            insert_comma(buf);
-            strcat(buf, format_skips(reporter->skips, use_colors));
+        if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0) {
+            char buf[1000];
+            sprintf(buf, "Completed \"%s\": ", name);
+            if (reporter->passes)
+                strcat(buf, format_passes(reporter->passes, use_colors));
+            if (reporter->skips) {
+                insert_comma(buf);
+                strcat(buf, format_skips(reporter->skips, use_colors));
+            }
+            if (reporter->failures) {
+                insert_comma(buf);
+                strcat(buf, format_failures(reporter->failures, use_colors));
+            }
+            if (reporter->exceptions) {
+                insert_comma(buf);
+                strcat(buf, format_exceptions(reporter->exceptions, use_colors));
+            }
+            memo->printer("%s in %dms.\n", buf, duration_in_milliseconds);
         }
-        if (reporter->failures) {
-            insert_comma(buf);
-            strcat(buf, format_failures(reporter->failures, use_colors));
-        }
-        if (reporter->exceptions) {
-            insert_comma(buf);
-            strcat(buf, format_exceptions(reporter->exceptions, use_colors));
-        }
-        memo->printer("%s in %dms.\n", buf, duration_in_milliseconds);
     }
 }
 
