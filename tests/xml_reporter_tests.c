@@ -15,7 +15,6 @@ using namespace cgreen;
 
 
 static const int line=666;
-static const uint32_t duration_in_milliseconds = 1;
 static char *output = NULL;
 
 static void clear_output(void)
@@ -102,7 +101,7 @@ Ensure(XmlReporter, will_report_beginning_and_successful_finishing_of_passing_te
     reporter->show_pass(reporter, "file", 2, "test_name", null_arguments);
     assert_that(strlen(output), is_equal_to(0));
 
-    reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds);
+    reporter->finish_test(reporter, "filename", line, NULL);
     assert_that(output, contains_string("</testcase>"));
 }
 
@@ -113,7 +112,7 @@ Ensure(XmlReporter, will_report_a_failing_test) {
 
     reporter->start_test(reporter, "test_name");
     reporter->show_fail(reporter, "file", 2, "test_name", null_arguments);
-    reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds);
+    reporter->finish_test(reporter, "filename", line, NULL);
     
     assert_that(output, contains_string("<failure message=\"test_name\">"));
     assert_that(output, contains_string("<location file=\"file\" line=\"2\"/>"));
@@ -123,7 +122,7 @@ Ensure(XmlReporter, will_report_a_failing_test) {
 
 Ensure(XmlReporter, will_report_finishing_of_suite) {
     reporter->start_suite(reporter, "suite_name", 1);
-    reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
+    reporter->finish_suite(reporter, "filename", line);
 
     assert_that(output, contains_string("</testsuite>"));
 }
@@ -135,8 +134,8 @@ Ensure(XmlReporter, will_mark_ignored_test_as_skipped) {
     reporter->start_suite(reporter, "suite_name", 1);
     reporter->start_test(reporter, "skipped_test_name");
     send_reporter_skipped_notification(reporter);
-    reporter->finish_test(reporter, "filename", line, "message", duration_in_milliseconds);
-    reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
+    reporter->finish_test(reporter, "filename", line, "message");
+    reporter->finish_suite(reporter, "filename", line);
 
     assert_that(output, contains_string("<skipped />"));
     assert_that(strstr(output, "time="), is_less_than(strstr(output, "<skipped")));
@@ -149,8 +148,8 @@ Ensure(XmlReporter, will_report_non_finishing_test) {
     reporter->start_suite(reporter, "suite_name", 1);
     reporter->start_test(reporter, "test_name");
     send_reporter_exception_notification(reporter);
-    reporter->finish_test(reporter, "filename", line, "message", duration_in_milliseconds);
-    reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
+    reporter->finish_test(reporter, "filename", line, "message");
+    reporter->finish_suite(reporter, "filename", line);
 
     assert_that(output, contains_string("error type=\"Fatal\""));
     assert_that(output, contains_string("message=\"message\""));

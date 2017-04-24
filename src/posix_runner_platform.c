@@ -36,14 +36,14 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
     (*reporter->start_test)(reporter, test->name);
     if (test->skip) {
         send_reporter_skipped_notification(reporter);
-        (*reporter->finish_test)(reporter, test->filename, test->line, NULL, 0);
+        (*reporter->finish_test)(reporter, test->filename, test->line, NULL);
     } else if (in_child_process()) {
         run_the_test_code(suite, test, reporter);
         send_reporter_completion_notification(reporter);
         stop();
     } else {
         const int status = wait_for_child_process();
-        uint32_t test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
+        reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
                                                                       cgreen_time_get_current_milliseconds());
         if (WIFSIGNALED(status)) {
             /* a C++ exception generates SIGABRT. Only print our special message for other signals. */
@@ -51,12 +51,12 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
             if (sig != SIGABRT) {
                 char buf[128];
                 snprintf(buf, sizeof(buf), "Test terminated with signal: %s", (const char *)strsignal(sig));
-                (*reporter->finish_test)(reporter, test->filename, test->line, buf, test_duration);
+                (*reporter->finish_test)(reporter, test->filename, test->line, buf);
                 return;
             }
         }
 
-        (*reporter->finish_test)(reporter, test->filename, test->line, NULL, test_duration);
+        (*reporter->finish_test)(reporter, test->filename, test->line, NULL);
     }
 }
 

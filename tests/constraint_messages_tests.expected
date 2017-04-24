@@ -157,4 +157,5 @@ constraint_messages_tests.c: Exception: ConstraintMessage -> increments_exceptio
 constraint_messages_tests.c: Exception: ConstraintMessage -> increments_exception_count_when_terminating_via_SIGTERM 
 	Test terminated with signal: Terminated
 
+  "ConstraintMessage": 35 failures, 2 exceptions in 0ms.
 Completed "constraint_messages_tests": 35 failures, 2 exceptions in 0ms.

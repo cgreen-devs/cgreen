@@ -13,7 +13,6 @@ using namespace cgreen;
 #endif
 
 static const int line=666;
-static const uint32_t duration_in_milliseconds = 1;
 static char *output = NULL;
 
 static void clear_output(void)
@@ -85,7 +84,7 @@ AfterEach(CDashReporter) {
 
 Ensure(CDashReporter, will_report_nothing_for_suites) {
     reporter->start_suite(reporter, "suite_name", 2);
-    reporter->finish_suite(reporter, "filename", line, 0);
+    reporter->finish_suite(reporter, "filename", line);
 }
 
 Ensure(CDashReporter, will_report_passed_for_test_with_one_pass) {
@@ -98,7 +97,7 @@ Ensure(CDashReporter, will_report_passed_for_test_with_one_pass) {
 
     // Must indicate test case completion before calling finish_test()
     send_reporter_completion_notification(reporter);
-    reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds);
+    reporter->finish_test(reporter, "filename", line, NULL);
 
     assert_that(output, contains_string("<Test Status=\"passed\">"));
 }
@@ -129,7 +128,7 @@ Ensure(CDashReporter, will_report_failed_once_for_each_fail) {
     
     // Must indicate test case completion before calling finish_test()
     send_reporter_completion_notification(reporter);
-    reporter->finish_test(reporter, "filename", line, NULL, duration_in_milliseconds);
+    reporter->finish_test(reporter, "filename", line, NULL);
     assert_that(output, is_equal_to_string(""));
 }
 
@@ -138,7 +137,7 @@ Ensure(CDashReporter, will_report_non_finishing_test) {
     reporter->start_suite(reporter, "suite_name", 1);
 
     send_reporter_exception_notification(reporter);
-    reporter->finish_suite(reporter, "filename", line, duration_in_milliseconds);
+    reporter->finish_suite(reporter, "filename", line);
 
     assert_that(output, contains_string("<Test Status=\"incomplete\">"));
 }

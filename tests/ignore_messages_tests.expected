@@ -5,4 +5,5 @@ ignore_messages_tests.c: Exception: IgnoreMessage -> should_not_count_exceptions
 ignore_messages_tests.c: Failure: IgnoreMessage -> should_not_count_failing_tests_as_ignored 
 	Expected [0] to [be true]
 
+  "IgnoreMessage": 1 pass, 1 skipped, 1 failure, 1 exception in 0ms.
 Completed "ignore_messages_tests": 1 pass, 1 skipped, 1 failure, 1 exception in 0ms.

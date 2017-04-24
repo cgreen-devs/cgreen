@@ -5,4 +5,5 @@ failure_messages_tests.c: Exception: FailureMessage -> for_CGREEN_PER_TEST_TIMEO
 failure_messages_tests.c: Exception: FailureMessage -> for_time_out_in_only_one_second 
 	Test terminated unexpectedly, likely from a non-standard exception or Posix signal
 
+  "FailureMessage": 1 pass, 2 exceptions in 0ms.
 Completed "failure_messages_tests": 1 pass, 2 exceptions in 0ms.
