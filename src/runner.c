@@ -103,7 +103,8 @@ static void run_named_test(TestSuite *suite, const char *name, TestReporter *rep
 
     (*reporter->start_suite)(reporter, suite->name, count_tests(suite));
     for (i = 0; i < suite->size; i++) {
-        if (has_test(suite->tests[i].Runnable.suite, name)) {
+        if (suite->tests[i].type != test_function &&
+                has_test(suite->tests[i].Runnable.suite, name)) {
             (*suite->setup)();
             run_named_test(suite->tests[i].Runnable.suite, name, reporter);
             (*suite->teardown)();
