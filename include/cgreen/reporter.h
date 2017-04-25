@@ -20,13 +20,18 @@ struct TestReporter_ {
     void (*assert_true)(TestReporter *reporter, const char *file, int line,
                         int result, const char * message, ...);
     void (*finish_test)(TestReporter *reporter, const char *file, int line,
-                        const char *message, uint32_t duration_in_milliseconds);
-    void (*finish_suite)(TestReporter *reporter, const char *file, int line,
-                         uint32_t milliseconds);
+                        const char *message);
+    void (*finish_suite)(TestReporter *reporter, const char *file, int line);
     int passes;
     int failures;
     int exceptions;
     int skips;
+    uint32_t duration;
+    int total_passes;
+    int total_failures;
+    int total_exceptions;
+    int total_skips;
+    uint32_t total_duration;
     CgreenBreadcrumb *breadcrumb;
     int ipc;
     void *memo;
@@ -48,9 +53,8 @@ void destroy_reporter(TestReporter *reporter);
 void destroy_memo(TestReportMemo *memo);
 void reporter_start_test(TestReporter *reporter, const char *name);
 void reporter_start_suite(TestReporter *reporter, const char *name, const int count);
-void reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message,
-                     uint32_t duration_in_milliseconds);
-void reporter_finish_suite(TestReporter *reporter, const char *filename, int line, uint32_t duration_in_milliseconds);
+void reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message);
+void reporter_finish_suite(TestReporter *reporter, const char *filename, int line);
 void add_reporter_result(TestReporter *reporter, int result);
 void send_reporter_exception_notification(TestReporter *reporter);
 void send_reporter_skipped_notification(TestReporter *reporter);

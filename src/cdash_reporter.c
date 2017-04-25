@@ -42,9 +42,8 @@ static void cdash_show_pass(TestReporter *reporter, const char *file, int line, 
 static void cdash_show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments);
 
 static void cdash_finish_test(TestReporter *reporter, const char *filename, int line,
-                                             const char *message, uint32_t duration_in_milliseconds);
-static void cdash_finish_suite(TestReporter *reporter, const char *filename, int line,
-                                          uint32_t duration_in_milliseconds);
+                                             const char *message);
+static void cdash_finish_suite(TestReporter *reporter, const char *filename, int line);
 
 static time_t cdash_build_stamp(char *sbuildstamp, size_t sb);
 static time_t cdash_current_time(char *strtime);
@@ -177,6 +176,11 @@ static void cdash_destroy_reporter(TestReporter *reporter) {
 static void cdash_reporter_start_suite(TestReporter *reporter, const char *name, const int number_of_tests) {
     (void)number_of_tests;
 
+    reporter->passes = 0;
+    reporter->failures = 0;
+    reporter->skips = 0;
+    reporter->exceptions = 0;
+
     reporter_start_test(reporter, name);
 }
 
@@ -294,14 +298,18 @@ static void cdash_show_incomplete(TestReporter *reporter, const char *file, int 
 
 
 static void cdash_finish_test(TestReporter *reporter, const char *filename, int line,
-                                             const char *message, uint32_t duration_in_milliseconds) {
-    reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
+                                             const char *message) {
+    reporter_finish_test(reporter, filename, line, message);
 }
 
 
-static void cdash_finish_suite(TestReporter *reporter, const char *filename, int line,
-                                          uint32_t duration_in_milliseconds) {
-    reporter_finish_test(reporter, filename, line, NULL, duration_in_milliseconds);
+static void cdash_finish_suite(TestReporter *reporter, const char *filename, int line) {
+    reporter_finish_test(reporter, filename, line, NULL);
+
+    reporter->total_passes += reporter->passes;
+    reporter->total_failures += reporter->failures;
+    reporter->total_skips += reporter->skips;
+    reporter->total_exceptions += reporter->exceptions;
 }
 
 static time_t cdash_build_stamp(char *sbuildstamp, size_t sb) {

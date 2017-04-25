@@ -48,5 +48,5 @@ assertion_messages_tests.c: Failure: AssertionMessage -> return_value_constraint
 	Got constraint of type [return value],
 		but they are not allowed for assertions, only in mock expectations.
 
-Completed "AssertionMessage": 1 pass, 12 failures in 0ms.
+  "AssertionMessage": 1 pass, 12 failures in 0ms.
 Completed "assertion_messages_tests": 1 pass, 12 failures in 0ms.

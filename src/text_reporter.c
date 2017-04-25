@@ -23,14 +23,13 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
         const int number_of_tests);
 static void text_reporter_start_test(TestReporter *reporter, const char *name);
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
-        int line, const char *message, uint32_t duration_in_milliseconds);
+        int line, const char *message);
 static void show_fail(TestReporter *reporter, const char *file, int line,
         const char *message, va_list arguments);
 static void show_incomplete(TestReporter *reporter, const char *file, int line,
         const char *message, va_list arguments);
 static void show_breadcrumb(const char *name, void *memo);
-static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line,
-                                       uint32_t duration_in_milliseconds);
+static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line);
 
 
 /* To be able to run a reporter as CUT for testing with Cgreen itself
@@ -89,6 +88,11 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 		const int number_of_tests) {
     TextMemo *memo = (TextMemo *)reporter->memo;
     
+    reporter->passes = 0;
+    reporter->failures = 0;
+    reporter->skips = 0;
+    reporter->exceptions = 0;
+
     reporter_start_test(reporter, name);
     if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 1) {
         if (!have_quiet_mode(reporter))
@@ -104,8 +108,8 @@ static void text_reporter_start_test(TestReporter *reporter, const char *name) {
 }
 
 static void text_reporter_finish(TestReporter *reporter, const char *filename,
-        int line, const char *message, uint32_t duration_in_milliseconds) {
-    reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
+        int line, const char *message) {
+    reporter_finish_test(reporter, filename, line, message);
 }
 
 
@@ -139,19 +143,54 @@ static char *format_exceptions(int exceptions, bool use_colors) {
     return buff;
 }
 
+static char *format_duration(uint32_t duration) {
+    static char buff[100];
+    snprintf(buff, sizeof(buff), " in %dms", duration);
+    return buff;
+}
 
 static void insert_comma(char buf[]) {
     if (buf[strlen(buf)-1] != ' ')
         strcat(buf, ", ");
 }
 
+static void text_reporter_print_results(char *buf, char *prepend,
+    int passes, int failures, int skips, int exceptions, uint32_t duration,
+    bool use_colors) {
 
-static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line, uint32_t duration_in_milliseconds) {
+    sprintf(buf, "%s", prepend);
+    if (passes || failures || skips || exceptions) {
+        if (passes)
+            strcat(buf, format_passes(passes, use_colors));
+        if (skips) {
+            insert_comma(buf);
+            strcat(buf, format_skips(skips, use_colors));
+        }
+        if (failures) {
+            insert_comma(buf);
+            strcat(buf, format_failures(failures, use_colors));
+        }
+        if (exceptions) {
+            insert_comma(buf);
+            strcat(buf, format_exceptions(exceptions, use_colors));
+        }
+        strcat(buf, format_duration(duration));
+    } else {
+        strcat(buf, "No tests");
+    }
+}
+
+static void text_reporter_finish_suite(TestReporter *reporter, const char *file, int line) {
     const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb);
     bool use_colors = reporter->options && ((TextReporterOptions *)reporter->options)->use_colours;
     TextMemo *memo = (TextMemo *)reporter->memo;
     
-    reporter_finish_suite(reporter, file, line, duration_in_milliseconds);
+    reporter_finish_suite(reporter, file, line);
+
+    reporter->total_passes += reporter->passes;
+    reporter->total_failures += reporter->failures;
+    reporter->total_skips += reporter->skips;
+    reporter->total_exceptions += reporter->exceptions;
 
     if (have_quiet_mode(reporter)) {
         if (use_colors) {
@@ -165,36 +204,49 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
         }
     } else {
         char buf[1000];
-        sprintf(buf, "Completed \"%s\": ", name);
-        if (reporter->passes)
-            strcat(buf, format_passes(reporter->passes, use_colors));
-        if (reporter->skips) {
-            insert_comma(buf);
-            strcat(buf, format_skips(reporter->skips, use_colors));
+        char prepend[100];
+
+        sprintf(prepend, "  \"%s\": ", name);
+        text_reporter_print_results(buf, prepend,
+                reporter->passes,
+                reporter->failures,
+                reporter->skips,
+                reporter->exceptions,
+                reporter->duration,
+                use_colors);
+
+        // Don't report top-level (pseudo-suite) if it had no tests
+        if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) != 0 ||
+                (reporter->passes || reporter->failures || reporter->skips || reporter->exceptions)) {
+            memo->printer("%s.\n", buf);
         }
-        if (reporter->failures) {
-            insert_comma(buf);
-            strcat(buf, format_failures(reporter->failures, use_colors));
+
+        // Report totals
+        if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0) {
+            sprintf(prepend, "Completed \"%s\": ", name);
+            text_reporter_print_results(buf, prepend,
+                    reporter->total_passes,
+                    reporter->total_failures,
+                    reporter->total_skips,
+                    reporter->total_exceptions,
+                    reporter->total_duration,
+                    use_colors);
+            memo->printer("%s.\n", buf);
         }
-        if (reporter->exceptions) {
-            insert_comma(buf);
-            strcat(buf, format_exceptions(reporter->exceptions, use_colors));
-        }
-        memo->printer("%s in %dms.\n", buf, duration_in_milliseconds);
     }
 }
 
 static void show_fail(TestReporter *reporter, const char *file, int line,
-		const char *message, va_list arguments) {
-    char buffer[1000];
-    TextMemo *memo = (TextMemo *)reporter->memo;
-    memo->printer("%s:%d: ", file, line);
-    memo->printer("Failure: ");
-    memo->depth = 0;
-    walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb, memo);
-    memo->printer("\n\t");
-    // Simplify *printf statements for more robust cross-platform logging
-    if (message == NULL) {
+        const char *message, va_list arguments) {
+        char buffer[1000];
+        TextMemo *memo = (TextMemo *)reporter->memo;
+        memo->printer("%s:%d: ", file, line);
+        memo->printer("Failure: ");
+        memo->depth = 0;
+        walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb, memo);
+        memo->printer("\n\t");
+        // Simplify *printf statements for more robust cross-platform logging
+        if (message == NULL) {
         vsprintf(buffer, "<FATAL: NULL for failure message>", arguments);
     } else {
         vsprintf(buffer, message, arguments);
