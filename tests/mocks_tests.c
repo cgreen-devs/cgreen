@@ -338,6 +338,7 @@ TestSuite *mock_tests(void) {
     add_test_with_context(suite, Mocks, can_mock_full_function_call_when_there_is_no_space_between_parameters);
     add_test_with_context(suite, Mocks, can_stub_an_out_parameter);
     add_test_with_context(suite, Mocks, string_contains_expectation_is_confirmed);
+    add_test_with_context(suite, Mocks, can_mock_a_function_macro);
 
     return suite;
 }

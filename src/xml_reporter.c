@@ -22,10 +22,9 @@ static void xml_reporter_start_suite(TestReporter *reporter, const char *name,
                                      int count);
 static void xml_reporter_start_test(TestReporter *reporter, const char *name);
 static void xml_reporter_finish_test(TestReporter *reporter, const char *filename,
-                                     int line, const char *message,
-                                     uint32_t duration_in_milliseconds);
+                                     int line, const char *message);
 static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename,
-                                      int line, uint32_t duration_in_milliseconds);
+                                      int line);
 static void xml_show_skip(TestReporter *reporter, const char *file, int line);
 static void xml_show_fail(TestReporter *reporter, const char *file, int line,
                           const char *message, va_list arguments);
@@ -119,6 +118,11 @@ static void xml_reporter_start_suite(TestReporter *reporter, const char *suitena
     FILE *out;
 
     (void)count;                /* UNUSED */
+
+    reporter->passes = 0;
+    reporter->failures = 0;
+    reporter->skips = 0;
+    reporter->exceptions = 0;
 
     suite_path[0] = '\0';
     walk_breadcrumb(reporter->breadcrumb, strcat_path_segment, &segment_decrementer);
@@ -230,13 +234,12 @@ static void transfer_output_from(FILE *tmpfile, XmlPrinter printer, FILE *out) {
 }
 
 
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message,
-                                     uint32_t duration_in_milliseconds) {
+static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message) {
     XmlMemo *memo = (XmlMemo *)reporter->memo;
     FILE *out = file_stack[file_stack_p-1];
 
-    reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
-    memo->printer(out, " time=\"%.5f\">\n", (double)duration_in_milliseconds/(double)1000);
+    reporter_finish_test(reporter, filename, line, message);
+    memo->printer(out, " time=\"%.5f\">\n", (double)reporter->duration/(double)1000);
     if (output && strlen(output) == 0) {
         free(output);
         output = NULL;
@@ -249,12 +252,16 @@ static void xml_reporter_finish_test(TestReporter *reporter, const char *filenam
     fflush(out);
 }
 
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line,
-                                      uint32_t duration_in_milliseconds) {
+static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
     XmlMemo *memo = (XmlMemo *)reporter->memo;
     FILE *out = file_stack[--file_stack_p];
 
-    reporter_finish_suite(reporter, filename, line, duration_in_milliseconds);
+    reporter_finish_suite(reporter, filename, line);
+
+    reporter->total_passes += reporter->passes;
+    reporter->total_failures += reporter->failures;
+    reporter->total_skips += reporter->skips;
+    reporter->total_exceptions += reporter->exceptions;
 
     // TODO: Here we should backpatch the time for the suite but that's not
     // exactly necessary as Jenkins, at least, seems to sum it up automatically

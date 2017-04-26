@@ -59,7 +59,7 @@ static void run_named_test_child(TestSuite *suite, const char *name, TestReporte
 
             run_named_test_child(newSuite, name, reporter);
 
-            uint32_t test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
+            reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
                                                                           cgreen_time_get_current_milliseconds());
 
             (*reporter->finish_suite)(reporter, newSuite->filename, newSuite->line, test_duration);
@@ -86,7 +86,7 @@ void run_specified_test_if_child(TestSuite *suite, TestReporter *reporter){
 
         run_named_test_child(suite, testName, reporter);
 
-        uint32_t test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
+        reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
                                                                       cgreen_time_get_current_milliseconds());
 
         reporter_finish_test(reporter, suite->filename, suite->line, NULL, test_duration);
@@ -169,7 +169,7 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
     dispose_environment(p_environment);
     WaitForSingleObject(piProcessInfo.hProcess,INFINITE);
 
-    uint32_t test_duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
+    reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
                                                                   cgreen_time_get_current_milliseconds());
 
     (*reporter->finish_test)(reporter, test->filename, test->line, NULL, test_duration);

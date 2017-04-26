@@ -71,6 +71,12 @@ TestReporter *create_reporter() {
     reporter->skips = 0;
     reporter->failures = 0;
     reporter->exceptions = 0;
+    reporter->duration = 0;
+    reporter->total_passes = 0;
+    reporter->total_skips = 0;
+    reporter->total_failures = 0;
+    reporter->total_exceptions = 0;
+    reporter->total_duration = 0;
     reporter->breadcrumb = breadcrumb;
     reporter->memo = NULL;
     reporter->options = NULL;
@@ -104,9 +110,7 @@ void reporter_start_suite(TestReporter *reporter, const char *name, const int co
     push_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, name);
 }
 
-void reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message,
-                          uint32_t duration_in_milliseconds) {
-    (void)duration_in_milliseconds;
+void reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message) {
     int status = read_reporter_results(reporter);
 
     if (status == FINISH_TEST_SKIPPED) {
@@ -121,10 +125,9 @@ void reporter_finish_test(TestReporter *reporter, const char *filename, int line
     pop_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
 }
 
-void reporter_finish_suite(TestReporter *reporter, const char *filename, int line, uint32_t duration_in_milliseconds) {
+void reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
     (void)filename;
     (void)line;
-    (void)duration_in_milliseconds;
 
     read_reporter_results(reporter);
     pop_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);

@@ -21,7 +21,7 @@ Darwin)
     prefix=lib
     extension=dylib
     ;;
-GNU/Linux)
+GNU/Linux|FreeBSD)
     prefix=lib
     extension=so
     ;;
@@ -99,7 +99,7 @@ if test -t 1; then
 fi
 
 # Compare normalized output to expected
-cmp --silent ${name}.output ${sourcedir}/${expected}
+cmp -s ${name}.output ${sourcedir}/${expected}
 
 # If not the same, show diff
 rc=$?
