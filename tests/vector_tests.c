@@ -120,13 +120,13 @@ Ensure(Vector, vector_size_of_null_pointer_is_zero) {
 
 Ensure(Vector, returns_null_for_get_on_illegal_index) {
     CgreenVector *vector = create_cgreen_vector(NULL);
-    fprintf(stderr, "  Expected output:");
+    fprintf(stderr, "  Expected output:"); /* We are expecting "illegal position (-1)" */
     assert_that(cgreen_vector_get(vector, -1), is_equal_to(NULL));
 }
 
 Ensure(Vector, returns_null_for_remove_from_illegal_index) {
     CgreenVector *vector = create_cgreen_vector(NULL);
-    fprintf(stderr, "  Expected output:");
+    fprintf(stderr, "  Expected output:"); /* We are expecting "illegal position (1)" */
     assert_that(cgreen_vector_remove(vector, 1), is_equal_to(NULL));
 }
 
