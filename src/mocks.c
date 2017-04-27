@@ -56,7 +56,6 @@ static void apply_any_content_setting_parameter_constraints(RecordedExpectation 
                                                      CgreenValue actual,
                                                      TestReporter* test_reporter);
 static CgreenValue stored_result_or_default_for(CgreenVector* constraints);
-int number_of_parameter_constraints_in(const CgreenVector* constraints);
 static int number_of_parameters_in(const char *parameter_list);
 static bool is_always_call(RecordedExpectation* expectation);
 static bool have_always_expectation_for(const char* function);
@@ -64,13 +63,15 @@ static bool is_never_call(RecordedExpectation* expectation);
 static bool have_never_call_expectation_for(const char* function);
 
 static void report_violated_never_call(TestReporter*, RecordedExpectation*);
-void report_unexpected_call(TestReporter*, RecordedExpectation*);
-void report_mock_parameter_name_not_found(TestReporter *test_reporter, RecordedExpectation *expectation, const char *parameter);
-void destroy_expectation_if_time_to_die(RecordedExpectation *expectation);
+static void report_unexpected_call(TestReporter*, RecordedExpectation*);
+static void report_mock_parameter_name_not_found(TestReporter *test_reporter, RecordedExpectation *expectation, const char *parameter);
+static void destroy_expectation_if_time_to_die(RecordedExpectation *expectation);
+
 
 void cgreen_mocks_are(CgreenMockMode mock_mode) {
     cgreen_mocks_are_ = mock_mode;
 }
+
 
 static int number_of_parameters_in(const char *parameter_list) {
     int count = 1;
@@ -86,6 +87,7 @@ static int number_of_parameters_in(const char *parameter_list) {
     return count;
 }
 
+/* Not used anywhere, but might become handy so make it non-static to avoid warnings */
 int number_of_parameter_constraints_in(const CgreenVector* constraints) {
     int i, parameters = 0;
 
@@ -110,7 +112,7 @@ static void learn_mock_call_for(const char *function, const char *mock_file, int
     cgreen_vector_add(learned_mock_calls, (void*)expectation);
 }
 
-void handle_missing_expectation_for(const char *function, const char *mock_file, int mock_line,
+static void handle_missing_expectation_for(const char *function, const char *mock_file, int mock_line,
                                     CgreenVector *parameter_names, CgreenVector *actual_values,
                                     TestReporter *test_reporter) {
     RecordedExpectation *expectation;
@@ -314,7 +316,8 @@ Constraint *when_(const char *parameter, Constraint* constraint) {
     return constraint;
 }
 
-void destroy_expectation_if_time_to_die(RecordedExpectation *expectation) {
+
+static void destroy_expectation_if_time_to_die(RecordedExpectation *expectation) {
 
     if (is_always_call(expectation)) {
         return;
@@ -484,7 +487,7 @@ static bool successfully_mocked_call(const char *function_name) {
 }
 
 
-void report_unexpected_call(TestReporter *test_reporter, RecordedExpectation* expectation) {
+static void report_unexpected_call(TestReporter *test_reporter, RecordedExpectation* expectation) {
     const char *message;
     if (successfully_mocked_call(expectation->function)) {
        message = "Mocked function [%s] was called too many times";
@@ -678,7 +681,7 @@ static RecordedExpectation *find_expectation(const char *function) {
     return NULL;
 }
 
-void report_mock_parameter_name_not_found(TestReporter *test_reporter, RecordedExpectation *expectation, const char *constraint_parameter_name) {
+static void report_mock_parameter_name_not_found(TestReporter *test_reporter, RecordedExpectation *expectation, const char *constraint_parameter_name) {
 
     test_reporter->assert_true(
         test_reporter,
