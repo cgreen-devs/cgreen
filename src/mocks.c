@@ -64,7 +64,9 @@ static bool have_never_call_expectation_for(const char* function);
 
 static void report_violated_never_call(TestReporter*, RecordedExpectation*);
 static void report_unexpected_call(TestReporter*, RecordedExpectation*);
-static void report_mock_parameter_name_not_found(TestReporter *test_reporter, RecordedExpectation *expectation, const char *parameter);
+static void report_mock_parameter_name_not_found(TestReporter *test_reporter,
+                                                 RecordedExpectation *expectation,
+                                                 const char *parameter);
 static void destroy_expectation_if_time_to_die(RecordedExpectation *expectation);
 
 
