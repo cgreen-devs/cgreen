@@ -11,6 +11,8 @@
 
 #include "cgreen_value_internal.h"
 #include "parameters.h"
+#include "constraint_internal.h"
+
 
 #ifdef __ANDROID__
 #include "cgreen/internal/android_headers/androidcompat.h"
@@ -73,7 +75,7 @@ void cgreen_mocks_are(CgreenMockMode mock_mode) {
 static int number_of_parameters_in(const char *parameter_list) {
     int count = 1;
     const char *current = parameter_list;
-    
+
     if (strlen(parameter_list) == 0) return 0;
 
     while (*current != '\0') {
@@ -91,7 +93,7 @@ int number_of_parameter_constraints_in(const CgreenVector* constraints) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(constraints, i);
 
         if (is_comparing(constraint)) {
-           parameters++; 
+           parameters++;
         }
     }
 
@@ -533,7 +535,7 @@ void print_learned_mocks(void) {
     CgreenBreadcrumb *breadcrumb = get_test_reporter()->breadcrumb;
 
     walk_breadcrumb(breadcrumb, &show_breadcrumb, (void *) &i);
-    
+
     fprintf(stderr, ": Learned mocks are\n");
 
     if (cgreen_vector_size(learned_mock_calls) == 0) {

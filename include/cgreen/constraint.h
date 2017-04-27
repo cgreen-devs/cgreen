@@ -50,7 +50,7 @@ void destroy_static_constraint(Constraint *constraint);
 void destroy_double_constraint(Constraint *constraint);
 void destroy_constraint(Constraint *);
 void destroy_constraints(va_list constraints);
- 
+
 bool compare_want_value(Constraint *constraint, CgreenValue actual);
 bool compare_do_not_want_value(Constraint *constraint, CgreenValue actual);
 void test_want(Constraint *constraint, const char *function, CgreenValue actual, const char *test_file, int test_line, TestReporter *reporter);
@@ -80,23 +80,6 @@ Constraint *create_greater_than_double_constraint(double expected_value, const c
 Constraint *create_return_value_constraint(intptr_t value_to_return);
 Constraint *create_return_double_value_constraint(double value_to_return);
 Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set, size_t size_to_set);
-
-bool no_expected_value_in(const Constraint *constraint);
-bool values_are_strings_in(const Constraint *constraint);
-bool is_content_comparing(const Constraint *constraint);
-bool is_content_setting(const Constraint *constraint);
-bool is_not_content_setting(const Constraint *constraint);
-bool is_string_comparing(const Constraint *constraint);
-bool is_double_comparing(const Constraint *constraint);
-bool is_comparing(const Constraint *constraint);
-bool is_not_comparing(const Constraint *constraint);
-bool is_parameter(const Constraint *);
-bool constraint_is_not_for_parameter(const Constraint *, const char *);
-bool constraint_is_for_parameter(const Constraint *, const char *);
-bool constraint_is_for_parameter_in(const Constraint *, const char *);
-bool doubles_are_equal(double tried, double expected);
-bool double_is_lesser(double actual, double expected);
-bool double_is_greater(double actual, double expected);
 
 #ifdef __cplusplus
     }
