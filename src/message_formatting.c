@@ -208,6 +208,8 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
              actual_value_as_string,
              constraint->name);
 
+    free((void*)actual_value_as_string);
+
     if (no_expected_value_in(constraint)) {
         return message;
     } else
