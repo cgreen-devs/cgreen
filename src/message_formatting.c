@@ -17,6 +17,8 @@
 #include "wincompat.h"
 #endif
 
+#include "constraint_internal.h"
+
 
 // Handling of percent signs
 static const char *next_percent_sign(const char *s) {

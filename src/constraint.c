@@ -23,6 +23,7 @@
 #include "wincompat.h"
 #endif
 
+#include "constraint_internal.h"
 #include "parameters.h"
 #include "utils.h"
 #include "cgreen_value_internal.h"
@@ -82,7 +83,7 @@ static void set_contents(Constraint *constraint, const char *function, CgreenVal
 static const char *default_actual_value_message = "\n\t\tactual value:\t\t\t[%" PRIdPTR "]";
 static const char *default_expected_value_message = "\t\texpected value:\t\t\t[%" PRIdPTR "]";
 
- 
+
 Constraint *create_constraint() {
     Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));
     /* TODO: setting this to NULL as an implicit type check :( */
@@ -131,7 +132,7 @@ void destroy_constraint(Constraint *constraint) {
 void destroy_constraints(va_list constraints) {
     Constraint *constraint = NULL;
     while ((constraint = va_arg(constraints, Constraint *)) != (Constraint *)0) {
-        destroy_constraint(constraint); 
+        destroy_constraint(constraint);
     }
 }
 
@@ -564,7 +565,7 @@ static bool compare_do_not_want_end_of_string(Constraint *constraint, CgreenValu
 
 
 // Double
- 
+
 static bool compare_want_double(Constraint *constraint, CgreenValue actual) {
     return doubles_are_equal(constraint->expected_value.value.double_value, actual.value.double_value);
 }
@@ -671,7 +672,7 @@ bool is_not_comparing(const Constraint *constraint) {
 }
 
 bool is_parameter(const Constraint *constraint) {
-    return is_comparing(constraint) || is_content_setting(constraint); 
+    return is_comparing(constraint) || is_content_setting(constraint);
 }
 
 bool constraint_is_for_parameter_in(const Constraint *constraint, const char *names) {
@@ -679,7 +680,7 @@ bool constraint_is_for_parameter_in(const Constraint *constraint, const char *na
     bool found = false;
 
     CgreenVector *parameter_names = create_vector_of_names(names);
-    if (!is_parameter(constraint)) return false; 
+    if (!is_parameter(constraint)) return false;
 
     for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
         const char *mock_parameter_name = (const char *)cgreen_vector_get(parameter_names, i);

@@ -8,6 +8,7 @@ using namespace cgreen;
 #endif
 
 #include "../src/cgreen_value_internal.h"
+#include "../src/constraint_internal.h"
 
 #define compare_integer_constraint(c, x) (*c->compare)(c, make_cgreen_integer_value(x))
 #define compare_pointer_constraint(c, x) (*c->compare)(c, make_cgreen_pointer_value(x))

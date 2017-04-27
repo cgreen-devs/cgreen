@@ -29,6 +29,14 @@ namespace cgreen {
 #define ASSERT_THAT_macro_dispatcher___(func, nargs)          func ## nargs
 
 
+#ifdef __GNUC__
+#define DEPRECATED __attribute__((deprecated))
+#elif defined(_MSC_VER)
+#define DEPRECATED __declspec(deprecated)
+#else
+#pragma message("WARNING: You need to implement DEPRECATED for this compiler")
+#define DEPRECATED
+#endif
 
 #define assert_that_NARG(...) ASSERT_THAT_macro_dispatcher(assert_that, __VA_ARGS__)
 
@@ -42,11 +50,6 @@ void assert_double_not_equal_(const char *file, int line, const char *expression
 void assert_string_equal_(const char *file, int line, const char *expression, const char *tried, const char *expected);
 void assert_string_not_equal_(const char *file, int line, const char *expression, const char *tried, const char *expected);
 void assert_that_double_(const char *file, int line, const char *actual_string, double actual, Constraint *constraint);
-
-const char *show_null_as_the_string_null(const char *string);
-bool doubles_are_equal(double tried, double expected);
-bool double_is_lesser(double actual, double expected);
-bool double_is_greater(double actual, double expected);
 
 #ifdef __cplusplus
     }

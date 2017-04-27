@@ -12,7 +12,12 @@
 #include <string.h>
 #include <float.h>
 
+
 #include "cgreen_value_internal.h"
+#include "constraint_internal.h"
+
+
+const char *show_null_as_the_string_null(const char *string);
 
 
 void assert_core_(const char *file, int line, const char *actual_string, intptr_t actual,
