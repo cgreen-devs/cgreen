@@ -1,4 +1,5 @@
 #include <cgreen/cgreen.h>
+#include <cgreen/mocks.h>
 #include <cgreen/constraint.h>
 
 #include <stdio.h>
