@@ -79,7 +79,7 @@ OUTPUT_DIFF_ARGUMENTS = $(1)_tests \
 unit: build-it
 	# Ensure the dynamic libraries can be found even on DLL-platforms without altering
 	# user process PATH
-	export PATH=$$PWD/build/src:$$PATH ; \
+	export PATH=$$PWD/build/src:"$$PATH" ; \
 	SOURCEDIR=$$PWD/tests/ ; \
 	cd build ; \
 	tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
