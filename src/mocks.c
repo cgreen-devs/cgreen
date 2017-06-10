@@ -289,7 +289,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
 
 static CgreenVector *create_vector_of_actuals(va_list actuals, int count) {
     int i;
-    CgreenVector *actual_values = create_cgreen_vector(NULL);
+    CgreenVector *actual_values = create_cgreen_vector(free);
     for (i = 0; i < count; i++) {
         uintptr_t actual = va_arg(actuals, uintptr_t);
         cgreen_vector_add(actual_values, (void*)create_cgreen_value(make_cgreen_integer_value(actual)));
