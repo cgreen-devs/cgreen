@@ -106,6 +106,18 @@ Ensure(TextReporter, will_report_passed_for_test_with_one_pass_on_completion) {
     assert_that(output, contains_string("Completed \"suite_name\": 1 pass"));
 }
 
+Ensure(TextReporter, will_report_no_asserts_for_suites_with_no_asserts) {
+    reporter->start_suite(reporter, "suite_name", 15);
+    reporter->start_test(reporter, "test_name");
+
+    // Must indicate test case completion before calling finish_test()
+    send_reporter_completion_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, NULL);
+    reporter->finish_suite(reporter, "filename", line);
+
+    assert_that(output, contains_string("Completed \"suite_name\": No asserts"));
+}
+
 
 Ensure(TextReporter, will_report_failed_once_for_each_fail) {
     va_list arguments;
@@ -123,7 +135,7 @@ Ensure(TextReporter, will_report_failed_once_for_each_fail) {
     reporter->show_fail(reporter, "file", 3, "test_name", arguments);
     assert_that(output, contains_string("file:3: Failure:"));
     clear_output();
-    
+
     // Must indicate test case completion before calling finish_test()
     send_reporter_completion_notification(reporter);
     reporter->finish_test(reporter, "filename", line, NULL);
@@ -149,7 +161,7 @@ TestSuite *text_reporter_tests(void) {
     add_test_with_context(suite, TextReporter, will_report_passed_for_test_with_one_pass_on_completion);
     add_test_with_context(suite, TextReporter, will_report_failed_once_for_each_fail);
     add_test_with_context(suite, TextReporter, will_report_non_finishing_test);
-    
+
     set_teardown(suite, text_reporter_tests_teardown);
     return suite;
 }
