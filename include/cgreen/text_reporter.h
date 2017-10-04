@@ -15,6 +15,8 @@ namespace cgreen {
 typedef struct text_reporter_options {
     bool use_colours;
     bool quiet_mode;
+    bool inhibit_start_suite_message;
+    bool inhibit_finish_suite_message;
 } TextReporterOptions;
 
 TestReporter *create_text_reporter(void);

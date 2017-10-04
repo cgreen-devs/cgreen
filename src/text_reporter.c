@@ -84,6 +84,14 @@ static bool have_quiet_mode(TestReporter *reporter) {
     return reporter->options&&((TextReporterOptions *)reporter->options)->quiet_mode;
 }
 
+static bool inhibit_start_suite_message(TestReporter *reporter) {
+    return reporter->options&&((TextReporterOptions *)reporter->options)->inhibit_start_suite_message;
+}
+
+static bool inhibit_finish_suite_message(TestReporter *reporter) {
+    return reporter->options&&((TextReporterOptions *)reporter->options)->inhibit_finish_suite_message;
+}
+
 static void text_reporter_start_suite(TestReporter *reporter, const char *name,
         const int number_of_tests) {
     TextMemo *memo = (TextMemo *)reporter->memo;
@@ -95,7 +103,7 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
 
     reporter_start_test(reporter, name);
     if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 1) {
-        if (!have_quiet_mode(reporter))
+        if (!have_quiet_mode(reporter) && !inhibit_start_suite_message(reporter))
             memo->printer("Running \"%s\" (%d tests)...\n",
                           get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb),
                           number_of_tests);
@@ -223,15 +231,17 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
 
         // Report totals
         if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0) {
-            sprintf(prepend, "Completed \"%s\": ", name);
-            text_reporter_print_results(buf, prepend,
-                    reporter->total_passes,
-                    reporter->total_failures,
-                    reporter->total_skips,
-                    reporter->total_exceptions,
-                    reporter->total_duration,
-                    use_colors);
-            memo->printer("%s.\n", buf);
+            if (!have_quiet_mode(reporter) && !inhibit_finish_suite_message(reporter)) {
+                sprintf(prepend, "Completed \"%s\": ", name);
+                text_reporter_print_results(buf, prepend,
+                                            reporter->total_passes,
+                                            reporter->total_failures,
+                                            reporter->total_skips,
+                                            reporter->total_exceptions,
+                                            reporter->total_duration,
+                                            use_colors);
+                memo->printer("%s.\n", buf);
+            }
         }
     }
 }

@@ -136,14 +136,15 @@ static int initialize_option_handling(int argc, const char **argv) {
                                                             )
                                                 )
                         );
-	return(argc);
+    return(argc);
 }
 
 
 /*----------------------------------------------------------------------*/
-static bool run_tests_in_library(const char *suite_name_option, const char *test_name, const char *test_library, bool verbose, bool no_run) {
-	int status;
-	char *suite_name;
+static bool run_tests_in_library(const char *suite_name_option, const char *test_name,
+                                 const char *test_library, bool verbose, bool no_run) {
+    int status;
+    char *suite_name;
 
     suite_name = get_a_suite_name(suite_name_option, test_library);
 
@@ -224,18 +225,27 @@ int main(int argc, const char **argv) {
         const char *test_library = argv[i++];
 
         bool fail;
+        bool first = true;
 
         if (!file_exists(test_library)) {
             printf("Couldn't find library: %s\n", test_library);
             return EXIT_FAILURE;
         }
 
-        /* Check if the next argument is not a filename, thus a test name, remember and move past it */
+        /* Check if the next argument is not a filename, thus a test name, remember
+           and move past it */
         if (!file_exists(argv[i])) {
             test_name = argv[i++];
         }
 
-        fail = run_tests_in_library(suite_name_option, test_name, test_library, verbose, no_run);
+        if (!gopt_arg(options, 'x', &prefix_option) && first && i < argc-1) {
+            printf("First but not last\n");
+            reporter_options.inhibit_finish_suite_message = true;
+            first = false;
+        }
+
+        fail = run_tests_in_library(suite_name_option, test_name, test_library,
+                                    verbose, no_run);
         if (fail) any_fail = true;
     }
 
