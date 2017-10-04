@@ -216,35 +216,57 @@ int main(int argc, const char **argv) {
         return EXIT_FAILURE;
     }
 
-
     set_reporter_options(reporter, &reporter_options);
+
+    /* Walk through all arguments and set up list of libraries and testnames */
+    const char **library;       /* Array of libraries to run tests in */
+    library = malloc(sizeof(char *)*argc);
+
+    const char **testname;      /* Array of test name patterns, maybe NULL */
+    testname = malloc(sizeof(char *)*argc);
+
+    int library_count = 0;
 
     i = 1;
     while(i < argc) {
-        const char *test_name = NULL;
-        const char *test_library = argv[i++];
+        library[library_count++] = argv[i++];
 
-        bool fail;
-        bool first = true;
-
-        if (!file_exists(test_library)) {
-            printf("Couldn't find library: %s\n", test_library);
-            return EXIT_FAILURE;
-        }
-
-        /* Check if the next argument is not a filename, thus a test name, remember
-           and move past it */
+        /* Check if the next argument is not a filename, thus a test name,
+           remember and move past it */
         if (!file_exists(argv[i])) {
-            test_name = argv[i++];
+            testname[library_count-1] = argv[i++];
+        }
+    }
+
+    for (i = 0; i<library_count; i++) {
+        bool fail = false;
+
+        if (!file_exists(library[i])) {
+            printf("Couldn't find library: %s\n", library[i]);
+            break;
         }
 
-        if (!gopt_arg(options, 'x', &prefix_option) && first && i < argc-1) {
-            printf("First but not last\n");
-            reporter_options.inhibit_finish_suite_message = true;
-            first = false;
+        /* If we are using the text_reporter && a common suite name
+           then for all except the first library inhibit the start
+           suite message and for all except the last library inhibit
+           the finish suite message.  NOTE that the last library might
+           be the second to last arg since there might be testname
+           pattern after it.
+         */
+        if (!gopt_arg(options, 'x', &prefix_option) &&
+            suite_name_option != NULL) {
+            if (i > 0 && library_count > 1) {
+                reporter_options.inhibit_start_suite_message = true;
+            } else
+                reporter_options.inhibit_start_suite_message = false;
+
+            if (i < library_count-1 && library_count > 1) {
+                reporter_options.inhibit_finish_suite_message = true;
+            } else
+                reporter_options.inhibit_finish_suite_message = false;
         }
 
-        fail = run_tests_in_library(suite_name_option, test_name, test_library,
+        fail = run_tests_in_library(suite_name_option, testname[i], library[i],
                                     verbose, no_run);
         if (fail) any_fail = true;
     }
