@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "../src/utils.h"
+
 #include <signal.h>
 
 #ifdef __cplusplus
@@ -42,10 +44,13 @@ Ensure(failure_reported_and_exception_thrown_when_messaging_would_block) {
     const int LOOPS = 65536;
     int messaging = start_cgreen_messaging(33);
     int loop;
+    char panic_message[100];
 
     signal_received = 0;
     signal(SIGPIPE, catch_signal);
-    fprintf(stderr, "  Expected output: ");
+
+    panic_set_output_buffer(panic_message);
+
     for (loop = 0; loop < LOOPS; loop++) {
         send_cgreen_message(messaging, 99);
         if (signal_received == 1)
@@ -54,6 +59,7 @@ Ensure(failure_reported_and_exception_thrown_when_messaging_would_block) {
 
     assert_that(signal_received, is_equal_to(1));
     assert_that(loop, is_less_than(LOOPS));
+    assert_that(panic_message, contains_string("Too many assertions"));
 }
 
 TestSuite *messaging_tests(void) {

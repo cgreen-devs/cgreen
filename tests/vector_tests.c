@@ -2,6 +2,8 @@
 #include <cgreen/vector.h>
 #include <stdlib.h>
 
+#include "../src/utils.h"
+
 #ifdef __cplusplus
 using namespace cgreen;
 #endif
@@ -120,14 +122,22 @@ Ensure(Vector, vector_size_of_null_pointer_is_zero) {
 
 Ensure(Vector, returns_null_for_get_on_illegal_index) {
     CgreenVector *vector = create_cgreen_vector(NULL);
-    fprintf(stderr, "  Expected output:"); /* We are expecting "illegal position (-1)" */
+    char panic_message[100];
+
+    panic_set_output_buffer(panic_message);
+
     assert_that(cgreen_vector_get(vector, -1), is_equal_to(NULL));
+    assert_that(panic_message, contains_string("illegal position (-1) in vector operation"));
 }
 
 Ensure(Vector, returns_null_for_remove_from_illegal_index) {
     CgreenVector *vector = create_cgreen_vector(NULL);
-    fprintf(stderr, "  Expected output:"); /* We are expecting "illegal position (1)" */
+    char panic_message[100];
+
+    panic_set_output_buffer(panic_message);
+
     assert_that(cgreen_vector_remove(vector, 1), is_equal_to(NULL));
+    assert_that(panic_message, contains_string("illegal position (1) in vector operation"));
 }
 
 TestSuite *vector_tests(void) {

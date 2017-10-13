@@ -1,4 +1,7 @@
 #include "cgreen/internal/cgreen_pipe.h"
+
+#include "utils.h"
+
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -27,7 +30,7 @@ int cgreen_pipe_open(int pipes[2])
         return pipe_open_result;
     }
 
-    pipe_nonblock_result = fcntl(pipes[1], F_SETFL, O_NONBLOCK); 
+    pipe_nonblock_result = fcntl(pipes[1], F_SETFL, O_NONBLOCK);
 
     if (pipe_nonblock_result != 0) {
         return pipe_open_result;
@@ -57,9 +60,9 @@ ssize_t cgreen_pipe_write(int p, const void *buf, size_t count)
     int status;
     if (pipe_write_result < 0) {
         if (errno == EWOULDBLOCK) {
-            fprintf(stderr, "\tCGREEN EXCEPTION: Too many assertions within a single test.\n");
+            PANIC("Too many assertions within a single test.");
         } else if (errno != EPIPE) {
-            fprintf(stderr, "\tCGREEN EXCEPTION: Error when reporting from test case process to reporter.\n");
+            PANIC("Error when reporting from test case process to reporter.");
         }
         raise(SIGPIPE);
         wait(&status); /* Safe-guarding against a signalhandler for SIGPIPE, which
