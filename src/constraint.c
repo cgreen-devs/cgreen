@@ -696,7 +696,7 @@ bool constraint_is_for_parameter_in(const Constraint *constraint, const char *na
 }
 
 bool doubles_are_equal(double tried, double expected) {
-    return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(tried, expected));
+    return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(fabs(tried), fabs(expected)));
 }
 
 bool double_is_lesser(double actual, double expected) {

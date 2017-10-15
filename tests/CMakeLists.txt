@@ -36,6 +36,7 @@ set(c_tests_library_SRCS
   cdash_reporter_tests.c
   constraint_tests.c
   cute_reporter_tests.c
+  double_tests.c
   environment_variables_tests.c
   message_formatting_tests.c
   messaging_tests.c
@@ -118,6 +119,7 @@ foreach(case
     cgreen_value
     constraint
     cute_reporter
+    double
     message_formatting
     messaging
     mocks
