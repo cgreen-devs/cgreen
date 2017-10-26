@@ -235,7 +235,8 @@ int main(int argc, const char **argv) {
            remember and move past it */
         if (!file_exists(argv[i])) {
             testname[library_count-1] = argv[i++];
-        }
+        } else
+            testname[library_count-1] = NULL;
     }
 
     for (i = 0; i<library_count; i++) {

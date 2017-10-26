@@ -62,8 +62,8 @@ static char *context_name_of(const char* symbolic_name) {
     char *context_name;
 
     if (strchr(symbolic_name, ':')) {
-    	context_name = string_dup(symbolic_name);
-    	*strchr(context_name, ':') = '\0';
+        context_name = string_dup(symbolic_name);
+        *strchr(context_name, ':') = '\0';
     } else {
         context_name = string_dup(CGREEN_DEFAULT_SUITE);
     }
@@ -146,9 +146,7 @@ static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_p
         if (symbolic_name_pattern == NULL || test_matches_pattern(symbolic_name_pattern, test_items[i])) {
             char *error;
             CgreenTest *test_function = (CgreenTest *)(dlsym(handle, test_items[i].specification_name));
-
             if ((error = dlerror()) != NULL)  {
-                fprintf (stderr, "%s\n", error);
                 return -1;
             }
 
@@ -242,9 +240,11 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
     ContextSuite *context_suites = NULL;
     TestSuite *suite = create_named_test_suite(suite_name);
 
-    const int number_of_matches = add_matching_tests_to_suite(test_library_handle, symbolic_name,
-                                                              test_items, suite, &context_suites);
-
+    const int number_of_matches = add_matching_tests_to_suite(test_library_handle,
+                                                              symbolic_name,
+                                                              test_items,
+                                                              suite,
+                                                              &context_suites);
     if (error_when_matching(number_of_matches))
         return EXIT_FAILURE;
 
@@ -264,6 +264,7 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
             else
                 printf(" to run all %d discovered tests ...\n", count(test_items));
         }
+
         if (number_of_matches > 0)
             status = run_test_suite(suite, reporter);
         else {
