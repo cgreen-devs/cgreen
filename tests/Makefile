@@ -1,12 +1,19 @@
-# This make file may serve as an example of how to easily
-# build a lot of Cgreen test libraries and run them through
-# the runner. By structuring it this way only affected libraries
-# need to be rebuilt.
+# This make file may serve as an example of how to easily build a lot
+# of Cgreen test libraries and run them through the runner. By
+# structuring it this way only affected libraries need to be rebuilt.
 #
-# Note that this is not official tests for Cgreen. To do that
-# you should go to root directory and do "make unit" or "make test"
+# Note that this is not official builds or tests for Cgreen. To do
+# that you should go to root directory and do "make unit" or "make
+# test"
 
 CFLAGS = -Wall -fPIC -std=c99 -I../include -I.. -I../src
+
+LIBRARY_PATH = ../build/src
+ifneq ($(shell uname), Darwin)
+LOAD_PATH = LD_LIBRARY_PATH=$(LIBRARY_PATH)
+else
+LOAD_PATH = DYLD_LIBRARY_PATH=$(LIBRARY_PATH)
+endif
 
 TEST_SOURCES = \
 	assertion_tests.c \
@@ -33,8 +40,6 @@ TEST_LIBRARIES = $(patsubst %.c,lib%.so, $(TEST_SOURCES))
 
 all: $(TEST_LIBRARIES)
 	cd ..; make --no-print-directory
-	LD_LIBRARY_PATH=../build/src ../build/tools/cgreen-runner -s unittests $?
+	$(LOAD_PATH) ../build/tools/cgreen-runner -s unittests $?
 
-lib%_tests.so : %_tests.o ; $(CC) -shared -o $@ $^
-
-%.o : %.c
+lib%_tests.so : %_tests.o ; $(CC) -shared -o $@ $^ -L$(LIBRARY_PATH) -lcgreen
