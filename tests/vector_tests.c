@@ -122,7 +122,7 @@ Ensure(Vector, vector_size_of_null_pointer_is_zero) {
 
 Ensure(Vector, returns_null_for_get_on_illegal_index) {
     CgreenVector *vector = create_cgreen_vector(NULL);
-    char panic_message[100];
+    char panic_message[1000];
 
     panic_set_output_buffer(panic_message);
 
@@ -132,7 +132,7 @@ Ensure(Vector, returns_null_for_get_on_illegal_index) {
 
 Ensure(Vector, returns_null_for_remove_from_illegal_index) {
     CgreenVector *vector = create_cgreen_vector(NULL);
-    char panic_message[100];
+    char panic_message[1000];
 
     panic_set_output_buffer(panic_message);
 
