@@ -1,0 +1,12 @@
+FILE *open_file(const char *filename, const char *mode) { 
+  return (FILE *) mock(filename, mode);
+}
+
+FILE *open_process(const char *command, const char *mode) { 
+  return (FILE *) mock(command, mode);
+}
+
+int read_line(FILE *file, char *buffer, int max_length) { 
+  return (int) mock(file, buffer, max_length);
+}
+
