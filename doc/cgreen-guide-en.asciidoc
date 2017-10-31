@@ -1671,6 +1671,9 @@ same as for the assertions we saw earlier):
 For the double valued constraints you can set the number of
 significant digits to consider a match with a call to
 `significant_figures_for_assert_double_are(int figures)`.
+The <<floating_point_comparison_algorithm,
+section on how to work with doubles>> has a more detailed
+discussion of the algorithm used for comparing floating point numbers.
 
 Then there are two ways to return results:
 
@@ -1984,6 +1987,33 @@ Here's an example of that:
 include::tutorial_src/double_tests1.c[lines=16..26]
 -----------------------------
 
+
+[[floating_point_comparison_algorithm]]
+==== Details of floating point comparison algorithm
+
+The number of significant digits set with
+`significant_figures_for_assert_double_are` specifies a _relative_ tolerance.
+Cgreen considers two double precision numbers +x+ and +y+ equal if their
+difference normalized by the larger of the two is smaller than +10^(1 -
+significant_figures)^+. Mathematically, we check that
++|x - y| < max(|x|, |y|) * 10^(1 - significant_figures)^+.
+
+Well documented subtleties arise when comparing floating point numbers close to
+zero using this algorithm. The article
+https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/[Comparing Floating Point Numbers, 2012 Edition]
+by Bruce Dawson has an excellent discussion of the issue. The essence of the
+problem can be appreciated if we consider the special case where +y == 0+. In
+that case, our condition reduces to +|x| < |x| * 10^(1 - significant_figures)^+.
+After cancelling +|x|+ this simplifies to +1 < 10^(1 - significant_figures)^+.
+But this is only true if +significant_figures < 1+. In words this can be
+summarized by saying that, in a relative sense, _all_ numbers are very different
+from zero. To circumvent this difficulty we recommend to use a constraint of the
+following form when comparing numbers close to zero:
+
+[source,c]
+-----------------------
+assert_that(fabs(x - y) < abs_tolerance);
+-----------------------
 
 
 === Using Cgreen with C{pp}
