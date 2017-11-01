@@ -17,17 +17,7 @@
 
 #include "runner.h"
 
-/* The name of a test is either a named mangled from the name of the
-   context, if any, and the actual test name.  Names (or patterns) on
-   the command line is formatted as a symbolic name composed of the
-   context name, a colon and the test name. The variable naming below
-   is trying to be clear about which type of name it is. */
-
-typedef struct test_item {
-    char *specification_name;
-    char *context_name;
-    char *test_name;
-} TestItem;
+#include "test_item.h"
 
 
 /* The ContextSuite is a datastructure created to partion the tests in

@@ -16,7 +16,7 @@ VPATH = ../src
 all: libdiscoverer_tests.so
 	LD_LIBRARY_PATH=../build/src ../build/tools/cgreen-runner $^
 
-libdiscoverer_tests.so: discoverer_tests.o discoverer.o
+libdiscoverer_tests.so: discoverer_tests.o discoverer.o test_item.o
 	$(CC) -shared $(LDFLAGS) -o $@ $^
 
 io.mocks : io.h
