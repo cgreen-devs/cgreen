@@ -16,22 +16,13 @@ Describe(Discoverer);
 BeforeEach(Discoverer) {}
 AfterEach(Discoverer) {}
 
+
+/* Helper functions */
 static void expect_open_file(const char *filename, void *result) {
     expect(open_file, when(filename,
                            is_equal_to_string(filename)),
            will_return(result));
 }
-
-
-
-Ensure(Discoverer, should_find_no_tests_in_non_existing_file) {
-    expect_open_file("non-existing-file", NULL);
-
-    CgreenVector *tests = discover_tests_in("non-existing-file");
-
-    assert_that(tests, is_null);
-}
-
 
 static void expect_open_process(const char *partial_command, void *result) {
     expect(open_process, when(command, contains_string(partial_command)),
@@ -45,16 +36,6 @@ static void given_a_file_with_no_lines(const char *filename) {
            will_return(EOF));     /* End of input */
 }
 
-
-/*======================================================================*/
-Ensure(Discoverer, should_find_no_tests_in_existing_empty_file) {
-    given_a_file_with_no_lines("empty-file");
-
-    CgreenVector *tests = discover_tests_in("empty-file");
-
-    assert_that(cgreen_vector_size(tests), is_equal_to(0));
-}
-
 static void expect_read_line_from(int file_id, const char *line) {
     if (line == NULL)
         expect(read_line, when(file, is_equal_to(file_id)),
@@ -65,15 +46,47 @@ static void expect_read_line_from(int file_id, const char *line) {
                will_return(strlen(line)+1));
 }
 
+static void given_a_file_with_two_lines(const char *filename, const char *line1, const char *line2) {
+    expect_open_file("some-file", (void *)1);
+    expect_open_process("nm ", (void *)2);
+    expect_read_line_from(2, line1);
+    expect_read_line_from(2, line2);
+    expect_read_line_from(2, NULL);
+}
 
-/*======================================================================*/
-Ensure(Discoverer, should_find_one_test_in_file_with_one_line_containing_testname_pattern) {
-    char line[] = "0000000000202160 D CgreenSpec__Discoverer__should_find_no_tests_in_existing_empty_file__";
-
+static void given_a_file_with_one_line(const char *filename, const char *line) {
     expect_open_file("some-file", (void *)1);
     expect_open_process("nm ", (void *)2);
     expect_read_line_from(2, line);
     expect_read_line_from(2, NULL);
+}
+
+
+
+/*======================================================================*/
+Ensure(Discoverer, should_find_no_tests_in_non_existing_file) {
+    expect_open_file("non-existing-file", NULL);
+
+    CgreenVector *tests = discover_tests_in("non-existing-file");
+
+    assert_that(tests, is_null);
+}
+
+
+/*======================================================================*/
+Ensure(Discoverer, should_find_no_tests_in_existing_empty_file) {
+    given_a_file_with_no_lines("empty-file");
+
+    CgreenVector *tests = discover_tests_in("empty-file");
+
+    assert_that(cgreen_vector_size(tests), is_equal_to(0));
+}
+
+
+/*======================================================================*/
+Ensure(Discoverer, should_find_one_test_in_file_with_one_line_containing_testname_pattern) {
+    given_a_file_with_one_line("some-file",
+                               "0000000000202160 D CgreenSpec__A_context__a_test__");
 
     CgreenVector *tests = discover_tests_in("some-file");
 
@@ -83,14 +96,9 @@ Ensure(Discoverer, should_find_one_test_in_file_with_one_line_containing_testnam
 
 /*======================================================================*/
 Ensure(Discoverer, should_find_two_test_in_two_line_file_with_two_lines_containing_testname_pattern) {
-    char line1[] = "0000000000202160 D CgreenSpec__Context1__test1__";
-    char line2[] = "0000000000202160 D CgreenSpec__Context2__test2__";
-
-    expect_open_file("some-file", (void *)1);
-    expect_open_process("nm ", (void *)2);
-    expect_read_line_from(2, line1);
-    expect_read_line_from(2, line2);
-    expect_read_line_from(2, NULL);
+    given_a_file_with_two_lines("some-file",
+                                "0000000000202160 D CgreenSpec__Context1__test1__",
+                                "0000000000202160 D CgreenSpec__Context2__test2__");
 
     CgreenVector *tests = discover_tests_in("some-file");
 
@@ -100,14 +108,9 @@ Ensure(Discoverer, should_find_two_test_in_two_line_file_with_two_lines_containi
 
 /*======================================================================*/
 Ensure(Discoverer, should_find_one_test_in_two_line_file_with_one_line_containing_testname_pattern) {
-    char line1[] = "0000000000202160 D CgreenSpec__Discoverer__test1__";
-    char line2[] = "0000000000202160 D ID";
-
-    expect_open_file("some-file", (void *)1);
-    expect_open_process("nm ", (void *)2);
-    expect_read_line_from(2, line1);
-    expect_read_line_from(2, line2);
-    expect_read_line_from(2, NULL);
+    given_a_file_with_two_lines("some-file",
+                                "0000000000202160 D CgreenSpec__Discoverer__test1__",
+                                "0000000000202160 D ID");
 
     CgreenVector *tests = discover_tests_in("some-file");
 
@@ -117,12 +120,8 @@ Ensure(Discoverer, should_find_one_test_in_two_line_file_with_one_line_containin
 
 /*======================================================================*/
 Ensure(Discoverer, should_find_no_test_in_file_with_no_definiton) {
-    char line[] = "0000000000202160 U CgreenSpec__Discoverer__test1__";
-
-    expect_open_file("some-file", (void *)1);
-    expect_open_process("nm ", (void *)2);
-    expect_read_line_from(2, line);
-    expect_read_line_from(2, NULL);
+    given_a_file_with_one_line("some-file",
+                               "0000000000202160 U CgreenSpec__Discoverer__test1__");
 
     CgreenVector *tests = discover_tests_in("some-file");
 
@@ -131,13 +130,9 @@ Ensure(Discoverer, should_find_no_test_in_file_with_no_definiton) {
 
 
 /*======================================================================*/
-Ensure(Discoverer, should_return_valid_test_items_for_a_line_containing_testname_pattern) {
-    char line1[] = "0000000000202160 D CgreenSpec__Context1__test_1__";
-
-    expect_open_file("some-file", (void *)1);
-    expect_open_process("nm ", (void *)2);
-    expect_read_line_from(2, line1);
-    expect_read_line_from(2, NULL);
+Ensure(Discoverer, should_return_valid_test_item_for_a_line_containing_testname_pattern) {
+    given_a_file_with_one_line("some-file",
+                               "0000000000202160 D CgreenSpec__Context1__test_1__");
 
     CgreenVector *tests = discover_tests_in("some-file");
 
