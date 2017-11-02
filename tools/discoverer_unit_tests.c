@@ -47,8 +47,10 @@ static void expect_read_line_from(int file_id, const char *line) {
 }
 
 static void given_a_file_with_two_lines(const char *filename, const char *line1, const char *line2) {
-    expect_open_file("some-file", (void *)1);
-    expect_open_process("nm ", (void *)2);
+    static char command[100];
+    expect_open_file(filename, (void *)1);
+    sprintf(command, "nm %s", filename);
+    expect_open_process(command, (void *)2);
     expect_read_line_from(2, line1);
     expect_read_line_from(2, line2);
     expect_read_line_from(2, NULL);
@@ -142,4 +144,16 @@ Ensure(Discoverer, should_return_valid_test_item_for_a_line_containing_testname_
     assert_that(test_item->specification_name, is_equal_to_string("CgreenSpec__Context1__test_1__"));
     assert_that(test_item->context_name, is_equal_to_string("Context1"));
     assert_that(test_item->test_name, is_equal_to_string("test_1"));
+}
+
+/*======================================================================*/
+Ensure(Discoverer, can_handle_unterminated_testnames) {
+    char line[] = "0000000000202160 D CgreenSpec__Context1__a";
+
+    given_a_file_with_one_line("some-file", line);
+
+    CgreenVector *tests = discover_tests_in("some-file");
+
+    TestItem *test_item = (TestItem*)cgreen_vector_get(tests, 0);
+    assert_that(test_item->test_name, is_equal_to_string("a"));
 }

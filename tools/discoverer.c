@@ -25,7 +25,6 @@ static bool is_definition(const char *line) {
 static void add_all_tests_from(FILE *nm_output_pipe, CgreenVector *tests) {
     char line[100];
     int length = read_line(nm_output_pipe, line, sizeof(line)-1);
-
     while (length > -1) {
         if (contains_cgreen_spec(line) && is_definition(line)) {
             TestItem *test_item = create_test_item_from(cgreen_spec_of(line));
@@ -40,7 +39,9 @@ CgreenVector *discover_tests_in(const char *filename) {
     if (library == NULL)
         return NULL;
     else {
-        FILE *nm_output_pipe = open_process("nm test", "r");
+        char nm_command[1000] = "/usr/bin/nm ";
+        strcat(nm_command, filename);
+        FILE *nm_output_pipe = open_process(nm_command, "r");
         if (nm_output_pipe != NULL) {
             CgreenVector *tests = create_cgreen_vector(NULL);
             add_all_tests_from(nm_output_pipe, tests);

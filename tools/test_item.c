@@ -36,7 +36,7 @@ static const char *test_name_from(const char *specification_name) {
     const char *start = skip_cgreen_spec_marker(specification_name);
     start = skip_over_separator(start);
     const char *end = skip_to_separator(start);
-    return string_copy_of(start, end);
+    return string_copy_of(start, end? end : &start[strlen(start)]);
 }
 
 TestItem *create_test_item_from(const char *specification_name) {

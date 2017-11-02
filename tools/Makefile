@@ -8,18 +8,39 @@
 # not worry about that for now, I'm confident that we
 # can solve that...
 #
-# And I really want to use cgreen!
+# And I really want to use Cgreen!
 
-CFLAGS = -Wall -g -fPIC -I../include -MMD
+COMMONFLAGS = -g
+CFLAGS = $(COMMONFLAGS) -Wall -fPIC -I../include -MMD
+LDFLAGS = $(COMMONFLAGS)
+
 VPATH = ../src
 
-all: libdiscoverer_tests.so
+all: unit_tests acceptance_tests main
+
+#----------------------------------------------------------------------
+main: main.o discoverer_acceptance_tests.o discoverer.o test_item.o io.o
+	$(CC) $(LDFLAGS) -o $@ $^ -L../build/src -lcgreen
+
+#----------------------------------------------------------------------
+unit_tests: libdiscoverer_unit_tests.so
 	LD_LIBRARY_PATH=../build/src ../build/tools/cgreen-runner $^
 
-libdiscoverer_tests.so: discoverer_tests.o discoverer.o test_item.o
-	$(CC) -shared $(LDFLAGS) -o $@ $^
+libdiscoverer_unit_tests.so: discoverer_unit_tests.o discoverer.o test_item.o
+	$(CC) -shared -o $@ $^
 
 io.mocks : io.h
 	../contrib/cgreen-mocker/cgreen-mocker.py -I../../pycparser-master/utils/fake_libc_include io.h > io.mocks
+
+#----------------------------------------------------------------------
+acceptance_tests: libdiscoverer_acceptance_tests.so
+	LD_LIBRARY_PATH=../build/src ../build/tools/cgreen-runner $^
+
+libdiscoverer_acceptance_tests.so: discoverer_acceptance_tests.o discoverer.o test_item.o io.o
+	$(CC) -shared -o $@ $^
+
+#----------------------------------------------------------------------
+clean:
+	-rm *.o *.so
 
 -include *.d
