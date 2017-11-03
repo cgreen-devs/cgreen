@@ -5,6 +5,7 @@
 #include <cgreen/string_comparison.h>
 #include <cgreen/vector.h>
 #include <inttypes.h>
+#include <float.h>
 #include <limits.h>
 #include <math.h>
 #ifndef __cplusplus
@@ -42,6 +43,7 @@
 
 
 static int significant_figures = 8;
+static double absolute_tolerance = DBL_MIN / 1.0e-8;
 
 
 static double accuracy(int significant_figures, double largest);
@@ -696,7 +698,9 @@ bool constraint_is_for_parameter_in(const Constraint *constraint, const char *na
 }
 
 bool doubles_are_equal(double tried, double expected) {
-    return max(tried, expected) - min(tried, expected) < accuracy(significant_figures, max(fabs(tried), fabs(expected)));
+    double abs_diff = fabs(tried - expected);
+    if (abs_diff < absolute_tolerance) return true;
+    return abs_diff < accuracy(significant_figures, max(fabs(tried), fabs(expected)));
 }
 
 bool double_is_lesser(double actual, double expected) {
@@ -708,7 +712,7 @@ bool double_is_greater(double actual, double expected) {
 }
 
 static double accuracy(int figures, double largest) {
-    return pow(10, 1 + (int)log10(fabs(largest)) - figures);
+    return pow(10.0, 1.0 + floor(log10(fabs(largest))) - figures);
 }
 
 void significant_figures_for_assert_double_are(int figures) {
