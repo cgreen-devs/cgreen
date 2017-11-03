@@ -147,7 +147,7 @@ Ensure(Discoverer, should_return_valid_test_item_for_a_line_containing_testname_
 }
 
 /*======================================================================*/
-Ensure(Discoverer, can_handle_unterminated_testnames) {
+Ensure(Discoverer, can_handle_truncated_testnames) {
     char line[] = "0000000000202160 D CgreenSpec__Context1__a";
 
     given_a_file_with_one_line("some-file", line);

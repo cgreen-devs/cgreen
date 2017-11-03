@@ -14,5 +14,6 @@ typedef struct test_item {
 } TestItem;
 
 extern TestItem *create_test_item_from(const char *specification_name);
+extern void destroy_test_item(TestItem *item);
 
 #endif

@@ -43,7 +43,7 @@ CgreenVector *discover_tests_in(const char *filename) {
         strcat(nm_command, filename);
         FILE *nm_output_pipe = open_process(nm_command, "r");
         if (nm_output_pipe != NULL) {
-            CgreenVector *tests = create_cgreen_vector(NULL);
+            CgreenVector *tests = create_cgreen_vector((GenericDestructor)&destroy_test_item);
             add_all_tests_from(nm_output_pipe, tests);
             return tests;
         } else

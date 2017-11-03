@@ -50,3 +50,9 @@ TestItem *create_test_item_from(const char *specification_name) {
 
     return test_item;
 }
+
+void destroy_test_item(TestItem *item) {
+    free(item->specification_name);
+    free(item->context_name);
+    free(item->test_name);
+}
