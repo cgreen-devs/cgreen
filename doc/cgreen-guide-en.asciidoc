@@ -1921,7 +1921,7 @@ double typed values we have
 | `is_greater_than_double(value)`
 |==========================================================================
 
-But there is also the special assert
+But there is also the special assert that you must use when asserting doubles
 
 |=========================================================
 | *Assertion*
@@ -1992,11 +1992,11 @@ include::tutorial_src/double_tests1.c[lines=16..26]
 ==== Details of floating point comparison algorithm
 
 The number of significant digits set with
-`significant_figures_for_assert_double_are` specifies a _relative_ tolerance.
-Cgreen considers two double precision numbers +x+ and +y+ equal if their
-difference normalized by the larger of the two is smaller than +10^(1 -
-significant_figures)^+. Mathematically, we check that
-+|x - y| < max(|x|, |y|) * 10^(1 - significant_figures)^+.
+`significant_figures_for_assert_double_are()` specifies a _relative_
+tolerance.  Cgreen considers two double precision numbers +x+ and +y+
+equal if their difference normalized by the larger of the two is
+smaller than +10^(1 - significant_figures)^+. Mathematically, we check
+that +|x - y| < max(|x|, |y|) * 10^(1 - significant_figures)^+.
 
 Well documented subtleties arise when comparing floating point numbers close to
 zero using this algorithm. The article
