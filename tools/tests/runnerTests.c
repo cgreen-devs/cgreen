@@ -7,6 +7,7 @@ using namespace cgreen;
 #endif
 
 #include "../runner.c"
+#include "test_item.h"
 
 Describe(Runner);
 
@@ -85,10 +86,7 @@ Ensure(Runner, can_register_context_and_test_from_a_symbol) {
     assert_that(test_items[0].context_name, is_equal_to_string(CONTEXT_NAME));
     assert_that(test_items[0].test_name, is_equal_to_string(TEST_NAME));
 
-    // TODO: make destroy_test_item(TestItem*)
-    free(test_items[0].context_name);
-    free(test_items[0].specification_name);
-    free(test_items[0].test_name);
+    destroy_test_item(&test_items[0]);
 }
 
 Ensure(Runner, can_ensure_test_exists_from_context_and_name) {
