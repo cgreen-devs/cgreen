@@ -13,6 +13,7 @@
 COMMONFLAGS = -g
 CFLAGS = $(COMMONFLAGS) -Wall -fPIC -I../include -MMD
 LDFLAGS = $(COMMONFLAGS)
+LIBRARIES = -L../build/src -lcgreen
 
 VPATH = ../src
 
@@ -20,14 +21,14 @@ all: unit_tests acceptance_tests main
 
 #----------------------------------------------------------------------
 main: main.o discoverer_acceptance_tests.o discoverer.o test_item.o io.o
-	$(CC) $(LDFLAGS) -o $@ $^ -L../build/src -lcgreen
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBRARIES)
 
 #----------------------------------------------------------------------
 unit_tests: libdiscoverer_unit_tests.so
 	LD_LIBRARY_PATH=../build/src ../build/tools/cgreen-runner $^
 
 libdiscoverer_unit_tests.so: discoverer_unit_tests.o discoverer.o test_item.o
-	$(CC) -shared -o $@ $^
+	$(CC) -shared -o $@ $^ $(LIBRARIES)
 
 io.mocks : io.h
 	../contrib/cgreen-mocker/cgreen-mocker.py -I../../pycparser-master/utils/fake_libc_include io.h > io.mocks
@@ -37,7 +38,7 @@ acceptance_tests: libdiscoverer_acceptance_tests.so
 	LD_LIBRARY_PATH=../build/src ../build/tools/cgreen-runner $^
 
 libdiscoverer_acceptance_tests.so: discoverer_acceptance_tests.o discoverer.o test_item.o io.o
-	$(CC) -shared -o $@ $^
+	$(CC) -shared -o $@ $^ $(LIBRARIES)
 
 #----------------------------------------------------------------------
 clean:
