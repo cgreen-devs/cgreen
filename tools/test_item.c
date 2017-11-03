@@ -52,7 +52,7 @@ TestItem *create_test_item_from(const char *specification_name) {
 }
 
 void destroy_test_item(TestItem *item) {
-    free(item->specification_name);
-    free(item->context_name);
-    free(item->test_name);
+    free((void *)item->specification_name);
+    free((void *)item->context_name);
+    free((void *)item->test_name);
 }

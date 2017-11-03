@@ -202,9 +202,9 @@ static bool matching_test_exists(const char *test_name, TestItem tests[]) {
 /*----------------------------------------------------------------------*/
 static void reflective_runner_cleanup(TestItem test_items[]) {
     for (int i = 0; test_items[i].specification_name != NULL; ++i) {
-        free(test_items[i].specification_name);
-        free(test_items[i].context_name);
-        free(test_items[i].test_name);
+        free((void*)test_items[i].specification_name);
+        free((void*)test_items[i].context_name);
+        free((void*)test_items[i].test_name);
     }
 }
 
@@ -317,7 +317,7 @@ static bool is_cgreen_spec_line(const char *line) {
 /*----------------------------------------------------------------------*/
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
 // XXX: but nm is more portable across object formats...
-static int discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items, bool verbose)
+int discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items, bool verbose)
 {
     int ret = 0;
 
