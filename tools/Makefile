@@ -17,7 +17,7 @@ LIBRARIES = -L../build/src -lcgreen
 
 VPATH = ../src
 
-all: unit_tests acceptance_tests main
+all: unit_tests acceptance_tests
 
 #----------------------------------------------------------------------
 main: main.o discoverer_acceptance_tests.o discoverer.o test_item.o io.o
