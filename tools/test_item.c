@@ -40,10 +40,8 @@ static const char *test_name_from(const char *specification_name) {
 }
 
 TestItem *create_test_item_from(const char *specification_name) {
-    char name[strlen(specification_name)+1];
     TestItem *test_item = (TestItem *)malloc(sizeof(TestItem));
 
-    strcpy(name, &specification_name[strlen(CGREEN_SPEC_PREFIX CGREEN_SEPARATOR)]);
     test_item->specification_name = strdup(specification_name);
     test_item->context_name = context_name_from(specification_name);
     test_item->test_name = test_name_from(specification_name);
