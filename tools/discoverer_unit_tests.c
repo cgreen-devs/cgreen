@@ -31,9 +31,11 @@ static void expect_open_process(const char *partial_command, void *result) {
 
 static void given_a_file_with_no_lines(const char *filename) {
     expect_open_file(filename, (void *)1);
+    expect(close_file, when(file, is_equal_to(1)));
     expect_open_process("nm ", (void *)2);
     expect(read_line, when(file, is_equal_to(2)),
            will_return(EOF));     /* End of input */
+    expect(close_process, when(file, is_equal_to(2)));
 }
 
 static void expect_read_line_from(int file_id, const char *line) {
@@ -49,18 +51,22 @@ static void expect_read_line_from(int file_id, const char *line) {
 static void given_a_file_with_two_lines(const char *filename, const char *line1, const char *line2) {
     static char command[100];
     expect_open_file(filename, (void *)1);
+    expect(close_file, when(file, is_equal_to(1)));
     sprintf(command, "nm %s", filename);
     expect_open_process(command, (void *)2);
     expect_read_line_from(2, line1);
     expect_read_line_from(2, line2);
     expect_read_line_from(2, NULL);
+    expect(close_process, when(file, is_equal_to(2)));
 }
 
 static void given_a_file_with_one_line(const char *filename, const char *line) {
     expect_open_file("some-file", (void *)1);
+    expect(close_file, when(file, is_equal_to(1)));
     expect_open_process("nm ", (void *)2);
     expect_read_line_from(2, line);
     expect_read_line_from(2, NULL);
+    expect(close_process, when(file, is_equal_to(2)));
 }
 
 
