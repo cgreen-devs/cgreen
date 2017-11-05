@@ -414,7 +414,7 @@ int runner(TestReporter *reporter, const char *test_library_name,
     TestItem discovered_tests[MAXIMUM_NUMBER_OF_TESTS];
     memset(discovered_tests, 0, sizeof(discovered_tests));
 
-    CgreenVector *tests = discover_tests_in(test_library_name); // Refactor: +verbose arg
+    CgreenVector *tests = discover_tests_in(test_library_name, verbose);
     refactor_convert_vector_to_array(discovered_tests, tests);
 
     if (count(discovered_tests) == 0) {

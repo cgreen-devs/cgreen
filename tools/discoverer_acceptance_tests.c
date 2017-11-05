@@ -8,6 +8,8 @@ Describe(Discoverer);
 BeforeEach(Discoverer) {}
 AfterEach(Discoverer) {}
 
+static bool verbose = false;
+
 static int count_tests_in(const char *filename) {
     char command[1000];
     sprintf(command, "/usr/bin/nm '%s'", filename);
@@ -23,7 +25,7 @@ static int count_tests_in(const char *filename) {
 
 Ensure(Discoverer, reads_a_library_and_finds_the_tests) {
     char filename[] = "libdiscoverer_unit_tests.so";
-    CgreenVector *tests = discover_tests_in(filename);
+    CgreenVector *tests = discover_tests_in(filename, verbose);
     assert_that(cgreen_vector_size(tests), is_equal_to(count_tests_in(filename)));
 }
 
