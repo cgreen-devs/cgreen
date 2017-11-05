@@ -9,8 +9,16 @@ FILE *open_file(const char *filename, const char *mode) {
     return fopen(filename, mode);
 }
 
+int close_file(FILE *file) {
+    return fclose(file);
+}
+
 FILE *open_process(const char *command, const char *mode) {
     return popen(command, mode);
+}
+
+int close_process(FILE *process) {
+    return pclose(process);
 }
 
 
@@ -22,5 +30,5 @@ FILE *open_process(const char *command, const char *mode) {
 */
 int read_line(FILE *file, char *buffer, int max_length) {
     char *result = fgets(buffer, max_length, file);
-    return result==NULL? EOF : strlen(result);
+    return result==NULL? EOF : (signed)strlen(result);
 }
