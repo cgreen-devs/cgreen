@@ -21,7 +21,7 @@ VPATH = ../src
 
 # defer to CMake build from top level
 all:
-	make -C ..
+	make --no-print-directory -C ..
 
 # Use this if you want quick feed back in this directory
 tests: unit_tests acceptance_tests
