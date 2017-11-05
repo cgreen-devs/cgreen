@@ -13,6 +13,13 @@ FILE *open_process(const char *command, const char *mode) {
     return popen(command, mode);
 }
 
+
+/*
+  read_line()   - read characters from a FILE
+                - behaves like fgets() except will return
+                - number of characters read and
+                - EOF if at end of file
+*/
 int read_line(FILE *file, char *buffer, int max_length) {
     char *result = fgets(buffer, max_length, file);
     return result==NULL? EOF : strlen(result);
