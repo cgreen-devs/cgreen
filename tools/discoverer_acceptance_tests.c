@@ -2,14 +2,29 @@
 
 #include "discoverer.h"
 
+#include <stdio.h>
 
 Describe(Discoverer);
 BeforeEach(Discoverer) {}
 AfterEach(Discoverer) {}
 
+static int count_tests_in(const char *filename) {
+    char command[1000];
+    sprintf(command, "/usr/bin/nm '%s'", filename);
+    FILE *nm_output = popen(command, "r");
+    char line[10000];
+    int count = 0;
+    while (fgets(line, sizeof(line), nm_output) != 0) {
+        if (strstr(line, CGREEN_SPEC_PREFIX CGREEN_SEPARATOR) != NULL)
+            count++;
+    }
+    return count;
+}
+
 Ensure(Discoverer, reads_a_library_and_finds_the_tests) {
-    CgreenVector *tests = discover_tests_in("libdiscoverer_unit_tests.so");
-    assert_that(cgreen_vector_size(tests), is_greater_than(0));
+    char filename[] = "libdiscoverer_unit_tests.so";
+    CgreenVector *tests = discover_tests_in(filename);
+    assert_that(cgreen_vector_size(tests), is_equal_to(count_tests_in(filename)));
 }
 
 TestSuite *discoverer_acceptance_tests(void) {

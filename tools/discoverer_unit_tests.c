@@ -88,7 +88,7 @@ Ensure(Discoverer, should_find_no_tests_in_existing_empty_file) {
 /*======================================================================*/
 Ensure(Discoverer, should_find_one_test_in_file_with_one_line_containing_testname_pattern) {
     given_a_file_with_one_line("some-file",
-                               "0000000000202160 D CgreenSpec__A_context__a_test__");
+                               "0000000000202160 D CgreenSpec__A_context__a_test__\n");
 
     CgreenVector *tests = discover_tests_in("some-file");
 
@@ -99,8 +99,8 @@ Ensure(Discoverer, should_find_one_test_in_file_with_one_line_containing_testnam
 /*======================================================================*/
 Ensure(Discoverer, should_find_two_test_in_two_line_file_with_two_lines_containing_testname_pattern) {
     given_a_file_with_two_lines("some-file",
-                                "0000000000202160 D CgreenSpec__Context1__test1__",
-                                "0000000000202160 D CgreenSpec__Context2__test2__");
+                                "0000000000202160 D CgreenSpec__Context1__test1__\n",
+                                "0000000000202160 D CgreenSpec__Context2__test2__\n");
 
     CgreenVector *tests = discover_tests_in("some-file");
 
@@ -111,8 +111,8 @@ Ensure(Discoverer, should_find_two_test_in_two_line_file_with_two_lines_containi
 /*======================================================================*/
 Ensure(Discoverer, should_find_one_test_in_two_line_file_with_one_line_containing_testname_pattern) {
     given_a_file_with_two_lines("some-file",
-                                "0000000000202160 D CgreenSpec__Discoverer__test1__",
-                                "0000000000202160 D ID");
+                                "0000000000202160 D CgreenSpec__Discoverer__test1__\n",
+                                "0000000000202160 D ID\n");
 
     CgreenVector *tests = discover_tests_in("some-file");
 
@@ -123,7 +123,18 @@ Ensure(Discoverer, should_find_one_test_in_two_line_file_with_one_line_containin
 /*======================================================================*/
 Ensure(Discoverer, should_find_no_test_in_file_with_no_definiton) {
     given_a_file_with_one_line("some-file",
-                               "0000000000202160 U CgreenSpec__Discoverer__test1__");
+                               "0000000000202160 U CgreenSpec__Discoverer__test1__\n");
+
+    CgreenVector *tests = discover_tests_in("some-file");
+
+    assert_that(cgreen_vector_size(tests), is_equal_to(0));
+}
+
+
+/*======================================================================*/
+Ensure(Discoverer, should_strip_newline_at_end_of_specification_name) {
+    given_a_file_with_one_line("some-file",
+                               "0000000000202160 U CgreenSpec__Discoverer__test1__\n");
 
     CgreenVector *tests = discover_tests_in("some-file");
 
@@ -134,7 +145,7 @@ Ensure(Discoverer, should_find_no_test_in_file_with_no_definiton) {
 /*======================================================================*/
 Ensure(Discoverer, should_return_valid_test_item_for_a_line_containing_testname_pattern) {
     given_a_file_with_one_line("some-file",
-                               "0000000000202160 D CgreenSpec__Context1__test_1__");
+                               "0000000000202160 D CgreenSpec__Context1__test_1__\n");
 
     CgreenVector *tests = discover_tests_in("some-file");
 
@@ -148,9 +159,7 @@ Ensure(Discoverer, should_return_valid_test_item_for_a_line_containing_testname_
 
 /*======================================================================*/
 Ensure(Discoverer, can_handle_truncated_testnames) {
-    char line[] = "0000000000202160 D CgreenSpec__Context1__a";
-
-    given_a_file_with_one_line("some-file", line);
+    given_a_file_with_one_line("some-file", "0000000000202160 D CgreenSpec__Context1__a\n");
 
     CgreenVector *tests = discover_tests_in("some-file");
 

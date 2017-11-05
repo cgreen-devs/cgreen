@@ -10,24 +10,38 @@
 
 #include "test_item.h"
 
-static const char *cgreen_spec_of(const char *line) {
+static const char *cgreen_spec_start_of(const char *line) {
     return strstr(line, CGREEN_SPEC_PREFIX CGREEN_SEPARATOR);
 }
 
 static bool contains_cgreen_spec(const char *line) {
-    return cgreen_spec_of(line) != NULL;
+    return cgreen_spec_start_of(line) != NULL;
 }
 
 static bool is_definition(const char *line) {
     return strstr(line, " D ") != NULL;
 }
 
+static bool complete_line_read(char line[]) {
+    return line[strlen(line)-1] == '\n';
+}
+
+#define PANIC(s) fprintf(stderr, "PANIC: %s\n", (s))
+
+static void strip_newline_from(char *name) {
+    if (name[strlen(name)-1] == '\n')
+        name[strlen(name)-1] = '\0';
+}
+
 static void add_all_tests_from(FILE *nm_output_pipe, CgreenVector *tests) {
-    char line[100];
+    char line[1000];
     int length = read_line(nm_output_pipe, line, sizeof(line)-1);
-    while (length > -1) {
+    while (length > -1) {       /* TODO: >0 ? */
+        if (!complete_line_read(line))
+            PANIC("Too long line in nm output");
         if (contains_cgreen_spec(line) && is_definition(line)) {
-            TestItem *test_item = create_test_item_from(cgreen_spec_of(line));
+            strip_newline_from(line);
+            TestItem *test_item = create_test_item_from(cgreen_spec_start_of(line));
             cgreen_vector_add(tests, test_item);
         }
         length = read_line(nm_output_pipe, line, sizeof(line)-1);
