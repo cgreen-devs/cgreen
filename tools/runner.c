@@ -1,5 +1,6 @@
 #include <cgreen/cgreen.h>
 #include <cgreen/xml_reporter.h>
+#include <cgreen/vector.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -14,11 +15,10 @@
 #endif
 
 #include "utils.h"
-
 #include "runner.h"
-
 #include "test_item.h"
 
+#include "discoverer.h"
 
 /* The ContextSuite is a datastructure created to partion the tests in
    suites according to the contexts, one suite per context. It
@@ -313,11 +313,10 @@ static bool is_cgreen_spec_line(const char *line) {
         && name_start(line) != NULL;
 }
 
-
 /*----------------------------------------------------------------------*/
 // XXX: hack to use nm command-line utility for now.  Use libelf later.
 // XXX: but nm is more portable across object formats...
-int discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items, bool verbose)
+int old_discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items, bool verbose)
 {
     int ret = 0;
 
@@ -396,6 +395,14 @@ static char *absolute(const char *file_path) {
 }
 
 
+static void refactor_convert_vector_to_array(TestItem discovered_tests[], CgreenVector *tests) {
+    int i;
+    for (i=0; i<cgreen_vector_size(tests); i++) {
+        discovered_tests[i] = *((TestItem *)cgreen_vector_get(tests, i));
+    }
+    discovered_tests[i].specification_name = NULL;
+}
+
 /*======================================================================*/
 int runner(TestReporter *reporter, const char *test_library_name,
            const char *suite_name, const char *test_name,
@@ -407,8 +414,8 @@ int runner(TestReporter *reporter, const char *test_library_name,
     TestItem discovered_tests[MAXIMUM_NUMBER_OF_TESTS];
     memset(discovered_tests, 0, sizeof(discovered_tests));
 
-    if (discover_tests_in(test_library_name, discovered_tests, MAXIMUM_NUMBER_OF_TESTS, verbose) < 0)
-        return 3;
+    CgreenVector *tests = discover_tests_in(test_library_name); // Refactor: +verbose arg
+    refactor_convert_vector_to_array(discovered_tests, tests);
 
     if (count(discovered_tests) == 0) {
         printf("No tests found in '%s'.\n", test_library_name);

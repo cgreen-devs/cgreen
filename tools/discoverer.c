@@ -52,15 +52,16 @@ CgreenVector *discover_tests_in(const char *filename) {
     FILE *library = open_file(filename, "r");
     if (library == NULL)
         return NULL;
-    else {
-        char nm_command[1000] = "/usr/bin/nm ";
-        strcat(nm_command, filename);
-        FILE *nm_output_pipe = open_process(nm_command, "r");
-        if (nm_output_pipe != NULL) {
-            CgreenVector *tests = create_cgreen_vector((GenericDestructor)&destroy_test_item);
-            add_all_tests_from(nm_output_pipe, tests);
-            return tests;
-        } else
-            return NULL;
-    }
+    close_file(library);
+
+    char nm_command[1000] = "/usr/bin/nm ";
+    strcat(nm_command, filename);
+    FILE *nm_output_pipe = open_process(nm_command, "r");
+    if (nm_output_pipe == NULL)
+        return NULL;
+
+    CgreenVector *tests = create_cgreen_vector((GenericDestructor)&destroy_test_item);
+    add_all_tests_from(nm_output_pipe, tests);
+    close_process(nm_output_pipe);
+    return tests;
 }
