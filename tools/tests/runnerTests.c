@@ -22,30 +22,6 @@ static char SPEC_NAME[] = CGREEN_SPEC_PREFIX CGREEN_SEPARATOR CONTEXT_NAME CGREE
 #define STRINGIFY_X(x) #x
 #define STRINGIFY(x) STRINGIFY_X(x)
 
-Ensure(Runner, can_demangle_specification_to_function_name) {
-    // NOTE: Must have the test name duplicated in the assert to compare to the actual function name
-    char *function_name = function_name_from_specname(STRINGIFY(spec_name(Runner, can_demangle_specification_to_function_name)));
-    assert_that(function_name, is_equal_to_string(__FUNCTION__));
-    free(function_name);
-}
-
-
-Ensure(Runner, can_get_context_name_from_specification_name) {
-    char *context_name = context_name_from_specname(SPEC_NAME);
-
-    assert_that(context_name, is_equal_to_string(CONTEXT_NAME));
-
-    free(context_name);
-}
-
-
-Ensure(Runner, can_get_test_name_from_symbol) {
-    char *test_name = test_name_from_specname(SPEC_NAME);
-    assert_that(test_name, is_equal_to_string(TEST_NAME));
-    free(test_name);
-}
-
-
 Ensure(Runner, can_get_context_name_of_name) {
     char *context_name = context_name_of("Context:Test");
     assert_that(context_name, is_equal_to_string("Context"));
@@ -79,15 +55,6 @@ Ensure(Runner, can_identify_a_cxx_mangled_cgreen_spec) {
     assert_that(is_cgreen_spec_line("63d4aaf0 D __ZN6cgreen51CgreenSpec__Runner__can_get_test_name_from_function__E"));
 }
 
-
-Ensure(Runner, can_register_context_and_test_from_a_symbol) {
-    TestItem test_items[2] = {{NULL, NULL, NULL}};
-    register_test(test_items, 2, SPEC_NAME);
-    assert_that(test_items[0].context_name, is_equal_to_string(CONTEXT_NAME));
-    assert_that(test_items[0].test_name, is_equal_to_string(TEST_NAME));
-
-    destroy_test_item(&test_items[0]);
-}
 
 Ensure(Runner, can_ensure_test_exists_from_context_and_name) {
     TestItem test_items[5] = {{(char *)"", (char *)"Context1", (char *)"Test1"},

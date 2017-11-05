@@ -150,46 +150,6 @@ static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_p
 
 
 /*----------------------------------------------------------------------*/
-static const char *position_of_context_name(const char *symbol) {
-    const char *context_name = strstr(symbol, CGREEN_SPEC_PREFIX) +
-        strlen(CGREEN_SPEC_PREFIX) +
-        strlen(CGREEN_SEPARATOR);
-
-    return context_name;
-}
-
-
-/*----------------------------------------------------------------------*/
-static char *test_name_from_specname(const char *spec_name) {
-    const char *context_name_position = position_of_context_name(spec_name);
-    char *test_name_position = string_dup(strstr(context_name_position, CGREEN_SEPARATOR) + strlen(CGREEN_SEPARATOR));
-
-    *strstr(test_name_position, CGREEN_SEPARATOR) = '\0';
-    return test_name_position;
-}
-
-
-/*----------------------------------------------------------------------*/
-static char *context_name_from_specname(const char *spec_name) {
-    const char *context_name_position = position_of_context_name(spec_name);
-    char *context_name = string_dup(context_name_position);
-    *strstr(context_name, CGREEN_SEPARATOR) = '\0';
-
-    return context_name;
-}
-
-
-/*----------------------------------------------------------------------*/
-static char *function_name_from_specname(const char *spec_name) {
-    const char *context_name_position = position_of_context_name(spec_name);
-    char *function_name_position = string_dup(context_name_position);
-    *(function_name_position+strlen(function_name_position)-strlen(CGREEN_SEPARATOR)) = '\0';
-
-    return function_name_position;
-}
-
-
-/*----------------------------------------------------------------------*/
 static bool matching_test_exists(const char *test_name, TestItem tests[]) {
     for (int i = 0; tests[i].specification_name != NULL; i++)
         if (test_matches_pattern(test_name, tests[i])) {
@@ -269,29 +229,9 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
 }
 
 
-/*----------------------------------------------------------------------*/
-static int register_test(TestItem *test_items, int maximum_number_of_tests, char *specification_name) {
-    int number_of_tests;
-
-    for (number_of_tests = 0; test_items[number_of_tests].specification_name != NULL; number_of_tests++)
-        ;
-    if (number_of_tests == maximum_number_of_tests) {
-        fprintf(stderr, "\nERROR: Found too many tests (%d)! Giving up.\nConsider splitting tests between libraries on logical suite boundaries.\n", number_of_tests);
-        return -1;
-    }
-
-    test_items[number_of_tests].specification_name = string_dup(specification_name);
-    test_items[number_of_tests].context_name = context_name_from_specname(specification_name);
-    test_items[number_of_tests].test_name = test_name_from_specname(specification_name);
-    test_items[number_of_tests+1].specification_name = NULL;
-
-    return 0;
-}
-
-
-
 // Cygwin and MacOSX nm lists external names with a leading '_'
 // which dlsym() doesn't want, so we'll have to remove that
+// TODO: does not apply for Cygwin any more, MacOS?
 #define NM_SYMBOL_TYPE_FIELD " D "
 
 
@@ -304,57 +244,6 @@ static char *name_start(const char *line) {
     pos += strlen(NM_SYMBOL_TYPE_FIELD);
     if (*pos == '_') pos++;
     return pos;
-}
-
-
-/*----------------------------------------------------------------------*/
-static bool is_cgreen_spec_line(const char *line) {
-    return strstr(line, CGREEN_SPEC_PREFIX) != NULL
-        && name_start(line) != NULL;
-}
-
-/*----------------------------------------------------------------------*/
-// XXX: hack to use nm command-line utility for now.  Use libelf later.
-// XXX: but nm is more portable across object formats...
-int old_discover_tests_in(const char* test_library, TestItem* test_items, const uint32_t maximum_number_of_test_items, bool verbose)
-{
-    int ret = 0;
-
-    char cmd[2048];
-    strcpy(cmd, "/usr/bin/nm '");
-    strcat(cmd, test_library);
-    strcat(cmd, "'");
-
-    /* Open the command for reading. */
-    FILE *nm_output_pipe = popen(cmd, "r");
-    if (nm_output_pipe == NULL) {
-        printf("\nERROR: Failed to run command ('/usr/bin/nm')\n" );
-        return -1;
-    }
-
-    char line[1024];
-    while (fgets(line, sizeof(line)-1, nm_output_pipe) != NULL) {
-        if (is_cgreen_spec_line(line)) {
-            char *specification_name = name_start(line);
-            specification_name[strlen(specification_name) - 1] = 0; /* remove newline */
-            if (verbose) {
-                char *suite_name = context_name_from_specname(specification_name);
-                char *test_name = test_name_from_specname(specification_name);
-                char *function_name = function_name_from_specname(specification_name);
-                printf("Discovered %s:%s (%s)\n", suite_name, test_name, function_name);
-                free(suite_name);
-                free(test_name);
-                free(function_name);
-            }
-            if (register_test(test_items, maximum_number_of_test_items, specification_name) < 0) {
-                ret = -1;
-                break;
-            }
-        }
-    }
-
-    pclose(nm_output_pipe);
-    return ret;
 }
 
 
