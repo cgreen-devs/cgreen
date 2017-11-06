@@ -160,16 +160,6 @@ static bool matching_test_exists(const char *test_name, TestItem tests[]) {
 
 
 /*----------------------------------------------------------------------*/
-static void reflective_runner_cleanup(TestItem test_items[]) {
-    for (int i = 0; test_items[i].specification_name != NULL; ++i) {
-        free((void*)test_items[i].specification_name);
-        free((void*)test_items[i].context_name);
-        free((void*)test_items[i].test_name);
-    }
-}
-
-
-/*----------------------------------------------------------------------*/
 static int count_test_items(TestItem test_items[]) {
     int i;
     for (i = 0; test_items[i].specification_name != NULL; i++)
@@ -257,18 +247,6 @@ static int run_tests(TestReporter *reporter,
 
 
 /*----------------------------------------------------------------------*/
-static char *name_start(const char *line) {
-    char *pos = (char *)strstr(line, NM_SYMBOL_TYPE_FIELD);
-    if (pos == NULL)
-        return NULL;
-
-    pos += strlen(NM_SYMBOL_TYPE_FIELD);
-    if (*pos == '_') pos++;
-    return pos;
-}
-
-
-/*----------------------------------------------------------------------*/
 void sort_test_items(TestItem test_items[]) {
     int count;
 
@@ -312,12 +290,7 @@ int runner(TestReporter *reporter, const char *test_library_name,
     int status = 0;
     void *test_library_handle = NULL;
 
-    const uint32_t MAXIMUM_NUMBER_OF_TESTS = 2000; /* Some arbitrarily large number */
-    TestItem discovered_tests[MAXIMUM_NUMBER_OF_TESTS];
-    memset(discovered_tests, 0, sizeof(discovered_tests));
-
     CgreenVector *tests = discover_tests_in(test_library_name, verbose);
-    refactor_convert_vector_to_array(discovered_tests, tests);
 
     if (count(tests) == 0) {
         printf("No tests found in '%s'.\n", test_library_name);
@@ -329,7 +302,7 @@ int runner(TestReporter *reporter, const char *test_library_name,
 
     if (!dont_run) {
         char *absolute_library_name = absolute(test_library_name);
-        sort_test_items(discovered_tests);
+        //sort_test_items(discovered_tests);
         if (verbose)
             printf("Opening [%s]", test_library_name);
         test_library_handle = dlopen(absolute_library_name, RTLD_NOW);
@@ -345,6 +318,7 @@ int runner(TestReporter *reporter, const char *test_library_name,
         free(absolute_library_name);
     }
 
-    reflective_runner_cleanup(discovered_tests);
+    destroy_cgreen_vector(tests);
+
     return status;
 }
