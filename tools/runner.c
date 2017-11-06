@@ -170,11 +170,16 @@ static void reflective_runner_cleanup(TestItem test_items[]) {
 
 
 /*----------------------------------------------------------------------*/
-static int count(TestItem test_items[]) {
+static int count_test_items(TestItem test_items[]) {
     int i;
     for (i = 0; test_items[i].specification_name != NULL; i++)
         ;
     return i;
+}
+
+/*----------------------------------------------------------------------*/
+static int count(CgreenVector *vector) {
+    return cgreen_vector_size(vector);
 }
 
 /*----------------------------------------------------------------------*/
@@ -209,10 +214,10 @@ static int run_tests(TestReporter *reporter, const char *suite_name, const char 
         status = run_single_test(suite, test_name_of(symbolic_name), reporter);
     } else {
         if (verbose) {
-            if (number_of_matches != count(test_items))
+            if (number_of_matches != count_test_items(test_items))
                 printf(" to run %d matching tests ...\n", number_of_matches);
             else
-                printf(" to run all %d discovered tests ...\n", count(test_items));
+                printf(" to run all %d discovered tests ...\n", count_test_items(test_items));
         }
 
         if (number_of_matches > 0)
@@ -306,13 +311,13 @@ int runner(TestReporter *reporter, const char *test_library_name,
     CgreenVector *tests = discover_tests_in(test_library_name, verbose);
     refactor_convert_vector_to_array(discovered_tests, tests);
 
-    if (count(discovered_tests) == 0) {
+    if (count(tests) == 0) {
         printf("No tests found in '%s'.\n", test_library_name);
         return 1;
     }
 
     if (verbose)
-        printf("Discovered %d test(s)\n", count(discovered_tests));
+        printf("Discovered %d test(s)\n", count(tests));
 
     if (!dont_run) {
         char *absolute_library_name = absolute(test_library_name);
