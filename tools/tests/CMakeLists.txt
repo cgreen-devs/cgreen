@@ -8,7 +8,10 @@ set(CGREEN_RUNNER_TESTS_LIBRARY
   CACHE INTERNAL "cgreen-runner tests shared library"
 )
 set(RUNNER_TESTS_SRCS
-  runnerTests.c)
+  runnerTests.c
+  ../discoverer.c
+  ../io.c
+  ../test_item.c)
 add_library(${CGREEN_RUNNER_TESTS_LIBRARY} SHARED ${RUNNER_TESTS_SRCS})
 
 target_link_libraries(${CGREEN_RUNNER_TESTS_LIBRARY} ${CGREEN_SHARED_LIBRARY} ${CMAKE_DL_LIBS})
