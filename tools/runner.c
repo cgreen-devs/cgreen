@@ -188,12 +188,28 @@ static bool error_when_matching(int number_of_matches) {
 }
 
 
+/************************************************************************/
+static void refactor_convert_vector_to_array(TestItem discovered_tests[], CgreenVector *tests) {
+    int i;
+    for (i=0; i<cgreen_vector_size(tests); i++) {
+        discovered_tests[i] = *((TestItem *)cgreen_vector_get(tests, i));
+    }
+    discovered_tests[i].specification_name = NULL;
+}
+
 /*----------------------------------------------------------------------*/
-static int run_tests(TestReporter *reporter, const char *suite_name, const char *symbolic_name,
-                     void *test_library_handle, TestItem test_items[], bool verbose) {
+static int run_tests(TestReporter *reporter,
+                     const char *suite_name,
+                     const char *symbolic_name,
+                     void *test_library_handle,
+                     CgreenVector *tests,
+                     bool verbose) {
     int status;
     ContextSuite *context_suites = NULL;
     TestSuite *suite = create_named_test_suite(suite_name);
+
+    TestItem test_items[1000];
+    refactor_convert_vector_to_array(test_items, tests);
 
     const int number_of_matches = add_matching_tests_to_suite(test_library_handle,
                                                               symbolic_name,
@@ -289,14 +305,6 @@ static char *absolute(const char *file_path) {
 }
 
 
-static void refactor_convert_vector_to_array(TestItem discovered_tests[], CgreenVector *tests) {
-    int i;
-    for (i=0; i<cgreen_vector_size(tests); i++) {
-        discovered_tests[i] = *((TestItem *)cgreen_vector_get(tests, i));
-    }
-    discovered_tests[i].specification_name = NULL;
-}
-
 /*======================================================================*/
 int runner(TestReporter *reporter, const char *test_library_name,
            const char *suite_name, const char *test_name,
@@ -330,7 +338,8 @@ int runner(TestReporter *reporter, const char *test_library_name,
                     absolute_library_name, dlerror());
             status = 2;
         } else {
-            status = run_tests(reporter, suite_name, test_name, test_library_handle, discovered_tests, verbose);
+            status = run_tests(reporter, suite_name, test_name, test_library_handle,
+                               tests, verbose);
             dlclose(test_library_handle);
         }
         free(absolute_library_name);

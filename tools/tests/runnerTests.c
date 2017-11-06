@@ -44,18 +44,6 @@ Ensure(Runner, can_get_test_name_of_symbolic_name) {
 }
 
 
-Ensure(Runner, can_identify_cgreen_spec) {
-    assert_that(is_cgreen_spec_line("63d4aaf0 D _CgreenSpec__Runner__can_get_test_name_from_function__"));
-    assert_that(is_cgreen_spec_line("63d4aaf0 D CgreenSpec__Runner__can_get_test_name_from_function__"));
-}
-
-
-Ensure(Runner, can_identify_a_cxx_mangled_cgreen_spec) {
-    assert_that(is_cgreen_spec_line("63d4aaf0 D _ZN6cgreen51CgreenSpec__Runner__can_get_test_name_from_function__E"));
-    assert_that(is_cgreen_spec_line("63d4aaf0 D __ZN6cgreen51CgreenSpec__Runner__can_get_test_name_from_function__E"));
-}
-
-
 Ensure(Runner, can_ensure_test_exists_from_context_and_name) {
     TestItem test_items[5] = {{(char *)"", (char *)"Context1", (char *)"Test1"},
                               {(char *)"", (char *)"Context1", (char *)"Test2"},
