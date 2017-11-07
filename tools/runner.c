@@ -271,21 +271,18 @@ void old_sort_test_items(TestItem test_items[]) {
 
 
 /*----------------------------------------------------------------------*/
-static CgreenVector *sort_test_items(CgreenVector *test_items) {
+static CgreenVector *sorted_test_items_from(CgreenVector *test_items) {
     CgreenVector *sorted = create_cgreen_vector((GenericDestructor)destroy_test_item);
     while (cgreen_vector_size(test_items) > 1) {
         int smallest = 0;
         const char *test_name0 = ((TestItem*)cgreen_vector_get(test_items, smallest))->test_name;
-        printf("%d= '%s'\n", 0, test_name0);
         for (int i=1; i<cgreen_vector_size(test_items); i++) {
             const char *test_name1 = ((TestItem*)cgreen_vector_get(test_items, i))->test_name;
-            printf("%d= '%s'\n", i, test_name1);
             if (strcmp(test_name0, test_name1) > 0) {
                 smallest = i;
                 test_name0 = ((TestItem*)cgreen_vector_get(test_items, smallest))->test_name;
             }
         }
-        printf("selected %d\n", smallest);
         cgreen_vector_add(sorted, cgreen_vector_remove(test_items, smallest));
     }
     if (cgreen_vector_size(test_items) == 1) {
@@ -327,7 +324,7 @@ int runner(TestReporter *reporter, const char *test_library_name,
 
     if (!dont_run) {
         char *absolute_library_name = absolute(test_library_name);
-        tests = sort_test_items(tests);
+        tests = sorted_test_items_from(tests);
         if (verbose)
             printf("Opening [%s]", test_library_name);
         test_library_handle = dlopen(absolute_library_name, RTLD_NOW);

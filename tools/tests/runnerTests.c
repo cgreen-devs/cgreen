@@ -96,7 +96,7 @@ Ensure(Runner, can_add_test_to_the_suite_for_its_context) {
 Ensure(Runner, can_sort_an_empty_list_of_tests) {
     CgreenVector *test_items = create_cgreen_vector(NULL);
 
-    test_items = sort_test_items(test_items);
+    test_items = sorted_test_items_from(test_items);
 
     assert_that(cgreen_vector_size(test_items) == 0);
 }
@@ -108,7 +108,7 @@ Ensure(Runner, can_sort_a_list_of_a_single_tests) {
     CgreenVector *test_items = create_cgreen_vector(NULL);
     cgreen_vector_add(test_items, &test_item);
 
-    test_items = sort_test_items(test_items);
+    test_items = sorted_test_items_from(test_items);
     assert_that(((TestItem *)cgreen_vector_get(test_items, 0))->test_name,
                 is_equal_to_string("Test1"));
 }
@@ -123,7 +123,7 @@ Ensure(Runner, can_sort_a_list_of_two_unordered_tests) {
     cgreen_vector_add(test_items, &test_item[0]);
     cgreen_vector_add(test_items, &test_item[1]);
 
-    test_items = sort_test_items(test_items);
+    test_items = sorted_test_items_from(test_items);
 
     assert_that(((TestItem *)cgreen_vector_get(test_items, 0))->test_name,
                 is_equal_to_string("Test1"));
@@ -141,7 +141,7 @@ Ensure(Runner, can_sort_an_ordered_list_of_two_tests) {
     cgreen_vector_add(test_items, &test_item[0]);
     cgreen_vector_add(test_items, &test_item[1]);
 
-    test_items = sort_test_items(test_items);
+    test_items = sorted_test_items_from(test_items);
 
     assert_that(((TestItem *)cgreen_vector_get(test_items, 0))->test_name,
                 is_equal_to_string("Test1"));
@@ -166,7 +166,7 @@ Ensure(Runner, can_sort_an_unordered_list_of_tests) {
     for (int i=0; i < (int)(sizeof(test_item)/sizeof(TestItem)); i++)
         cgreen_vector_add(test_items, &test_item[i]);
 
-    test_items = sort_test_items(test_items);
+    test_items = sorted_test_items_from(test_items);
 
     assert_that(((TestItem *)cgreen_vector_get(test_items, 0))->test_name,
                 is_equal_to_string("Test1"));
