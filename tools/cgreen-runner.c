@@ -239,6 +239,9 @@ int main(int argc, const char **argv) {
             testname[library_count-1] = NULL;
     }
 
+    reporter_options.inhibit_start_suite_message = false;
+    reporter_options.inhibit_finish_suite_message = false;
+
     for (i = 0; i<library_count; i++) {
         bool fail = false;
 
