@@ -273,9 +273,25 @@ void old_sort_test_items(TestItem test_items[]) {
 /*----------------------------------------------------------------------*/
 static CgreenVector *sort_test_items(CgreenVector *test_items) {
     CgreenVector *sorted = create_cgreen_vector((GenericDestructor)destroy_test_item);
-    while (cgreen_vector_size(sorted) != cgreen_vector_size(test_items))
-        cgreen_vector_add(sorted, cgreen_vector_get(test_items, 0));
-    destroy_cgreen_vector(test_items);
+    while (cgreen_vector_size(test_items) > 1) {
+        int smallest = 0;
+        const char *test_name0 = ((TestItem*)cgreen_vector_get(test_items, smallest))->test_name;
+        printf("%d= '%s'\n", 0, test_name0);
+        for (int i=1; i<cgreen_vector_size(test_items); i++) {
+            const char *test_name1 = ((TestItem*)cgreen_vector_get(test_items, i))->test_name;
+            printf("%d= '%s'\n", i, test_name1);
+            if (strcmp(test_name0, test_name1) > 0) {
+                smallest = i;
+                test_name0 = ((TestItem*)cgreen_vector_get(test_items, smallest))->test_name;
+            }
+        }
+        printf("selected %d\n", smallest);
+        cgreen_vector_add(sorted, cgreen_vector_remove(test_items, smallest));
+    }
+    if (cgreen_vector_size(test_items) == 1) {
+        cgreen_vector_add(sorted, cgreen_vector_remove(test_items, 0));
+        destroy_cgreen_vector(test_items);
+    }
     return sorted;
 }
 
@@ -327,7 +343,7 @@ int runner(TestReporter *reporter, const char *test_library_name,
         free(absolute_library_name);
     }
 
-    destroy_cgreen_vector(tests);
+    //destroy_cgreen_vector(tests);
 
     return status;
 }
