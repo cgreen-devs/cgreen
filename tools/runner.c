@@ -247,7 +247,7 @@ static int run_tests(TestReporter *reporter,
 
 
 /*----------------------------------------------------------------------*/
-void sort_test_items(TestItem test_items[]) {
+void old_sort_test_items(TestItem test_items[]) {
     int count;
 
     for (count = 0; test_items[count].specification_name != NULL; count++);
@@ -269,6 +269,15 @@ void sort_test_items(TestItem test_items[]) {
     }
 }
 
+
+/*----------------------------------------------------------------------*/
+static CgreenVector *sort_test_items(CgreenVector *test_items) {
+    CgreenVector *sorted = create_cgreen_vector((GenericDestructor)destroy_test_item);
+    while (cgreen_vector_size(sorted) != cgreen_vector_size(test_items))
+        cgreen_vector_add(sorted, cgreen_vector_get(test_items, 0));
+    destroy_cgreen_vector(test_items);
+    return sorted;
+}
 
 /*----------------------------------------------------------------------*/
 static char *absolute(const char *file_path) {
@@ -302,7 +311,7 @@ int runner(TestReporter *reporter, const char *test_library_name,
 
     if (!dont_run) {
         char *absolute_library_name = absolute(test_library_name);
-        //sort_test_items(discovered_tests);
+        tests = sort_test_items(tests);
         if (verbose)
             printf("Opening [%s]", test_library_name);
         test_library_handle = dlopen(absolute_library_name, RTLD_NOW);
