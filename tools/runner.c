@@ -127,10 +127,25 @@ static void add_test_to_context(TestSuite *parent, ContextSuite **context_suites
 }
 
 
+/************************************************************************/
+static void refactor_convert_vector_to_array(TestItem discovered_tests[], CgreenVector *tests) {
+    int i;
+    for (i=0; i<cgreen_vector_size(tests); i++) {
+        discovered_tests[i] = *((TestItem *)cgreen_vector_get(tests, i));
+    }
+    discovered_tests[i].specification_name = NULL;
+}
+
+
 /*----------------------------------------------------------------------*/
-static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_pattern, TestItem *test_items, TestSuite *suite, ContextSuite **context_suites)
+static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_pattern,
+                                       CgreenVector *tests, TestSuite *suite,
+                                       ContextSuite **context_suites)
 {
+    TestItem test_items[1000];
     int count = 0;
+
+    refactor_convert_vector_to_array(test_items, tests);
 
     for (int i = 0; test_items[i].specification_name != NULL; i++) {
         if (symbolic_name_pattern == NULL || test_matches_pattern(symbolic_name_pattern, test_items[i])) {
@@ -178,15 +193,6 @@ static bool error_when_matching(int number_of_matches) {
 }
 
 
-/************************************************************************/
-static void refactor_convert_vector_to_array(TestItem discovered_tests[], CgreenVector *tests) {
-    int i;
-    for (i=0; i<cgreen_vector_size(tests); i++) {
-        discovered_tests[i] = *((TestItem *)cgreen_vector_get(tests, i));
-    }
-    discovered_tests[i].specification_name = NULL;
-}
-
 /*----------------------------------------------------------------------*/
 static int run_tests(TestReporter *reporter,
                      const char *suite_name,
@@ -203,7 +209,7 @@ static int run_tests(TestReporter *reporter,
 
     const int number_of_matches = add_matching_tests_to_suite(test_library_handle,
                                                               symbolic_name,
-                                                              test_items,
+                                                              tests,
                                                               suite,
                                                               &context_suites);
     if (error_when_matching(number_of_matches))
@@ -245,29 +251,6 @@ static int run_tests(TestReporter *reporter,
 // TODO: does not apply for Cygwin any more, MacOS?
 #define NM_SYMBOL_TYPE_FIELD " D "
 
-
-/*----------------------------------------------------------------------*/
-void old_sort_test_items(TestItem test_items[]) {
-    int count;
-
-    for (count = 0; test_items[count].specification_name != NULL; count++);
-    if (count > 1) {
-        bool swap = true;
-        while (swap) {
-            int i;
-            swap = false;
-            for (i=0; test_items[i+1].specification_name != NULL; i++) {
-                if (strcmp(test_items[i].test_name, test_items[i+1].test_name) > 0) {
-                    TestItem temp;
-                    swap = true;
-                    temp = test_items[i];
-                    test_items[i] = test_items[i+1];
-                    test_items[i+1] = temp;
-                }
-            }
-        }
-    }
-}
 
 /*----------------------------------------------------------------------*/
 const char *test_name_of_element(CgreenVector *test_items, int index) {
