@@ -150,7 +150,7 @@ Ensure(Runner, can_sort_an_ordered_list_of_two_tests) {
 }
 
 Ensure(Runner, can_sort_an_unordered_list_of_tests) {
-    TestItem test_item[] = {
+    TestItem unordered_test_items[] = {
         {(char *)"", (char *)"Context1", (char *)"Test9"},
         {(char *)"", (char *)"Context1", (char *)"Test6"},
         {(char *)"", (char *)"Context1", (char *)"Test3"},
@@ -161,31 +161,18 @@ Ensure(Runner, can_sort_an_unordered_list_of_tests) {
         {(char *)"", (char *)"Context1", (char *)"Test4"},
         {(char *)"", (char *)"Context1", (char *)"Test2"},
     };
+    const char *expected_test_name[] = {
+        "Test1", "Test2", "Test3", "Test4", "Test5", "Test6", "Test7", "Test8", "Test9" };
 
     CgreenVector *test_items = create_cgreen_vector(NULL);
-    for (int i=0; i < (int)(sizeof(test_item)/sizeof(TestItem)); i++)
-        cgreen_vector_add(test_items, &test_item[i]);
+    for (int i=0; i < (int)(sizeof(unordered_test_items)/sizeof(TestItem)); i++)
+        cgreen_vector_add(test_items, &unordered_test_items[i]);
 
     test_items = sorted_test_items_from(test_items);
 
-    assert_that(((TestItem *)cgreen_vector_get(test_items, 0))->test_name,
-                is_equal_to_string("Test1"));
-    assert_that(((TestItem *)cgreen_vector_get(test_items, 1))->test_name,
-                is_equal_to_string("Test2"));
-    assert_that(((TestItem *)cgreen_vector_get(test_items, 2))->test_name,
-                is_equal_to_string("Test3"));
-    assert_that(((TestItem *)cgreen_vector_get(test_items, 3))->test_name,
-                is_equal_to_string("Test4"));
-    assert_that(((TestItem *)cgreen_vector_get(test_items, 4))->test_name,
-                is_equal_to_string("Test5"));
-    assert_that(((TestItem *)cgreen_vector_get(test_items, 5))->test_name,
-                is_equal_to_string("Test6"));
-    assert_that(((TestItem *)cgreen_vector_get(test_items, 6))->test_name,
-                is_equal_to_string("Test7"));
-    assert_that(((TestItem *)cgreen_vector_get(test_items, 7))->test_name,
-                is_equal_to_string("Test8"));
-    assert_that(((TestItem *)cgreen_vector_get(test_items, 8))->test_name,
-                is_equal_to_string("Test9"));
+    for (int i=0; i<cgreen_vector_size(test_items); i++)
+        assert_that(((TestItem *)cgreen_vector_get(test_items, i))->test_name,
+                    is_equal_to_string(expected_test_name[i]));
 }
 
 /* vim: set ts=4 sw=4 et cindent: */
