@@ -165,9 +165,9 @@ static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_p
 
 
 /*----------------------------------------------------------------------*/
-static bool matching_test_exists(const char *test_name, TestItem tests[]) {
-    for (int i = 0; tests[i].specification_name != NULL; i++)
-        if (test_matches_pattern(test_name, tests[i])) {
+static bool matching_test_exists(const char *test_name, CgreenVector *tests) {
+    for (int i = 0; i<cgreen_vector_size(tests); i++)
+        if (test_matches_pattern(test_name, (*(TestItem*)cgreen_vector_get(tests, i)))) {
             return true;
         }
     return false;
@@ -216,7 +216,7 @@ static int run_tests(TestReporter *reporter,
         return EXIT_FAILURE;
 
     if (symbolic_name != NULL && number_of_matches == 1) {
-        bool found = matching_test_exists(symbolic_name, test_items);
+        bool found = matching_test_exists(symbolic_name, tests);
         if (verbose)
             printf(" to only run one test: '%s' ...\n", symbolic_name);
         if (!found) {

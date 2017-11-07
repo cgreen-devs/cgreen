@@ -43,13 +43,22 @@ Ensure(Runner, can_get_test_name_of_symbolic_name) {
 }
 
 
+static void add_test_items_to_vector(TestItem items[], CgreenVector *test_items, int count) {
+    for (int i=0; i < count; i++)
+        cgreen_vector_add(test_items, &items[i]);
+}
+
+
 Ensure(Runner, can_ensure_test_exists_from_context_and_name) {
-    TestItem test_items[5] = {{(char *)"", (char *)"Context1", (char *)"Test1"},
-                              {(char *)"", (char *)"Context1", (char *)"Test2"},
-                              {(char *)"", (char *)"Context2", (char *)"Test1"},
-                              {(char *)"", (char *)"Context2", (char *)"Test2"},
-                              {NULL, NULL, NULL}};
-    assert_that(matching_test_exists("Context1:Test1", test_items));
+    TestItem test_items[5] = {
+        {(char *)"", (char *)"Context1", (char *)"Test1"},
+        {(char *)"", (char *)"Context1", (char *)"Test2"},
+        {(char *)"", (char *)"Context2", (char *)"Test1"},
+        {(char *)"", (char *)"Context2", (char *)"Test2"}};
+    CgreenVector *tests = create_cgreen_vector(NULL);
+    add_test_items_to_vector(test_items, tests, 5);
+
+    assert_that(matching_test_exists("Context1:Test1", tests));
 }
 
 Ensure(Runner, can_match_test_name) {
@@ -114,20 +123,19 @@ Ensure(Runner, can_sort_a_list_of_a_single_tests) {
 }
 
 Ensure(Runner, can_sort_a_list_of_two_unordered_tests) {
-    TestItem test_item[] = {
+    TestItem test_items[] = {
         {(char *)"", (char *)"Context1", (char *)"Test2"},
         {(char *)"", (char *)"Context1", (char *)"Test1"},
     };
 
-    CgreenVector *test_items = create_cgreen_vector(NULL);
-    cgreen_vector_add(test_items, &test_item[0]);
-    cgreen_vector_add(test_items, &test_item[1]);
+    CgreenVector *tests = create_cgreen_vector(NULL);
+    add_test_items_to_vector(test_items, tests, 2);
 
-    test_items = sorted_test_items_from(test_items);
+    tests = sorted_test_items_from(tests);
 
-    assert_that(((TestItem *)cgreen_vector_get(test_items, 0))->test_name,
+    assert_that(((TestItem *)cgreen_vector_get(tests, 0))->test_name,
                 is_equal_to_string("Test1"));
-    assert_that(((TestItem *)cgreen_vector_get(test_items, 1))->test_name,
+    assert_that(((TestItem *)cgreen_vector_get(tests, 1))->test_name,
                 is_equal_to_string("Test2"));
 }
 
@@ -164,14 +172,14 @@ Ensure(Runner, can_sort_an_unordered_list_of_tests) {
     const char *expected_test_name[] = {
         "Test1", "Test2", "Test3", "Test4", "Test5", "Test6", "Test7", "Test8", "Test9" };
 
-    CgreenVector *test_items = create_cgreen_vector(NULL);
-    for (int i=0; i < (int)(sizeof(unordered_test_items)/sizeof(TestItem)); i++)
-        cgreen_vector_add(test_items, &unordered_test_items[i]);
+    CgreenVector *tests = create_cgreen_vector(NULL);
+    add_test_items_to_vector(unordered_test_items, tests,
+                             sizeof(unordered_test_items)/sizeof(unordered_test_items[0]));
 
-    test_items = sorted_test_items_from(test_items);
+    tests = sorted_test_items_from(tests);
 
-    for (int i=0; i<cgreen_vector_size(test_items); i++)
-        assert_that(((TestItem *)cgreen_vector_get(test_items, i))->test_name,
+    for (int i=0; i<cgreen_vector_size(tests); i++)
+        assert_that(((TestItem *)cgreen_vector_get(tests, i))->test_name,
                     is_equal_to_string(expected_test_name[i]));
 }
 
