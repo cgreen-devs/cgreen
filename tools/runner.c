@@ -175,14 +175,6 @@ static bool matching_test_exists(const char *test_name, CgreenVector *tests) {
 
 
 /*----------------------------------------------------------------------*/
-static int count_test_items(TestItem test_items[]) {
-    int i;
-    for (i = 0; test_items[i].specification_name != NULL; i++)
-        ;
-    return i;
-}
-
-/*----------------------------------------------------------------------*/
 static int count(CgreenVector *vector) {
     return cgreen_vector_size(vector);
 }
@@ -204,9 +196,6 @@ static int run_tests(TestReporter *reporter,
     ContextSuite *context_suites = NULL;
     TestSuite *suite = create_named_test_suite(suite_name);
 
-    TestItem test_items[1000];
-    refactor_convert_vector_to_array(test_items, tests);
-
     const int number_of_matches = add_matching_tests_to_suite(test_library_handle,
                                                               symbolic_name,
                                                               tests,
@@ -226,10 +215,10 @@ static int run_tests(TestReporter *reporter,
         status = run_single_test(suite, test_name_of(symbolic_name), reporter);
     } else {
         if (verbose) {
-            if (number_of_matches != count_test_items(test_items))
+            if (number_of_matches != count(tests))
                 printf(" to run %d matching tests ...\n", number_of_matches);
             else
-                printf(" to run all %d discovered tests ...\n", count_test_items(test_items));
+                printf(" to run all %d discovered tests ...\n", count(tests));
         }
 
         if (number_of_matches > 0)
