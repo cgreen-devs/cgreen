@@ -269,18 +269,22 @@ void old_sort_test_items(TestItem test_items[]) {
     }
 }
 
+/*----------------------------------------------------------------------*/
+const char *test_name_of_element(CgreenVector *test_items, int index) {
+    return ((TestItem*)cgreen_vector_get(test_items, index))->test_name;
+}
 
 /*----------------------------------------------------------------------*/
 static CgreenVector *sorted_test_items_from(CgreenVector *test_items) {
     CgreenVector *sorted = create_cgreen_vector((GenericDestructor)destroy_test_item);
     while (cgreen_vector_size(test_items) > 1) {
         int smallest = 0;
-        const char *test_name0 = ((TestItem*)cgreen_vector_get(test_items, smallest))->test_name;
+        const char *smallest_test_name = test_name_of_element(test_items, smallest);
         for (int i=1; i<cgreen_vector_size(test_items); i++) {
-            const char *test_name1 = ((TestItem*)cgreen_vector_get(test_items, i))->test_name;
-            if (strcmp(test_name0, test_name1) > 0) {
+            const char *current_test_name = test_name_of_element(test_items, i);
+            if (strcmp(smallest_test_name, current_test_name) > 0) {
                 smallest = i;
-                test_name0 = ((TestItem*)cgreen_vector_get(test_items, smallest))->test_name;
+                smallest_test_name = test_name_of_element(test_items, smallest);
             }
         }
         cgreen_vector_add(sorted, cgreen_vector_remove(test_items, smallest));
