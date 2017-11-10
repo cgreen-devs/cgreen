@@ -98,19 +98,21 @@ def show_func_defs(args):
     ast = parse_file(args[0], use_cpp=True,
                      cpp_args=[r'-Ipycparser/utils/fake_libc_include'] + args[1:])
 
+    print('#include "%s"' % args[len(args)-1]);
+    print()
     v = FuncDefVisitor()
     v.visit(ast)
 
 def usage():
     print("""
 Usage:
-    cgreen-mocker.py <headerfile> { <cpp_directive> }
+    cgreen-mocker.py { <cpp_directive> } <headerfile>
 
-    <headerfile>:    file with function declarations that you want
-                     to mock
     <cpp_directive>: any 'cpp' directive but most useful are e.g.
                      "-I <directory>" to ensure cpp finds files and
-                     "-D <define>" to create an inline define""")
+                     "-D <define>" to create an inline define
+    <headerfile>:    file with function declarations that you want
+                     to mock""")
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
