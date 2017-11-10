@@ -1,3 +1,5 @@
+#include "io.h"
+
 FILE *open_file(const char *filename, const char *mode) { 
   return (FILE *) mock(filename, mode);
 }
