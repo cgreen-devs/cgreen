@@ -2,7 +2,7 @@
 #
 # We are using cgreen itself to test this but since the modules here
 # might at some point get into the actual cgreen-runner there will be
-# an clash when it loads the test library. So we will have to make the
+# a clash when it loads the test library. So we will have to make the
 # external symbols in the modules have other names when unittesting
 # them using some macro magic. But let's not worry about that for now,
 # I'm confident that we can solve that...
@@ -10,7 +10,7 @@
 # And I really want to use Cgreen!
 
 COMMONFLAGS = -g
-CFLAGS = $(COMMONFLAGS) -Wall -fPIC -I../include -MMD
+CFLAGS = $(COMMONFLAGS) -Wall -Wextra -fPIC -I../include -MMD
 LDFLAGS = $(COMMONFLAGS)
 
 # NOTE: We should run these tests with a standard cgreen install, not
@@ -27,8 +27,10 @@ all:
 tests: unit_tests acceptance_tests
 
 #----------------------------------------------------------------------
-main: main.o discoverer_acceptance_tests.o discoverer.o test_item.o io.o
+main: main.o discoverer_acceptance_tests.o discoverer.o test_item.o io.o utils.o
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBRARIES)
+
+utils.o: ../src/utils.c
 
 #----------------------------------------------------------------------
 unit_tests: libdiscoverer_unit_tests.so

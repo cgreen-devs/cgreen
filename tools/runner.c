@@ -74,11 +74,12 @@ static char *test_name_of(const char *symbolic_name) {
 
 
 /*----------------------------------------------------------------------*/
-static bool test_matches_pattern(const char *symbolic_name_pattern, TestItem test) {
+static bool test_matches_pattern(const char *symbolic_name_pattern,
+                                 TestItem *test_item) {
     char* context_name = context_name_of(symbolic_name_pattern);
-    int context_name_matches_test = fnmatch(context_name, test.context_name, 0) == 0;
+    int context_name_matches_test = fnmatch(context_name, test_item->context_name, 0) == 0;
     char* test_name = test_name_of(symbolic_name_pattern);
-    int test_name_matches_test = fnmatch(test_name, test.test_name, 0) == 0;
+    int test_name_matches_test = fnmatch(test_name, test_item->test_name, 0) == 0;
 
     free(context_name);
     free(test_name);
@@ -116,46 +117,57 @@ static ContextSuite *add_new_context_suite(TestSuite *parent, const char* contex
 
 
 /*----------------------------------------------------------------------*/
-static void add_test_to_context(TestSuite *parent, ContextSuite **context_suites, const char *context_name, const char *test_name, CgreenTest *test) {
-    TestSuite *suite_for_context = find_suite_for_context(*context_suites, context_name);
+static void add_test_to_context(TestSuite *parent, ContextSuite **context_suites,
+                                TestItem *test_item, CgreenTest *test) {
+    TestSuite *suite_for_context = find_suite_for_context(*context_suites, test_item->context_name);
 
     if (suite_for_context == NULL) {
-        *context_suites = add_new_context_suite(parent, context_name, *context_suites);
+        *context_suites = add_new_context_suite(parent, test_item->context_name, *context_suites);
         suite_for_context = (*context_suites)->suite;
     }
-    add_test_(suite_for_context, test_name, test);
+    add_test_(suite_for_context, test_item->test_name, test);
 }
 
 
+#ifdef REFACTOR
 /************************************************************************/
-static void refactor_convert_vector_to_array(TestItem discovered_tests[], CgreenVector *tests) {
+static void refactor_convert_vector_to_array(TestItem discovered_tests[],
+                                             CgreenVector *tests) {
     int i;
     for (i=0; i<cgreen_vector_size(tests); i++) {
         discovered_tests[i] = *((TestItem *)cgreen_vector_get(tests, i));
     }
     discovered_tests[i].specification_name = NULL;
 }
+#endif
+
+static TestItem *get_item(CgreenVector *tests, int i) {
+    return (TestItem*)cgreen_vector_get(tests, i);
+}
+
 
 
 /*----------------------------------------------------------------------*/
-static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_pattern,
+static int add_matching_tests_to_suite(void *handle,
+                                       const char *symbolic_name_pattern,
                                        CgreenVector *tests, TestSuite *suite,
                                        ContextSuite **context_suites)
 {
-    TestItem test_items[1000];
     int count = 0;
 
-    refactor_convert_vector_to_array(test_items, tests);
-
-    for (int i = 0; test_items[i].specification_name != NULL; i++) {
-        if (symbolic_name_pattern == NULL || test_matches_pattern(symbolic_name_pattern, test_items[i])) {
+    for (int i = 0; i<cgreen_vector_size(tests); i++) {
+        if (symbolic_name_pattern == NULL || test_matches_pattern(symbolic_name_pattern, get_item(tests, i))) {
             char *error;
-            CgreenTest *test_function = (CgreenTest *)(dlsym(handle, test_items[i].specification_name));
+            const char *specification_name = get_item(tests, i)->specification_name;
+            CgreenTest *test_function = (CgreenTest *)(dlsym(handle,
+                                                             specification_name));
             if ((error = dlerror()) != NULL)  {
+                PANIC("Could not find specification_name symbol '%s'",
+                      specification_name);
                 return -1;
             }
 
-            add_test_to_context(suite, context_suites, test_items[i].context_name, test_items[i].test_name, test_function);
+            add_test_to_context(suite, context_suites, get_item(tests, i), test_function);
             count++;
         }
     }
@@ -167,7 +179,7 @@ static int add_matching_tests_to_suite(void *handle, const char *symbolic_name_p
 /*----------------------------------------------------------------------*/
 static bool matching_test_exists(const char *test_name, CgreenVector *tests) {
     for (int i = 0; i<cgreen_vector_size(tests); i++)
-        if (test_matches_pattern(test_name, (*(TestItem*)cgreen_vector_get(tests, i)))) {
+        if (test_matches_pattern(test_name, (TestItem*)cgreen_vector_get(tests, i))) {
             return true;
         }
     return false;
@@ -305,8 +317,8 @@ int runner(TestReporter *reporter, const char *test_library_name,
             printf("Opening [%s]", test_library_name);
         test_library_handle = dlopen(absolute_library_name, RTLD_NOW);
         if (test_library_handle == NULL) {
-            fprintf(stderr, "\nERROR: dlopen failure when trying to run '%s' (error: %s)\n",
-                    absolute_library_name, dlerror());
+            PANIC("dlopen failure when trying to run '%s' (error: %s)\n",
+                  absolute_library_name, dlerror());
             status = 2;
         } else {
             status = run_tests(reporter, suite_name, test_name, test_library_handle,
