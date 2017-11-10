@@ -106,7 +106,8 @@ static TestSuite *find_suite_for_context(ContextSuite *suites, const char *conte
 
 
 /*----------------------------------------------------------------------*/
-static ContextSuite *add_new_context_suite(TestSuite *parent, const char* context_name, ContextSuite *next) {
+static ContextSuite *add_new_context_suite(TestSuite *parent, const char* context_name,
+                                           ContextSuite *next) {
     ContextSuite *new_context_suite = (ContextSuite *)calloc(1, sizeof(ContextSuite));
     new_context_suite->context_name = string_dup(context_name);
     new_context_suite->suite = create_named_test_suite(context_name);
@@ -130,7 +131,7 @@ static void add_test_to_context(TestSuite *parent, ContextSuite **context_suites
 
 
 /*----------------------------------------------------------------------*/
-static TestItem *get_item(CgreenVector *tests, int i) {
+static TestItem *get_item_from(CgreenVector *tests, int i) {
     return (TestItem*)cgreen_vector_get(tests, i);
 }
 
@@ -144,9 +145,10 @@ static int add_matching_tests_to_suite(void *handle,
     int count = 0;
 
     for (int i = 0; i<cgreen_vector_size(tests); i++) {
-        if (symbolic_name_pattern == NULL || test_matches_pattern(symbolic_name_pattern, get_item(tests, i))) {
+        if (symbolic_name_pattern == NULL || test_matches_pattern(symbolic_name_pattern,
+                                                                  get_item_from(tests, i))) {
             char *error;
-            const char *specification_name = get_item(tests, i)->specification_name;
+            const char *specification_name = get_item_from(tests, i)->specification_name;
             CgreenTest *test_function = (CgreenTest *)(dlsym(handle,
                                                              specification_name));
             if ((error = dlerror()) != NULL)  {
@@ -155,7 +157,7 @@ static int add_matching_tests_to_suite(void *handle,
                 return -1;
             }
 
-            add_test_to_context(suite, context_suites, get_item(tests, i), test_function);
+            add_test_to_context(suite, context_suites, get_item_from(tests, i), test_function);
             count++;
         }
     }
@@ -167,7 +169,7 @@ static int add_matching_tests_to_suite(void *handle,
 /*----------------------------------------------------------------------*/
 static bool matching_test_exists(const char *test_name, CgreenVector *tests) {
     for (int i = 0; i<cgreen_vector_size(tests); i++)
-        if (test_matches_pattern(test_name, get_item(tests, i))) {
+        if (test_matches_pattern(test_name, get_item_from(tests, i))) {
             return true;
         }
     return false;
@@ -243,7 +245,7 @@ static int run_tests(TestReporter *reporter,
 
 /*----------------------------------------------------------------------*/
 const char *test_name_of_element(CgreenVector *tests, int index) {
-    return get_item(tests, index)->test_name;
+    return get_item_from(tests, index)->test_name;
 }
 
 /*----------------------------------------------------------------------*/
@@ -298,25 +300,25 @@ int runner(TestReporter *reporter, const char *test_library_name,
     if (verbose)
         printf("Discovered %d test(s)\n", count(tests));
 
-    if (!dont_run) {
-        char *absolute_library_name = absolute(test_library_name);
-        tests = sorted_test_items_from(tests);
-        if (verbose)
-            printf("Opening [%s]", test_library_name);
-        test_library_handle = dlopen(absolute_library_name, RTLD_NOW);
-        if (test_library_handle == NULL) {
-            PANIC("dlopen failure when trying to run '%s' (error: %s)\n",
-                  absolute_library_name, dlerror());
-            status = 2;
-        } else {
+    char *absolute_library_name = absolute(test_library_name);
+    tests = sorted_test_items_from(tests);
+    if (verbose)
+        printf("Opening [%s]", test_library_name);
+    test_library_handle = dlopen(absolute_library_name, RTLD_NOW);
+    if (test_library_handle == NULL) {
+        PANIC("dlopen failure when trying to run '%s' (error: %s)\n",
+              absolute_library_name, dlerror());
+        status = 2;
+    } else {
+        if (!dont_run) {
             status = run_tests(reporter, suite_name, test_name, test_library_handle,
                                tests, verbose);
-            dlclose(test_library_handle);
         }
-        free(absolute_library_name);
+        dlclose(test_library_handle);
     }
+    free(absolute_library_name);
 
-    //destroy_cgreen_vector(tests);
+    destroy_cgreen_vector(tests);
 
     return status;
 }
