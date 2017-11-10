@@ -129,22 +129,10 @@ static void add_test_to_context(TestSuite *parent, ContextSuite **context_suites
 }
 
 
-#ifdef REFACTOR
-/************************************************************************/
-static void refactor_convert_vector_to_array(TestItem discovered_tests[],
-                                             CgreenVector *tests) {
-    int i;
-    for (i=0; i<cgreen_vector_size(tests); i++) {
-        discovered_tests[i] = *((TestItem *)cgreen_vector_get(tests, i));
-    }
-    discovered_tests[i].specification_name = NULL;
-}
-#endif
-
+/*----------------------------------------------------------------------*/
 static TestItem *get_item(CgreenVector *tests, int i) {
     return (TestItem*)cgreen_vector_get(tests, i);
 }
-
 
 
 /*----------------------------------------------------------------------*/
@@ -179,7 +167,7 @@ static int add_matching_tests_to_suite(void *handle,
 /*----------------------------------------------------------------------*/
 static bool matching_test_exists(const char *test_name, CgreenVector *tests) {
     for (int i = 0; i<cgreen_vector_size(tests); i++)
-        if (test_matches_pattern(test_name, (TestItem*)cgreen_vector_get(tests, i))) {
+        if (test_matches_pattern(test_name, get_item(tests, i))) {
             return true;
         }
     return false;
@@ -254,8 +242,8 @@ static int run_tests(TestReporter *reporter,
 
 
 /*----------------------------------------------------------------------*/
-const char *test_name_of_element(CgreenVector *test_items, int index) {
-    return ((TestItem*)cgreen_vector_get(test_items, index))->test_name;
+const char *test_name_of_element(CgreenVector *tests, int index) {
+    return get_item(tests, index)->test_name;
 }
 
 /*----------------------------------------------------------------------*/
