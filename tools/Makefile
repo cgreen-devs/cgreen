@@ -10,7 +10,7 @@
 # And I really want to use Cgreen!
 
 COMMONFLAGS = -g
-CFLAGS = $(COMMONFLAGS) -Wall -Wextra -fPIC -I../include -MMD
+CFLAGS = $(COMMONFLAGS) -Wall -Wextra -fPIC -I../include -MMD -DUNITTESTING
 LDFLAGS = $(COMMONFLAGS)
 
 # NOTE: We should run these tests with a standard cgreen install, not

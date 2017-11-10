@@ -64,7 +64,7 @@ static void given_a_file_with_two_lines(const char *filename, const char *line1,
 }
 
 static void given_a_file_with_one_line(const char *filename, const char *line) {
-    expect_open_file("some-file", (void *)1);
+    expect_open_file(filename, (void *)1);
     expect(close_file, when(file, is_equal_to(1)));
     expect_open_process("nm ", (void *)2);
     expect_read_line_from(2, line);
