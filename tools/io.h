@@ -4,11 +4,11 @@
 #include <stdio.h>
 
 #ifdef UNITTESTING
-#define open_file(x,y) open_file_unittesting(x,y)
-#define close_file(x) close_file_unittesting(x)
-#define open_process(x,y) open_process_file_unittesting(x,y)
-#define close_process(x) close_process_unittesting(x)
-#define read_line(x,y,z) read_line_unittesting(x,y,z)
+#define open_file open_file_unittesting
+#define close_file close_file_unittesting
+#define open_process open_process_file_unittesting
+#define close_process close_process_unittesting
+#define read_line read_line_unittesting
 #endif
 
 extern FILE *open_file(const char *filename, const char *mode);
