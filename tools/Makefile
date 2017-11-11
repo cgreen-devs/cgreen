@@ -4,22 +4,26 @@
 # might at some point get into the actual cgreen-runner there will be
 # a clash when it loads the test library. So we will have to make the
 # external symbols in the modules have other names when unittesting
-# them using some macro magic. But let's not worry about that for now,
-# I'm confident that we can solve that...
-#
-# And I really want to use Cgreen!
+# them using macro magic. The UNITTESTING preprocessor symbol will
+# add the suffix '_unittesting' to externally, clashing symbols so
+# that we can separate the once in the cgreen-runner that is running
+# the tests, and the ones in the units being tested.
+
+OS=$(shell uname -o)
 
 COMMONFLAGS = -g
-CFLAGS = $(COMMONFLAGS) -Wall -Wextra -fPIC -I../include -MMD -DUNITTESTING
+CFLAGS = $(COMMONFLAGS) -Wall -Wextra -I../include -MMD -DUNITTESTING
+ifneq ($(OS),Cygwin)
+  CFLAGS+=-fPIC
+endif
+
 LDFLAGS = $(COMMONFLAGS)
 
-# NOTE: We should run these tests with a standard cgreen install, not
-# with the cgreen-runner built in this tree.
-LIBRARIES = -lcgreen
+LIBRARIES = -L../build/src -lcgreen
 
 VPATH = ../src
 
-# defer to CMake build from top level
+# Redirect to CMake build from top level
 all:
 	make --no-print-directory -C ..
 
