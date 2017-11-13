@@ -237,12 +237,6 @@ static int run_tests(TestReporter *reporter,
 }
 
 
-// Cygwin and MacOSX nm lists external names with a leading '_'
-// which dlsym() doesn't want, so we'll have to remove that
-// TODO: does not apply for Cygwin any more, MacOS?
-#define NM_SYMBOL_TYPE_FIELD " D "
-
-
 /*----------------------------------------------------------------------*/
 const char *test_name_of_element(CgreenVector *tests, int index) {
     return get_item_from(tests, index)->test_name;
