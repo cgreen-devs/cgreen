@@ -120,8 +120,7 @@ endif
 
 
 build-it: build
-	cd build
-	make
+	make -C build
 
 build:
 	mkdir build

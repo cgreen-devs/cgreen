@@ -44,7 +44,7 @@ Ensure(failure_reported_and_exception_thrown_when_messaging_would_block) {
     const int LOOPS = 65536;
     int messaging = start_cgreen_messaging(33);
     int loop;
-    char panic_message[100];
+    char panic_message[1000];
 
     signal_received = 0;
     signal(SIGPIPE, catch_signal);
