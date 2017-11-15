@@ -23,6 +23,15 @@ LIBRARIES = -L../build/src -lcgreen
 
 VPATH = ../src
 
+ifeq ($(OS),Darwin)
+	LD_PATH_NAME=DYLD_LIBRARY_PATH
+else
+	LD_PATH_NAME=LD_LIBRARY_PATH
+endif
+
+CGREEN_RUNNER = $(LD_PATH_NAME)=../build/src cgreen-runner
+
+
 # Redirect to CMake build from top level
 all:
 	make --no-print-directory -C ..
@@ -38,7 +47,7 @@ utils.o: ../src/utils.c
 
 #----------------------------------------------------------------------
 unit_tests: libdiscoverer_unit_tests.so
-	cgreen-runner $^
+	$(CGREEN_RUNNER) $^
 
 libdiscoverer_unit_tests.so: discoverer_unit_tests.o discoverer.o test_item.o
 	$(CC) -shared -o $@ $^ $(LIBRARIES)
@@ -48,7 +57,7 @@ io.mocks : io.h
 
 #----------------------------------------------------------------------
 acceptance_tests: libdiscoverer_acceptance_tests.so
-	cgreen-runner $^
+	$(CGREEN_RUNNER) $^
 
 libdiscoverer_acceptance_tests.so: discoverer_acceptance_tests.o discoverer.o test_item.o io.o
 	$(CC) -shared -o $@ $^ $(LIBRARIES)

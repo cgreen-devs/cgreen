@@ -8,6 +8,9 @@
 
 #include <cgreen/internal/unit_implementation.h>
 
+#include "../src/utils.h"
+
+
 #include "test_item.h"
 
 static const char *cgreen_spec_start_of(const char *line) {
@@ -26,7 +29,6 @@ static bool complete_line_read(char line[]) {
     return line[strlen(line)-1] == '\n';
 }
 
-#define PANIC(s) fprintf(stderr, "PANIC: %s\n", (s))
 
 static void strip_newline_from(char *name) {
     if (name[strlen(name)-1] == '\n')
