@@ -250,6 +250,7 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
         const char *message, va_list arguments) {
         char buffer[1000];
         TextMemo *memo = (TextMemo *)reporter->memo;
+        if (have_quiet_mode(reporter)) memo->printer("\n");
         memo->printer("%s:%d: ", file, line);
         memo->printer("Failure: ");
         memo->depth = 0;
