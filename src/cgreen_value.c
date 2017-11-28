@@ -39,3 +39,8 @@ CgreenValue make_cgreen_double_value(double d) {
     value.value.double_value = d;
     return value;
 }
+
+void destroy_cgreen_value(CgreenValue value) {
+    if (value.type == STRING)
+        free((void *)value.value.string_value);
+}

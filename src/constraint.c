@@ -81,6 +81,7 @@ static bool compare_want_greater_double(Constraint *constraint, CgreenValue actu
 static void set_contents(Constraint *constraint, const char *function, CgreenValue actual,
                          const char *test_file, int test_line, TestReporter *reporter);
 
+static void destroy_string_constraint(Constraint *constraint);
 
 static const char *default_actual_value_message = "\n\t\tactual value:\t\t\t[%" PRIdPTR "]";
 static const char *default_expected_value_message = "\t\texpected value:\t\t\t[%" PRIdPTR "]";
@@ -245,6 +246,7 @@ Constraint *create_equal_to_string_constraint(const char* expected_value, const 
     constraint->compare = &compare_want_string;
     constraint->execute = &test_want;
     constraint->name = "equal string";
+    constraint->destroy = &destroy_string_constraint;
     constraint->expected_value_message = "\t\texpected to equal:\t\t[\"%s\"]";
 
     return constraint;
@@ -257,6 +259,7 @@ Constraint *create_not_equal_to_string_constraint(const char* expected_value, co
     constraint->compare = &compare_do_not_want_string;
     constraint->execute = &test_want;
     constraint->name = "not equal string";
+    constraint->destroy = &destroy_string_constraint;
     constraint->expected_value_message = "\t\texpected to not equal:\t[\"%s\"]";
 
     return constraint;
@@ -269,7 +272,21 @@ Constraint *create_contains_string_constraint(const char* expected_value, const 
     constraint->compare = &compare_want_substring;
     constraint->execute = &test_want;
     constraint->name = "contain string";
+    constraint->destroy = &destroy_string_constraint;
     constraint->expected_value_message = "\t\texpected to contain:\t\t[\"%s\"]";
+
+    return constraint;
+}
+
+Constraint *create_does_not_contain_string_constraint(const char* expected_value, const char *expected_value_name) {
+    Constraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
+    constraint->type = STRING_COMPARER;
+
+    constraint->compare = &compare_do_not_want_substring;
+    constraint->execute = &test_want;
+    constraint->name = "not contain string";
+    constraint->destroy = &destroy_string_constraint;
+    constraint->expected_value_message = "\t\texpected to not contain:\t[\"%s\"]";
 
     return constraint;
 }
@@ -281,6 +298,7 @@ Constraint *create_begins_with_string_constraint(const char* expected_value, con
     constraint->compare = &compare_want_beginning_of_string;
     constraint->execute = &test_want;
     constraint->name = "begin with string";
+    constraint->destroy = &destroy_string_constraint;
     constraint->expected_value_message = "\t\texpected to begin with:\t\t[\"%s\"]";
 
     return constraint;
@@ -293,6 +311,7 @@ Constraint *create_does_not_begin_with_string_constraint(const char* expected_va
     constraint->compare = &compare_do_not_want_beginning_of_string;
     constraint->execute = &test_want;
     constraint->name = "not begin with string";
+    constraint->destroy = &destroy_string_constraint;
     constraint->expected_value_message = "\t\texpected to not begin with:\t[\"%s\"]";
 
     return constraint;
@@ -305,6 +324,7 @@ Constraint *create_ends_with_string_constraint(const char* expected_value, const
     constraint->compare = &compare_want_end_of_string;
     constraint->execute = &test_want;
     constraint->name = "end with string";
+    constraint->destroy = &destroy_string_constraint;
     constraint->expected_value_message = "\t\texpected to end with:\t\t[\"%s\"]";
 
     return constraint;
@@ -317,19 +337,8 @@ Constraint *create_does_not_end_with_string_constraint(const char* expected_valu
     constraint->compare = &compare_do_not_want_end_of_string;
     constraint->execute = &test_want;
     constraint->name = "not end with string";
+    constraint->destroy = &destroy_string_constraint;
     constraint->expected_value_message = "\t\texpected to not end with:\t[\"%s\"]";
-
-    return constraint;
-}
-
-Constraint *create_does_not_contain_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
-    constraint->type = STRING_COMPARER;
-
-    constraint->compare = &compare_do_not_want_substring;
-    constraint->execute = &test_want;
-    constraint->name = "not contain string";
-    constraint->expected_value_message = "\t\texpected to not contain:\t[\"%s\"]";
 
     return constraint;
 }
@@ -613,6 +622,11 @@ static void test_do_not_want_double(Constraint *constraint, const char *function
 }
 
 void destroy_double_constraint(Constraint *constraint) {
+    destroy_empty_constraint(constraint);
+}
+
+static void destroy_string_constraint(Constraint *constraint) {
+    destroy_cgreen_value(constraint->expected_value);
     destroy_empty_constraint(constraint);
 }
 
