@@ -1,6 +1,14 @@
 #include <cgreen/cgreen_value.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
+
+static char *stringdup(const char *string) {
+    if (string == NULL)
+        return NULL;
+    else
+        return strcpy((char *)malloc(strlen(string)+1), string);
+}
 
 CgreenValue *create_cgreen_value(CgreenValue value) {
     CgreenValue *ptr = (CgreenValue*)malloc(sizeof(CgreenValue));
@@ -16,7 +24,7 @@ CgreenValue make_cgreen_integer_value(intptr_t integer) {
 
 CgreenValue make_cgreen_string_value(const char *string) {
     CgreenValue value = {STRING, {0}};
-    value.value.string_value = string;
+    value.value.string_value = stringdup(string);
     return value;
 }
 
