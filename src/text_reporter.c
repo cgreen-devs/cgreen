@@ -247,17 +247,17 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
 }
 
 static void show_fail(TestReporter *reporter, const char *file, int line,
-        const char *message, va_list arguments) {
-        char buffer[1000];
-        TextMemo *memo = (TextMemo *)reporter->memo;
-        if (have_quiet_mode(reporter)) memo->printer("\n");
-        memo->printer("%s:%d: ", file, line);
-        memo->printer("Failure: ");
-        memo->depth = 0;
-        walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb, memo);
-        memo->printer("\n\t");
-        // Simplify *printf statements for more robust cross-platform logging
-        if (message == NULL) {
+                      const char *message, va_list arguments) {
+    char buffer[1000];
+    TextMemo *memo = (TextMemo *)reporter->memo;
+    if (have_quiet_mode(reporter)) memo->printer("\n");
+    memo->printer("%s:%d: ", file, line);
+    memo->printer("Failure: ");
+    memo->depth = 0;
+    walk_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb, &show_breadcrumb, memo);
+    memo->printer("\n\t");
+    // Simplify *printf statements for more robust cross-platform logging
+    if (message == NULL) {
         vsprintf(buffer, "<FATAL: NULL for failure message>", arguments);
     } else {
         vsprintf(buffer, message, arguments);
@@ -269,7 +269,7 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
 }
 
 static void show_incomplete(TestReporter *reporter, const char *file, int line,
-        const char *message, va_list arguments) {
+                            const char *message, va_list arguments) {
     char buffer[1000];
     TextMemo *memo = (TextMemo *)reporter->memo;
 
