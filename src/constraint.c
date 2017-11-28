@@ -81,8 +81,6 @@ static bool compare_want_greater_double(Constraint *constraint, CgreenValue actu
 static void set_contents(Constraint *constraint, const char *function, CgreenValue actual,
                          const char *test_file, int test_line, TestReporter *reporter);
 
-static void destroy_string_constraint(Constraint *constraint);
-
 static const char *default_actual_value_message = "\n\t\tactual value:\t\t\t[%" PRIdPTR "]";
 static const char *default_expected_value_message = "\t\texpected value:\t\t\t[%" PRIdPTR "]";
 
@@ -625,7 +623,7 @@ void destroy_double_constraint(Constraint *constraint) {
     destroy_empty_constraint(constraint);
 }
 
-static void destroy_string_constraint(Constraint *constraint) {
+void destroy_string_constraint(Constraint *constraint) {
     destroy_cgreen_value(constraint->expected_value);
     destroy_empty_constraint(constraint);
 }

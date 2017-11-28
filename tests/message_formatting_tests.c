@@ -21,7 +21,6 @@ Ensure(MessageFormatting, can_show_failure_message_containing_percent_sign) {
     assert_that(failure_message, contains_string("another %%!"));
 
     free(failure_message);
-    destroy_constraint(constraint);
 }
 
 TestSuite *message_formatting_tests(void) {

@@ -7,6 +7,14 @@ namespace cgreen {
     extern "C" {
 #endif
 
+extern void destroy_empty_constraint(Constraint *constraint);
+extern void destroy_static_constraint(Constraint *constraint);
+extern void destroy_string_constraint(Constraint *constraint);
+extern void destroy_double_constraint(Constraint *constraint);
+extern void destroy_constraint(Constraint *);
+extern void destroy_constraints(va_list constraints);
+
+
 extern bool no_expected_value_in(const Constraint *constraint);
 extern bool values_are_strings_in(const Constraint *constraint);
 extern bool is_content_comparing(const Constraint *constraint);

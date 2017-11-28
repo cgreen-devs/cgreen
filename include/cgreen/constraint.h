@@ -45,12 +45,6 @@ namespace cgreen {
 Constraint *create_constraint(void);
 Constraint *create_parameter_constraint_for(const char *parameter_name);
 
-void destroy_empty_constraint(Constraint *constraint);
-void destroy_static_constraint(Constraint *constraint);
-void destroy_double_constraint(Constraint *constraint);
-void destroy_constraint(Constraint *);
-void destroy_constraints(va_list constraints);
-
 bool compare_want_value(Constraint *constraint, CgreenValue actual);
 bool compare_do_not_want_value(Constraint *constraint, CgreenValue actual);
 void test_want(Constraint *constraint, const char *function, CgreenValue actual, const char *test_file, int test_line, TestReporter *reporter);

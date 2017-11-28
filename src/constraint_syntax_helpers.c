@@ -1,5 +1,6 @@
 #include <cgreen/constraint_syntax_helpers.h>
 #include <cgreen/constraint.h>
+#include "constraint_internal.h"
 #include <cgreen/message_formatting.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -35,7 +36,7 @@ Constraint static_is_null_constraint = {
     /* .size_of_stored_value */ 0
 };
 
-Constraint static_is_false_constraint = { 
+Constraint static_is_false_constraint = {
     /* .type */ VALUE_COMPARER,
     /* .name */ "be false",
     /* .destroy */ destroy_static_constraint,
@@ -50,7 +51,7 @@ Constraint static_is_false_constraint = {
     /* .size_of_stored_value */ 0
 };
 
-Constraint static_is_true_constraint = { 
+Constraint static_is_true_constraint = {
     /* .type */ VALUE_COMPARER,
     /* .name */ "be true",
     /* .destroy */ destroy_static_constraint,
