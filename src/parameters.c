@@ -6,12 +6,6 @@
 
 #include "parameters.h"
 
-#ifdef _MSC_VER
-//disable warning on windows
-//'strdup': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _strdup.
-#pragma warning(disable:4996)
-#endif
-
 static char *tokenise_by_commas_and_whitespace(char *list);
 static char *skip_nulls_until(char *pointer, char *pointer_end);
 static char *end_of_token(char *token);
