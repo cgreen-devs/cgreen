@@ -206,7 +206,9 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
             if (reporter->failures) memo->printer(RED);
             if (reporter->exceptions) memo->printer(MAGENTA);
         }
-        memo->printer(".");
+        if (reporter->exceptions) memo->printer("X");
+        else if (reporter->failures) memo->printer("F");
+        else memo->printer(".");
         if (use_colors) {
             memo->printer(RESET);
         }
