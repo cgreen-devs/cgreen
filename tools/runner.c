@@ -10,10 +10,6 @@
 #include <unistd.h>
 #include <fnmatch.h>
 
-#ifndef __cpluscplus
-#include <stdbool.h>
-#endif
-
 #include "utils.h"
 #include "runner.h"
 #include "test_item.h"
