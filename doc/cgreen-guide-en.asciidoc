@@ -53,7 +53,7 @@ Here are some of its features:
 
 *Cgreen* also supports the classic xUnit-style assertions for easy
 porting from other frameworks.
-        
+
 *Cgreen* was initially developed to support C programming, but there
 is also some support for C{pp}. It was initially a spinoff from a
 research project at Wordtracker and created by Marcus Baker. Significant
@@ -118,7 +118,7 @@ Once you have the CMake tool installed, the steps are:
 $ unzip cgreen-master.zip
 $ cd cgreen-master
 $ make
-$ make test    
+$ make test
 $ make install
 -----------------------------------------
 
@@ -186,7 +186,7 @@ $ gcc -c first_test.c
 $ gcc first_test.o -lcgreen -o first_test
 $ ./first_test
 -----------------------------
-          
+
 Invoking the executable should give...
 
 -----------------------------
@@ -406,7 +406,7 @@ include::tutorial_src/words4.c[lines=10..-1]
 ----------------------------------
 
 ...restores order...
-		  
+
 ----------------------------------
 include::tutorial_src/words5.out[]
 ----------------------------------
@@ -440,8 +440,8 @@ The function under test is the `words()` function and we want to make
 sure it walks the sentence correctly, dispatching individual words as
 it goes. So what calls are made are very important. How to test this?
 
-Let's start with a one word sentence. In this case we would expect 
-the callback to be invoked once with the only word, right? Here is 
+Let's start with a one word sentence. In this case we would expect
+the callback to be invoked once with the only word, right? Here is
 the test for that...
 
 [source,c]
@@ -455,15 +455,15 @@ include::tutorial_src/words_tests3.c[lines=41..-1]
 
 What is the funny looking `mock()` function?
 
-A mock is basically a programmable object. In C objects are limited 
+A mock is basically a programmable object. In C objects are limited
 to functions, so this is a mock function. The macro `mock()` compares
-the incoming parameters with any expected values and dispatches 
-messages to the test suite if there is a mismatch. It also returns 
+the incoming parameters with any expected values and dispatches
+messages to the test suite if there is a mismatch. It also returns
 any values that have been preprogrammed in the test.
- 
+
 The test is `invokes_callback_once_for_single_word_sentence()`. It
 programs the mock function using the `expect()` macro. It expects a
-single call, and that single call should use the parameters `"Word"` 
+single call, and that single call should use the parameters `"Word"`
 and `NULL`. If they don't match, we will get a test failure.
 
 So when the code under test (our `words()` function) calls the
@@ -473,7 +473,7 @@ actual parameters.
 Of course, we don't add the mock callback to the test suite, it's not
 a test.
 
-For a successful compile and link, the `words.h` file must now look 
+For a successful compile and link, the `words.h` file must now look
 like...
 
 [source,c]
@@ -494,7 +494,7 @@ This gives us the expected failing test...
 include::tutorial_src/words6.out[]
 ----------------------------
 
-*Cgreen* reports that the callback was never invoked. We can easily 
+*Cgreen* reports that the callback was never invoked. We can easily
 get the test to pass by filling out the implementation with...
 
 [source,c]
@@ -519,7 +519,7 @@ add to `words_test.c`...
 include::tutorial_src/words_tests4.c[lines=37..43]
 ----------------------------
 
-Each call is expected in sequence. Any failures, or left-over or 
+Each call is expected in sequence. Any failures, or left-over or
 extra calls, and we get failures. We can see all this when we run the
 tests...
 
@@ -548,8 +548,8 @@ include::tutorial_src/words9.out[]
 
 More work than I like to admit as it took me three goes to get this
 right. I firstly forgot the `+ 1` added on to `strlen()`, then forgot
-to swap `sentence` for `word` in the `(*callback)()` call, and 
-finally third time lucky. Of course running the tests each time made 
+to swap `sentence` for `word` in the `(*callback)()` call, and
+finally third time lucky. Of course running the tests each time made
 these mistakes very obvious. It's taken me far longer to write these
 paragraphs than it has to write the code.
 
@@ -560,9 +560,9 @@ paragraphs than it has to write the code.
 *Cgreen* is a tool for building unit tests in the C or C++
 languages. These are usually written alongside the production code by
 the programmer to prevent bugs. Even though the test suites are
-created by software developers, they are intended to be human 
-readable C code, as part of their function is an executable 
-specification. Used in this way, the test harness delivers constant 
+created by software developers, they are intended to be human
+readable C code, as part of their function is an executable
+specification. Used in this way, the test harness delivers constant
 quality assurance.
 
 In other words you'll get less bugs.
@@ -593,15 +593,15 @@ long as it fullfills the rules for an identifier in C and C++. A
 typical way to choose the named of the tests is what we see here,
 reading the declaration of the test makes sense since it is almost
 plain english, "Ensure strlen returns five for 'hello'". No problem
-understanding what we aim to test, or in TDD lingo, test drive. And 
-it can be viewed as an example from a description of what strlen 
-should be able to do. In a way, extracting all the `Ensure`:s from 
+understanding what we aim to test, or in TDD lingo, test drive. And
+it can be viewed as an example from a description of what strlen
+should be able to do. In a way, extracting all the `Ensure`:s from
 your test might give you all the documentation you'll need.
 
-The call to `assert_that()` is the primary part of an assertion, 
-which is complemented with a constraint, in this case 
-`is_equal_to()`, as a parameter. This makes a very fluent interface 
-to the asserts, that actually reads like English. The general format 
+The call to `assert_that()` is the primary part of an assertion,
+which is complemented with a constraint, in this case
+`is_equal_to()`, as a parameter. This makes a very fluent interface
+to the asserts, that actually reads like English. The general format
 is then
 
 [source, C]
@@ -623,7 +623,7 @@ Here are the standard constraints...
 
 |=========================================================
 |*Constraint* |*Passes if actual value/expression...*
-| _Basic_ | 
+| _Basic_ |
 | `is_true` | evaluates to true, buy you can also just leave out the constraint,
               e.g. `assert_that(found)` if `found` is of boolean type
 | `is_false` | evaluates to false
@@ -638,7 +638,7 @@ Here are the standard constraints...
 | `is_greater_than(value)` | '> value'
 | `is_less_than(value)` | '< value'
 ||
-| _Structs and general data_ | 
+| _Structs and general data_ |
 | `is_equal_to_contents_of(pointer, size)` | matches the data pointed
                                              to by `pointer` to a size
                                              of `size` bytes
@@ -646,7 +646,7 @@ Here are the standard constraints...
                                                  pointed to by `pointer`
                                                  to a size of `size` bytes
 ||
-| _Strings_ | 
+| _Strings_ |
 | `is_equal_to_string(value)` | are equal when compared using `strcmp()`
 | `is_not_equal_to_string(value)` | are not equal when compared using `strcmp()`
 | `contains_string(value)` | contains `value` when evaluated using `strstr()`
@@ -657,7 +657,7 @@ Here are the standard constraints...
 | `ends_with_string(value)` | ends with the string `value`
 | `does_not_end_with_string(value)` | does not end with the string `value`
 ||
-| _Double floats_ | 
+| _Double floats_ |
 | `is_equal_to_double(value)` | are equal to `value` within the number of
                                 significant digits (which you can set with a call
                                 to `significant_figures_for_assert_double_are(int figures)`)
@@ -671,9 +671,9 @@ The boolean assertion macros accept an `int` value. The equality
 assertions accept anything that can be cast to `intptr_t` and simply
 perform an `==` operation. The string comparisons are slightly
 different in that they use the `<string.h>` library function
-`strcmp()`.  If you use `is_equal_to()` with `char *` pointers then 
-it is the value of the pointers themselves that has to be the same, 
-i.e. the pointers have to point at the same string for the test to 
+`strcmp()`.  If you use `is_equal_to()` with `char *` pointers then
+it is the value of the pointers themselves that has to be the same,
+i.e. the pointers have to point at the same string for the test to
 pass.
 
 The constraints above should be used as the second argument to one of the
@@ -710,8 +710,8 @@ When you use *CGreen* with C++ there is one extra assertion available:
 === BDD Style vs. TDD Style
 
 So far we have encouraged the modern BDD style. It has merits that we
-really want you to benefit from. But you might come across *Cgreen* 
-test in another style, more like the standard TDD style, which is 
+really want you to benefit from. But you might come across *Cgreen*
+test in another style, more like the standard TDD style, which is
 more inline with previous thinking and might be more similar to other
 frameworks.
 
@@ -816,7 +816,7 @@ constraints based assertions.
 
 The tests are only run by running a test suite in some form. (But see
 also <<runner>>.) We can create and run one especially for this test like
-so... 
+so...
 
 [source,c]
 -----------------------------
@@ -877,7 +877,7 @@ include::tutorial_src/strlen_tests6.c[lines=8..10]
 -----------------------------
 include::tutorial_src/strlen6.out[]
 -----------------------------
-                
+
 *Cgreen* starts every message with the location of the test failure so
 that the usual error message identifying tools (like Emacs's
 `next-error`) will work out of the box.
@@ -915,13 +915,13 @@ having dozens of tests is very likely.
 
 We can get *Cgreen* to do some of the work for us by calling these
 methods before and after each test in the test suite.
- 
+
 Here is the new version...
 
 [source,c]
 ---------------------------
 ...
-include::tutorial_src/schema_tests2.c[lines=6] 
+include::tutorial_src/schema_tests2.c[lines=6]
     ...
 include::tutorial_src/schema_tests2.c[lines=11..13]
     ...
@@ -946,7 +946,7 @@ the tests to `BeforeEach()`:
 
 [source,c]
 ---------------------------
-include::tutorial_src/schema_tests2.c[lines=25..26] 
+include::tutorial_src/schema_tests2.c[lines=25..26]
 ---------------------------
 
 Of course that would require an extra variable, and it might make the
@@ -1083,7 +1083,7 @@ include::tutorial_src/crash_tests3.c[lines=8]
     ...
 include::tutorial_src/crash_tests3.c[lines=11..23]
 ---------------------------
-                
+
 When executed, the code will slow for a second, and then finish with...
 
 ---------------------------
@@ -1115,7 +1115,7 @@ and *Cgreen* can catch it, rather than crashing too. It can then
 report the exception and continue with the next test.
 
 If you want to debug any of your tests the constant `fork()`-ing
-might make that difficult or impossible. There are also other 
+might make that difficult or impossible. There are also other
 circumstances that might require that you don't use `fork()`.
 
 There are two ways to make *Cgreen* refrain from `fork()`-ing.
@@ -1133,14 +1133,14 @@ environment using `getenv()` it will run the test(s) in the same
 process. In this case the non-forking applies to *all* tests run, so
 all test will run in the same process, namely *Cgreen*s main process.
 
-WARNING: This might bring your whole test suite down if a single test 
-causes an exception. So it is not a recommended setting for normal 
+WARNING: This might bring your whole test suite down if a single test
+causes an exception. So it is not a recommended setting for normal
 use.
 
 
 
 === Building Composite Test Suites
-            
+
 The `TestSuite` is a composite structure.  This means test suites can
 be added to test suites, building a tree structure that will be
 executed in order.
@@ -1303,7 +1303,7 @@ This allows the reuse of common fixtures across projects.
 
 
 == Mocking functions with Cgreen
-        
+
 When testing you want certainty above all else.  Random events destroy
 confidence in your test suite and force needless extra runs "to be
 sure".  A good test places the system under test into a tightly
@@ -1325,10 +1325,10 @@ is eventually fleshed out.
 
 The ideal is to have minimal stubs written for each individual test.
 *Cgreen* encourages this approach by making such tests easier to write.
-         
+
 
 === The Problem with Streams
-            
+
 How would we test the following code...?
 
 [source,c]
@@ -1374,9 +1374,9 @@ different one for each test. That's a lot of clutter.
 *Cgreen* can handle this clutter for us by letting us write a single
 programmable function for all our tests.
 
-             
+
 === Record and Playback
-            
+
 We can redo our example by creating a `stream_stub()` function. We can
 call it anything we want, and since I thought we wanted to have a
 stubbed stream...
@@ -1452,17 +1452,17 @@ around a bit everything is fine:
 include::tutorial_src/stream3.out[]
 -----------------------
 
-How do the *Cgreen* stubs work?  Each `expect()` describes one call to
-the stub and the calls to `will_return()` build up a static list of
-return values which are used and returned in order as those calls
-arrive. The return values are cleared between tests.
+So, how do the *Cgreen* stubs work?  Each `expect()` describes one
+call to the stub and a call to `will_return()` is included it will
+aggregate into a list of return values which are used and returned in
+order as the expected calls arrive.
 
 The `mock()` macro captures the parameter names and the `__func__`
 property (the name of the stub function).  *Cgreen* can then use these
 to look up entries in the return list, and also to generate more
 helpful messages.
 
-We can crank out our tests quite quickly now...
+We can now crank out our tests quite quickly...
 
 [source,c]
 -----------------------
@@ -1501,7 +1501,7 @@ include::tutorial_src/stream_tests4.c[lines=43..46]
 This time we musn't use `always_return()`. We want to leave the stream
 where it is, ready for the next call to `read_paragraph()`. If we call
 the stream beyond the line ending, we want to fail.
-             
+
 Oops, that was a little too fast. Turns out we are failing anyway...
 
 -----------------------
@@ -1521,7 +1521,7 @@ And we are passing again...
 -----------------------
 include::tutorial_src/stream6.out[]
 -----------------------
-             
+
 There are no limits to the number of stubbed methods within a test,
 only that two stubs cannot have the same name. The following will
 cause problems...
@@ -1559,7 +1559,7 @@ mock objects.
 
 
 === Setting Expectations on Mock Functions
-            
+
 To swap the traffic flow, we'll look at an outgoing example instead.
 Here is the prewritten production code...
 
@@ -1894,7 +1894,7 @@ TIP: You can try the `cgreen-mocker` for this, as described in
 
 == Special Cases
 
-=== Working with `doubles` 
+=== Working with `doubles`
 
 We are not talking about
 http://www.hostettler.net/blog/2014/05/18/fakes-stubs-dummy-mocks-doubles-and-all-that/[test doubles]
@@ -1932,7 +1932,7 @@ and the utility function
 
 |====================
 | *Utility*
-| `significant_figures_for_assert_double_are(int figures)` 
+| `significant_figures_for_assert_double_are(int figures)`
 |====================
 
 And of course they are designed to go together. So, if you want to assert
@@ -1977,7 +1977,7 @@ To get the value back you "unbox" it.
                                      memory area and return a pointer
                                      to it
 | `unbox_double(BoxedDouble *box)` | Unwrap the value by freeing the
-                                     area and returning the value 
+                                     area and returning the value
 |=================================================================
 
 Here's an example of that:
@@ -2247,9 +2247,9 @@ Once you get the build set up right for the cgreen-runner everything
 is fairly straight-forward. But you have a few options:
 
 --xml <prefix>:: Instead of messages on stdout with the TextReporter,
-      		     write results into one XML-file per suite or context,
-		         compatible with Hudson/Jenkins CI. The filename(s)
-		         will be `<prefix>-<suite>.xml`
+                 write results into one XML-file per suite or context,
+                 compatible with Hudson/Jenkins CI. The filename(s)
+                 will be `<prefix>-<suite>.xml`
 --suite <name>:: Name the top level suite
 --no-run::       Don't run the tests
 --verbose::      Show progress information and list discovered tests
@@ -2410,7 +2410,7 @@ automatic discovery of tests as described in <<runner>>.
 
 Replacing the Reporter
 ~~~~~~~~~~~~~~~~~~~~~~
-            
+
 In every test suite so far, we have run the tests with this line...
 
 [source,c]
@@ -2431,14 +2431,14 @@ when your code runs the test suite.
 
 [options="header", cols=4]
 |====================================================================================
-| Reporter  | Purpose                
+| Reporter  | Purpose
  | Signature  | Note
 | Text      | Human readable, with clear messages
- | `create_text_reporter(void)`                   | 
+ | `create_text_reporter(void)`                   |
 | XML       | ANT/Jenkins compatible
  | `create_xml_reporter(const char *file_prefix)` | `file_prefix` is the prefix of the XML files generated.
 | CUTE      | CUTE Eclipse-plugin (http://cute-test.org) compatible output
- | `create_cute_reporter(void)`  | 
+ | `create_cute_reporter(void)`  |
 | CDash     | CMake (http://cmake.org) dashboard
  | `create_cdash_reporter(CDashInfo *info)` | `info` is a structure defined in `cdash_reporter.h`
 |====================================================================================
@@ -2490,7 +2490,7 @@ text reporter code replaces these with something more dramatic, and
 then returns a pointer to this new object. Thus the
 `create_text_reporter()` function effectively extends the object from
 `create_reporter()`.
-             
+
 The text reporter only outputs content at the start of the first test,
 at the end of the test run to display the results, when a failure
 occurs, and when a test fails to complete.  A quick look at the
@@ -2634,9 +2634,9 @@ can use to liven up the messages...
 `passes`:: The number of passes so far.
 `skips`:: The number of tests that has been skipped by the `xEnsure` mechanism (see <<xensure>>)
 `failures`::  The number of failures generated so far.
-`exceptions`:: The number of test functions that have failed to complete so far. 
+`exceptions`:: The number of test functions that have failed to complete so far.
 `breadcrumb`:: This is a pointer to the list of test names in the stack.
-				
+
 The `breadcrumb` pointer is different and needs a little explanation.
 Basically it is a stack, analogous to the breadcrumb trail you see on
 websites.  Everytime a `start()` handler is invoked, the name is
@@ -2682,9 +2682,9 @@ used to set options. E.g. the textreporter defines the structure
 use of colors when printing passes and failures. You set it with
 `set_reporter_options(*void)`.
 
- 
+
 === An Example XML Reporter
-    
+
 Let's make things real with an example.  Suppose we want to send the
 output from *Cgreen* in XML format, say for storing in a repository or
 for sending across the network.
@@ -2807,7 +2807,7 @@ well as `stdio.h`.
 
 This gets us pretty close to what we want...
 
-[source,xml]	
+[source,xml]
 -----------------------
 include::tutorial_src/test_as_xml2.out[]
 -----------------------
@@ -2841,7 +2841,7 @@ The `get_breadcrumb_depth()` function just gives the current test
 depth as recorded in the reporters breadcrumb (from
 `cgreen/breadcrumb.h`).  As that is just the number of tabs to output,
 the implementation is trivial.
-            
+
 We can then use this function in the rest of the code.  Here is the
 complete listing...
 
