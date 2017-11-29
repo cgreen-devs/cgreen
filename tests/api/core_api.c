@@ -51,4 +51,3 @@ Ensure(mocks_compiles) {
     expect(int_stub, when(parameter, is_equal_to(1)));
     int_stub(1);
 }
-
