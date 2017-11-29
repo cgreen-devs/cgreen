@@ -45,6 +45,7 @@ import sys
 sys.path.extend(['.', '..'])
 
 from pycparser import c_parser, c_ast, parse_file, c_generator
+from pycparser.plyparser import ParseError
 
 
 # A visitor for FuncDef nodes that prints the
@@ -61,21 +62,24 @@ class FuncDefVisitor(c_ast.NodeVisitor):
 
 def arg_list(args):
     if args != None and len(args.params) > 0:
-        return [el for el in map(parameter_name_or_box_double, args.params) if el is not None]
+        return [el for el in map(parameter_name_or_box_double,
+                                 filter(lambda x: not is_ellipsis_param(x),
+                                        args.params))
+                if el is not None]
     else:
         return []
 
 def parameter_name_or_box_double(node):
-    if isdouble_decl(node):
+    if is_double_decl(node):
         return "box_double({})".format(node.name)
     else:
         return node.name
 
 def should_return(node):
     generator = c_generator.CGenerator()
-    if isdouble_decl(node):
+    if is_double_decl(node):
         print("  return unbox_double(", end="")
-    elif not isvoid_decl(node):
+    elif not is_void_decl(node):
         print("  return (", end="")
         print(generator.visit(node.type), end="")
         if isinstance(node.type, c_ast.PtrDecl):
@@ -84,19 +88,33 @@ def should_return(node):
     else:
         print("  ", end="")
 
-def isvoid_decl(node):
+def is_void_decl(node):
     type = node.type
     return isinstance(type, c_ast.TypeDecl) and type.type.names == ['void']
 
-def isdouble_decl(node):
+def is_double_decl(node):
     type = node.type
     return isinstance(type, c_ast.TypeDecl) and type.type.names == ['double']
+
+def is_ellipsis_param(node):
+    return isinstance(node, c_ast.EllipsisParam)
 
 def show_func_defs(args):
     # Note that cpp is used. Provide a path to your own cpp or
     # make sure one exists in PATH.
-    ast = parse_file(args[0], use_cpp=True,
-                     cpp_args=[r'-Ipycparser/utils/fake_libc_include'] + args[1:])
+    try:
+        ast = parse_file(args[0], use_cpp=True,
+                         cpp_args=[
+                             r'-Ipycparser/utils/fake_libc_include',
+                             r'-D__attribute__(x)=',
+                             r'-D__extension__=',
+                             r'-D__restrict=',
+                             r'-D__inline='
+                         ] +
+                         args[1:])
+    except ParseError as e:
+        print("{} - C99 parse error".format(e))
+        return
 
     print('#include "%s"' % args[len(args)-1]);
     print()
