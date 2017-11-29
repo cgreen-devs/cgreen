@@ -115,8 +115,8 @@ static void learn_mock_call_for(const char *function, const char *mock_file, int
 }
 
 static void handle_missing_expectation_for(const char *function, const char *mock_file, int mock_line,
-                                    CgreenVector *parameter_names, CgreenVector *actual_values,
-                                    TestReporter *test_reporter) {
+                                           CgreenVector *parameter_names, CgreenVector *actual_values,
+                                           TestReporter *test_reporter) {
     RecordedExpectation *expectation;
     CgreenVector *no_constraints;
 
@@ -525,13 +525,13 @@ void clear_mocks(void) {
 }
 
 static void show_breadcrumb(const char *name, void *memo) {
-	if (*(int *) memo > 1) {
-		fprintf(stderr, "-> ");
-	}
-	if (*(int *) memo > 0) {
-		fprintf(stderr, "%s ", name);
-	}
-	(*(int *) memo)++;
+    if (*(int *) memo > 1) {
+        fprintf(stderr, "-> ");
+    }
+    if (*(int *) memo > 0) {
+        fprintf(stderr, "%s ", name);
+    }
+    (*(int *) memo)++;
 }
 
 
