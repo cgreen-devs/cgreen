@@ -15,12 +15,12 @@
 #
 # Simplistically adapted from pycparser example: func_defs.py
 #
-# Since it uses pycparser it will only handle C functions
-# and you will probably need the pycparsers "fake_libc_include"
-# to avoid parsing the whole world of libc headers. You can
-# make a soft link in your directory to a copy of the pycparser
-# source, and cgreen-mocker will pick it up or you can point
-# to it using a command line 'cpp_directive' arg.
+# Since it uses pycparser it will only handle C functions and you will
+# probably need the pycparsers "fake_libc_include" to avoid parsing
+# the whole world of libc headers. You can make a soft link with the
+# name 'pycparser' in your directory to a copy of the pycparser
+# source, and cgreen-mocker will pick it up or you can point to it
+# using a command line 'cpp_directive' arg.
 #
 # You can find pycparser at https://github.com/eliben/pycparser
 #
@@ -117,6 +117,7 @@ def show_func_defs(args):
         return
 
     print('#include "%s"' % args[len(args)-1]);
+    print('#include <cgreen/mocks.h>');
     print()
     v = FuncDefVisitor()
     v.visit(ast)
@@ -130,7 +131,27 @@ Usage:
                      "-I <directory>" to ensure cpp finds files and
                      "-D <define>" to create an inline define
     <headerfile>:    file with function declarations that you want
-                     to mock""")
+                     to mock
+
+    Cgreen-mocker takes a header file and generates cgreen mocks for
+    all functions in it. It will print the generated mocks to standard
+    output so you can inspect it, or pipe it to a file that can be
+    compiled and linked with your tests.
+
+    If your header does not name some arguments you will not be able
+    to use those arguments in 'expect when' statements, of course.
+
+    A tip is to ensure that the header file does not include other
+    header files that have external function definitions since they
+    will also be mocked, which is probably not what you want.
+
+    If cgreen-mocker encounters parse errors and they look like
+    gnu-isms you should get a copy of the source for pycparser (on
+    which cgreen-mocker is built). In it you will find a
+    'fake_libc_include' which help. Create a symbolic link named
+    'pycparser' that links to the root of pycparser source and
+    cgreen-mocker will find it itself.
+""")
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
