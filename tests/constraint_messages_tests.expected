@@ -37,13 +37,13 @@ constraint_messages_tests.c: Failure: ConstraintMessage -> for_ends_with_string
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_equal_to_double 
 	Expected [0] to [equal double] [1] within [8] significant figures
-		actual value:	0.000000
-		expected value:	1.000000
+		actual value:			[0.000000]
+		expected value:			[1.000000]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_equal_to_double_negative 
 	Expected [-1] to [equal double] [-2] within [8] significant figures
-		actual value:	-1.000000
-		expected value:	-2.000000
+		actual value:			[-1.000000]
+		expected value:			[-2.000000]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to 
 	Expected [forty_five] to [equal] [thirty_three]
@@ -76,13 +76,13 @@ constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_greater_than
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_greater_than_double 
 	Expected [three_point_three] to [be greater than double] [four_point_five] within [8] significant figures
-		actual value:	3.300000
-		expected value:	4.500000
+		actual value:			[3.300000]
+		expected value:			[4.500000]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_greater_than_double_with_accuracy 
 	Expected [1.0] to [be greater than double] [1.0 + 1.0e-3 + DBL_EPSILON] within [4] significant figures
-		actual value:	1.000000
-		expected value:	1.001000
+		actual value:			[1.000000]
+		expected value:			[1.001000]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_less_than 
 	Expected [forty_five] to [be less than] [thirty_three]
@@ -91,13 +91,13 @@ constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_less_than
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_less_than_double 
 	Expected [four_point_five] to [be less than double] [three_point_three] within [8] significant figures
-		actual value:	4.500000
-		expected value:	3.300000
+		actual value:			[4.500000]
+		expected value:			[3.300000]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_less_than_double_with_accuracy 
 	Expected [1.0] to [be less than double] [1.0 - 1.0e-3 - DBL_EPSILON] within [4] significant figures
-		actual value:	1.000000
-		expected value:	0.999000
+		actual value:			[1.000000]
+		expected value:			[0.999000]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_non_null 
 	Expected [pointer] to [be non null]
@@ -111,8 +111,8 @@ constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_not_equal_to_c
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_not_equal_to_double 
 	Expected [four_point_five] to [not equal double] [almost_four_point_five] within [4] significant figures
-		actual value:	4.500000
-		expected value:	4.499900
+		actual value:			[4.500000]
+		expected value:			[4.499900]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_not_equal_to_string 
 	Expected [another_forty_five] to [not equal string] [forty_five]
@@ -140,13 +140,13 @@ constraint_messages_tests.c: Failure: ConstraintMessage -> for_no_mock_parameter
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_not_equal_to_double 
 	Expected [0] to [not equal double] [0] within [8] significant figures
-		actual value:	0.000000
-		expected value:	0.000000
+		actual value:			[0.000000]
+		expected value:			[0.000000]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_not_equal_to_double_negative 
 	Expected [-1] to [not equal double] [-1] within [8] significant figures
-		actual value:	-1.000000
-		expected value:	-1.000000
+		actual value:			[-1.000000]
+		expected value:			[-1.000000]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_violated_never_expect 
 	Mocked function [some_mock] has an expectation that it will never be called, but it was
