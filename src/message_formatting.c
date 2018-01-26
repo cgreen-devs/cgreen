@@ -113,9 +113,9 @@ char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
 
 
     size_t message_size = strlen(name_has_incorrect_size_message) +
-    		strlen(null_used_for_compare_message) +
-    		strlen(null_used_for_actual_message) +
-    		512; // just in case
+            strlen(null_used_for_compare_message) +
+            strlen(null_used_for_actual_message) +
+            512; // just in case
 
     char *message = (char *)malloc(message_size);
     memset(message, 0, message_size);
@@ -146,7 +146,7 @@ char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
 
         if ((void *)actual == NULL) {
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
-            		null_used_for_compare_message,
+                    null_used_for_compare_message,
                     as_string);
 
                 return message;
@@ -154,7 +154,7 @@ char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
 
         if (constraint->expected_value.value.pointer_value == NULL) {
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
-            		null_used_for_actual_message,
+                    null_used_for_actual_message,
                     as_string);
 
                 return message;
@@ -176,26 +176,27 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
     const char *expected_value_string_format =  "[%s]";
     const char *actual_value_string_format = "\n\t\tactual value:\t\t\t[\"%s\"]";
     const char *at_offset = "\n\t\tat offset:\t\t\t[%d]";
+    const char *expected_content = "\n\t\t\tactual value:\t\t[%#4x]\n\t\t\texpected value:\t\t[%#4x]";
     const char *actual_value_as_string;
     char *message;
     size_t message_size = strlen(constraint_as_string_format) +
-    		strlen(expected_value_string_format) +
-    		strlen(actual_value_string_format) +
-    		strlen(at_offset) +
-    		strlen(constraint->actual_value_message) +
-    		strlen(constraint->expected_value_message) +
-    		strlen(constraint->expected_value_name) +
-    		strlen(constraint->name) +
-    		strlen(actual_string) +
-    		512; // just in case
+            strlen(expected_value_string_format) +
+            strlen(actual_value_string_format) +
+            strlen(at_offset) +
+            strlen(constraint->actual_value_message) +
+            strlen(constraint->expected_value_message) +
+            strlen(constraint->expected_value_name) +
+            strlen(constraint->name) +
+            strlen(actual_string) +
+            512; // just in case
 
     snprintf(actual_int_value_string, sizeof(actual_int_value_string) - 1, "%" PRIdPTR, actual_value);
 
     if (values_are_strings_in(constraint)) {
-    	message_size += strlen(constraint->expected_value.value.string_value);
-    	if (actual_value != (intptr_t)NULL) {
-    		message_size += strlen((char *)actual_value);
-    	}
+        message_size += strlen(constraint->expected_value.value.string_value);
+        if (actual_value != (intptr_t)NULL) {
+            message_size += strlen((char *)actual_value);
+        }
     }
 
     message = (char *)malloc(message_size);

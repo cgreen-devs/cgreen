@@ -52,12 +52,14 @@ constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to_contents_of 
 	Expected [thirty_three] to [equal contents of] [forty_five]
-		at offset:			[9]
+		at offset:			[8]
+			actual value:		[0x21]
+			expected value:		[0x2b]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to_double 
 	Expected [four_point_five] to [equal double] [three_point_three] within [8] significant figures
-		actual value:	4.500000
-		expected value:	3.300000
+		actual value:			[4.500000]
+		expected value:			[3.300000]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to_hex 
 	Expected [chars[0]] to [equal] [0xbb]
