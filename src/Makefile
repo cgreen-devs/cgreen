@@ -1,2 +1,2 @@
 all:
-	cd ..; make unit
+	cd ..; make --no-print-directory unit
