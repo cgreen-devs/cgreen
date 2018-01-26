@@ -73,7 +73,7 @@ static int find_index_of_difference(void *expected, void *actual, size_t size_to
 
     while (size_to_compare--) {
         if (*expectedp++ != *actualp++) {
-            return (int)((void *)actualp - actual);
+            return (int)((void *)actualp - actual)-1;
         }
     }
 
@@ -176,7 +176,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
     const char *expected_value_string_format =  "[%s]";
     const char *actual_value_string_format = "\n\t\tactual value:\t\t\t[\"%s\"]";
     const char *at_offset = "\n\t\tat offset:\t\t\t[%d]";
-    const char *expected_content = "\n\t\t\tactual value:\t\t[%#4x]\n\t\t\texpected value:\t\t[%#4x]";
+    const char *expected_content = "\n\t\t\tactual value:\t\t[0x%02x]\n\t\t\texpected value:\t\t[0x%02x]";
     const char *actual_value_as_string;
     char *message;
     size_t message_size = strlen(constraint_as_string_format) +
@@ -261,6 +261,10 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
                      at_offset,
                      difference_index);
+            snprintf(message + strlen(message), message_size - strlen(message) - 1,
+                     expected_content,
+                     ((char *)actual_value)[difference_index],
+                     ((char *)constraint->expected_value.value.pointer_value)[difference_index]);
         }
         return message;
     }
