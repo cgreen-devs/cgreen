@@ -1,4 +1,3 @@
-
 [![Build Status](https://travis-ci.org/cgreen-devs/cgreen.svg?branch=master)](https://travis-ci.org/cgreen-devs/cgreen)
 [![Coverage Status](https://coveralls.io/repos/cgreen-devs/cgreen/badge.svg?branch=master&service=github)](https://coveralls.io/github/cgreen-devs/cgreen?branch=master)
 [![Chat on Gitter](https://img.shields.io/gitter/room/badges/shields.svg)](https://gitter.im/cgreen-devs/chat)
@@ -42,6 +41,13 @@ Cgreen is hosted on GitHub. As of now there are no pre-built packages
 to download, so you have to download the source zip from
 [GitHub](http://www.github.com/cgreen-devs/cgreen) and build it
 yourself.
+
+There are some packaging scripts floating around, some of which have unclear status:
+
+  - [debian packaging is part of cgreens source tree](https://github.com/cgreen-devs/cgreen/tree/master/debian)
+  - [PACMAN script](https://github.com/voins/cgreen-pkg)
+  - [MacOS packagesbuild](https://github.com/cgreen-devs/cgreen-macosx-packaging)
+  - [Cygwin package script](https://github.com/cgreen-devs/cgreen-cygport)
 
 ## Building It
 
