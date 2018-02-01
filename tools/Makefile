@@ -9,7 +9,12 @@
 # that we can separate the once in the cgreen-runner that is running
 # the tests, and the ones in the units being tested.
 
-OS=$(shell uname -o)
+UNAMEOEXISTS=$(shell uname -o 1>&2 2>/dev/null; echo $$?)
+ifeq ($(UNAMEOEXISTS),0)
+  OS=$(shell uname -o)
+else
+  OS=$(shell uname -s)
+endif
 
 COMMONFLAGS = -g
 CFLAGS = $(COMMONFLAGS) -Wall -Wextra -I../include -MMD -DUNITTESTING
