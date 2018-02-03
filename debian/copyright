@@ -1,19 +1,17 @@
-This work was packaged for Debian by:
+This work was packaged for Debian using scripts by:
 
     Colm Dougan <colm.dougan@gmail.com> on Sun, 08 May 2011 22:52:32 +0100
 
-It was downloaded from:
+Source:
 
     http://github.com/cgreen-devs/cgreen
 
 Copyright:
 
-    cgreen authors (see above) and others
-
-License:
-
-    Copyright (c) 2006-2016, Cgreen Development Team and contributors
+    Copyright (c) 2006-2018, Cgreen Development Team and contributors
     (https://github.com/cgreen-devs/cgreen/graphs/contributors)
+
+License: ISC
 
     Permission to use, copy, modify, and/or distribute this software and
     its documentation for any purpose with or without fee is hereby

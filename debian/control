@@ -1,9 +1,10 @@
 Source: cgreen
 Section: devel
 Priority: optional
-Maintainer: Thomas Nilefalk <thomas@junovagen.se>
-Build-Depends: debhelper (>= 7.0.0), cmake
-Standards-Version: 3.9.7
+Maintainer: Thomas Nilefalk <thomas@nilefalk.se>
+Build-Depends: debhelper (>= 10), cmake
+Standards-Version: 4.0.0
+Homepage: https://github.com/cgreen-devs/cgreen
 
 Package: cgreen
 Architecture: any
