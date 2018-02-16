@@ -180,6 +180,43 @@ Ensure(Mocks, can_always_return_double) {
 #endif
 
 
+typedef struct {
+    int field;
+} S;
+
+/* The mock function */
+S func(void) {
+    S s;
+    S *sp;
+
+    sp = (S *)mock();
+
+    /* Copy content of struct pointed to by returned value */
+    memcpy(&s, sp, sizeof(S));
+
+    /* Return it */
+    return s;
+}
+
+Ensure(Mocks, can_return_struct) {
+    /* Allocate a struct */
+    S *sp = (S *)malloc(sizeof(S));
+
+    /* Prime one field */
+    sp->field = 42;
+
+    /* Expect a call and return a pointer to the struct */
+    expect(func, will_return(sp));
+
+    /* Call our mock function which returns a struct */
+    S ret = func();
+
+    /* And assert that the field in the returned struct is propagated */
+    assert_that(ret.field, is_equal_to(42));
+
+    free(sp);
+}
+
 static void mixed_parameters(int i, const char *s) {
     mock(i, s);
 }
