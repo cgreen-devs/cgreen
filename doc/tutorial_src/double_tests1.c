@@ -14,14 +14,14 @@ Ensure(Doubles, can_assert_double_values) {
 }
 
 static double double_out(int i, double d) {
-    return unbox_double(mock(i, box_double(d)));
+    return unbox_double(mock(i, box_double(d))); // <1>
 }
 
 Ensure(Doubles, can_be_arguments_to_mock_and_returned) {
     expect(double_out,
            when(i, is_equal_to(15)),
-           when(d, is_equal_to_double(31.32)),
-           will_return_double(3.1415926));
+           when(d, is_equal_to_double(31.32)), // <2>
+           will_return_double(3.1415926));     // <3>
     assert_that_double(double_out(15, 31.32), is_equal_to_double(3.1415926));
 }
 

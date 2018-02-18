@@ -1680,6 +1680,7 @@ Then there are two ways to return results:
 |===========================================================================================
 |*Macro*                                                      |*Description*
 |`will_return(value)`                                         |Return the value from the mock function (which needs to be declared returning that type
+|`will_return_double(value)`                                  |Ditto for double values (required because of C's type coercion rules which would otherwise convert a double into an int)
 |`will_set_contents_of_parameter(parameter_name, value, size)`|Writes the value in the referenced parameter
 |===========================================================================================
 
@@ -1825,9 +1826,9 @@ in a suite.
 
 ==== Learning Mocks
 
-Working with legacy code and trying to apply TDD, BDD or even simply
-add some unit tests is not easy. You're working with unknown code that
-does unknown things with unknown counterparts.
+Working with legacy code and trying to apply TDD, BDD, or even simply
+adding some unit tests, is not easy. You're working with unknown code
+that does unknown things with unknown counterparts.
 
 So the first step would be to isolate the unit. We won't go into
 details on how to do that here, but basically you would replace the
@@ -1900,13 +1901,15 @@ We are not talking about
 http://www.hostettler.net/blog/2014/05/18/fakes-stubs-dummy-mocks-doubles-and-all-that/[test doubles]
 here, but about values of C/C++ ``double`` type (a.k.a double float.)
 
-*Cgreen* is designed to make it easy and natural to write assertions and
-expectations. Many functions can be used for multiple data types, e.g.
-`is_equal_to()` applies to all integer type values.
+*Cgreen* is designed to make it easy and natural to write assertions
+and expectations. Many functions can be used for multiple data types,
+e.g.  `is_equal_to()` applies to all integer type values, actually
+including pointers.
 
 But the C language has its quirks. One of them is the fact that it is
-impossible to inspect the datatypes of values during run-time. This has e.g.
-forced the introduction of `is_equal_to_string()` to enable string comparisons.
+impossible to inspect the datatypes of values during run-time. This
+has e.g.  forced the introduction of `is_equal_to_string()` to enable
+string comparisons.
 
 ==== Assertions and Constraints
 
@@ -1956,23 +1959,32 @@ include::tutorial_src/double1.out[lines=2..5]
 [[double_mocks]]
 ==== Mocks
 
-When you are using mocks with double typed values there are two different
-issues to remember:
+The general mechanism *Cgreen* uses to transport values to and from
+mock functions is based on the simple idea that most types fit into a
+"large" integer and can be type converted to and from whatever type
+you need.
 
-1. To use `double` as arguments to `mock()` you must "box" them
-2. A `double` return value from `mock()` needs to be "unboxed"
+Since a `double float` will not fit into the same memory space as an
+integer *Cgreen* handles that by encapsulating ("boxing") the `double`
+into an area which is represented by the pointer to it.  And that
+pointer can fit into the integer type value (`intptr_t`) that *Cgreen*
+uses to transport values into and out of `mock()`.  To get the value
+back you "unbox" it.
 
-So, what is this "boxing" and "unboxing" then?
+There are two possible uses of `double` that you need to be
+aware of
 
-Since a `double float` will not fit into the same memory space as
-an integer *Cgreen* handles that by encapsulating ("boxing") the
-`double` into an area which is represented by the pointer to it.
-And that pointer can fit into the integer type value that *Cgreen*
-uses to transport values into and out of `mock()`.
-To get the value back you "unbox" it.
+1. When a parameter to the mocked function is of `double` type and
+needs to be matched in an constraint in an `expect` call.
+
+2. When the mock function itself should return a `double` type value.
+
+In the test you should use the special `double` type constraints and
+the `will_return_double()` convenience function.  In the mock function
+you will have to take care to box and unbox as required.
 
 |=================================================================
-|*Boxing*                          | *Description*
+|*Boxing and unboxing in mock functions* | *Description*
 | `box_double(double value)`       | Wrap the value in an allocated
                                      memory area and return a pointer
                                      to it
@@ -1987,6 +1999,17 @@ Here's an example of that:
 include::tutorial_src/double_tests1.c[lines=16..26]
 -----------------------------
 
+<1> We can see that the parameter `d` to the mock function, since it is a
+`double`, it will have to be used as `box_double(d)` in the call to
+`mock()`.
+<2> The corresponding `expect()` uses a double constraint.
+<3> The mock function in this small example also returns a `double`. The
+`expect()` uses `will_return_double()` so the mock function needs to
+unbox the return value from `mock()` to be able to return the `double`
+type value.
+
+NOTE: Strange errors may occur if you box and/or unbox or combine
+`double` constraints incorrectly.
 
 [[floating_point_comparison_algorithm]]
 ==== Details of floating point comparison algorithm
@@ -1998,17 +2021,19 @@ equal if their difference normalized by the larger of the two is
 smaller than +10^(1 - significant_figures)^+. Mathematically, we check
 that +|x - y| < max(|x|, |y|) * 10^(1 - significant_figures)^+.
 
-Well documented subtleties arise when comparing floating point numbers close to
-zero using this algorithm. The article
-https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/[Comparing Floating Point Numbers, 2012 Edition]
-by Bruce Dawson has an excellent discussion of the issue. The essence of the
-problem can be appreciated if we consider the special case where +y == 0+. In
-that case, our condition reduces to +|x| < |x| * 10^(1 - significant_figures)^+.
-After cancelling +|x|+ this simplifies to +1 < 10^(1 - significant_figures)^+.
-But this is only true if +significant_figures < 1+. In words this can be
-summarized by saying that, in a relative sense, _all_ numbers are very different
-from zero. To circumvent this difficulty we recommend to use a constraint of the
-following form when comparing numbers close to zero:
+Well documented subtleties arise when comparing floating point numbers
+close to zero using this algorithm. The article
+https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/[Comparing
+Floating Point Numbers, 2012 Edition] by Bruce Dawson has an excellent
+discussion of the issue. The essence of the problem can be appreciated
+if we consider the special case where +y == 0+. In that case, our
+condition reduces to +|x| < |x| * 10^(1 - significant_figures)^+.
+After cancelling +|x|+ this simplifies to +1 < 10^(1 -
+significant_figures)^+.  But this is only true if +significant_figures
+< 1+. In words this can be summarized by saying that, in a relative
+sense, _all_ numbers are very different from zero. To circumvent this
+difficulty we recommend to use a constraint of the following form when
+comparing numbers close to zero:
 
 [source,c]
 -----------------------
