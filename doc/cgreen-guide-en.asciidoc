@@ -2335,10 +2335,10 @@ all tests and runs them one by one. The macros required by the BDD-ish
 style ensures that the corresponding `BeforeEach()` and `AfterEach()`
 are run before and after each test.
 
-NOTE: The `cgreen-runner` __will__ discover your tests in a shared
+CAUTION: The `cgreen-runner` __will__ discover your tests in a shared
 library even if you don't use the BDD-ish style. But it will not be
 able to find and run the `setup()` and/or `teardown()` attached to your
-suite(s).
+suite(s). This will probably cause your tests to fail or crash.
 
 In case you have non-BDD style tests __without__ any `setup()` and/or
 `teardown()` you can still use the runner. The default suite/context
@@ -2347,7 +2347,7 @@ you convert your tests to BDD notation? This removes the risk of
 frustrating trouble-shooting when you added `setup()`
 and `teardown()` and can't understand why they are not run...
 
-So, the runner incourages you to use the BDD notation. But since we
+So, the runner encourages you to use the BDD notation. But since we
 recommend that you do anyway, that's no extra problem if you are
 starting out from scratch. But see <<changing_style>> for some easy
 tips on how to get you there if you already have non-BDD
