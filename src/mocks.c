@@ -298,6 +298,18 @@ static CgreenVector *create_vector_of_actuals(va_list actuals, int count) {
 }
 
 
+static Constraint *create_appropriate_equal_constraint_for(const char *parameter_name,
+                                                           CgreenValue actual) {
+    Constraint *constraint;
+    if (actual.type == DOUBLE)
+        constraint = create_equal_to_double_constraint(actual.value.double_value,
+                                                       parameter_name);
+    else
+        constraint = create_equal_to_value_constraint(actual.value.integer_value,
+                                                      parameter_name);
+    return constraint;
+}
+
 static CgreenVector *create_equal_value_constraints_for(CgreenVector *parameter_names,
                                                         CgreenVector *actual_values) {
     int i;
@@ -305,8 +317,7 @@ static CgreenVector *create_equal_value_constraints_for(CgreenVector *parameter_
     for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
         const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
         CgreenValue actual = *(CgreenValue*)cgreen_vector_get(actual_values, i);
-        Constraint *constraint = create_equal_to_value_constraint(actual.value.integer_value,
-                                                                  parameter_name);
+        Constraint *constraint = create_appropriate_equal_constraint_for(parameter_name, actual);
         cgreen_vector_add(constraints, constraint);
     }
     return constraints;
@@ -554,8 +565,12 @@ void print_learned_mocks(void) {
         fprintf(stderr, "\texpect(%s", function_name);
         for (c = 0; c < cgreen_vector_size(expectation->constraints); c++) {
             Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, c);
-            fprintf(stderr, ", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name,
-                    constraint->expected_value.value.integer_value);
+            if (constraint->expected_value.type == DOUBLE)
+                fprintf(stderr, ", when(%s, is_equal_to_double(%f))", constraint->expected_value_name,
+                        constraint->expected_value.value.double_value);
+            else
+                fprintf(stderr, ", when(%s, is_equal_to(%" PRIdPTR "))", constraint->expected_value_name,
+                        constraint->expected_value.value.integer_value);
         }
         fprintf(stderr, ");\n");
     }

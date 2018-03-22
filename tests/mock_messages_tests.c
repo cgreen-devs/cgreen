@@ -8,6 +8,9 @@
 using namespace cgreen;
 #endif
 
+/* NOTE: These tests are not designed to pass, they are run to output
+   messages which need to be compared to some golden output */
+
 Describe(Mocks);
 BeforeEach(Mocks) {}
 AfterEach(Mocks) {}
@@ -97,17 +100,22 @@ Ensure(Mocks, reports_multiple_never_expect) {
 
 Ensure(Mocks, single_uncalled_expectation_fails_tally) {
     expect(string_out,
-        will_return(5),
-        when(i, is_equal_to(666)),
-        when(s, is_equal_to_string("devil"))
-    );
+           will_return(5),
+           when(i, is_equal_to(666)),
+           when(s, is_equal_to_string("devil"))
+           );
 }
 
 static double double_out(void) {
     return (double)mock();
 }
 
+static void double_in(double in) {
+    mock(box_double(in));
+}
+
 /* TODO: this will not report anything until v2 */
+/* Why? */
 xEnsure(Mocks, reports_mock_cannot_return_double) {
     expect(double_out, will_return_double(4.123));
     double_out();
@@ -125,6 +133,11 @@ Ensure(Mocks, learning_mocks_emit_pastable_code) {
     integer_out();
     string_out(3);
     integer_out();
+}
+
+Ensure(Mocks, can_learn_double_expects) {
+    cgreen_mocks_are(learning_mocks);
+    double_in(3.14);
 }
 
 /* It would be very nice if learning mocks could survive unexpected

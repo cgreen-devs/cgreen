@@ -1,4 +1,4 @@
-Running "mock_messages_tests" (12 tests)...
+Running "mock_messages_tests" (13 tests)...
 mock_messages_tests.c: Failure: Mocks -> calls_beyond_expected_sequence_fail_when_mocks_are_strict 
 	Mocked function [integer_out] was called too many times
 
@@ -30,6 +30,8 @@ mock_messages_tests.c: Failure: Mocks -> single_uncalled_expectation_fails_tally
 
   "Mocks": 4 passes, 2 skipped, 9 failures in 0ms.
 Completed "mock_messages_tests": 4 passes, 2 skipped, 9 failures in 0ms.
+Mocks -> can_learn_double_expects : Learned mocks are
+	expect(double_in, when(in, is_equal_to_double(3.140000)));
 Mocks -> learning_mocks_emit_none_when_learning_no_mocks : Learned mocks are
 	<none>
 Mocks -> learning_mocks_emit_pastable_code : Learned mocks are
