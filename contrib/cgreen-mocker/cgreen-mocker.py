@@ -18,11 +18,11 @@
 # Since it uses pycparser it will only handle C functions and you will
 # probably need the pycparsers "fake_libc_include" to avoid parsing
 # the whole world of libc headers. You can make a soft link with the
-# name 'pycparser' in your directory to a copy of the pycparser
+# name 'pycparser' in the directory you are running this from, or in
+# the directory of 'cgreen-mocker' itself, to a copy of the pycparser
 # source, and cgreen-mocker will pick it up or you can point to it
 # using a command line 'cpp_directive' arg.
 #
-# You can find pycparser at https://github.com/eliben/pycparser
 #
 # Thanks to @gardenia for the pointer to pycparser!
 #
@@ -39,6 +39,7 @@
 #-----------------------------------------------------------------
 from __future__ import print_function
 import sys
+import os
 
 # This is not required if you've installed pycparser into
 # your site-packages/ with setup.py
@@ -106,6 +107,8 @@ def show_func_defs(args):
         ast = parse_file(args[0], use_cpp=True,
                          cpp_args=[
                              r'-Ipycparser/utils/fake_libc_include',
+                             r'-I'+os.path.dirname(os.path.abspath(__file__))+'/'
+                                  +'pycparser/utils/fake_libc_include',
                              r'-D__attribute__(x)=',
                              r'-D__extension__=',
                              r'-D__restrict=',
@@ -151,6 +154,9 @@ Usage:
     'fake_libc_include' which help. Create a symbolic link named
     'pycparser' that links to the root of pycparser source and
     cgreen-mocker will find it itself.
+
+    You can find pycparser at https://github.com/eliben/pycparser
+
 """)
 
 if __name__ == "__main__":
