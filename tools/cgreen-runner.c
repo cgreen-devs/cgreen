@@ -1,6 +1,8 @@
 #include <cgreen/cgreen.h>
 #include <cgreen/xml_reporter.h>
 
+#include <cgreen/vector.h>
+
 #include "utils.h"
 
 #include <unistd.h>
@@ -9,6 +11,7 @@
 #include "gopt.h"
 
 #include "runner.h"
+#include "discoverer.h"
 
 
 /*----------------------------------------------------------------------*/
@@ -141,6 +144,13 @@ static int initialize_option_handling(int argc, const char **argv) {
 
 
 /*----------------------------------------------------------------------*/
+static bool have_xml_option(void) {
+    const char *prefix_option;
+
+    return gopt_arg(options, 'x', &prefix_option);
+}
+
+/*----------------------------------------------------------------------*/
 static bool run_tests_in_library(const char *suite_name_option, const char *test_name,
                                  const char *test_library, bool verbose, bool no_run) {
     int status;
@@ -154,6 +164,32 @@ static bool run_tests_in_library(const char *suite_name_option, const char *test
     return status != 0;
 }
 
+
+/*----------------------------------------------------------------------*/
+static void print_common_header(const char *suite_name_option, int library_count, int test_count) {
+    char in_libraries_text[100] = "";
+    sprintf(in_libraries_text, " in %d libraries", library_count);
+
+    printf("Running \"%s\" (%d test%s%s)...\n", suite_name_option,
+           test_count, test_count>1?"s":"",
+           in_libraries_text);
+}
+
+/*----------------------------------------------------------------------*/
+static void inhibit_appropriate_suite_message(int i, int library_count) {
+    /* If we are using the text_reporter && a common suite name
+       then inhibit the start suite message for all libraries and
+       for all except the last library inhibit the finish suite
+       message.  NOTE that the last library might be the second to
+       last arg since there might be a testname pattern after it.
+    */
+    reporter_options.inhibit_start_suite_message = true;
+
+    if (i < library_count-1 && library_count > 1) {
+        reporter_options.inhibit_finish_suite_message = true;
+    } else
+        reporter_options.inhibit_finish_suite_message = false;
+}
 
 
 
@@ -219,17 +255,18 @@ int main(int argc, const char **argv) {
     set_reporter_options(reporter, &reporter_options);
 
     /* Walk through all arguments and set up list of libraries and testnames */
-    const char **library;       /* Array of libraries to run tests in */
-    library = malloc(sizeof(char *)*argc);
+    const char **libraries;       /* Array of libraries to run tests in */
+    libraries = malloc(sizeof(char *)*argc);
 
     const char **testname;      /* Array of test name patterns, maybe NULL */
     testname = malloc(sizeof(char *)*argc);
 
     int library_count = 0;
 
+    /* Find libraries */
     i = 1;
     while(i < argc) {
-        library[library_count++] = argv[i++];
+        libraries[library_count++] = argv[i++];
 
         /* Check if the next argument is not a filename, thus a test name,
            remember and move past it */
@@ -242,40 +279,41 @@ int main(int argc, const char **argv) {
     reporter_options.inhibit_start_suite_message = false;
     reporter_options.inhibit_finish_suite_message = false;
 
+    int test_count = 0;
+    if (!have_xml_option() && suite_name_option != NULL) {
+
+        /* Count all tests */
+        for (i = 0; i<library_count; i++) {
+            if (!file_exists(libraries[i])) {
+                printf("Couldn't find library: %s\n", libraries[i]);
+                break;
+            }
+
+            CgreenVector *discovered_tests = discover_tests_in(libraries[i], false);
+            test_count += cgreen_vector_size(discovered_tests);
+            destroy_cgreen_vector(discovered_tests);
+        }
+        print_common_header(suite_name_option, library_count, test_count);
+    }
+
+
     for (i = 0; i<library_count; i++) {
         bool fail = false;
 
-        if (!file_exists(library[i])) {
-            printf("Couldn't find library: %s\n", library[i]);
+        if (!file_exists(libraries[i])) {
+            printf("Couldn't find library: %s\n", libraries[i]);
             break;
         }
 
-        /* If we are using the text_reporter && a common suite name
-           then for all except the first library inhibit the start
-           suite message and for all except the last library inhibit
-           the finish suite message.  NOTE that the last library might
-           be the second to last arg since there might be testname
-           pattern after it.
-         */
-        if (!gopt_arg(options, 'x', &prefix_option) &&
-            suite_name_option != NULL) {
-            if (i > 0 && library_count > 1) {
-                reporter_options.inhibit_start_suite_message = true;
-            } else
-                reporter_options.inhibit_start_suite_message = false;
+        if (!have_xml_option() && suite_name_option != NULL)
+            inhibit_appropriate_suite_message(i, library_count);
 
-            if (i < library_count-1 && library_count > 1) {
-                reporter_options.inhibit_finish_suite_message = true;
-            } else
-                reporter_options.inhibit_finish_suite_message = false;
-        }
-
-        fail = run_tests_in_library(suite_name_option, testname[i], library[i],
+        fail = run_tests_in_library(suite_name_option, testname[i], libraries[i],
                                     verbose, no_run);
         if (fail) any_fail = true;
     }
 
-    if (!gopt_arg(options, 'x', &prefix_option) && reporter_options.quiet_mode)
+    if (!have_xml_option() && reporter_options.quiet_mode)
         printf("\n");
 
     return any_fail?EXIT_FAILURE:EXIT_SUCCESS;
