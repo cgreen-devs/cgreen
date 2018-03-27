@@ -6,10 +6,15 @@
 #include <cgreen/mocks.h>
 #include <signal.h>
 #include <float.h>
+#ifdef HAVE_SYS_RESOURCE_H
+#include <sys/resource.h>
+#endif
+
 
 #ifdef __cplusplus
 using namespace cgreen;
 #endif
+
 
 Describe(ConstraintMessage);
 BeforeEach(ConstraintMessage) {}
@@ -213,6 +218,12 @@ Ensure(ConstraintMessage, for_no_mock_parameters_with_parameter_constraint) {
 }
 
 Ensure(ConstraintMessage, increments_exception_count_when_terminating_via_SIGQUIT) {
+#ifdef HAVE_SYS_RESOURCE_H
+    struct rlimit core_limit;
+    core_limit.rlim_cur = 1U;
+    core_limit.rlim_max = 1U;
+    setrlimit(RLIMIT_CORE, &core_limit);
+#endif
     raise(SIGQUIT);
 }
 

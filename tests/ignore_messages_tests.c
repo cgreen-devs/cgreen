@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#ifdef HAVE_SYS_RESOURCE_H
+#include <sys/resource.h>
+#endif
 
 #ifdef __cplusplus
 using namespace cgreen;
@@ -25,6 +28,12 @@ Ensure(IgnoreMessage, should_not_count_failing_tests_as_ignored) {
 }
 
 Ensure(IgnoreMessage, should_not_count_exceptions_as_ignored) {
+#ifdef HAVE_SYS_RESOURCE_H
+    struct rlimit core_limit;
+    core_limit.rlim_cur = 1U;
+    core_limit.rlim_max = 1U;
+    setrlimit(RLIMIT_CORE, &core_limit);
+#endif
     raise(SIGSEGV);
 }
 
