@@ -58,7 +58,7 @@ static TextReporterOptions reporter_options;
 static void cleanup(void)
 {
     if (reporter) reporter->destroy(reporter);
-    if (options) free(options);
+    if (options) gopt_free(options);
 }
 
 static char* get_a_suite_name(const char *suite_option, const char *test_library_name) {
