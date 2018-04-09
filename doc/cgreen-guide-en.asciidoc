@@ -2057,6 +2057,9 @@ All you have to do is
 There is also one extra feature when you use C++, the `assert_throws`
 function.
 
+NOTE: If you use the runner, as described in <<runner>>, and thus link
+your tests into a shared library, don't forget to link it with the
+same C++ library that was used to create the `cgreen-runner`.
 
 == Context, System Under Test & Suites
 
