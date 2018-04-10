@@ -2921,27 +2921,29 @@ Usage:
                       "-I <directory>" to ensure cpp finds files.
 -----------------
 
-So give a header file containg lines like
+So given a header file containing lines like
 
 [source,c]
 ----------------------------
-extern CgreenValue make_cgreen_integer_value(intptr_t integer);
-extern CgreenValue make_cgreen_string_value(const char *string);
+extern Value make_integer_value(int integer);
+extern Value make_string_value(const char *string);
 ----------------------------
 
-`cgreen-mocker` will, give that there are no errors, print something
+`cgreen-mocker` will, given that there are no errors, print something
 like this on the screen:
 
 [source,c]
 ----------------------------
-CgreenValue make_cgreen_integer_value(intptr_t integer) {
+Value make_integer_value(int integer) {
   return mock(integer);
 }
 
-CgreenValue make_cgreen_string_value(const char *string) {
+Value make_string_value(const char *string) {
   return mock(string);
 }
 ----------------------------
+
+Of course, you would pipe this output to a file.
 
 To use `cgreen-mocker` you need Python and `pycparser`. The latter
 can be found at [https://github.com/eliben/pycparser] or can easily
