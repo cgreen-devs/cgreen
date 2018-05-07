@@ -1,7 +1,7 @@
 :source-highlighter: highlightjs
 :icons: font
 :numbered:
-:toc:
+:toc: left
 :pp: ++
 
 ifdef::env-github[]
