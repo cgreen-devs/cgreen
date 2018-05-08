@@ -25,13 +25,13 @@ static void xml_show_fail(TestReporter *reporter, const char *file, int line, co
     printf("</fail>\n");
 }
 
-static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message, uint32_t duration_in_milliseconds) {
-    reporter_finish_test(reporter, filename, line, message, duration_in_milliseconds);
+static void xml_reporter_finish_test(TestReporter *reporter, const char *filename, int line, const char *message) {
+    reporter_finish_test(reporter, filename, line, message);
     printf("</test>\n");
 }
 
-static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line, uint32_t duration_in_milliseconds) {
-    reporter_finish_suite(reporter, filename, line, duration_in_milliseconds);
+static void xml_reporter_finish_suite(TestReporter *reporter, const char *filename, int line) {
+    reporter_finish_suite(reporter, filename, line);
     printf("</suite>\n");
 }
 

@@ -5,4 +5,5 @@ crash_tests.c:8: Exception: seg_faults_for_null_dereference
 crash_tests.c:13: Exception: will_loop_forever 
 	Test terminated unexpectedly, likely from a non-standard exception or Posix signal
 
+  "main": 2 exceptions in 42ms.
 Completed "main": 2 exceptions in 42ms.

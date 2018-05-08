@@ -1,8 +1,8 @@
 Running "main" (2 tests)...
 words_tests.c:21: Failure: words_tests -> converts_spaces_to_zeroes 
 	Expected [comparison] to [equal] [0]
-		actual value:			[-32]
+		actual value:			[-8192]
 		expected value:			[0]
 
-Completed "words_tests": 1 pass, 1 failure in 42ms.
+  "words_tests": 1 pass, 1 failure in 42ms.
 Completed "main": 1 pass, 1 failure in 42ms.

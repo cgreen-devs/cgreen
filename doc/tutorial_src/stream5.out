@@ -11,5 +11,5 @@ stream_tests.c:45: Failure: ParagraphReader -> gives_empty_line_for_single_line_
 "]
 		expected to equal:		[""]
 
-Completed "ParagraphReader": 3 passes, 2 failures in 42ms.
+  "ParagraphReader": 3 passes, 2 failures in 42ms.
 Completed "stream": 3 passes, 2 failures in 42ms.

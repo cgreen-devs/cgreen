@@ -22,8 +22,8 @@ FPIC=
 MYSQL_INCLUDE = /usr/include/mysql
 MYSQL_LIB = /usr/lib
 else
-MYSQLROOT =
-MYSQL_INCLUDE = $(MYSQLROOT)/include
+MYSQLROOT = /usr
+MYSQL_INCLUDE = $(MYSQLROOT)/include/mysql
 MYSQL_LIB = $(MYSQLROOT)/lib
 endif
 endif
@@ -76,7 +76,7 @@ with_main:  first0 first1 \
 	for f in $^ ; do echo $$f; $(LDPATH) ./$$f | $(SED) > $$f.out; done
 
 # Most tests built to run with the runner we can run here, but some need special care
-# They have their output produced directly in their build rules below and are run usint
+# They have their output produced directly in their build rules below and are run using
 # the 'special' rule
 with_runner: stream0 stream1 stream2 stream3 stream4 stream6 \
 			 multiple_streams1 multiple_streams2 \

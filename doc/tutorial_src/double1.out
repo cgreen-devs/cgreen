@@ -1,7 +1,8 @@
 Running "main" (2 tests)...
 double_tests.c:13: Failure: can_assert_double_values 
 	Expected [3.14] to [equal double] [5.0] within [3] significant figures
-		actual value:	3.140000
-		expected value:	5.000000
+		actual value:			[3.140000]
+		expected value:			[5.000000]
 
+  "main": 3 passes, 1 failure in 42ms.
 Completed "main": 3 passes, 1 failure in 42ms.

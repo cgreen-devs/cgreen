@@ -5,5 +5,5 @@ multiple_streams.c:19: Failure: Streams -> good_test
 multiple_streams.c:20: Failure: Streams -> good_test 
 	Expected call was not made to mocked function [second_stream_stub]
 
-Completed "Streams": 2 failures in 42ms.
+  "Streams": 2 failures in 42ms.
 Completed "multiple_streams": 2 failures in 42ms.
