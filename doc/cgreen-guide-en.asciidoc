@@ -3148,4 +3148,5 @@ build system
 - Thomas Nilefalk <thomas@junovagen.se> - cgreen-runner and current
 maintainer
 
-Thanks also go to @gardenia, @d-meiser, @stevemadsenblippar and others.
+Thanks also go to @gardenia, @d-meiser, @stevemadsenblippar and others
+for their contributions.
