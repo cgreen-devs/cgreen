@@ -39,9 +39,9 @@ are some of Cgreens unique selling points:
 ## Getting It
 
 Cgreen is hosted on GitHub. As of now there are no pre-built packages
-to download, so you have to download the source zip from
-[GitHub](http://www.github.com/cgreen-devs/cgreen) and build it
-yourself.
+to download, so you have to clone the repository or download the
+source zip from [GitHub](http://www.github.com/cgreen-devs/cgreen) and
+build it yourself.
 
 There are some packaging scripts floating around, some of which have unclear status:
 

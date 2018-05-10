@@ -13,7 +13,6 @@ ifdef::env-github[]
 endif::[]
 
 = Cgreen : Unit Tests, Stubbing and Mocking for C and C++
-Marcus Baker <marcus@lastcraft.com>; Thomas Nilefalk <thomas@junovagen.se>; João Freitas <joaohf@gmail.com>;
 v{VERSION}
 
 
@@ -3118,7 +3117,7 @@ output consistency. You can't have both...
 [appendix]
 == License
 
-Copyright (c) 2006-2016, Cgreen Development Team and contributors +
+Copyright (c) 2006-2018, Cgreen Development Team and contributors +
 (https://github.com/cgreen-devs/cgreen/graphs/contributors)
 
 Permission to use, copy, modify, and/or distribute this software and
@@ -3134,3 +3133,19 @@ ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+[appendix]
+== Acknowledgements
+
+Thanks to
+
+- Marcus Baker <marcus@lastcraft.com> - initiator and substantial
+inital work
+- Matt Hargett <plaztiksyke@gmail.com> - upgrading to the modern
+BDD-ish syntax
+- João Freitas <joaohf@gmail.com> - asciidoc documentation and Cmake
+build system
+- Thomas Nilefalk <thomas@junovagen.se> - cgreen-runner and current
+maintainer
+
+Thanks also go to @gardenia, @d-meiser, @stevemadsenblippar and others.
