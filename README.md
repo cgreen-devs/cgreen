@@ -21,6 +21,7 @@ And you want output like this
 
 Then *Cgreen* is the thing for you!
 
+**TLDR;** The full tutorial is on [github.io](https://cgreen-devs.github.io)..
 
 ## What It Is
 
