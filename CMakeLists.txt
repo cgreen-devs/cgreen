@@ -124,7 +124,7 @@ configure_file( ${PROJECT_CONFIG_IN}
 configure_file( ${VERSION_CONFIG_IN}
         "${VERSION_CONFIG}" @ONLY )
 
-install( FILES
+install(FILES
         "${PROJECT_CONFIG}" "${VERSION_CONFIG}"
         DESTINATION
         "${CONFIG_INSTALL_DIR}" )

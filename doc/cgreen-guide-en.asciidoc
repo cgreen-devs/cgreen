@@ -1026,9 +1026,8 @@ crashing test...
 include::tutorial_src/crash_tests2.c[lines=13..17]
 -----------------------------
 
-When run in this way, *Cgreen* will not `fork()`. But see also <<no-fork>>.
-
-TIP: The function `run()` is a good place to place a breakpoint.
+When run in this way, *Cgreen* will not `fork()`. But see the section
+on <<debugging>>.
 
 The following is a typical session:
 
@@ -1105,14 +1104,16 @@ timeout to every test run. This will apply to all tests in the same
 run.
 
 
-[[no-fork]]
-=== No fork, please
+[[debugging]]
+=== Debugging *Cgreen* tests
 
 *Cgreen* protects itself from being torn down by an exception in a
 test by `fork()`-ing each test into a separate process. A catastrophic
 error will then only affect the child process for that specific test
 and *Cgreen* can catch it, rather than crashing too. It can then
 report the exception and continue with the next test.
+
+==== No fork, please
 
 If you want to debug any of your tests the constant `fork()`-ing
 might make that difficult or impossible. There are also other
@@ -1137,7 +1138,38 @@ WARNING: This might bring your whole test suite down if a single test
 causes an exception. So it is not a recommended setting for normal
 use.
 
+==== Debugging with `cgreen-runner`
 
+If you use the convenient auto-discovery feature of *Cgreen* (see
+<<auto-discovery>>) by running dynamic loadable libraries through
+`cgreen-runner`, it might be tricky to figure out to where to put
+breaks and to get them to "take".
+
+`cgreen-runner` obviously loads the library (or libraries) with your
+tests dynamically so the tests are not available before executing the
+code that loads them.
+
+TIP: The function `run()` is a good place to place a breakpoint.
+
+==== `cgreen-debug`
+
+For some platforms a utility script, `cgreen-debug`, is installed when
+you install *Cgreen*. It makes it very convenient to start a debugging
+session for a particular test.
+
+Find out the logical name of the test, which is composed of the
+Context and the Testname, in the form <context>:<testname>. Then just
+invoke `cgreen-debug`
+
+----
+$ cgreen-debug <library> <context>:<testname>
+----
+
+The script will try to find a debugger, invoke it on the
+`cgreen-runner` and break on that test.
+
+NOTE: Currently it only supports `gdb` and will prefer `cgdb` if
+that's available.
 
 === Building Composite Test Suites
 
@@ -2162,7 +2194,7 @@ the same source file.
 
 
 
-[[runner]]
+[[auto-discovery]]
 == Automatic Test Discovery
 
 
@@ -2429,7 +2461,7 @@ file at a time, by just following the recipe above. Everything will
 still work as before but your tests and code will likely improve.
 
 And once you have changed style you can fully benefit from the
-automatic discovery of tests as described in <<runner>>.
+automatic discovery of tests as described in <<auto-discovery>>.
 
 
 
@@ -2471,9 +2503,13 @@ when your code runs the test suite.
  | `create_cdash_reporter(CDashInfo *info)` | `info` is a structure defined in `cdash_reporter.h`
 |====================================================================================
 
-If you write a runner function like in most examples above, you can just substitute which runner to create. If you use the `cgreen-runner` (<<runner>>) to dynamically find all your tests you can force it to use the XML-reporter with the `-x <prefix>` option.
+If you write a runner function like in most examples above, you can
+just substitute which runner to create. If you use the `cgreen-runner`
+(<<auto-discovery>>) to dynamically find all your tests you can force
+it to use the XML-reporter with the `-x <prefix>` option.
 
-NOTE: Currently `cgreen-runner` does only support the XML built-in reporter.
+NOTE: Currently `cgreen-runner` only supports the test and XML
+built-in reporters.
 
 
 === Rolling Our Own
@@ -2751,10 +2787,11 @@ above output...
 include::tutorial_src/test_as_xml0.c[]
 -----------------------
 
-We can't use the auto-discovering `cgreen-runner` here since we need
-to ensure that the nested suites are reported as a nested xml
-structure. And we're not actually writing real tests, just something
-that we can use to drive our new reporter.
+We can't use the auto-discovering `cgreen-runner` (see
+<<auto-discovery>>) here since we need to ensure that the nested
+suites are reported as a nested xml structure. And we're not actually
+writing real tests, just something that we can use to drive our new
+reporter.
 
 The text reporter is used just to confirm that everything is
 working. So far it is.

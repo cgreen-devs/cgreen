@@ -1,5 +1,14 @@
 #!/bin/bash
 #
+# cgreen-debug is a script to helt debugging Cgreen tests.
+#
+# Run your tests with the cgreen-runner as usual. Find the name of the
+# test you want to debug. Convert the breadcrum form (Context -> Test)
+# to commandline form (Context:Test) and run cgreen-debug like this:
+#
+#     cgreen-debug <library> <test>
+#
+#
 # This is a positional arguments-only example of Argbash potential
 #
 # ARG_HELP([Start cgreen-runner under GDB and break at a specific test])
@@ -94,6 +103,12 @@ assign_positional_args
 # [ <-- needed because of Argbash
 
 bp=${2//:/__}
-echo break $bp > .cgreen-gdb-commands
-echo run $1 $2 >> .cgreen-gdb-commands
-cgdb -ex "set breakpoint pending on" cgreen-runner --command=.cgreen-gdb-commands
+echo break $bp > .cgreen-debug-commands
+echo run $1 $2 >> .cgreen-debug-commands
+if command -v cgdb ; then
+    debugger=cgdb
+else
+    debugger=gdb
+fi
+$debugger -ex "set breakpoint pending on" cgreen-runner --command=.cgreen-debug-commands
+rm .cgreen-debug-commands
