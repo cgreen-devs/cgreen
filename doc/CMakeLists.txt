@@ -1,6 +1,6 @@
 FIND_PACKAGE(Asciidoctor)
 
-SET(ASCIIDOC_CONFFILE "${PROJECT_SOURCE_DIR}/docs/cgreen_asciidoc.conf")
+SET(ASCIIDOC_CONFFILE "${PROJECT_SOURCE_DIR}/doc/cgreen_asciidoc.conf")
 
 OPTION(CGREEN_WITH_HTML_DOCS "with HTML output" FALSE)
 OPTION(CGREEN_WITH_PDF_DOCS "with PDF output" FALSE)
@@ -23,7 +23,6 @@ IF(CGREEN_WITH_HTML_DOCS OR CGREEN_WITH_PDF_DOCS)
       ADD_CUSTOM_COMMAND(
         OUTPUT "${_out}-html"
         COMMAND ${ASCIIDOCTOR_EXECUTABLE}
-        -a toc
         -a VERSION=${APPLICATION_VERSION}
         -o ${_out} ${_file}
         DEPENDS ${_file}
