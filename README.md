@@ -5,8 +5,8 @@
 Cgreen - The Modern Unit Test and Mocking Framework for C and C++
 =================================================================
 
-Do you TDD? In C? Maybe you want to have your tests read out in a
-fluent fashion? Like this
+Do you TDD? In C or C++? Maybe you want to have your tests read out in
+a fluent fashion? Like this
 
     Ensure(Converter, converts_XIV_to_14) {
         assert_that(convert_roman_to_decimal("XIV"), is_equal_to(14));
@@ -21,7 +21,7 @@ And you want output like this
 
 Then *Cgreen* is the thing for you!
 
-**TLDR;** The full tutorial is on [github.io](https://cgreen-devs.github.io)..
+**TLDR;** The full tutorial is on [github.io](https://cgreen-devs.github.io).
 
 ## What It Is
 
@@ -77,16 +77,10 @@ Generate it using Asciidoctor, which can be done using the CMake
 configuration. Of course you need
 [Asciidoctor](http://www.asciidoctor.org).
 
-Navigate to the ``build`` directory. You need to add the
-``CGREEN_WITH_HTML_DOCS`` and/or ``CGREEN_WITH_PDF_DOCS`` option:
+    make docs
+    make pdf
 
-    cmake -DCGREEN_WITH_HTML_DOCS:bool=ON ..
-
-Run ``make``. For example
-
-    cd build
-    cmake -DCGREEN_WITH_HTML_DOCS:bool=ON -DCGREEN_WITH_PDF_DOCS:bool=ON ..
-    make
+(Generating PDF also requires [asciidoctor-pdf](https://asciidoctor.org/docs/asciidoctor-pdf/).)
 
 ## License
 

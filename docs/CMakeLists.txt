@@ -1,6 +1,6 @@
 FIND_PACKAGE(Asciidoctor)
 
-SET(ASCIIDOC_CONFFILE "${PROJECT_SOURCE_DIR}/doc/cgreen_asciidoc.conf")
+SET(ASCIIDOC_CONFFILE "${PROJECT_SOURCE_DIR}/docs/cgreen_asciidoc.conf")
 
 OPTION(CGREEN_WITH_HTML_DOCS "with HTML output" FALSE)
 OPTION(CGREEN_WITH_PDF_DOCS "with PDF output" FALSE)
