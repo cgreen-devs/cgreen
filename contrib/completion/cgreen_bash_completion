@@ -1,0 +1,30 @@
+#/usr/bin/env bash
+#
+# Contributed by Yavor Lulchev @RookieWookiee
+
+_cgreen_runner_completion()
+{
+    local suggestions=("--colour" "--xml" "--suite" "--verbose" "--no-run" "--help" " --version")
+    suggestions+=" $(ls | grep -e '\b\.so\b')"
+
+    for word in ${COMP_WORDS[@]}; do
+        if echo $word | grep -q -E "\b\.so\b"; then
+            if test ! -f  $word || test ! -x $word; then continue; fi
+
+            local SUT="$(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | awk -F '__' '{ print $2 }' | uniq)"
+            local test_names=($(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | sed -e 's/CgreenSpec__[a-zA-Z0-9]\+\?__//' -e 's/__$//'))
+
+            if test $SUT = "default" ; then
+                suggestions+=" $test_names"
+            else
+                local prefix="$SUT\\:"
+                suggestions+=" ${test_names[@]/#/$prefix}"
+                echo ${suggestions[@]} > log
+            fi
+        fi
+    done
+
+    COMPREPLY=($(compgen -W "$(printf "%s " ${suggestions[@]})" -- "${COMP_WORDS[$COMP_CWORD]}"))
+}
+
+complete -o dirnames -F _cgreen_runner_completion cgreen-runner
