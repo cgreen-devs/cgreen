@@ -250,7 +250,9 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
 
 static void show_fail(TestReporter *reporter, const char *file, int line,
                       const char *message, va_list arguments) {
-    char buffer[1000];
+    va_list temp;
+    va_copy(temp, arguments);
+    char buffer[message ? 1 + vsnprintf(NULL, 0, message, temp) : 1000];
     TextMemo *memo = (TextMemo *)reporter->memo;
     if (have_quiet_mode(reporter)) memo->printer("\n");
     memo->printer("%s:%d: ", file, line);
@@ -260,9 +262,9 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
     memo->printer("\n\t");
     // Simplify *printf statements for more robust cross-platform logging
     if (message == NULL) {
-        vsprintf(buffer, "<FATAL: NULL for failure message>", arguments);
+        vsnprintf(buffer, sizeof(buffer), "<FATAL: NULL for failure message>", arguments);
     } else {
-        vsprintf(buffer, message, arguments);
+        vsnprintf(buffer, sizeof(buffer), message, arguments);
     }
     memo->printer("%s", buffer);
     memo->printer("\n");
@@ -272,7 +274,9 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
 
 static void show_incomplete(TestReporter *reporter, const char *file, int line,
                             const char *message, va_list arguments) {
-    char buffer[1000];
+    va_list temp;
+    va_copy(temp, arguments);
+    char buffer[message ? 1 + vsnprintf(NULL, 0, message, temp) : 1000];
     TextMemo *memo = (TextMemo *)reporter->memo;
 
     memo->printer("%s:%d: ", file, line);
@@ -283,7 +287,7 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line,
                     memo);
 
     memo->printer("\n\t");
-    vsprintf(buffer, message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
+    vsnprintf(buffer, sizeof(buffer), message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
     memo->printer(buffer);
     memo->printer("\n");
     memo->printer("\n");
