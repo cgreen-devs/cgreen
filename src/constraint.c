@@ -84,6 +84,8 @@ static void set_contents(Constraint *constraint, const char *function, CgreenVal
 static const char *default_actual_value_message = "\n\t\tactual value:\t\t\t[%" PRIdPTR "]";
 static const char *default_expected_value_message = "\t\texpected value:\t\t\t[%" PRIdPTR "]";
 
+static void execute_sideeffect(Constraint *constraint, const char *function, CgreenValue actual,
+                         const char *test_file, int test_line, TestReporter *reporter);
 
 Constraint *create_constraint() {
     Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));
@@ -429,6 +431,18 @@ Constraint *create_set_parameter_value_constraint(const char *parameter_name, in
     return constraint;
 }
 
+Constraint *create_with_sideeffect_constraint(void (*callback)(void *), void *data) {
+    Constraint* constraint = create_constraint();
+    constraint->type = CALL;
+
+    constraint->name = "cause side effect";
+    constraint->sideeffect_callback = callback;
+    constraint->sideeffect_data = data;
+	constraint->execute = &execute_sideeffect;
+	
+	return constraint;
+}
+
 bool compare_want_value(Constraint *constraint, CgreenValue actual) {
     return constraint->expected_value.value.integer_value == actual.value.integer_value;
 }
@@ -489,6 +503,22 @@ static void set_contents(Constraint *constraint, const char *function, CgreenVal
     memmove((void *)actual.value.integer_value, constraint->expected_value.value.pointer_value, constraint->size_of_expected_value);
 }
 
+static void execute_sideeffect(Constraint *constraint, const char *function, CgreenValue actual,
+                               const char *test_file, int test_line, TestReporter *reporter) {
+	(void)function;
+	(void)actual;
+	
+	if (constraint->sideeffect_callback == NULL) {
+		
+		(*reporter->assert_true)(
+			reporter,
+			test_file,
+			test_line,
+			false,
+			"no side effect function was set");
+	}
+	(constraint->sideeffect_callback)(constraint->sideeffect_data);
+}
 
 
 void test_want(Constraint *constraint, const char *function, CgreenValue actual,

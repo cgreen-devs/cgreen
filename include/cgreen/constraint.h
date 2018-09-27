@@ -33,6 +33,10 @@ struct Constraint_ {
     CgreenValue expected_value;
     const char *expected_value_name;
 
+    /* Side Effect parameters */ 
+    void (*sideeffect_callback)(void *);
+    void *sideeffect_data;
+
     /* for PARAMETER constraints */
     const char *parameter_name;
     size_t size_of_expected_value;
@@ -75,6 +79,7 @@ Constraint *create_greater_than_double_constraint(double expected_value, const c
 Constraint *create_return_value_constraint(intptr_t value_to_return);
 Constraint *create_return_double_value_constraint(double value_to_return);
 Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set, size_t size_to_set);
+Constraint *create_with_sideeffect_constraint(void (*callback)(void *), void *data);
 
 #ifdef __cplusplus
     }

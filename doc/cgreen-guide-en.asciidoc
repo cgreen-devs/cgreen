@@ -1589,6 +1589,18 @@ other way, from code to stub. This gets us into the same territory as
 mock objects.
 
 
+=== Executing function as a side effect
+
+There are time where we want to execute a function whenever a mock is
+invoked. One example of these cases is we want to call another diagnose
+function.
+
+[source, c]
+-----------------------
+include::tutorial_src/stream_test.c[lines=96..112]
+-----------------------
+
+
 === Setting Expectations on Mock Functions
 
 To swap the traffic flow, we'll look at an outgoing example instead.
@@ -1713,6 +1725,7 @@ Then there are two ways to return results:
 |`will_return(value)`                                         |Return the value from the mock function (which needs to be declared returning that type
 |`will_return_double(value)`                                  |Ditto for double values (required because of C's type coercion rules which would otherwise convert a double into an int)
 |`will_set_contents_of_parameter(parameter_name, value, size)`|Writes the value in the referenced parameter
+|`with_sideeffect(pointer_to_function, pointer_to_data)`      |Executes the side effect function and passes data to it
 |===========================================================================================
 
 You can combine these in various ways:
@@ -1725,6 +1738,7 @@ You can combine these in various ways:
   expect(mocked_file_reader,
         when(file, is_equal_to_contents_of(&FD, sizeof(FD))),
         when(input, is_equal_to_string("Hello world!"),
+        with_sideeffect(&update_counter, &counter),
         will_set_contents_of_parameter(status, FD_CLOSED, sizeof(bool))));
 -----------------------
 
