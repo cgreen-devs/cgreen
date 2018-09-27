@@ -380,6 +380,26 @@ Ensure(Mocks, constraint_number_of_calls_order_of_expectations_matter) {
     simple_mocked_function(1, 2);
 }
 
+static int sideeffect_changed = 1;
+static int mock_with_sideeffect(void) {
+    return (int)mock();
+}
+static void the_sideeffect(void * data) {
+	assert_that(*(int*)data, is_equal_to(99));
+    sideeffect_changed = 2;
+}
+
+Ensure(Mocks, mock_expect_with_sideeffect) {
+	int data_passed_to_sideeffect = 99;
+    expect(mock_with_sideeffect,
+           with_sideeffect(&the_sideeffect, &data_passed_to_sideeffect),
+           will_return(22));
+
+    assert_that(mock_with_sideeffect(), is_equal_to(22));
+
+    assert_that(sideeffect_changed, is_equal_to(2));
+}
+
 
 TestSuite *mock_tests(void) {
     TestSuite *suite = create_test_suite();
@@ -413,6 +433,7 @@ TestSuite *mock_tests(void) {
     add_test_with_context(suite, Mocks, constraint_number_of_calls_when_is_present);
     add_test_with_context(suite, Mocks, constraint_number_of_calls_when_multiple_expectations_are_present);
     add_test_with_context(suite, Mocks, constraint_number_of_calls_order_of_expectations_matter);
+    add_test_with_context(suite, Mocks, mock_expect_with_sideeffect);
 
     return suite;
 }
