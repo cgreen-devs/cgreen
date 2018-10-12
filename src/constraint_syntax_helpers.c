@@ -17,8 +17,8 @@ Constraint static_is_non_null_constraint = {
     /* .expected_value_message */ "",
     /* .expected_value */ {INTEGER, {0}},
     /* .stored_value_name */ "null",
-    /* .sideeffect_callback */ NULL,
-    /* .sideeffect_data */ NULL,
+    /* .side_effect_callback */ NULL,
+    /* .side_effect_data */ NULL,
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
 };
@@ -34,8 +34,8 @@ Constraint static_is_null_constraint = {
     /* .expected_value_message */ "",
     /* .expected_value */ {INTEGER, {(intptr_t)NULL}},
     /* .stored_value_name */ "null",
-    /* .sideeffect_callback */ NULL,
-    /* .sideeffect_data */ NULL,
+    /* .side_effect_callback */ NULL,
+    /* .side_effect_data */ NULL,
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
 };
@@ -51,8 +51,8 @@ Constraint static_is_false_constraint = {
     /* .expected_value_message */ "",
     /* .expected_value */ {INTEGER, {false}},
     /* .stored_value_name */ "false",
-    /* .sideeffect_callback */ NULL,
-    /* .sideeffect_data */ NULL,
+    /* .side_effect_callback */ NULL,
+    /* .side_effect_data */ NULL,
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
 };
@@ -68,8 +68,8 @@ Constraint static_is_true_constraint = {
     /* .expected_message */ "",
     /* .expected_value */ {INTEGER, {true}},
     /* .stored_value_name */ "true",
-    /* .sideeffect_callback */ NULL,
-    /* .sideeffect_data */ NULL,
+    /* .side_effect_callback */ NULL,
+    /* .side_effect_data */ NULL,
     /* .parameter_name */ NULL,
     /* .size_of_stored_value */ 0
 };

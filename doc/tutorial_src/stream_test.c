@@ -103,7 +103,7 @@ Ensure(using_side_effect) {
     expect(reader, will_return('\n'));
     always_expect(reader,
                   will_return(EOF),
-                  with_sideeffect(&update_counter,
+                  with_side_effect(&update_counter,
                                   &number_of_times_reader_was_called));
     expect_never(writer);
     by_paragraph(&reader, NULL, &writer, NULL);

@@ -41,7 +41,7 @@
 #define is_greater_than_double(value) create_greater_than_double_constraint(value, #value)
 
 
-#define with_sideeffect(callback, data) create_with_sideeffect_constraint(callback, data)
+#define with_side_effect(callback, data) create_with_side_effect_constraint(callback, data)
 #define will_return(value) create_return_value_constraint((intptr_t)value)
 #define will_return_double(value) create_return_double_value_constraint(value)
 #define will_set_contents_of_parameter(parameter_name, value, size) create_set_parameter_value_constraint(#parameter_name, (intptr_t)value, (size_t)size)
