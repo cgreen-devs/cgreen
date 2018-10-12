@@ -431,13 +431,13 @@ Constraint *create_set_parameter_value_constraint(const char *parameter_name, in
     return constraint;
 }
 
-Constraint *create_with_sideeffect_constraint(void (*callback)(void *), void *data) {
+Constraint *create_with_side_effect_constraint(void (*callback)(void *), void *data) {
     Constraint* constraint = create_constraint();
     constraint->type = CALL;
 
     constraint->name = "cause side effect";
-    constraint->sideeffect_callback = callback;
-    constraint->sideeffect_data = data;
+    constraint->side_effect_callback = callback;
+    constraint->side_effect_data = data;
 	constraint->execute = &execute_sideeffect;
 	
 	return constraint;
@@ -508,7 +508,7 @@ static void execute_sideeffect(Constraint *constraint, const char *function, Cgr
 	(void)function;
 	(void)actual;
 	
-	if (constraint->sideeffect_callback == NULL) {
+	if (constraint->side_effect_callback == NULL) {
 		
 		(*reporter->assert_true)(
 			reporter,
@@ -517,7 +517,7 @@ static void execute_sideeffect(Constraint *constraint, const char *function, Cgr
 			false,
 			"no side effect function was set");
 	}
-	(constraint->sideeffect_callback)(constraint->sideeffect_data);
+	(constraint->side_effect_callback)(constraint->side_effect_data);
 }
 
 

@@ -79,12 +79,10 @@ static void report_mock_parameter_name_not_found(TestReporter *test_reporter,
                                                  const char *parameter);
 static void destroy_expectation_if_time_to_die(RecordedExpectation *expectation);
 
-static bool
-is_sideeffect_constraint(const Constraint *constraint);
-static void
-apply_sideeffect(TestReporter *test_reporter,
-                 const RecordedExpectation *expectation,
-                 Constraint *constraint);
+static bool is_side_effect_constraint(const Constraint *constraint);
+static void apply_side_effect(TestReporter *test_reporter,
+                              const RecordedExpectation *expectation,
+                              Constraint *constraint);
 
 void cgreen_mocks_are(CgreenMockMode mock_mode) {
     cgreen_mocks_are_ = mock_mode;
@@ -227,8 +225,8 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
-        if (is_sideeffect_constraint(constraint)) {
-            apply_sideeffect(test_reporter, expectation, constraint);
+        if (is_side_effect_constraint(constraint)) {
+            apply_side_effect(test_reporter, expectation, constraint);
             continue;
         }
 
@@ -314,13 +312,11 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
         return stored_result.value.integer_value;
 }
 
-static
-void
-apply_sideeffect(TestReporter *test_reporter,
-                 const RecordedExpectation *expectation,
-                 Constraint *constraint)
+static void apply_side_effect(TestReporter *test_reporter,
+                  const RecordedExpectation *expectation,
+                  Constraint *constraint)
 {
-    CgreenValue actual;
+    CgreenValue actual = {};
     constraint->execute(
                     constraint,
                     expectation->function,
@@ -331,7 +327,7 @@ apply_sideeffect(TestReporter *test_reporter,
 }
 static
 bool
-is_sideeffect_constraint(const Constraint *constraint) { return constraint->type == CALL; }
+is_side_effect_constraint(const Constraint *constraint) { return constraint->type == CALL; }
 
 static CgreenVector *create_vector_of_actuals(va_list actuals, int count) {
     int i;
