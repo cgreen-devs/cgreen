@@ -1,6 +1,6 @@
 #include <cgreen/assertions.h>
 #include <cgreen/boxed_double.h>
-#include <cgreen/constraint_syntax_helpers.h>
+#include <cgreen/constraints.h>
 #include <cgreen/message_formatting.h>
 #include <cgreen/reporter.h>
 #include <cgreen/string_comparison.h>

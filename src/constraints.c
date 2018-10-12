@@ -1,4 +1,4 @@
-#include <cgreen/constraint_syntax_helpers.h>
+#include <cgreen/constraints.h>
 #include <cgreen/constraint.h>
 #include "constraint_internal.h"
 #include <cgreen/message_formatting.h>

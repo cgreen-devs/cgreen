@@ -6,7 +6,7 @@ set(cgreen_HDRS
   cgreen.h
   cgreen_value.h
   constraint.h
-  constraint_syntax_helpers.h
+  constraints.h
   cpp_assertions.h
   cpp_constraint.h
   cute_reporter.h
