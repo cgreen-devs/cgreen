@@ -1,6 +1,7 @@
 #include <cgreen/cgreen.h>
 #include <cgreen/message_formatting.h>
 #include <stdlib.h>
+#include "src/constraint_internal.h"
 
 #ifdef __cplusplus
 using namespace cgreen;
@@ -22,6 +23,7 @@ Ensure(MessageFormatting, can_show_failure_message_containing_percent_sign) {
 
     constraint->destroy(constraint);
     free(failure_message);
+    destroy_constraint(constraint);
 }
 
 Ensure(MessageFormatting, shows_offset_as_zero_based) {
@@ -42,6 +44,7 @@ Ensure(MessageFormatting, shows_offset_as_zero_based) {
 
     constraint->destroy(constraint);
     free(failure_message);
+    destroy_constraint(constraint);
 }
 
 TestSuite *message_formatting_tests(void) {
