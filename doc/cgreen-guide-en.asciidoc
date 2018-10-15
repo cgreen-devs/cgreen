@@ -696,6 +696,35 @@ arguments to the constraint macros. This is caused by the macros using
 argument  strings to produce nice failure messages.
 
 
+=== The Custom Constraints
+
+Cgreen allow the developer to create custom constraints. A simple example
+is the creation of a constraint that will ensure that the number to
+be checked is bigger than 5 using a static constraint that does not
+receive any parameter
+
+
+[source,c]
+-----------------------------
+include::tutorial_src/constraints.c[lines=3..26]
+-----------------------------
+
+Creating a constraint that receives an input parameter
+
+[source,c]
+-----------------------------
+include::tutorial_src/constraints1.c[lines=3..26]
+-----------------------------
+
+A constraint that given a piece and a box, checks if the piece
+can fit inside the box
+
+[source,c]
+-----------------------------
+include::tutorial_src/constraints2.c[lines=3..52]
+-----------------------------
+
+
 === Asserting C++ Exceptions
 
 When you use *CGreen* with C++ there is one extra assertion available:
