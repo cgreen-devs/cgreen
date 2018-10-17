@@ -49,14 +49,47 @@ from pycparser.plyparser import ParseError
 # A visitor for FuncDef nodes that prints the
 # Cgreen mock equivalent of the function
 class FuncDefVisitor(c_ast.NodeVisitor):
+    def __init__(self):
+        self._types = {}
+
     def visit_FuncDecl(self, node):
         generator = c_generator.CGenerator()
         print(generator.visit(node), end="")
         print(" { ")
-        should_return(node)
+        self.should_return(node)
         print("mock(%s);" % ", ".join(arg_list(node.args)))
         print("}")
         print()
+
+    def visit_Typedef(self, node):
+        self._types[node.name] = {
+            'is_pointer': isinstance(node.type, c_ast.PtrDecl),
+        }
+        if self._types[node.name]['is_pointer']:
+            self._types[node.name]['to_class'] = node.type.type.type.names
+        else:
+            self._types[node.name]['to_class'] = None
+
+    def should_return(self, node):
+        generator = c_generator.CGenerator()
+        if is_double_decl(node):
+            print("  return unbox_double(", end="")
+        elif not is_void_decl(node):
+            print("  return %s(" % ("*" if self.is_return_by_value(node) else ""), end="")
+            print(generator.visit(node.type), end="")
+            if isinstance(node.type, c_ast.PtrDecl) or self.is_return_by_value(node):
+                print(" *", end="")
+            print(") ", end="")
+        else:
+            print("  ", end="")
+
+    def is_return_by_value(self, node):
+        type = node.type
+        return not isinstance(type, c_ast.PtrDecl) and not self._types[type.type.names[0]]['is_pointer']
+
+    def is_return_by_value_pointer(self, node):
+        type = node.type
+        return not isinstance(type, c_ast.PtrDecl) and self._types[type.type.names[0]]['is_pointer']
 
 def arg_list(args):
     if args != None and len(args.params) > 0:
@@ -72,19 +105,6 @@ def parameter_name_or_box_double(node):
         return "box_double({})".format(node.name)
     else:
         return node.name
-
-def should_return(node):
-    generator = c_generator.CGenerator()
-    if is_double_decl(node):
-        print("  return unbox_double(", end="")
-    elif not is_void_decl(node):
-        print("  return (", end="")
-        print(generator.visit(node.type), end="")
-        if isinstance(node.type, c_ast.PtrDecl):
-            print(" *", end="")
-        print(") ", end="")
-    else:
-        print("  ", end="")
 
 def is_void_decl(node):
     type = node.type
