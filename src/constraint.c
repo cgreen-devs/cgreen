@@ -405,6 +405,20 @@ Constraint *create_return_value_constraint(intptr_t value_to_return) {
     return constraint;
 }
 
+Constraint *create_return_by_value_constraint(intptr_t value_to_return, size_t size) {
+    intptr_t actual_return = (intptr_t) malloc(size);
+    memcpy((void*)actual_return, (void*)value_to_return, size);
+    Constraint* constraint = create_constraint();
+    constraint->type = RETURN_VALUE;
+
+    constraint->compare = &compare_true;
+    constraint->execute = &test_true;
+    constraint->name = "return value";
+    constraint->expected_value = make_cgreen_by_value((void*)actual_return, size);
+
+    return constraint;
+}
+
 Constraint *create_return_double_value_constraint(double value_to_return) {
     Constraint* constraint = create_constraint();
     constraint->type = RETURN_VALUE;

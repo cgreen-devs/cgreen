@@ -16,6 +16,7 @@ typedef enum {
     DOUBLE_COMPARER,
     RETURN_VALUE,
     CONTENT_SETTER,
+    RETURN_POINTER,
     CALL,
     CALL_COUNTER
 } ConstraintType;
@@ -77,6 +78,7 @@ Constraint *create_not_equal_to_double_constraint(double expected_value, const c
 Constraint *create_less_than_double_constraint(double expected_value, const char *expected_value_name);
 Constraint *create_greater_than_double_constraint(double expected_value, const char *expected_value_name);
 Constraint *create_return_value_constraint(intptr_t value_to_return);
+Constraint *create_return_by_value_constraint(intptr_t value_to_return, size_t size);
 Constraint *create_return_double_value_constraint(double value_to_return);
 Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set, size_t size_to_set);
 Constraint *create_with_side_effect_constraint(void (*callback)(void *), void *data);

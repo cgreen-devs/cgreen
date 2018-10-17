@@ -891,6 +891,8 @@ static CgreenValue stored_result_or_default_for(CgreenVector* constraints) {
 
         if (constraint->type == RETURN_VALUE) {
             return constraint->expected_value;
+        } else if (constraint->type == RETURN_POINTER) {
+            return constraint->expected_value;
         }
     }
 
