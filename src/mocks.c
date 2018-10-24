@@ -10,8 +10,10 @@
 #include <string.h>
 
 #include "cgreen_value_internal.h"
+#include "cgreen/cgreen_value.h"
 #include "parameters.h"
 #include "constraint_internal.h"
+#include "utils.h"
 
 
 #ifdef __ANDROID__
@@ -24,6 +26,7 @@ typedef struct RecordedExpectation_ {
     int test_line;
     int time_to_live;
     CgreenVector *constraints;
+    int number_times_called;
 } RecordedExpectation;
 
 const int UNLIMITED_TIME_TO_LIVE = 0x0f314159;
@@ -210,6 +213,11 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
+        if(constraint->type == CALL_COUNTER) {
+            expectation->number_times_called++;
+            continue;
+        }
+
         if (!is_parameter(constraint)) continue;
 
         if (!constraint_is_for_parameter_in(constraint, parameters)) {
@@ -330,6 +338,39 @@ Constraint *when_(const char *parameter, Constraint* constraint) {
 }
 
 
+
+void test_times_called(Constraint *constraint, const char *function, CgreenValue actual,
+               const char *test_file, int test_line, TestReporter *reporter) {
+    char *message;
+    char parameter_name_actual_string[255];
+
+    snprintf(parameter_name_actual_string, sizeof(parameter_name_actual_string) - 1, "%s", function);
+    message = constraint->failure_message(constraint, parameter_name_actual_string, actual.value.integer_value);
+
+    (*reporter->assert_true)(
+            reporter,
+            test_file,
+            test_line,
+            (*constraint->compare)(constraint, actual),
+            message);
+
+    free(message);
+}
+
+Constraint *times_(const int number_times_called) {
+    Constraint * time_constraint = create_constraint();
+    time_constraint->expected_value = make_cgreen_integer_value(number_times_called);
+    time_constraint->expected_value_name = string_dup("times");
+    time_constraint->type = CALL_COUNTER;
+
+    time_constraint->compare = &compare_want_value;
+    time_constraint->execute = &test_times_called;
+    time_constraint->name = "be called";
+    time_constraint->size_of_expected_value = sizeof(intptr_t);
+    time_constraint->expected_value_message = "\t\texpected to have been called:\t[%" PRIdPTR "] times";
+    return time_constraint;
+}
+
 static void destroy_expectation_if_time_to_die(RecordedExpectation *expectation) {
 
     if (is_always_call(expectation)) {
@@ -385,7 +426,15 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
     constraints_vector = constraints_vector_from_va_list(constraints);
     expectation = create_recorded_expectation(function, test_file, test_line, constraints_vector);
     va_end(constraints);
+
     expectation->time_to_live = 1;
+    for (int i = 0 ; i < cgreen_vector_size(expectation->constraints) ; i++) {
+        Constraint * constraint = cgreen_vector_get(expectation->constraints, i);
+        if (constraint && constraint->type == CALL_COUNTER) {
+            expectation->time_to_live = (int)constraint->expected_value.value.integer_value;
+            break;
+        }
+    }
     cgreen_vector_add(global_expectation_queue, expectation);
 }
 
@@ -610,6 +659,7 @@ static RecordedExpectation *create_recorded_expectation(const char *function, co
     expectation->test_file = test_file;
     expectation->test_line = test_line;
     expectation->constraints = constraints;
+    expectation->number_times_called = 0;
 
     return expectation;
 }
@@ -621,6 +671,7 @@ static void destroy_expectation(RecordedExpectation *expectation) {
     expectation->test_file = NULL;
     expectation->test_line = 0;
     expectation->time_to_live = 0;
+    expectation->number_times_called = 0;
 
     free(expectation);
 }
@@ -676,12 +727,28 @@ static void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, Te
             continue;
         }
 
-        (*reporter->assert_true)(
-                reporter,
-                expectation->test_file,
-                expectation->test_line,
-                0,
-                "Expected call was not made to mocked function [%s]", expectation->function);
+        bool call_counter_present = false;
+        for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
+            Constraint *constraint = (Constraint *) cgreen_vector_get(expectation->constraints, i);
+            if(constraint->type == CALL_COUNTER) {
+                constraint->execute(
+                        constraint,
+                        expectation->function,
+                        make_cgreen_integer_value(expectation->number_times_called),
+                        expectation->test_file,
+                        expectation->test_line,
+                        get_test_reporter());
+                call_counter_present = true;
+            }
+        }
+
+        if (!call_counter_present)
+            (*reporter->assert_true)(
+                    reporter,
+                    expectation->test_file,
+                    expectation->test_line,
+                    0,
+                    "Expected call was not made to mocked function [%s]", expectation->function);
     }
 }
 

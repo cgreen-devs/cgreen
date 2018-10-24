@@ -347,6 +347,39 @@ Ensure(Mocks, can_mock_a_function_macro) {
 
 #undef FUNCTION_MACRO
 
+static void simple_mocked_function(int first, int second) {
+    mock(first, second);
+}
+
+Ensure(Mocks, constraint_number_of_calls_when_no_when_is_present) {
+    expect(simple_mocked_function, times(2));
+    simple_mocked_function(1, 2);
+    simple_mocked_function(1, 2);
+}
+
+Ensure(Mocks, constraint_number_of_calls_when_is_present) {
+    expect(simple_mocked_function, when(first, is_equal_to(1)), times(2));
+    simple_mocked_function(1, 2);
+    simple_mocked_function(1, 2);
+}
+
+Ensure(Mocks, constraint_number_of_calls_when_multiple_expectations_are_present) {
+    expect(simple_mocked_function, when(first, is_equal_to(1)), times(2));
+    expect(simple_mocked_function, when(first, is_equal_to(2)), times(1));
+    simple_mocked_function(1, 2);
+    simple_mocked_function(1, 2);
+    simple_mocked_function(2, 2);
+}
+
+Ensure(Mocks, constraint_number_of_calls_order_of_expectations_matter) {
+    expect(simple_mocked_function, when(first, is_equal_to(1)), times(1));
+    expect(simple_mocked_function, when(first, is_equal_to(2)), times(1));
+    expect(simple_mocked_function, when(first, is_equal_to(1)), times(1));
+    simple_mocked_function(1, 2);
+    simple_mocked_function(2, 2);
+    simple_mocked_function(1, 2);
+}
+
 
 TestSuite *mock_tests(void) {
     TestSuite *suite = create_test_suite();
@@ -376,6 +409,10 @@ TestSuite *mock_tests(void) {
     add_test_with_context(suite, Mocks, can_stub_an_out_parameter);
     add_test_with_context(suite, Mocks, string_contains_expectation_is_confirmed);
     add_test_with_context(suite, Mocks, can_mock_a_function_macro);
+    add_test_with_context(suite, Mocks, constraint_number_of_calls_when_no_when_is_present);
+    add_test_with_context(suite, Mocks, constraint_number_of_calls_when_is_present);
+    add_test_with_context(suite, Mocks, constraint_number_of_calls_when_multiple_expectations_are_present);
+    add_test_with_context(suite, Mocks, constraint_number_of_calls_order_of_expectations_matter);
 
     return suite;
 }

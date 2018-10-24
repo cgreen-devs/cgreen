@@ -16,7 +16,8 @@ typedef enum {
     DOUBLE_COMPARER,
     RETURN_VALUE,
     CONTENT_SETTER,
-    CALL
+    CALL,
+    CALL_COUNTER
 } ConstraintType;
 
 typedef struct Constraint_ Constraint;

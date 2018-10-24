@@ -1,4 +1,4 @@
-Running "mock_messages_tests" (13 tests)...
+Running "mock_messages_tests" (15 tests)...
 mock_messages_tests.c: Failure: Mocks -> calls_beyond_expected_sequence_fail_when_mocks_are_strict 
 	Mocked function [integer_out] was called too many times
 
@@ -9,6 +9,21 @@ mock_messages_tests.c: Failure: Mocks -> calls_beyond_expected_sequence_fail_whe
 
 mock_messages_tests.c: Failure: Mocks -> can_declare_function_never_called 
 	Mocked function [sample_mock] has an expectation that it will never be called, but it was
+
+mock_messages_tests.c: Failure: Mocks -> constraint_number_of_calls_out_of_order_expectations_fail 
+	Expected [[first] parameter in [simple_mocked_function]] to [equal] [1]
+		actual value:			[2]
+		expected value:			[1]
+
+mock_messages_tests.c: Failure: Mocks -> constraint_number_of_calls_out_of_order_expectations_fail 
+	Expected [[first] parameter in [simple_mocked_function]] to [equal] [2]
+		actual value:			[1]
+		expected value:			[2]
+
+mock_messages_tests.c: Failure: Mocks -> constraint_number_of_calls_when_not_called_enough_times 
+	Expected [simple_mocked_function] to [be called] [times]
+		actual value:			[1]
+		expected to have been called:	[2] times
 
 mock_messages_tests.c: Failure: Mocks -> failure_reported_when_expect_after_always_expect_for_same_function 
 	Mocked function [integer_out] already has an expectation that it will always be called a certain way; any expectations declared after an always expectation are invalid
@@ -28,8 +43,8 @@ mock_messages_tests.c: Failure: Mocks -> reports_multiple_never_expect
 mock_messages_tests.c: Failure: Mocks -> single_uncalled_expectation_fails_tally 
 	Expected call was not made to mocked function [string_out]
 
-  "Mocks": 4 passes, 2 skipped, 9 failures in 0ms.
-Completed "mock_messages_tests": 4 passes, 2 skipped, 9 failures in 0ms.
+  "Mocks": 4 passes, 2 skipped, 12 failures in 0ms.
+Completed "mock_messages_tests": 4 passes, 2 skipped, 12 failures in 0ms.
 Mocks -> can_learn_double_expects : Learned mocks are
 	expect(double_in, when(in, is_equal_to_double(3.140000)));
 Mocks -> learning_mocks_emit_none_when_learning_no_mocks : Learned mocks are
