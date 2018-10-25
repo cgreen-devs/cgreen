@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <cgreen/memory.h>
 
 
 char *string_dup(const char *string) {

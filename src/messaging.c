@@ -19,6 +19,7 @@
 #include <sched.h>
 #endif
 
+#include <cgreen/memory.h>
 
 #define message_content_size(Type) (sizeof(Type) - sizeof(long))
 
@@ -61,6 +62,7 @@ int get_pipe_write_handle(void)
 
 static void clean_up_messaging(void);
 
+#undef realloc
 int start_cgreen_messaging(int tag) {
     CgreenMessageQueue *tmp;
     int pipes[2];
@@ -95,6 +97,7 @@ int start_cgreen_messaging(int tag) {
     queues[queue_count - 1].tag = tag;
     return queue_count - 1;
 }
+#define realloc cgreen_realloc
 
 void send_cgreen_message(int messaging, int result) {
     CgreenMessage *message;
@@ -128,6 +131,7 @@ int receive_cgreen_message(int messaging) {
     return result;
 }
 
+#undef free
 static void clean_up_messaging(void) {
     int i;
     for (i = 0; i < queue_count; i++) {
@@ -140,5 +144,6 @@ static void clean_up_messaging(void) {
     queues = NULL;
     queue_count = 0;
 }
+#define free cgreen_free
 
 /* vim: set ts=4 sw=4 et cindent: */

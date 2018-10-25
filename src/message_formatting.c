@@ -18,6 +18,7 @@
 #endif
 
 #include "constraint_internal.h"
+#include <cgreen/memory.h>
 
 
 // Handling of percent signs
