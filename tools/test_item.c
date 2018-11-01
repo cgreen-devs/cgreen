@@ -53,4 +53,5 @@ void destroy_test_item(TestItem *item) {
     free((void *)item->specification_name);
     free((void *)item->context_name);
     free((void *)item->test_name);
+    free((void *)item);
 }

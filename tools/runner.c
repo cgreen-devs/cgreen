@@ -210,7 +210,9 @@ static int run_tests(TestReporter *reporter,
             fprintf(stderr, "ERROR: No such test: '%s' in '%s'\n", symbolic_name, suite_name);
             return EXIT_FAILURE;
         }
-        status = run_single_test(suite, test_name_of(symbolic_name), reporter);
+        char *test_name = test_name_of(symbolic_name);
+        status = run_single_test(suite, test_name, reporter);
+        free(test_name);
     } else {
         if (verbose) {
             if (number_of_matches != count(tests))

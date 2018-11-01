@@ -316,5 +316,7 @@ int main(int argc, const char **argv) {
     if (!have_xml_option() && reporter_options.quiet_mode)
         printf("\n");
 
+    free(libraries);
+    free(testname);
     return any_fail?EXIT_FAILURE:EXIT_SUCCESS;
 }
