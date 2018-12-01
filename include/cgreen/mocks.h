@@ -36,6 +36,8 @@ namespace cgreen {
 
 #define when(parameter, constraint) when_(#parameter, constraint)
 
+#define times(number_times_called) times_(number_times_called)
+
 /* Make Cgreen mocks strict, loose or learning */
 typedef enum { strict_mocks = 0, loose_mocks = 1, learning_mocks = 2 } CgreenMockMode;
 extern void cgreen_mocks_are(CgreenMockMode mode);

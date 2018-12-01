@@ -152,3 +152,19 @@ xEnsure(Mocks, learning_mocks_survive_termination) {
     string_out(1);
     *ip = 0;
 }
+
+static void simple_mocked_function(int first, int second) {
+    mock(first, second);
+}
+
+Ensure(Mocks, constraint_number_of_calls_when_not_called_enough_times) {
+    expect(simple_mocked_function, times(2));
+    simple_mocked_function(1, 2);
+}
+
+Ensure(Mocks, constraint_number_of_calls_out_of_order_expectations_fail) {
+    expect(simple_mocked_function, when(first, is_equal_to(1)), times(1));
+    expect(simple_mocked_function, when(first, is_equal_to(2)), times(1));
+    simple_mocked_function(2, 2);
+    simple_mocked_function(1, 2);
+}

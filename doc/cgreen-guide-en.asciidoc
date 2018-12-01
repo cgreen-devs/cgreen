@@ -1736,6 +1736,44 @@ You can also have multiple `will_set_contents_of_parameter()` in an
 expectation, one for each reference parameter, but naturally only one
 `will_return()`.
 
+To ensure that a specific call happens `n` times the macro `times(number_times_called)` can be passed
+as a constraint to a specific call:
+
+[source,c]
+-----------------------
+  expect(mocked_file_writer,
+        when(data, is_equal_to(42)),
+        times(1));
+-----------------------
+
+This feature only works for `expect`.
+
+The expections still need to respect the order of calling, so if we call the function
+`mocker_file_writer` with the following pattern:
+
+[source,c]
+-----------------------
+  mocked_file_writer(42);
+  mocked_file_writer(42);
+  mocked_file_writer(43);
+  mocked_file_writer(42);
+-----------------------
+
+The expectation code should look like the following
+
+[source,c]
+-----------------------
+  expect(mocked_file_writer,
+        when(data, is_equal_to(42)),
+        times(2));
+  expect(mocked_file_writer,
+        when(data, is_equal_to(43)),
+        times(1));
+  expect(mocked_file_writer,
+        when(data, is_equal_to(42)),
+        times(1));
+-----------------------
+
 It's about time we actually ran our test...
 
 -----------------------
