@@ -23,15 +23,6 @@ debug: build
 32bit: build
 	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" ..; make
 
-# TODO: verify that we're not already on CygwinXX, in that case "make" should suffice
-.PHONY:cygwin32
-cygwin32: build
-	cd build; cmake -DCMAKE_C_COMPILER=i686-pc-cygwin-gcc -DCMAKE_CXX_COMPILER=i686-pc-cygwin-g++ -DCMAKE_INSTALL_BINDIR:string=bin32 -DCMAKE_INSTALL_LIBDIR:string=lib32 ..; make
-
-.PHONY:cygwin64
-cygwin64: build
-	cd build; cmake -DCMAKE_C_COMPILER=i686-pc-cygwin-gcc -DCMAKE_CXX_COMPILER=i686-pc-cygwin-g++ ..; make
-
 .PHONY:test
 test: build
 	cd build; make check
@@ -50,7 +41,7 @@ install:
 
 
 # This is kind of a hack to get a quicker and clearer feedback when
-# developing Cgreen by using 'make unit'. Should be updated when new
+# developing Cgreen by allowing 'make unit'. Must be updated when new
 # test libraries or output comparisons are added.
 
 # Find out if 'uname -o' works, if it does - use it, otherwise use 'uname -s'
@@ -60,6 +51,8 @@ ifeq ($(UNAMEOEXISTS),0)
 else
   OS=$(shell uname -s)
 endif
+
+# Set prefix and suffix for shared libraries depending on platform
 ifeq ($(OS),Darwin)
 	PREFIX=lib
 	SUFFIX=.dylib
@@ -71,8 +64,9 @@ else
 	SUFFIX=.so
 endif
 
-OUTPUT_DIFF=../../tools/cgreen_runner_output_diff
-OUTPUT_DIFF_ARGUMENTS = $(1)_tests \
+DIFF_TOOL=../../tools/cgreen_runner_output_diff
+XML_DIFF_TOOL=../../tools/cgreen_xml_output_diff
+DIFF_TOOL_ARGUMENTS = $(1)_tests \
 	../../tests \
 	$(1)_tests.expected
 
@@ -89,17 +83,17 @@ unit: build-it
 	tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
 	r=$$((r + $$?)) ; \
 	cd tests ; \
-	../../tools/cgreen_xml_output_diff $(call OUTPUT_DIFF_ARGUMENTS,xml_output) ; \
+	$(XML_DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,xml_output) ; \
 	r=$$((r + $$?)) ; \
-	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,mock_messages) ; \
+	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,mock_messages) ; \
 	r=$$((r + $$?)) ; \
-	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,constraint_messages) ; \
+	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,constraint_messages) ; \
 	r=$$((r + $$?)) ; \
-	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,assertion_messages) ; \
+	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,assertion_messages) ; \
 	r=$$((r + $$?)) ; \
-	$(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,ignore_messages) ; \
+	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,ignore_messages) ; \
 	r=$$((r + $$?)) ; \
-	CGREEN_PER_TEST_TIMEOUT=1 $(OUTPUT_DIFF) $(call OUTPUT_DIFF_ARGUMENTS,failure_messages) ; \
+	CGREEN_PER_TEST_TIMEOUT=1 $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,failure_messages) ; \
 	r=$$((r + $$?)) ; \
 	exit $$r
 
