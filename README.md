@@ -72,6 +72,9 @@ version of Cgreen in your project use ``find_package(cgreen 1.1.0)``
 You can read the extensive tutorial directly on
 [GitHub](https://cgreen-devs.github.io).
 
+There is a [cheat sheet](https://github.com/cgreen-devs/cgreen/blob/master/doc/cheat-sheet.md)
+available.
+
 You can also build the documentation yourself in HTML and PDF format.
 Generate it using Asciidoctor, which can be done using the CMake
 configuration. Of course you need
