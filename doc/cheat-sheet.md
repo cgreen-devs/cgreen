@@ -52,6 +52,8 @@
     is_less_than_double( <value> )
     is_greater_than_double( <value> )
 
+    significant_figures_for_assert_double_are( <figures> )
+
 ## Mocks
 
     <qualifiers> <function_name> ( <parameters> ) {
@@ -69,8 +71,15 @@
         never_expect(...);
     }
 
+    cgreen_mocks_are( strict_mocks | loose_mocks | learning_mocks );
+
 ### Returns
 
     will_return( <value> )
     will_return_double( <value> )
     will_set_contents_of_parameter( <parameter_name>, <value>, <size> )
+
+## C++
+
+    namespace cgreen;
+    assert_throws( <exception>, <expression>);
