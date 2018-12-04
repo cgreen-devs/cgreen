@@ -1,4 +1,10 @@
 #include <cgreen/cgreen.h>
+#include "cgreen_value_internal.h"
+#include "utils.h"
+
+Describe(TestConstraint);
+BeforeEach(TestConstraint) {}
+AfterEach(TestConstraint) {}
 
 typedef struct Box {
     int id;
@@ -45,7 +51,7 @@ Constraint *create_piece_fit_in_box_constraint(intptr_t expected_value, const ch
 
 #define can_fit_in_box(box) create_piece_fit_in_box_constraint((intptr_t)box, #box)
 
-Ensure(Constraint, more_complex_custom_constraint_function) {
+Ensure(TestConstraint, more_complex_custom_constraint_function) {
     Box box1 = {.id = 1, .size = 5};
     Piece piece99 = {.id = 99, .size = 6};
     assert_that(&piece99, can_fit_in_box(&box1));
@@ -53,6 +59,6 @@ Ensure(Constraint, more_complex_custom_constraint_function) {
 
 int main(int argc, char **argv) {
     TestSuite *suite = create_test_suite();
-    add_test(suite, more_complex_custom_constraint_function);
+    add_test_with_context(suite, TestConstraint, more_complex_custom_constraint_function);
     run_test_suite(suite, create_text_reporter());
 }
