@@ -17,10 +17,11 @@ typedef struct Piece {
 } Piece;
 
 bool compare_piece_and_box_size(Constraint *constraint, CgreenValue actual) {
-    return ((Piece *)actual.value.pointer_value)->size < ((Box*)constraint->expected_value.value.pointer_value)->size ;
+    return ((Piece *)actual.value.pointer_value)->size
+        < ((Box*)constraint->expected_value.value.pointer_value)->size ;
 }
 
-static void test_fit_piece(Constraint *constraint, const char *function, CgreenValue actual,
+static void test_fit_piece(Constraint *constraint, const char *function_name, CgreenValue actual,
                            const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
             reporter,
@@ -30,7 +31,7 @@ static void test_fit_piece(Constraint *constraint, const char *function, CgreenV
             "Piece [%f], does not fit in [%f] in function [%s] parameter [%s]",
             ((Piece *)constraint->expected_value.value.pointer_value)->id,
             ((Box *)actual.value.pointer_value)->id,
-            function,
+            function_name,
             constraint->parameter_name);
 }
 
@@ -48,7 +49,6 @@ Constraint *create_piece_fit_in_box_constraint(intptr_t expected_value, const ch
 
     return constraint;
 }
-
 #define can_fit_in_box(box) create_piece_fit_in_box_constraint((intptr_t)box, #box)
 
 Ensure(TestConstraint, more_complex_custom_constraint_function) {

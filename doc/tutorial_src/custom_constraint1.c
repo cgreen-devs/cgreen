@@ -6,15 +6,15 @@ Describe(TestConstraint);
 BeforeEach(TestConstraint) {}
 AfterEach(TestConstraint) {}
 
-bool compare_want_greater_value(Constraint *constraint, CgreenValue actual) {
-    return actual.value.integer_value > constraint->expected_value.value.integer_value ;
+bool compare_want_greater_than_5(Constraint *constraint, CgreenValue actual) {
+    return actual.value.integer_value > 5;
 }
 
 Constraint static_is_bigger_than_5 = {
         /* .type */ VALUE_COMPARER,
         /* .name */ "bigger than 5",
         /* .destroy */ destroy_static_constraint,
-        /* .compare */ compare_want_greater_value,
+        /* .compare */ compare_want_greater_than_5,
         /* .test */ test_want,
         /* .format_failure_message_for */ failure_message_for,
         /* .actual_value_message */ "",

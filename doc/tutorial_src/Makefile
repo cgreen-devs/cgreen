@@ -73,7 +73,9 @@ with_main:  first0 first1 \
 			test_as_xml2 \
 			test_as_xml3 \
 			test_as_xml4 \
-			constraints constraints1 constraints2
+			custom_constraint1 \
+			custom_constraint2 \
+			custom_constraint3
 	for f in $^ ; do echo $$f; $(LDPATH) ./$$f | $(SED) > $$f.out; done
 
 # Most tests built to run with the runner we can run here, but some need special care
@@ -188,13 +190,13 @@ test_as_xml3: test_as_xml1.o xml_reporter3.o
 test_as_xml4: test_as_xml1.o xml_reporter4.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
-constraints: constraints.o
+custom_constraint1: custom_constraint1.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
-constraints1: constraints1.o
+custom_constraint2: custom_constraint2.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
-constraints2: constraints2.o
+custom_constraint3: custom_constraint3.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
 
