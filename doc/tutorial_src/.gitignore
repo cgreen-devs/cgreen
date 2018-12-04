@@ -2,6 +2,9 @@
 *.so
 *.exe
 *.stackdump
+constraints
+constraints1
+constraints2
 crash1
 crash2
 crash3
@@ -38,3 +41,4 @@ formatter4
 formatter5
 stream_test4
 formatter6
+*.out
