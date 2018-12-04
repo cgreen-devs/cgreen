@@ -26,7 +26,7 @@ struct Constraint_ {
     const char *name;
     void (*destroy)(Constraint *);
     bool (*compare)(Constraint *, CgreenValue);
-    void(*execute)(Constraint *, const char *, CgreenValue, const char *, int, TestReporter *);
+    void (*execute)(Constraint *, const char *, CgreenValue, const char *, int, TestReporter *);
     char *(*failure_message)(Constraint *, const char *, intptr_t);
     const char *actual_value_message;
     const char *expected_value_message;

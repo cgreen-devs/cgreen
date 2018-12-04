@@ -2968,40 +2968,128 @@ return a boolean for monitoring purposes.
 
 == Advanced Usage
 
-=== The Custom Constraints
+=== Custom Constraints
 
-Cgreen allow the developer to create custom constraints. A simple example
-is the creation of a constraint that will ensure that the number to
-be checked is bigger than 5 using a static constraint that does not
-receive any parameter
+Sometimes the built-in constraints that *Cgreen* provide are not
+sufficient. With *Cgreen* it is possible to create custom constraints,
+although you will be depending on some internal structures if you do
+so.
 
+Here's how to implement a simple example custom constraint that
+asserts that the value is bigger than 5. We'll implement this using a
+static constraint since it does not take any parameter.
 
-[source,c]
------------------------------
-include::tutorial_src/constraints.c[lines=3..26]
------------------------------
-
-Creating a constraint that receives an input parameter
+First we need the actual compare function:
 
 [source,c]
 -----------------------------
-include::tutorial_src/constraints1.c[lines=3..26]
+include::tutorial_src/custom_constraint1.c[lines=1..1]
+
+include::tutorial_src/custom_constraint1.c[lines=9..12]
 -----------------------------
 
-A constraint that given a piece and a box, checks if the piece
-can fit inside the box
+And then the static constraint structure, for which we'll need some of
+*Cgreen*'s internal functions:
 
 [source,c]
 -----------------------------
-include::tutorial_src/constraints2.c[lines=3..52]
+include::tutorial_src/custom_constraint1.c[lines=2..3]
+
+include::tutorial_src/custom_constraint1.c[lines=13..26]
 -----------------------------
+
+This implementation can use a statically declared `Constraint`
+structure that is prefilled since it does not need to store the value
+to be checked. This static custom constraint can then be used directly
+in the `assert` like this:
+
+[source,c]
+-----------------------------
+include::tutorial_src/custom_constraint1.c[lines=28..31]
+-----------------------------
+
+To create a custom constraint that takes an input parameter, we need
+to add a function that creates a constraint structure that correctly
+saves the value to be checked, and, for convenience, a macro. This
+time we need to dig into how *Cgreen* stores expected values and we'll
+also make use of *Cgreen*'s utility function `string_dup()`.
+
+[source,c]
+-----------------------------
+include::tutorial_src/custom_constraint2.c[lines=2..4]
+
+include::tutorial_src/custom_constraint2.c[lines=9..28]
+-----------------------------
+
+This gives a custom constraint that can be used in the `assert` in the
+same way as *Cgreen*'s built-in constraints:
+
+[source,c]
+-----------------------------
+include::tutorial_src/custom_constraint2.c[lines=31..33]
+-----------------------------
+
+The last, and definitely more complex, example is a constraint that
+takes two structures and compares fields in them. The constraint will,
+given a structure representing a piece and another structure
+representing a box, check if the piece can fit inside the box using a
+size field.
+
+Assuming two "application" structures with `size` fields:
+
+[source,c]
+-----------------------------
+include::tutorial_src/custom_constraint3.c[lines=9..17]
+-----------------------------
+
+We want to be able to write a test like this:
+
+[source,c]
+-----------------------------
+include::tutorial_src/custom_constraint3.c[lines=54..58]
+-----------------------------
+
+To implement the `can_fit_in_box` constraint we first need a comparer
+function:
+
+[source,c]
+-----------------------------
+include::tutorial_src/custom_constraint3.c[lines=19..22]
+-----------------------------
+
+And this time we can't rely on *Cgreen*'s checker and message
+generating function `test_want()` which we used in the previous
+examples. So we also need a custom function that calls the comparison
+and formats a possible error message:
+
+[source,c]
+-----------------------------
+include::tutorial_src/custom_constraint3.c[lines=24..36]
+-----------------------------
+
+Finally we'll use both of those in the constraint creating function
+and add the convenience macro:
+
+[source,c]
+-----------------------------
+include::tutorial_src/custom_constraint3.c[lines=38..52]
+-----------------------------
+
+CAUTION: As stated above, using custom constraints makes your tests
+vulnurable to changes in *Cgreen*'s internals. Hopefully a method to
+avoid this will emerge in the future.
+
+TIP: You can write custom constraints directly in a test file, but
+they can of course also be collected into a separately compiled module
+which is linked with your tests.
+
 
 
 == Hints and Tips
 
-CAUTION: This chapter is intended to contain tips for
-situations that you need some help with, but it is nowhere near complete
-at this time.
+CAUTION: This chapter is intended to contain tips for situations that
+you might need some help with, but it is nowhere near complete at this
+time.
 
 [[cgreen-mocker]]
 === `cgreen-mocker` - Automated Mocking
