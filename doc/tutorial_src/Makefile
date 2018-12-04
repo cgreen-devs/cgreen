@@ -29,7 +29,7 @@ endif
 endif
 
 CGREEN_BIN=$(CGREEN_ROOT)/build
-CC = gcc -c -g -Wall -I$(CGREEN_ROOT)/include -I$(MYSQL_INCLUDE) $(FPIC)
+CC = gcc -c -g -Wall -I$(CGREEN_ROOT)/include -I$(CGREEN_ROOT)/src -I$(MYSQL_INCLUDE) $(FPIC)
 LINK = gcc -g
 LIBDIRS = -L$(CGREEN_BIN)/src -L$(MYSQL_LIB)
 
@@ -72,7 +72,8 @@ with_main:  first0 first1 \
 			test_as_xml1 \
 			test_as_xml2 \
 			test_as_xml3 \
-			test_as_xml4
+			test_as_xml4 \
+			constraints constraints1 constraints2
 	for f in $^ ; do echo $$f; $(LDPATH) ./$$f | $(SED) > $$f.out; done
 
 # Most tests built to run with the runner we can run here, but some need special care
@@ -185,6 +186,15 @@ test_as_xml3: test_as_xml1.o xml_reporter3.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
 test_as_xml4: test_as_xml1.o xml_reporter4.o
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+
+constraints: constraints.o
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+
+constraints1: constraints1.o
+	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
+
+constraints2: constraints2.o
 	$(LINK) -o $@ $^ $(LIBDIRS) -lcgreen
 
 
