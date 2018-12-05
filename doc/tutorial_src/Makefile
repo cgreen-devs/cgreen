@@ -1,10 +1,11 @@
-# This Makefile generates source and output that is part of Cgreen documentation
-# Files here are included in the asciidoc source so be careful with what you
-# commit, it might thrash the documentation. In particular, be aware that
-# non-UTF-8 characters in them (usually) makes generation of PDF impossible.
-# 'stream2' and 'stream5' might generate random data as actual in the output
-# file. This is the way it is supposed to be to work as documentation examples.
-#
+# This Makefile generates source and output that is part of Cgreen
+# documentation. Files here are included in the asciidoc source so be
+# careful with what you commit, it might thrash the documentation. In
+# particular, be aware that non-UTF-8 characters in them (usually)
+# makes generation of PDF impossible.  'stream2' and 'stream5' might
+# generate random data as 'actual' values in the output file. That is
+# the way it is supposed to be to work as documentation examples.
+# Take care that data is printable but looks random.
 
 .IGNORE :
 .SILENT :
@@ -47,9 +48,9 @@ RUNNER = $(LDPATH) $(CGREEN_BIN)/tools/cgreen-runner
 all: with_main with_runner special
 	echo
 	echo "NOTE: 'stream2.out' and 'stream5.out' should contain a simulation"
-	echo "NOTE: of random memory as the actual. Don't commit changes that do"
+	echo "NOTE: of random memory as the actual value. Don't commit changes that do"
 	echo "NOTE: not. But also note that PDF generation of the documentation"
-	echo "NOTE: will fail if there are real non-UTF-8 in it."
+	echo "NOTE: will fail if there are non-UTF-8 characters in them."
 
 # Since we have multiple files for the same tutorial example, distinguished by a number,
 # we need to remove that number from all output
