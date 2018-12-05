@@ -120,6 +120,17 @@ Ensure(Mocks, single_uncalled_expectation_fails_tally) {
            );
 }
 
+
+Ensure(Mocks, should_detect_two_unfulfilled_expectations_on_unknown_functions) {
+    expect(f1, will_return('a'));
+    expect(f2, will_return('b'));
+}
+
+Ensure(Mocks, should_detect_two_unfulfilled_expectations_without_constraints_on_unknown_functions) {
+    expect(f1);
+    expect(f2);
+}
+
 static double double_out(void) {
     return (double)mock();
 }
