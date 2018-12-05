@@ -104,9 +104,10 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
     reporter_start_test(reporter, name);
     if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 1) {
         if (!have_quiet_mode(reporter) && !inhibit_start_suite_message(reporter))
-            memo->printer("Running \"%s\" (%d tests)...\n",
+            memo->printer("Running \"%s\" (%d test%s)...\n",
                           get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb),
-                          number_of_tests);
+                          number_of_tests,
+                          number_of_tests>1?"s":"");
         fflush(stdout);
     }
 }
