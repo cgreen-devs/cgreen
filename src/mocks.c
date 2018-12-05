@@ -714,9 +714,8 @@ static void remove_expectation_for(const char *function) {
 }
 
 static void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestReporter *reporter) {
-    int i;
-    for (i = 0; i < cgreen_vector_size(expectation_queue); i++) {
-        RecordedExpectation *expectation = (RecordedExpectation *)cgreen_vector_get(expectation_queue, i);
+    for (int e = 0; e < cgreen_vector_size(expectation_queue); e++) {
+        RecordedExpectation *expectation = (RecordedExpectation *)cgreen_vector_get(expectation_queue, e);
 
         if (NULL == expectation) {
             fprintf(stderr, "*** NULL unfulfilled cgreen expectation found -- maybe a previous incorrect removal?");
@@ -728,8 +727,8 @@ static void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, Te
         }
 
         bool call_counter_present = false;
-        for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
-            Constraint *constraint = (Constraint *) cgreen_vector_get(expectation->constraints, i);
+        for (int c = 0; c < cgreen_vector_size(expectation->constraints); c++) {
+            Constraint *constraint = (Constraint *) cgreen_vector_get(expectation->constraints, c);
             if(constraint->type == CALL_COUNTER) {
                 constraint->execute(
                         constraint,

@@ -1,4 +1,4 @@
-Running "mock_messages_tests" (15 tests)...
+Running "mock_messages_tests" (17 tests)...
 mock_messages_tests.c: Failure: Mocks -> calls_beyond_expected_sequence_fail_when_mocks_are_strict 
 	Mocked function [integer_out] was called too many times
 
@@ -40,11 +40,23 @@ mock_messages_tests.c: Failure: Mocks -> reports_multiple_always_expect
 mock_messages_tests.c: Failure: Mocks -> reports_multiple_never_expect 
 	Mocked function [integer_out] already has an expectation that it will never be called; declaring an expectation for a function after a never call expectation is not allowed
 
+mock_messages_tests.c: Failure: Mocks -> should_detect_two_unfulfilled_expectations_on_unknown_functions 
+	Expected call was not made to mocked function [f1]
+
+mock_messages_tests.c: Failure: Mocks -> should_detect_two_unfulfilled_expectations_on_unknown_functions 
+	Expected call was not made to mocked function [f2]
+
+mock_messages_tests.c: Failure: Mocks -> should_detect_two_unfulfilled_expectations_without_constraints_on_unknown_functions 
+	Expected call was not made to mocked function [f1]
+
+mock_messages_tests.c: Failure: Mocks -> should_detect_two_unfulfilled_expectations_without_constraints_on_unknown_functions 
+	Expected call was not made to mocked function [f2]
+
 mock_messages_tests.c: Failure: Mocks -> single_uncalled_expectation_fails_tally 
 	Expected call was not made to mocked function [string_out]
 
-  "Mocks": 4 passes, 2 skipped, 12 failures in 0ms.
-Completed "mock_messages_tests": 4 passes, 2 skipped, 12 failures in 0ms.
+  "Mocks": 4 passes, 2 skipped, 16 failures in 0ms.
+Completed "mock_messages_tests": 4 passes, 2 skipped, 16 failures in 0ms.
 Mocks -> can_learn_double_expects : Learned mocks are
 	expect(double_in, when(in, is_equal_to_double(3.140000)));
 Mocks -> learning_mocks_emit_none_when_learning_no_mocks : Learned mocks are
