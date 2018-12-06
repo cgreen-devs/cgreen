@@ -128,7 +128,6 @@ Ensure(Vector, returns_null_for_get_on_illegal_index) {
 
     assert_that(cgreen_vector_get(vector, -1), is_equal_to(NULL));
     assert_that(panic_message, contains_string("illegal position (-1) in vector operation"));
-    destroy_cgreen_vector(vector);
 }
 
 Ensure(Vector, returns_null_for_remove_from_illegal_index) {
@@ -139,7 +138,6 @@ Ensure(Vector, returns_null_for_remove_from_illegal_index) {
 
     assert_that(cgreen_vector_remove(vector, 1), is_equal_to(NULL));
     assert_that(panic_message, contains_string("illegal position (1) in vector operation"));
-    destroy_cgreen_vector(vector);
 }
 
 TestSuite *vector_tests(void) {
