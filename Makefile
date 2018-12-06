@@ -108,6 +108,11 @@ chunked: doc
 	asciidoctor-chunker build/doc/cgreen-guide-en.html -o docs
 	echo open $(PWD)/docs/index.html
 
+.PHONY:valgrind
+valgrind: build-it
+	LD_LIBRARY_PATH=build/src valgrind --leak-check=full build/tools/cgreen-runner build/tests/$(PREFIX)cgreen_c_tests$(SUFFIX) > valgrind.log 2>&1
+	grep "definitely lost" valgrind.log | grep -v " 0 bytes" | wc -l
+
 
 
 ############# Internal

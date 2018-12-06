@@ -12,3 +12,4 @@ configure-stamp
 .#*
 bin
 lib
+valgrind.log

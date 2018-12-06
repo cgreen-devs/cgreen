@@ -125,18 +125,21 @@ Ensure(can_strip_multiple_mixed_parameters_to_leave_original_names) {
 Ensure(can_create_empty_vector_of_double_markers) {
     CgreenVector *markers = create_vector_of_double_markers_for("");
     assert_that(cgreen_vector_size(markers), is_equal_to(0));
+    destroy_cgreen_vector(markers);
 }
 
 Ensure(can_create_markers_for_single_non_double) {
     CgreenVector *markers = create_vector_of_double_markers_for("a");
     assert_that(cgreen_vector_size(markers), is_equal_to(1));
     assert_that(!*(bool*)cgreen_vector_get(markers, 0));
+    destroy_cgreen_vector(markers);
 }
 
 Ensure(can_create_markers_for_single_double) {
     CgreenVector *markers = create_vector_of_double_markers_for("box_double(a)");
     assert_that(cgreen_vector_size(markers), is_equal_to(1));
     assert_that(*(bool*)cgreen_vector_get(markers, 0));
+    destroy_cgreen_vector(markers);
 }
 
 Ensure(can_create_markers_for_mixed_parameters) {
@@ -147,6 +150,7 @@ Ensure(can_create_markers_for_mixed_parameters) {
     assert_that(!*(bool*)cgreen_vector_get(markers, 2));
     assert_that(!*(bool*)cgreen_vector_get(markers, 3));
     assert_that(*(bool*)cgreen_vector_get(markers, 4));
+    destroy_cgreen_vector(markers);
 }
 
 TestSuite *parameter_tests(void) {
