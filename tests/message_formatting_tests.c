@@ -20,6 +20,7 @@ Ensure(MessageFormatting, can_show_failure_message_containing_percent_sign) {
     assert_that(failure_message, contains_string("contains %%!"));
     assert_that(failure_message, contains_string("another %%!"));
 
+    constraint->destroy(constraint);
     free(failure_message);
 }
 
@@ -39,6 +40,7 @@ Ensure(MessageFormatting, shows_offset_as_zero_based) {
     assert_that(failure_message, contains_string("0x0b"));
     assert_that(strstr(failure_message, "0x0a"), is_less_than(strstr(failure_message, "0x0b")));
 
+    constraint->destroy(constraint);
     free(failure_message);
 }
 
