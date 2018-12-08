@@ -10,10 +10,33 @@ using namespace cgreen;
 #include "../src/cgreen_value_internal.h"
 #include "../src/constraint_internal.h"
 
-#define compare_integer_constraint(c, x) (*c->compare)(c, make_cgreen_integer_value(x))
-#define compare_pointer_constraint(c, x) (*c->compare)(c, make_cgreen_pointer_value(x))
-#define compare_string_constraint(c, x) (*c->compare)(c, make_cgreen_string_value(x))
-#define compare_double_constraint(c, x) (*c->compare)(c, make_cgreen_double_value(x))
+static bool compare_integer_constraint(Constraint *c, int x) {
+    CgreenValue v = make_cgreen_integer_value(x);
+    bool r = (*c->compare)(c, v);
+    destroy_cgreen_value(v);
+    return r;
+}
+
+static bool compare_pointer_constraint(Constraint *c, void *x) {
+    CgreenValue v = make_cgreen_pointer_value(x);
+    bool r = (*c->compare)(c, v);
+    destroy_cgreen_value(v);
+    return r;
+}
+
+static bool compare_string_constraint(Constraint *c, const char *x) {
+    CgreenValue v = make_cgreen_string_value(x);
+    bool r = (*c->compare)(c, v);
+    destroy_cgreen_value(v);
+    return r;
+}
+
+static bool compare_double_constraint(Constraint *c, double x) {
+    CgreenValue v = make_cgreen_double_value(x);
+    bool r = (*c->compare)(c, v);
+    destroy_cgreen_value(v);
+    return r;
+}
 
 Describe(Constraint);
 BeforeEach(Constraint) {}
@@ -37,7 +60,7 @@ Ensure(Constraint, default_destroy_clears_state) {
 
 Ensure(Constraint, parameter_name_matches_correctly) {
     Constraint *constraint =
-    		create_constraint();
+            create_constraint();
     constraint->type = VALUE_COMPARER;
     constraint->parameter_name = "label";
 
@@ -51,7 +74,7 @@ Ensure(Constraint, compare_contents_is_correct_on_larger_than_intptr_array) {
     int content[] = { 0, 1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10, 11, 12, 13, 14, 15 };
     int also_content[] = { 0, 1, 2, 3, 4, 5, 6, 7 ,8 ,9, 10, 11, 12, 13, 14, 15 };
     Constraint *is_equal_to_contents_constraint =
-    		create_equal_to_contents_constraint(content, sizeof(content), "content");
+            create_equal_to_contents_constraint(content, sizeof(content), "content");
 
     int not_content[] = { 0, 1, 2, 3, 4, 5, 6, 7, 108, 109, 110, 111, 112, 113, 114, 115 };
     assert_that(compare_pointer_constraint(is_equal_to_contents_constraint, also_content), is_true);
@@ -76,7 +99,7 @@ Ensure(Constraint, compare_to_is_null_correctly) {
 
 Ensure(Constraint, string_constraint_destroy_clears_state) {
     Constraint *string_constraint =
-    		create_equal_to_string_constraint("Hello", "user_greeting");
+            create_equal_to_string_constraint("Hello", "user_greeting");
     destroy_constraint(string_constraint);
 
 /* these checks correctly trip valgrind's use-after-free check, so
@@ -93,7 +116,7 @@ Ensure(Constraint, string_constraint_destroy_clears_state) {
 
 Ensure(Constraint, matching_strings_as_equal) {
     Constraint *equals_string_hello_constraint =
-    		create_equal_to_string_constraint("Hello", "user_greeting");
+            create_equal_to_string_constraint("Hello", "user_greeting");
 
     assert_that(compare_string_constraint(equals_string_hello_constraint, "Hello"), is_true);
     assert_that(compare_string_constraint(equals_string_hello_constraint, "Goodbye"), is_false);
@@ -103,7 +126,7 @@ Ensure(Constraint, matching_strings_as_equal) {
 
 Ensure(Constraint, matching_null_string_against_non_null_string) {
     Constraint *equals_string_hello_constraint =
-    		create_equal_to_string_constraint("Hello", "user_greeting");
+            create_equal_to_string_constraint("Hello", "user_greeting");
 
     assert_that(compare_string_constraint(equals_string_hello_constraint, NULL), is_false);
 
@@ -112,7 +135,7 @@ Ensure(Constraint, matching_null_string_against_non_null_string) {
 
 Ensure(Constraint, matching_against_null_string) {
     Constraint *equals_null_string_constraint =
-    		create_equal_to_string_constraint((const char *)NULL, "user_greeting");
+            create_equal_to_string_constraint((const char *)NULL, "user_greeting");
 
     assert_that(compare_string_constraint(equals_null_string_constraint, NULL), is_true);
     assert_that(compare_string_constraint(equals_null_string_constraint, "Hello"), is_false);
