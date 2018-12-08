@@ -110,8 +110,12 @@ chunked: doc
 
 .PHONY:valgrind
 valgrind: build-it
-	LD_LIBRARY_PATH=build/src valgrind --leak-check=full build/tools/cgreen-runner build/tests/$(PREFIX)cgreen_c_tests$(SUFFIX) > valgrind.log 2>&1
-	grep "definitely lost" valgrind.log | grep -v " 0 bytes" | wc -l
+	> valgrind.log
+	for lib in `ls build/tests/$(PREFIX)*_tests$(SUFFIX)` ; \
+	do \
+		LD_LIBRARY_PATH=build/src valgrind --leak-check=full build/tools/cgreen-runner $$lib >> valgrind.log 2>&1 ; \
+	done
+	grep " lost:" valgrind.log | grep -v " 0 bytes" | wc -l
 
 
 
