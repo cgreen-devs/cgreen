@@ -743,15 +743,14 @@ static void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, Te
             continue;
         }
 
-        if (is_never_call(expectation) && expectation->times_triggered == 0) {
-            (*reporter->assert_true)(
-                    reporter,
-                    expectation->test_file,
-                    expectation->test_line,
-                    1,
-                    "The mocked function [%s] was never called", expectation->function);
-            continue;
-        } else if (is_never_call(expectation)) {
+        if (is_never_call(expectation)) {
+            if (expectation->times_triggered == 0) {
+                (*reporter->assert_true)(reporter,
+                                         expectation->test_file,
+                                         expectation->test_line,
+                                         1,
+                                         "The mocked function [%s] was never called", expectation->function);
+            }
             continue;
         }
 
