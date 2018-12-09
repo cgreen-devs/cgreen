@@ -914,6 +914,7 @@ static bool remove_never_call_expectation_for(const char* function) {
         if (strcmp(expectation->function, function) == 0) {
             if (is_never_call(expectation)) {
                 cgreen_vector_remove(global_expectation_queue, i);
+                destroy_expectation(expectation);
             }
         }
     }
