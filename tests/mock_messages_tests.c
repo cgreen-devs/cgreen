@@ -33,6 +33,10 @@ Ensure(Mocks, can_declare_function_never_called) {
     sample_mock(0, "");
 }
 
+Ensure(Mocks, when_never_expected_mock_function_is_not_called_pass_counter_increments_by_one) {
+    never_expect(sample_mock);
+}
+
 Ensure(Mocks, calls_beyond_expected_sequence_fail_when_mocks_are_strict) {
     expect(integer_out,
         will_return(1)
@@ -91,6 +95,16 @@ Ensure(Mocks, failure_reported_when_expect_after_always_expect_for_same_function
 Ensure(Mocks, reports_multiple_always_expect) {
     always_expect(integer_out);
     always_expect(integer_out);
+}
+
+Ensure(Mocks, reports_always_expect_after_never_expect_for_same_function) {
+    never_expect(integer_out);
+    always_expect(integer_out);
+}
+
+Ensure(Mocks, reports_never_expect_after_always_expect_for_same_function) {
+    always_expect(integer_out);
+    never_expect(integer_out);
 }
 
 Ensure(Mocks, reports_multiple_never_expect) {

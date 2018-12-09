@@ -27,6 +27,12 @@ typedef struct RecordedExpectation_ {
     int time_to_live;
     CgreenVector *constraints;
     int number_times_called;
+    /*
+     * Used to record the number of time this particular expectation was triggered.
+     * The main use at this point is to ensure that never_expect only adds itself
+     * as a successful test if it as never been called
+     */
+    int times_triggered;
 } RecordedExpectation;
 
 const int UNLIMITED_TIME_TO_LIVE = 0x0f314159;
@@ -64,6 +70,7 @@ static bool is_always_call(RecordedExpectation* expectation);
 static bool have_always_expectation_for(const char* function);
 static bool is_never_call(RecordedExpectation* expectation);
 static bool have_never_call_expectation_for(const char* function);
+static bool remove_never_call_expectation_for(const char* function);
 
 static void report_violated_never_call(TestReporter*, RecordedExpectation*);
 static void report_unexpected_call(TestReporter*, RecordedExpectation*);
@@ -196,6 +203,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     }
 
     if (is_never_call(expectation)) {
+        expectation->times_triggered++;
         report_violated_never_call(test_reporter, expectation);
         destroy_cgreen_vector(actual_values);
         destroy_cgreen_vector(parameter_names);
@@ -258,6 +266,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     destroy_cgreen_vector(parameter_names);
     destroy_cgreen_vector(actual_values);
 
+    expectation->times_triggered++;
     destroy_expectation_if_time_to_die(expectation);
 
     if (stored_result.type == DOUBLE) {
@@ -407,6 +416,8 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
     }
 
     if (have_never_call_expectation_for(function)) {
+        remove_never_call_expectation_for(function);
+
         test_reporter->assert_true(
                 test_reporter,
                 test_file,
@@ -459,6 +470,8 @@ void always_expect_(TestReporter* test_reporter, const char *function, const cha
     }
 
     if (have_never_call_expectation_for(function)) {
+        remove_never_call_expectation_for(function);
+
         test_reporter->assert_true(
                 test_reporter,
                 test_file,
@@ -502,6 +515,8 @@ void never_expect_(TestReporter* test_reporter, const char *function, const char
     }
 
     if (have_never_call_expectation_for(function)) {
+        remove_never_call_expectation_for(function);
+
         test_reporter->assert_true(
                 test_reporter,
                 test_file,
@@ -660,6 +675,7 @@ static RecordedExpectation *create_recorded_expectation(const char *function, co
     expectation->test_line = test_line;
     expectation->constraints = constraints;
     expectation->number_times_called = 0;
+    expectation->times_triggered = 0;
 
     return expectation;
 }
@@ -672,6 +688,7 @@ static void destroy_expectation(RecordedExpectation *expectation) {
     expectation->test_line = 0;
     expectation->time_to_live = 0;
     expectation->number_times_called = 0;
+    expectation->times_triggered = 0;
 
     free(expectation);
 }
@@ -722,7 +739,18 @@ static void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, Te
             continue;
         }
 
-        if (is_always_call(expectation) || is_never_call(expectation)) {
+        if (is_always_call(expectation)) {
+            continue;
+        }
+
+        if (is_never_call(expectation)) {
+            if (expectation->times_triggered == 0) {
+                (*reporter->assert_true)(reporter,
+                                         expectation->test_file,
+                                         expectation->test_line,
+                                         1,
+                                         "The mocked function [%s] was never called", expectation->function);
+            }
             continue;
         }
 
@@ -870,6 +898,22 @@ static bool have_never_call_expectation_for(const char* function) {
         if (strcmp(expectation->function, function) == 0) {
             if (is_never_call(expectation)) {
                 return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+static bool remove_never_call_expectation_for(const char* function) {
+    int i;
+    for (i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
+        RecordedExpectation *expectation =
+                (RecordedExpectation *)cgreen_vector_get(global_expectation_queue, i);
+        if (strcmp(expectation->function, function) == 0) {
+            if (is_never_call(expectation)) {
+                cgreen_vector_remove(global_expectation_queue, i);
+                destroy_expectation(expectation);
             }
         }
     }
