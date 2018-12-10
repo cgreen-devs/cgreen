@@ -730,6 +730,11 @@ static void remove_expectation_for(const char *function) {
     }
 }
 
+static bool is_first_call_matching(RecordedExpectation *expectation) {
+    return expectation->times_triggered == 0;
+}
+
+
 static void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, TestReporter *reporter) {
     for (int e = 0; e < cgreen_vector_size(expectation_queue); e++) {
         RecordedExpectation *expectation = (RecordedExpectation *)cgreen_vector_get(expectation_queue, e);
@@ -744,7 +749,7 @@ static void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, Te
         }
 
         if (is_never_call(expectation)) {
-            if (expectation->times_triggered == 0) {
+            if (is_first_call_matching(expectation)) {
                 (*reporter->assert_true)(reporter,
                                          expectation->test_file,
                                          expectation->test_line,
