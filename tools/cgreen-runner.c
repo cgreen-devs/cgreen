@@ -25,6 +25,7 @@ static int file_exists(const char *filename)
 /*----------------------------------------------------------------------*/
 static void version(void) {
     printf("cgreen-runner for Cgreen unittest and mocking framework v%s\n", VERSION);
+    printf("Cgreen library version %s (%s) loaded\n", cgreen_library_version, cgreen_library_revision);
 }
 
 
