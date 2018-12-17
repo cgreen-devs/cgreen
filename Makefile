@@ -121,11 +121,6 @@ valgrind: build-it
 
 ############# Internal
 
-ifeq ($(OS),Darwin)
-ARCHS=-DCMAKE_OSX_ARCHITECTURES:string="x86_64;i386"
-endif
-
-
 build-it: build
 	make -C build
 
