@@ -13,3 +13,4 @@ configure-stamp
 bin
 lib
 valgrind.log
+gitrevision.h

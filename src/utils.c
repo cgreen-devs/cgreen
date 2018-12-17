@@ -5,8 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../gitrevision.h"
+
 char *cgreen_library_version = VERSION;
-char *cgreen_library_revision = COMMIT;
+char *cgreen_library_revision = GITREVISION;
 
 char *string_dup(const char *string) {
     char *dup = (char *)malloc(strlen(string)+1);
