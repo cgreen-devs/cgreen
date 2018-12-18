@@ -6,12 +6,13 @@ find_file(GITDIR NAMES .git PATHS ${CMAKE_SOURCE_DIR} NO_DEFAULT_PATH)
 if (GIT_SCM AND GITDIR)
   # Create gitrevision.h
   # that depends on the Git HEAD log
+  string(RANDOM LENGTH 6 ALPHABET 0123456789 TMP)
   add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/gitrevision.h
-    COMMAND ${CMAKE_COMMAND} -E echo_append "#define GITREVISION \"" > ${CMAKE_SOURCE_DIR}/gitrevision.h.tmp
-    COMMAND ${GIT_SCM} describe --tags --always --abbrev=7 --dirty=-modified >> ${CMAKE_SOURCE_DIR}/gitrevision.h.tmp
-    COMMAND ${CMAKE_COMMAND} -E echo_append "\"" >> ${CMAKE_SOURCE_DIR}/gitrevision.h.tmp
-    COMMAND sed -e N -e "s/\\n//g" ${CMAKE_SOURCE_DIR}/gitrevision.h.tmp > ${CMAKE_SOURCE_DIR}/gitrevision.h
-    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_SOURCE_DIR}/gitrevision.h.tmp
+    COMMAND ${CMAKE_COMMAND} -E echo_append "#define GITREVISION \"" > ${CMAKE_SOURCE_DIR}/gitrevision.h.${TMP}
+    COMMAND ${GIT_SCM} describe --tags --always --abbrev=7 --dirty=-modified >> ${CMAKE_SOURCE_DIR}/gitrevision.h.${TMP}
+    COMMAND ${CMAKE_COMMAND} -E echo_append "\"" >> ${CMAKE_SOURCE_DIR}/gitrevision.h.${TMP}
+    COMMAND sed -e N -e "s/\\n//g" ${CMAKE_SOURCE_DIR}/gitrevision.h.${TMP} > ${CMAKE_SOURCE_DIR}/gitrevision.h
+    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_SOURCE_DIR}/gitrevision.h.${TMP}
     DEPENDS ${GITDIR}/logs/HEAD
     VERBATIM
     )
