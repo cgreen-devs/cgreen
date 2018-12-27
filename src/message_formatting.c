@@ -80,7 +80,7 @@ static int find_index_of_difference(void *expected, void *actual, size_t size_to
     return -1;
 }
 
-static bool actual_value_not_necessary_for(Constraint *constraint, const char *actual_string, const char *actual_value_string) {
+static bool actual_value_not_necessary_for(CgreenConstraint *constraint, const char *actual_string, const char *actual_value_string) {
     (void)constraint; // UNUSED!
     return strings_are_equal(actual_string, actual_value_string) ||
             strings_are_equal(actual_string, "true") ||
@@ -88,7 +88,7 @@ static bool actual_value_not_necessary_for(Constraint *constraint, const char *a
 }
 
 
-bool parameters_are_not_valid_for(Constraint *constraint, intptr_t actual) {
+bool parameters_are_not_valid_for(CgreenConstraint *constraint, intptr_t actual) {
     char *message = validation_failure_message_for(constraint, actual);
 
     bool not_valid = (strlen(message) > 0);
@@ -98,7 +98,7 @@ bool parameters_are_not_valid_for(Constraint *constraint, intptr_t actual) {
     return not_valid;
 }
 
-char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
+char *validation_failure_message_for(CgreenConstraint *constraint, intptr_t actual) {
     const char *name_has_incorrect_size_message =
         "Wanted to compare contents with [%s],\n"
         "\t\tbut [%ld] was given for the comparison size.";
@@ -165,12 +165,12 @@ char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
 }
 
 
-static bool is_not_equal_to_string_constraint(Constraint *constraint) {
+static bool is_not_equal_to_string_constraint(CgreenConstraint *constraint) {
     return strstr(constraint->name, "not ") != NULL && strstr(constraint->name, "equal ") != NULL;
 }
 
 
-char *failure_message_for(Constraint *constraint, const char *actual_string, intptr_t actual_value) {
+char *failure_message_for(CgreenConstraint *constraint, const char *actual_string, intptr_t actual_value) {
     char actual_int_value_string[32];
     const char *constraint_as_string_format = "Expected [%s] to [%s]";
     const char *expected_value_string_format =  "[%s]";

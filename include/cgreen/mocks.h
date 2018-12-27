@@ -18,11 +18,11 @@ namespace cgreen {
    expect(<function>, when(<parameter>, <constraint>), will_return(<value>));
 */
 #define expect(f, ...) expect_(get_test_reporter(), STRINGIFY_TOKEN(f), __FILE__, __LINE__, \
-                               (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
+                               (CgreenConstraint *)__VA_ARGS__ +0, (CgreenConstraint *)0)
 #define always_expect(f, ...) always_expect_(get_test_reporter(), STRINGIFY_TOKEN(f), __FILE__, __LINE__, \
-                                             (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
+                                             (CgreenConstraint *)__VA_ARGS__ +0, (CgreenConstraint *)0)
 #define never_expect(f, ...) never_expect_(get_test_reporter(), STRINGIFY_TOKEN(f), __FILE__, __LINE__, \
-                                           (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
+                                           (CgreenConstraint *)__VA_ARGS__ +0, (CgreenConstraint *)0)
 
 
 #ifdef _MSC_VER

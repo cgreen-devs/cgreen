@@ -623,7 +623,7 @@ results.
 Here are the standard constraints...
 
 |=========================================================
-|*Constraint* |*Passes if actual value/expression...*
+|*CgreenConstraint* |*Passes if actual value/expression...*
 | _Basic_ |
 | `is_true` | evaluates to true, buy you can also just leave out the constraint,
               e.g. `assert_that(found)` if `found` is of boolean type
@@ -1702,7 +1702,7 @@ There is a multitude of constraints available (actually, exactly the
 same as for the assertions we saw earlier):
 
 |==========================================================================
-|*Constraint*                                             |*Type*
+|*CgreenConstraint*                                       |*Type*
 |`is_equal_to(value)`                                     | Integers
 |`is_not_equal_to(value)`                                 | Integers
 |`is_greater_than(value)`                                 | Integers
@@ -2014,7 +2014,7 @@ When it comes to double typed values this has spilled over even further. For
 double typed values we have
 
 |==========================================================================
-| *Constraint*
+| *CgreenConstraint*
 | `is_equal_to_double(value)`
 | `is_not_equal_to_double(value)`
 | `is_less_than_double(value)`

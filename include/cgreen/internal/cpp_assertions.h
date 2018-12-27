@@ -12,14 +12,14 @@ namespace cgreen {
 
 #define assert_that_constraint(actual, constraint) assert_that_(__FILE__, __LINE__, STRINGIFY_TOKEN(actual), actual, constraint)
 
-    void assert_that_(const char *file, int line, const char *actual_string, const std::string& actual, Constraint *constraint);
-    void assert_that_(const char *file, int line, const char *actual_string, const std::string *actual, Constraint *constraint);
-    void assert_that_(const char *file, int line, const char *actual_string, double actual, Constraint *constraint);
+    void assert_that_(const char *file, int line, const char *actual_string, const std::string& actual, CgreenConstraint *constraint);
+    void assert_that_(const char *file, int line, const char *actual_string, const std::string *actual, CgreenConstraint *constraint);
+    void assert_that_(const char *file, int line, const char *actual_string, double actual, CgreenConstraint *constraint);
 
     // this isn't declared in assertions.h because you can't have overloads for an extern "C"-declared function, so it seems
-    void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, Constraint *constraint);
+    void assert_that_(const char *file, int line, const char *actual_string, intptr_t actual, CgreenConstraint *constraint);
 
-    template <typename T> void assert_that_(const char *file, int line, const char *actual_string, T actual, Constraint *constraint) {
+    template <typename T> void assert_that_(const char *file, int line, const char *actual_string, T actual, CgreenConstraint *constraint) {
 
         if (typeid(actual) == typeid(std::string&) ||
             typeid(actual) == typeid(const std::string&) ||

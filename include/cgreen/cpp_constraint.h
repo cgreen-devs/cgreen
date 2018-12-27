@@ -8,22 +8,22 @@
 namespace cgreen {
 
 template<typename T>
-class CppConstraint : public Constraint {
+class CppConstraint : public CgreenConstraint {
  public:
     T expected_real_value;
     bool (*compare)(CppConstraint *, T);
 };
 
-Constraint *create_equal_to_string_constraint(const std::string& expected_value, const char *expected_value_name);
-Constraint *create_equal_to_string_constraint(const std::string* expected_value, const char *expected_value_name);
-Constraint *create_not_equal_to_string_constraint(const std::string& expected_value, const char *expected_value_name);
-Constraint *create_not_equal_to_string_constraint(const std::string* expected_value, const char *expected_value_name);
-Constraint *create_contains_string_constraint(const std::string& expected_value, const char *expected_value_name);
-Constraint *create_contains_string_constraint(const std::string* expected_value, const char *expected_value_name);
-Constraint *create_does_not_contain_string_constraint(const std::string& expected_value, const char *expected_value_name);
-Constraint *create_does_not_contain_string_constraint(const std::string* expected_value, const char *expected_value_name);
-Constraint *create_begins_with_string_constraint(const std::string& expected_value, const char *expected_value_name);
-Constraint *create_begins_with_string_constraint(const std::string* expected_value, const char *expected_value_name);
+CgreenConstraint *create_equal_to_string_constraint(const std::string& expected_value, const char *expected_value_name);
+CgreenConstraint *create_equal_to_string_constraint(const std::string* expected_value, const char *expected_value_name);
+CgreenConstraint *create_not_equal_to_string_constraint(const std::string& expected_value, const char *expected_value_name);
+CgreenConstraint *create_not_equal_to_string_constraint(const std::string* expected_value, const char *expected_value_name);
+CgreenConstraint *create_contains_string_constraint(const std::string& expected_value, const char *expected_value_name);
+CgreenConstraint *create_contains_string_constraint(const std::string* expected_value, const char *expected_value_name);
+CgreenConstraint *create_does_not_contain_string_constraint(const std::string& expected_value, const char *expected_value_name);
+CgreenConstraint *create_does_not_contain_string_constraint(const std::string* expected_value, const char *expected_value_name);
+CgreenConstraint *create_begins_with_string_constraint(const std::string& expected_value, const char *expected_value_name);
+CgreenConstraint *create_begins_with_string_constraint(const std::string* expected_value, const char *expected_value_name);
 
 
 template<typename T>
@@ -56,7 +56,7 @@ CppConstraint<T> *create_equal_to_value_constraint(CgreenValue cgreen_value, T e
 
     (void)cgreen_value;         /* Avoid warnings for UNUSED, which it is for now */
     
-    constraint->Constraint::compare = &compare_want_value;
+    constraint->CgreenConstraint::compare = &compare_want_value;
     constraint->execute = &test_want;
     constraint->name = "equal";
     constraint->expected_value = expected_value;

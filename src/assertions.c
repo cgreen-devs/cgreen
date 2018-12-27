@@ -21,7 +21,7 @@ const char *show_null_as_the_string_null(const char *string);
 
 
 void assert_core_(const char *file, int line, const char *actual_string, intptr_t actual,
-                  Constraint* constraint) {
+                  CgreenConstraint* constraint) {
 
     char *failure_message;
 
@@ -80,7 +80,7 @@ void assert_core_(const char *file, int line, const char *actual_string, intptr_
     free(failure_message);
 }
 
-void assert_that_double_(const char *file, int line, const char *expression, double actual, Constraint* constraint) {
+void assert_that_double_(const char *file, int line, const char *expression, double actual, CgreenConstraint* constraint) {
     BoxedDouble* boxed_actual;
 
     if (NULL != constraint && is_not_comparing(constraint)) {

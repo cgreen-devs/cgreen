@@ -48,47 +48,47 @@ static double absolute_tolerance = DBL_MIN / 1.0e-8;
 
 static double accuracy(int significant_figures, double largest);
 
-static bool compare_want_greater_value(Constraint *constraint, CgreenValue actual);
+static bool compare_want_greater_value(CgreenConstraint *constraint, CgreenValue actual);
 
-static bool compare_want_lesser_value(Constraint *constraint, CgreenValue actual);
+static bool compare_want_lesser_value(CgreenConstraint *constraint, CgreenValue actual);
 
-static bool compare_want_contents(Constraint *constraint, CgreenValue actual);
+static bool compare_want_contents(CgreenConstraint *constraint, CgreenValue actual);
 
-static bool compare_do_not_want_contents(Constraint *constraint, CgreenValue actual);
+static bool compare_do_not_want_contents(CgreenConstraint *constraint, CgreenValue actual);
 
-static bool compare_true(Constraint *constraint, CgreenValue actual);
-static void test_true(Constraint *constraint, const char *function, CgreenValue actual,
+static bool compare_true(CgreenConstraint *constraint, CgreenValue actual);
+static void test_true(CgreenConstraint *constraint, const char *function, CgreenValue actual,
                       const char *test_file, int test_line, TestReporter *reporter);
 
-static bool compare_want_string(Constraint *constraint, CgreenValue actual);
-static bool compare_do_not_want_string(Constraint *constraint, CgreenValue actual);
-static bool compare_want_substring(Constraint *constraint, CgreenValue actual);
-static bool compare_do_not_want_substring(Constraint *constraint, CgreenValue actual);
-static bool compare_want_beginning_of_string(Constraint *constraint, CgreenValue actual);
-static bool compare_do_not_want_beginning_of_string(Constraint *constraint, CgreenValue actual);
-static bool compare_want_end_of_string(Constraint *constraint, CgreenValue actual);
-static bool compare_do_not_want_end_of_string(Constraint *constraint, CgreenValue actual);
+static bool compare_want_string(CgreenConstraint *constraint, CgreenValue actual);
+static bool compare_do_not_want_string(CgreenConstraint *constraint, CgreenValue actual);
+static bool compare_want_substring(CgreenConstraint *constraint, CgreenValue actual);
+static bool compare_do_not_want_substring(CgreenConstraint *constraint, CgreenValue actual);
+static bool compare_want_beginning_of_string(CgreenConstraint *constraint, CgreenValue actual);
+static bool compare_do_not_want_beginning_of_string(CgreenConstraint *constraint, CgreenValue actual);
+static bool compare_want_end_of_string(CgreenConstraint *constraint, CgreenValue actual);
+static bool compare_do_not_want_end_of_string(CgreenConstraint *constraint, CgreenValue actual);
 
-static bool compare_want_double(Constraint *constraint, CgreenValue actual);
-static void test_want_double(Constraint *constraint, const char *function, CgreenValue actual,
+static bool compare_want_double(CgreenConstraint *constraint, CgreenValue actual);
+static void test_want_double(CgreenConstraint *constraint, const char *function, CgreenValue actual,
                              const char *test_file, int test_line, TestReporter *reporter);
-static bool compare_do_not_want_double(Constraint *constraint, CgreenValue actual);
-static void test_do_not_want_double(Constraint *constraint, const char *function, CgreenValue actual,
+static bool compare_do_not_want_double(CgreenConstraint *constraint, CgreenValue actual);
+static void test_do_not_want_double(CgreenConstraint *constraint, const char *function, CgreenValue actual,
                                     const char *test_file, int test_line, TestReporter *reporter);
-static bool compare_want_lesser_double(Constraint *constraint, CgreenValue actual);
-static bool compare_want_greater_double(Constraint *constraint, CgreenValue actual);
+static bool compare_want_lesser_double(CgreenConstraint *constraint, CgreenValue actual);
+static bool compare_want_greater_double(CgreenConstraint *constraint, CgreenValue actual);
 
-static void set_contents(Constraint *constraint, const char *function, CgreenValue actual,
+static void set_contents(CgreenConstraint *constraint, const char *function, CgreenValue actual,
                          const char *test_file, int test_line, TestReporter *reporter);
 
 static const char *default_actual_value_message = "\n\t\tactual value:\t\t\t[%" PRIdPTR "]";
 static const char *default_expected_value_message = "\t\texpected value:\t\t\t[%" PRIdPTR "]";
 
-static void execute_sideeffect(Constraint *constraint, const char *function, CgreenValue actual,
+static void execute_sideeffect(CgreenConstraint *constraint, const char *function, CgreenValue actual,
                          const char *test_file, int test_line, TestReporter *reporter);
 
-Constraint *create_constraint() {
-    Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));
+CgreenConstraint *create_constraint() {
+    CgreenConstraint *constraint = (CgreenConstraint *)malloc(sizeof(CgreenConstraint));
     /* TODO: setting this to NULL as an implicit type check :( */
     constraint->parameter_name = NULL;
     constraint->destroy = &destroy_empty_constraint;
@@ -100,8 +100,8 @@ Constraint *create_constraint() {
     return constraint;
 }
 
-static Constraint *create_constraint_expecting(CgreenValue expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+static CgreenConstraint *create_constraint_expecting(CgreenValue expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint();
 
     constraint->expected_value = expected_value;
     constraint->expected_value_name = string_dup(expected_value_name);
@@ -109,7 +109,7 @@ static Constraint *create_constraint_expecting(CgreenValue expected_value, const
     return constraint;
 }
 
-void destroy_empty_constraint(Constraint *constraint) {
+void destroy_empty_constraint(CgreenConstraint *constraint) {
     constraint->name = NULL;
     constraint->parameter_name = NULL;
     constraint->compare = NULL;
@@ -122,28 +122,28 @@ void destroy_empty_constraint(Constraint *constraint) {
     free(constraint);
 }
 
-void destroy_static_constraint(Constraint *constraint) {
+void destroy_static_constraint(CgreenConstraint *constraint) {
     /* static constraints helpers (e.g. is_null) act as singletons, and are never destroyed */
     (void)constraint;
 }
 
-void destroy_constraint(Constraint *constraint) {
+void destroy_constraint(CgreenConstraint *constraint) {
     if (constraint->destroy != NULL)
         (*constraint->destroy)(constraint);
 }
 
 void destroy_constraints(va_list constraints) {
-    Constraint *constraint = NULL;
-    while ((constraint = va_arg(constraints, Constraint *)) != (Constraint *)0) {
+    CgreenConstraint *constraint = NULL;
+    while ((constraint = va_arg(constraints, CgreenConstraint *)) != (CgreenConstraint *)0) {
         destroy_constraint(constraint);
     }
 }
 
-bool constraint_is_for_parameter(const Constraint *constraint, const char *parameter) {
+bool constraint_is_for_parameter(const CgreenConstraint *constraint, const char *parameter) {
     return !constraint_is_not_for_parameter(constraint, parameter);
 }
 
-bool constraint_is_not_for_parameter(const Constraint *constraint, const char *parameter) {
+bool constraint_is_not_for_parameter(const CgreenConstraint *constraint, const char *parameter) {
     if (is_not_comparing(constraint) && is_not_content_setting(constraint)) {
         return true;
     }
@@ -151,8 +151,8 @@ bool constraint_is_not_for_parameter(const Constraint *constraint, const char *p
     return strcmp(constraint->parameter_name, parameter) != 0;
 }
 
-Constraint *create_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_integer_value(expected_value), expected_value_name);
+CgreenConstraint *create_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_integer_value(expected_value), expected_value_name);
     constraint->type = VALUE_COMPARER;
 
     constraint->compare = &compare_want_value;
@@ -163,8 +163,8 @@ Constraint *create_equal_to_value_constraint(intptr_t expected_value, const char
     return constraint;
 }
 
-Constraint *create_equal_to_hexvalue_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_integer_value(expected_value), expected_value_name);
+CgreenConstraint *create_equal_to_hexvalue_constraint(intptr_t expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_integer_value(expected_value), expected_value_name);
     constraint->type = VALUE_COMPARER;
 
     constraint->compare = &compare_want_value;
@@ -177,8 +177,8 @@ Constraint *create_equal_to_hexvalue_constraint(intptr_t expected_value, const c
     return constraint;
 }
 
-Constraint *create_not_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_integer_value(expected_value), expected_value_name);
+CgreenConstraint *create_not_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_integer_value(expected_value), expected_value_name);
     constraint->type = VALUE_COMPARER;
 
     constraint->compare = &compare_do_not_want_value;
@@ -189,8 +189,8 @@ Constraint *create_not_equal_to_value_constraint(intptr_t expected_value, const 
     return constraint;
 }
 
-Constraint *create_less_than_value_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_integer_value(expected_value), expected_value_name);
+CgreenConstraint *create_less_than_value_constraint(intptr_t expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_integer_value(expected_value), expected_value_name);
     constraint->type = VALUE_COMPARER;
 
     constraint->compare = &compare_want_lesser_value;
@@ -202,8 +202,8 @@ Constraint *create_less_than_value_constraint(intptr_t expected_value, const cha
     return constraint;
 }
 
-Constraint *create_greater_than_value_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_integer_value(expected_value), expected_value_name);
+CgreenConstraint *create_greater_than_value_constraint(intptr_t expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_integer_value(expected_value), expected_value_name);
     constraint->type = VALUE_COMPARER;
 
     constraint->compare = &compare_want_greater_value;
@@ -215,8 +215,8 @@ Constraint *create_greater_than_value_constraint(intptr_t expected_value, const 
     return constraint;
 }
 
-Constraint *create_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare, const char *compared_pointer_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_pointer_value(pointer_to_compare), compared_pointer_name);
+CgreenConstraint *create_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare, const char *compared_pointer_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_pointer_value(pointer_to_compare), compared_pointer_name);
     constraint->type = CONTENT_COMPARER;
 
     constraint->compare = &compare_want_contents;
@@ -227,8 +227,8 @@ Constraint *create_equal_to_contents_constraint(void *pointer_to_compare, size_t
     return constraint;
 }
 
-Constraint *create_not_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare, const char *compared_pointer_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_pointer_value(pointer_to_compare), compared_pointer_name);
+CgreenConstraint *create_not_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare, const char *compared_pointer_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_pointer_value(pointer_to_compare), compared_pointer_name);
     constraint->type = CONTENT_COMPARER;
 
     constraint->compare = &compare_do_not_want_contents;
@@ -239,8 +239,8 @@ Constraint *create_not_equal_to_contents_constraint(void *pointer_to_compare, si
     return constraint;
 }
 
-Constraint *create_equal_to_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
+CgreenConstraint *create_equal_to_string_constraint(const char* expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_want_string;
@@ -252,8 +252,8 @@ Constraint *create_equal_to_string_constraint(const char* expected_value, const 
     return constraint;
 }
 
-Constraint *create_not_equal_to_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
+CgreenConstraint *create_not_equal_to_string_constraint(const char* expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_do_not_want_string;
@@ -265,8 +265,8 @@ Constraint *create_not_equal_to_string_constraint(const char* expected_value, co
     return constraint;
 }
 
-Constraint *create_contains_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
+CgreenConstraint *create_contains_string_constraint(const char* expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_want_substring;
@@ -278,8 +278,8 @@ Constraint *create_contains_string_constraint(const char* expected_value, const 
     return constraint;
 }
 
-Constraint *create_does_not_contain_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
+CgreenConstraint *create_does_not_contain_string_constraint(const char* expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_do_not_want_substring;
@@ -291,8 +291,8 @@ Constraint *create_does_not_contain_string_constraint(const char* expected_value
     return constraint;
 }
 
-Constraint *create_begins_with_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
+CgreenConstraint *create_begins_with_string_constraint(const char* expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_want_beginning_of_string;
@@ -304,8 +304,8 @@ Constraint *create_begins_with_string_constraint(const char* expected_value, con
     return constraint;
 }
 
-Constraint *create_does_not_begin_with_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
+CgreenConstraint *create_does_not_begin_with_string_constraint(const char* expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_do_not_want_beginning_of_string;
@@ -317,8 +317,8 @@ Constraint *create_does_not_begin_with_string_constraint(const char* expected_va
     return constraint;
 }
 
-Constraint *create_ends_with_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
+CgreenConstraint *create_ends_with_string_constraint(const char* expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_want_end_of_string;
@@ -330,8 +330,8 @@ Constraint *create_ends_with_string_constraint(const char* expected_value, const
     return constraint;
 }
 
-Constraint *create_does_not_end_with_string_constraint(const char* expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
+CgreenConstraint *create_does_not_end_with_string_constraint(const char* expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_string_value(expected_value), expected_value_name);
     constraint->type = STRING_COMPARER;
 
     constraint->compare = &compare_do_not_want_end_of_string;
@@ -343,8 +343,8 @@ Constraint *create_does_not_end_with_string_constraint(const char* expected_valu
     return constraint;
 }
 
-Constraint *create_equal_to_double_constraint(double expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_double_value(expected_value), expected_value_name);
+CgreenConstraint *create_equal_to_double_constraint(double expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_double_value(expected_value), expected_value_name);
     constraint->type = DOUBLE_COMPARER;
 
     constraint->compare = &compare_want_double;
@@ -355,8 +355,8 @@ Constraint *create_equal_to_double_constraint(double expected_value, const char 
     return constraint;
 }
 
-Constraint *create_not_equal_to_double_constraint(double expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_double_value(expected_value), expected_value_name);
+CgreenConstraint *create_not_equal_to_double_constraint(double expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_double_value(expected_value), expected_value_name);
     constraint->type = DOUBLE_COMPARER;
 
     constraint->compare = &compare_do_not_want_double;
@@ -367,8 +367,8 @@ Constraint *create_not_equal_to_double_constraint(double expected_value, const c
     return constraint;
 }
 
-Constraint *create_less_than_double_constraint(double expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_double_value(expected_value), expected_value_name);
+CgreenConstraint *create_less_than_double_constraint(double expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_double_value(expected_value), expected_value_name);
     constraint->type = DOUBLE_COMPARER;
 
     constraint->compare = &compare_want_lesser_double;
@@ -380,8 +380,8 @@ Constraint *create_less_than_double_constraint(double expected_value, const char
     return constraint;
 }
 
-Constraint *create_greater_than_double_constraint(double expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint_expecting(make_cgreen_double_value(expected_value), expected_value_name);
+CgreenConstraint *create_greater_than_double_constraint(double expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint_expecting(make_cgreen_double_value(expected_value), expected_value_name);
     constraint->type = DOUBLE_COMPARER;
 
     constraint->compare = &compare_want_greater_double;
@@ -393,8 +393,8 @@ Constraint *create_greater_than_double_constraint(double expected_value, const c
     return constraint;
 }
 
-Constraint *create_return_value_constraint(intptr_t value_to_return) {
-    Constraint* constraint = create_constraint();
+CgreenConstraint *create_return_value_constraint(intptr_t value_to_return) {
+    CgreenConstraint* constraint = create_constraint();
     constraint->type = RETURN_VALUE;
 
     constraint->compare = &compare_true;
@@ -405,8 +405,8 @@ Constraint *create_return_value_constraint(intptr_t value_to_return) {
     return constraint;
 }
 
-Constraint *create_return_double_value_constraint(double value_to_return) {
-    Constraint* constraint = create_constraint();
+CgreenConstraint *create_return_double_value_constraint(double value_to_return) {
+    CgreenConstraint* constraint = create_constraint();
     constraint->type = RETURN_VALUE;
 
     constraint->compare = &compare_true;
@@ -417,8 +417,8 @@ Constraint *create_return_double_value_constraint(double value_to_return) {
     return constraint;
 }
 
-Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set, size_t size_to_set) {
-    Constraint* constraint = create_constraint();
+CgreenConstraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set, size_t size_to_set) {
+    CgreenConstraint* constraint = create_constraint();
     constraint->type = CONTENT_SETTER;
 
     constraint->compare = &compare_true;
@@ -431,8 +431,8 @@ Constraint *create_set_parameter_value_constraint(const char *parameter_name, in
     return constraint;
 }
 
-Constraint *create_with_side_effect_constraint(void (*callback)(void *), void *data) {
-    Constraint* constraint = create_constraint();
+CgreenConstraint *create_with_side_effect_constraint(void (*callback)(void *), void *data) {
+    CgreenConstraint* constraint = create_constraint();
     constraint->type = CALL;
 
     constraint->name = "cause side effect";
@@ -443,24 +443,24 @@ Constraint *create_with_side_effect_constraint(void (*callback)(void *), void *d
 	return constraint;
 }
 
-bool compare_want_value(Constraint *constraint, CgreenValue actual) {
+bool compare_want_value(CgreenConstraint *constraint, CgreenValue actual) {
     return constraint->expected_value.value.integer_value == actual.value.integer_value;
 }
 
-bool compare_do_not_want_value(Constraint *constraint, CgreenValue actual) {
+bool compare_do_not_want_value(CgreenConstraint *constraint, CgreenValue actual) {
     return !compare_want_value(constraint, actual);
 }
 
-bool compare_want_greater_value(Constraint *constraint, CgreenValue actual) {
+bool compare_want_greater_value(CgreenConstraint *constraint, CgreenValue actual) {
     return actual.value.integer_value > constraint->expected_value.value.integer_value ;
 }
 
-bool compare_want_lesser_value(Constraint *constraint, CgreenValue actual) {
+bool compare_want_lesser_value(CgreenConstraint *constraint, CgreenValue actual) {
     return actual.value.integer_value < constraint->expected_value.value.integer_value;
 }
 
 
-bool compare_want_contents(Constraint *constraint, CgreenValue actual) {
+bool compare_want_contents(CgreenConstraint *constraint, CgreenValue actual) {
     /* We can't inspect the contents of a NULL pointer, so comparison always fails */
     /* TODO: This should really be .pointer_value */
     if ((void *)actual.value.integer_value == NULL) {
@@ -471,7 +471,7 @@ bool compare_want_contents(Constraint *constraint, CgreenValue actual) {
                        (void *)actual.value.integer_value, constraint->size_of_expected_value);
 }
 
-bool compare_do_not_want_contents(Constraint *constraint, CgreenValue actual) {
+bool compare_do_not_want_contents(CgreenConstraint *constraint, CgreenValue actual) {
     /* we can't inspect the contents of a NULL pointer, so comparison always fails */
     if ((void *)actual.value.integer_value == NULL) {
         return 0;
@@ -480,7 +480,7 @@ bool compare_do_not_want_contents(Constraint *constraint, CgreenValue actual) {
     return !compare_want_contents(constraint, actual);
 }
 
-static void set_contents(Constraint *constraint, const char *function, CgreenValue actual,
+static void set_contents(CgreenConstraint *constraint, const char *function, CgreenValue actual,
                          const char *test_file, int test_line, TestReporter *reporter) {
     char *message;
     (void)function;
@@ -503,7 +503,7 @@ static void set_contents(Constraint *constraint, const char *function, CgreenVal
     memmove((void *)actual.value.integer_value, constraint->expected_value.value.pointer_value, constraint->size_of_expected_value);
 }
 
-static void execute_sideeffect(Constraint *constraint, const char *function, CgreenValue actual,
+static void execute_sideeffect(CgreenConstraint *constraint, const char *function, CgreenValue actual,
                                const char *test_file, int test_line, TestReporter *reporter) {
 	(void)function;
 	(void)actual;
@@ -521,7 +521,7 @@ static void execute_sideeffect(Constraint *constraint, const char *function, Cgr
 }
 
 
-void test_want(Constraint *constraint, const char *function, CgreenValue actual,
+void test_want(CgreenConstraint *constraint, const char *function, CgreenValue actual,
                const char *test_file, int test_line, TestReporter *reporter) {
     char *message;
     char parameter_name_actual_string[255];
@@ -554,19 +554,19 @@ void test_want(Constraint *constraint, const char *function, CgreenValue actual,
     free(message);
 }
 
-static bool compare_want_string(Constraint *constraint, CgreenValue actual) {
+static bool compare_want_string(CgreenConstraint *constraint, CgreenValue actual) {
     return strings_are_equal(constraint->expected_value.value.string_value, actual.value.string_value);
 }
 
-static bool compare_do_not_want_string(Constraint *constraint, CgreenValue actual) {
+static bool compare_do_not_want_string(CgreenConstraint *constraint, CgreenValue actual) {
     return !compare_want_string(constraint, actual);
 }
 
-static bool compare_do_not_want_substring(Constraint *constraint, CgreenValue actual) {
+static bool compare_do_not_want_substring(CgreenConstraint *constraint, CgreenValue actual) {
     return !compare_want_substring(constraint, actual);
 }
 
-static bool compare_want_substring(Constraint *constraint, CgreenValue actual) {
+static bool compare_want_substring(CgreenConstraint *constraint, CgreenValue actual) {
     return string_contains(actual.value.string_value, constraint->expected_value.value.string_value);
 }
 
@@ -583,20 +583,20 @@ static unsigned int strpos(const char *haystack, const char *needle)
     return NOT_FOUND;
 }
 
-static bool compare_want_beginning_of_string(Constraint *constraint, CgreenValue actual) {
+static bool compare_want_beginning_of_string(CgreenConstraint *constraint, CgreenValue actual) {
     return strpos(actual.value.string_value, constraint->expected_value.value.string_value) == 0;
 }
 
-static bool compare_do_not_want_beginning_of_string(Constraint *constraint, CgreenValue actual) {
+static bool compare_do_not_want_beginning_of_string(CgreenConstraint *constraint, CgreenValue actual) {
     return strpos(actual.value.string_value, constraint->expected_value.value.string_value) != 0;
 }
 
-static bool compare_want_end_of_string(Constraint *constraint, CgreenValue actual) {
+static bool compare_want_end_of_string(CgreenConstraint *constraint, CgreenValue actual) {
     return strpos(actual.value.string_value, constraint->expected_value.value.string_value) ==
         strlen(actual.value.string_value) - strlen(constraint->expected_value.value.string_value);
 }
 
-static bool compare_do_not_want_end_of_string(Constraint *constraint, CgreenValue actual) {
+static bool compare_do_not_want_end_of_string(CgreenConstraint *constraint, CgreenValue actual) {
     return strpos(actual.value.string_value, constraint->expected_value.value.string_value) !=
         strlen(actual.value.string_value) - strlen(constraint->expected_value.value.string_value);
 }
@@ -605,19 +605,19 @@ static bool compare_do_not_want_end_of_string(Constraint *constraint, CgreenValu
 
 // Double
 
-static bool compare_want_double(Constraint *constraint, CgreenValue actual) {
+static bool compare_want_double(CgreenConstraint *constraint, CgreenValue actual) {
     return doubles_are_equal(constraint->expected_value.value.double_value, actual.value.double_value);
 }
 
-static bool compare_want_lesser_double(Constraint *constraint, CgreenValue actual) {
+static bool compare_want_lesser_double(CgreenConstraint *constraint, CgreenValue actual) {
     return double_is_lesser(constraint->expected_value.value.double_value, actual.value.double_value);
 }
 
-static bool compare_want_greater_double(Constraint *constraint, CgreenValue actual) {
+static bool compare_want_greater_double(CgreenConstraint *constraint, CgreenValue actual) {
     return double_is_greater(constraint->expected_value.value.double_value, actual.value.double_value);
 }
 
-static void test_want_double(Constraint *constraint, const char *function, CgreenValue actual,
+static void test_want_double(CgreenConstraint *constraint, const char *function, CgreenValue actual,
                              const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
             reporter,
@@ -631,11 +631,11 @@ static void test_want_double(Constraint *constraint, const char *function, Cgree
             constraint->parameter_name);
 }
 
-static bool compare_do_not_want_double(Constraint *constraint, CgreenValue actual) {
+static bool compare_do_not_want_double(CgreenConstraint *constraint, CgreenValue actual) {
     return !compare_want_double(constraint, actual);
 }
 
-static void test_do_not_want_double(Constraint *constraint, const char *function, CgreenValue actual,
+static void test_do_not_want_double(CgreenConstraint *constraint, const char *function, CgreenValue actual,
                                     const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
             reporter,
@@ -649,23 +649,23 @@ static void test_do_not_want_double(Constraint *constraint, const char *function
             constraint->parameter_name);
 }
 
-void destroy_double_constraint(Constraint *constraint) {
+void destroy_double_constraint(CgreenConstraint *constraint) {
     destroy_empty_constraint(constraint);
 }
 
-void destroy_string_constraint(Constraint *constraint) {
+void destroy_string_constraint(CgreenConstraint *constraint) {
     destroy_cgreen_value(constraint->expected_value);
     destroy_empty_constraint(constraint);
 }
 
-static bool compare_true(Constraint *constraint, CgreenValue actual) {
+static bool compare_true(CgreenConstraint *constraint, CgreenValue actual) {
     (void)constraint;
     (void)actual;
 
     return true;
 }
 
-static void test_true(Constraint *constraint, const char *function, CgreenValue actual,
+static void test_true(CgreenConstraint *constraint, const char *function, CgreenValue actual,
                       const char *test_file, int test_line, TestReporter *reporter) {
     (void)constraint;
     (void)function;
@@ -675,51 +675,51 @@ static void test_true(Constraint *constraint, const char *function, CgreenValue 
     (void)reporter;
 }
 
-bool values_are_strings_in(const Constraint *constraint) {
+bool values_are_strings_in(const CgreenConstraint *constraint) {
     return is_string_comparing(constraint) &&
         (constraint->expected_value.value.string_value != NULL);
 }
 
-bool no_expected_value_in(const Constraint *constraint) {
+bool no_expected_value_in(const CgreenConstraint *constraint) {
     return constraint->destroy == destroy_static_constraint;
 }
 
-bool is_content_comparing(const Constraint *constraint) {
+bool is_content_comparing(const CgreenConstraint *constraint) {
     return constraint->type == CONTENT_COMPARER;
 }
 
-bool is_content_setting(const Constraint *constraint) {
+bool is_content_setting(const CgreenConstraint *constraint) {
     return constraint->type == CONTENT_SETTER;
 }
 
-bool is_not_content_setting(const Constraint *constraint) {
+bool is_not_content_setting(const CgreenConstraint *constraint) {
     return !is_content_setting(constraint);
 }
 
-bool is_string_comparing(const Constraint *constraint) {
+bool is_string_comparing(const CgreenConstraint *constraint) {
     return constraint->type == STRING_COMPARER;
 }
 
-bool is_double_comparing(const Constraint *constraint) {
+bool is_double_comparing(const CgreenConstraint *constraint) {
     return constraint->type == DOUBLE_COMPARER;
 }
 
-bool is_comparing(const Constraint *constraint) {
+bool is_comparing(const CgreenConstraint *constraint) {
     return is_string_comparing(constraint) ||
             is_content_comparing(constraint) ||
             is_double_comparing(constraint) ||
             constraint->type == VALUE_COMPARER;
 }
 
-bool is_not_comparing(const Constraint *constraint) {
+bool is_not_comparing(const CgreenConstraint *constraint) {
     return !is_comparing(constraint);
 }
 
-bool is_parameter(const Constraint *constraint) {
+bool is_parameter(const CgreenConstraint *constraint) {
     return is_comparing(constraint) || is_content_setting(constraint);
 }
 
-bool constraint_is_for_parameter_in(const Constraint *constraint, const char *names) {
+bool constraint_is_for_parameter_in(const CgreenConstraint *constraint, const char *names) {
     int i;
     bool found = false;
 
