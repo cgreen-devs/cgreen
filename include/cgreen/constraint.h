@@ -81,6 +81,10 @@ Constraint *create_return_double_value_constraint(double value_to_return);
 Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set, size_t size_to_set);
 Constraint *create_with_side_effect_constraint(void (*callback)(void *), void *data);
 
+/* Utility: */
+int get_significant_figures(void);
+void significant_figures_for_assert_double_are(int figures);
+
 #ifdef __cplusplus
     }
 }

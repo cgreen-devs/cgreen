@@ -32,11 +32,6 @@ namespace cgreen {
 #define pass_test() assert_true(true)
 #define fail_test(...) assert_true_with_message(false, __VA_ARGS__)
 
-
-/* Utility: */
-int get_significant_figures(void);
-void significant_figures_for_assert_double_are(int figures);
-
 #include <cgreen/legacy.h>
 
 #ifdef __cplusplus
