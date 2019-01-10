@@ -34,15 +34,24 @@ static char *concat(char *output, char *buffer) {
     return output;
 }
 
-static int mocked_printer(const char *format, ...) {
+static int mocked_vprinter(const char *format, va_list ap) {
     char buffer[10000];
-    va_list ap;
-    va_start(ap, format);
+
     vsprintf(buffer, format, ap);
-    va_end(ap);
 
     output = concat(output, buffer);
     return strlen(output);
+}
+
+static int mocked_printer(const char *format, ...) {
+   int result = 0;
+
+   va_list ap;
+   va_start(ap, format);
+   result = mocked_vprinter(format, ap);
+   va_end(ap);
+
+   return result;
 }
 
 static TestReporter *reporter;
@@ -58,6 +67,7 @@ static void text_reporter_tests_setup(void) {
 
     clear_output();
     set_text_reporter_printer(reporter, mocked_printer);
+    set_text_reporter_vprinter(reporter, mocked_vprinter);
 }
 
 static void text_reporter_tests_teardown(void) {
@@ -142,6 +152,30 @@ Ensure(TextReporter, will_report_failed_once_for_each_fail) {
     assert_that(output, is_equal_to_string(""));
 }
 
+static void wrapped_show_fail(TestReporter *reporter, const char *file, int line,
+        const char *message, ...) {
+   va_list arguments;
+   va_start(arguments, message);
+   reporter->show_fail(reporter, file, line, message, arguments);
+   va_end(arguments);
+}
+
+Ensure(TextReporter, will_use_arguments_for_show_fail) {
+    reporter->start_test(reporter, "test_name");
+
+    reporter->failures++;   // Simulating a failed assert
+    wrapped_show_fail(reporter, "file", 2, "test_case %s requires %i arguments", "Foo", 2);
+
+    assert_that(output, contains_string("file:2: Failure"));
+    assert_that(output, contains_string("test_case Foo requires 2 arguments"));
+
+    clear_output();
+
+    // Must indicate test case completion before calling finish_test()
+    send_reporter_completion_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, NULL);
+    assert_that(output, is_equal_to_string(""));
+}
 
 Ensure(TextReporter, will_report_non_finishing_test) {
     const int line = 666;
