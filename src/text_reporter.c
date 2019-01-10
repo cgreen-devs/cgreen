@@ -42,6 +42,7 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
  */
 typedef struct {
     TextPrinter *printer;
+    TextVPrinter *vprinter;
     int depth;
 } TextMemo;
 
@@ -51,6 +52,10 @@ void set_text_reporter_printer(TestReporter *reporter, TextPrinter *new_printer)
     memo->printer = new_printer;
 }
 
+void set_text_reporter_vprinter(TestReporter *reporter, TextVPrinter *new_vprinter) {
+    TextMemo *memo = (TextMemo *)reporter->memo;
+    memo->vprinter = new_vprinter;
+}
 
 TestReporter *create_text_reporter(void) {
     TextMemo *memo;
@@ -75,6 +80,7 @@ TestReporter *create_text_reporter(void) {
     reporter->finish_suite = &text_reporter_finish_suite;
 
     set_text_reporter_printer(reporter, printf);
+    set_text_reporter_vprinter(reporter, vprintf);
 
     return reporter;
 }
@@ -251,9 +257,6 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
 
 static void show_fail(TestReporter *reporter, const char *file, int line,
                       const char *message, va_list arguments) {
-    va_list temp;
-    va_copy(temp, arguments);
-    char buffer[message ? 1 + vsnprintf(NULL, 0, message, temp) : 1000];
     TextMemo *memo = (TextMemo *)reporter->memo;
     if (have_quiet_mode(reporter)) memo->printer("\n");
     memo->printer("%s:%d: ", file, line);
@@ -263,11 +266,10 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
     memo->printer("\n\t");
     // Simplify *printf statements for more robust cross-platform logging
     if (message == NULL) {
-        vsnprintf(buffer, sizeof(buffer), "<FATAL: NULL for failure message>", arguments);
+        memo->printer("<FATAL: NULL for failure message>");
     } else {
-        vsnprintf(buffer, sizeof(buffer), message, arguments);
+        memo->vprinter(message, arguments);
     }
-    memo->printer("%s", buffer);
     memo->printer("\n");
     memo->printer("\n");
     fflush(NULL);
@@ -275,9 +277,6 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
 
 static void show_incomplete(TestReporter *reporter, const char *file, int line,
                             const char *message, va_list arguments) {
-    va_list temp;
-    va_copy(temp, arguments);
-    char buffer[message ? 1 + vsnprintf(NULL, 0, message, temp) : 1000];
     TextMemo *memo = (TextMemo *)reporter->memo;
 
     memo->printer("%s:%d: ", file, line);
@@ -288,8 +287,12 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line,
                     memo);
 
     memo->printer("\n\t");
-    vsnprintf(buffer, sizeof(buffer), message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
-    memo->printer(buffer);
+    if (message == NULL) {
+        memo->printer("Test terminated unexpectedly, "
+                "likely from a non-standard exception or Posix signal");
+    } else {
+        memo->vprinter(message, arguments);
+    }
     memo->printer("\n");
     memo->printer("\n");
     fflush(NULL);
