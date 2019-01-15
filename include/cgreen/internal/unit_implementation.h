@@ -29,7 +29,7 @@ typedef struct {
 #define spec_name(contextName, testName) CgreenSpec__##contextName##__##testName##__
 
 //This gives better error messages at the cost of duplication
-#define ENSURE_VA_NUM_ARGS(...) ENSURE_VA_NUM_ARGS_IMPL_((__VA_ARGS__, _CALLED_WITH_TOO_MANY_ARGUMENTS,  WithContextAndSpecificationName,  WithSpecificationName))
+#define ENSURE_VA_NUM_ARGS(...) ENSURE_VA_NUM_ARGS_IMPL_((__VA_ARGS__, _CALLED_WITH_TOO_MANY_ARGUMENTS,  WithContextAndSpecificationName,  WithSpecificationName, DummyToFillVaArgs))
 #define ENSURE_VA_NUM_ARGS_IMPL_(tuple) ENSURE_VA_NUM_ARGS_IMPL tuple
 
 #define ENSURE_VA_NUM_ARGS_IMPL(_1, _2, _3, _4, N, ...) N
@@ -43,14 +43,14 @@ typedef struct {
 
 #define Ensure_NARG(...) ENSURE_macro_dispatcher(Ensure, __VA_ARGS__)
 
-#define EnsureWithContextAndSpecificationName(skip, contextName, specName, ...) \
+#define EnsureWithContextAndSpecificationName(skip, contextName, specName) \
     static void contextName##__##specName (void);\
     CgreenTest spec_name(contextName, specName) = { skip, &contextFor##contextName, STRINGIFY_TOKEN(specName), &contextName##__##specName, __FILE__, __LINE__ }; \
     static void contextName##__##specName (void)
 
 extern CgreenContext defaultContext;
 
-#define EnsureWithSpecificationName(skip, specName, ...)   \
+#define EnsureWithSpecificationName(skip, specName) \
     static void specName (void);\
     CgreenTest spec_name(default, specName) = { skip, &defaultContext, STRINGIFY_TOKEN(specName), &specName, __FILE__, __LINE__ }; \
     static void specName (void)
@@ -66,7 +66,8 @@ extern CgreenContext defaultContext;
         }                                                               \
         static void teardown(void) {                                    \
             if (AfterEach_For_##subject != NULL) AfterEach_For_##subject(); \
-        }
+        }                                                               \
+        typedef struct Dummy_ ## subject { int x; } Dummy_ ## subject ## _t
 
 #define BeforeEachImplementation(subject) \
         void BeforeEach_For_##subject##_Function(void);                 \

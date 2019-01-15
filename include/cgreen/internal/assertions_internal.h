@@ -16,7 +16,7 @@ namespace cgreen {
 #endif
 
 //At the cost of duplication, these macros now give more descriptive error messages
-#define ASSERT_THAT_VA_NUM_ARGS(...) ASSERT_THAT_VA_NUM_ARGS_IMPL_((__VA_ARGS__, _CALLED_WITH_TOO_MANY_ARGS,  _constraint,  _expression))
+#define ASSERT_THAT_VA_NUM_ARGS(...) ASSERT_THAT_VA_NUM_ARGS_IMPL_((__VA_ARGS__, _CALLED_WITH_TOO_MANY_ARGS,  _constraint,  _expression, DummyToFillVaArgs))
 #define ASSERT_THAT_VA_NUM_ARGS_IMPL_(tuple) ASSERT_THAT_VA_NUM_ARGS_IMPL tuple
 
 #define ASSERT_THAT_VA_NUM_ARGS_IMPL(_1, _2, _3, N, ...) N
