@@ -31,17 +31,25 @@ static char *concat(char *output, char *buffer) {
     return output;
 }
 
-static int mocked_printer(FILE *stream, const char *format, ...) {
-    char buffer[10000];
-    va_list ap;
-    va_start(ap, format);
-    vsprintf(buffer, format, ap);
-    va_end(ap);
-
+static int mocked_vprinter(FILE *stream, const char *format, va_list ap) {
     (void)stream;               /* Unused */
+
+    char buffer[10000];
+    vsprintf(buffer, format, ap);
     
     output = concat(output, buffer);
     return strlen(output);
+}
+
+static int mocked_printer(FILE *stream, const char *format, ...) {
+    int result = 0;
+
+    va_list ap;
+    va_start(ap, format);
+    result = mocked_vprinter(stream, format, ap);
+    va_end(ap);
+
+    return result;
 }
 
 static TestReporter *reporter;
@@ -58,6 +66,7 @@ static void setup_cdash_reporter_tests(void) {
 
     clear_output();
     set_cdash_reporter_printer(reporter, mocked_printer);
+    set_cdash_reporter_vprinter(reporter, mocked_vprinter);
 }
 
 static void teardown_cdash_reporter_tests(void) {
@@ -126,6 +135,30 @@ Ensure(CDashReporter, will_report_failed_once_for_each_fail) {
 
     clear_output();
     
+    // Must indicate test case completion before calling finish_test()
+    send_reporter_completion_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, NULL);
+    assert_that(output, is_equal_to_string(""));
+}
+
+static void wrapped_show_fail(TestReporter *reporter, const char *file, int line,
+        const char *message, ...) {
+   va_list arguments;
+   va_start(arguments, message);
+   reporter->show_fail(reporter, file, line, message, arguments);
+   va_end(arguments);
+}
+
+Ensure(CDashReporter, will_use_arguments_for_show_fail) {
+    reporter->start_test(reporter, "test_name");
+
+    reporter->failures++;   // Simulating a failed assert
+    wrapped_show_fail(reporter, "file", 2, "test_case %i is %s", 5, "alive");
+
+    assert_that(output, contains_string("<Value>test_case 5 is alive</Value>"));
+
+    clear_output();
+
     // Must indicate test case completion before calling finish_test()
     send_reporter_completion_notification(reporter);
     reporter->finish_test(reporter, "filename", line, NULL);

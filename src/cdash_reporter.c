@@ -25,6 +25,7 @@ typedef time_t Timer(char *strtime);
 typedef struct {
     CDashInfo *info;
     CDashPrinter *printer;
+    CDashVPrinter *vprinter;
     FILE *stream;
     time_t begin;
     time_t startdatetime;
@@ -55,6 +56,11 @@ void set_cdash_reporter_printer(TestReporter *reporter, CDashPrinter *new_printe
     memo->printer = new_printer;
 }
 
+void set_cdash_reporter_vprinter(TestReporter *reporter, CDashVPrinter *new_vprinter) {
+    CDashMemo *memo = (CDashMemo *)reporter->memo;
+    memo->vprinter = new_vprinter;
+}
+
 
 TestReporter *create_cdash_reporter(CDashInfo *info) {
     TestReporter *reporter;
@@ -81,6 +87,7 @@ TestReporter *create_cdash_reporter(CDashInfo *info) {
     reporter->memo = memo;
     
     set_cdash_reporter_printer(reporter, fprintf);
+    set_cdash_reporter_vprinter(reporter, vfprintf);
 
     rep_dir = mkdir("./Testing", S_IXUSR|S_IRUSR|S_IWUSR|S_IXGRP|S_IRGRP|S_IXOTH);
 
@@ -217,12 +224,20 @@ static void print_results_header(CDashMemo *memo, const char *name, float execti
                   exectime, name);
 }
 
-static void print_measurement(CDashMemo *memo, const char *value) {
+static void print_measurement(CDashMemo *memo, const char* message, va_list arguments) {
     memo->printer(memo->stream,
                   "       <Measurement>\n"
-                  "        <Value>%s</Value>\n"
-                  "       </Measurement>\n",
-                  value);
+                  "        <Value>");
+    if (message == NULL) {
+        memo->printer(memo->stream,
+                      "Problem");
+    } else {
+        memo->vprinter(memo->stream,
+                       message, arguments);
+    }
+    memo->printer(memo->stream,
+                  "</Value>\n"
+                  "       </Measurement>\n");
 }
 
 static void print_tail(CDashMemo *memo) {
@@ -233,7 +248,6 @@ static void print_tail(CDashMemo *memo) {
 
 static void cdash_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     const char *name;
-    char buffer[1000];
     float exectime;
     CDashMemo *memo;
 
@@ -247,10 +261,7 @@ static void cdash_show_fail(TestReporter *reporter, const char *file, int line, 
 
     print_test_header(memo, "failed", name, file, line);
     print_results_header(memo, name, exectime);
-
-    vsprintf(buffer, (message == NULL ? "Problem" : message), arguments);
-    print_measurement(memo, buffer);
-
+    print_measurement(memo, message, arguments);
     print_tail(memo);
 }
 
@@ -259,7 +270,6 @@ static void cdash_show_pass(TestReporter *reporter, const char *file, int line, 
     CDashMemo *memo;
     const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
     (void)message;
-    (void)arguments;
     memo = (CDashMemo *)reporter->memo;
 
     memo->testfinished = cdash_current_time(NULL);
@@ -267,7 +277,7 @@ static void cdash_show_pass(TestReporter *reporter, const char *file, int line, 
 
     print_test_header(memo, "passed", name, file, line);
     print_results_header(memo, name, exectime);
-    print_measurement(memo, "");
+    print_measurement(memo, "", arguments);
     print_tail(memo);
 }
 
@@ -275,7 +285,6 @@ static void cdash_show_pass(TestReporter *reporter, const char *file, int line, 
 
 static void cdash_show_incomplete(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     const char *name;
-    char buffer[1000];
     float exectime;
     CDashMemo *memo;
 
@@ -289,10 +298,7 @@ static void cdash_show_incomplete(TestReporter *reporter, const char *file, int 
 
     print_test_header(memo, "incomplete", name, file, line);
     print_results_header(memo, name, exectime);
-   
-    vsprintf(buffer, (message == NULL ? "Problem" : message), arguments);
-    print_measurement(memo, buffer);
-
+    print_measurement(memo, message, arguments);
     print_tail(memo);
 }
 

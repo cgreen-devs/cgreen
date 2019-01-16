@@ -12,6 +12,7 @@
 
 typedef struct {
     CutePrinter *printer;
+    CuteVPrinter *vprinter;
     int error_count;    // For status within the test case process
     int previous_error; // For status outside the test case process
 } CuteMemo;
@@ -37,6 +38,11 @@ void set_cute_reporter_printer(TestReporter *reporter, CutePrinter *new_printer)
     memo->printer = new_printer;
 }
 
+void set_cute_reporter_vprinter(TestReporter *reporter, CuteVPrinter *new_vprinter) {
+    CuteMemo *memo = (CuteMemo *)reporter->memo;
+    memo->vprinter = new_vprinter;
+}
+
 TestReporter *create_cute_reporter(void) {
     CuteMemo *memo;
     TestReporter *reporter;
@@ -54,6 +60,7 @@ TestReporter *create_cute_reporter(void) {
     reporter->memo = memo;
     
     set_cute_reporter_printer(reporter, printf);
+    set_cute_reporter_vprinter(reporter, vprintf);
 
     reporter->start_suite = &cute_start_suite;
     reporter->start_test = &cute_start_test;
@@ -124,12 +131,15 @@ static void show_fail(TestReporter *reporter, const char *file, int line,
         const char *message, va_list arguments) {
     CuteMemo *memo = (CuteMemo *) reporter->memo;
     if (!memo->previous_error) {
-        char buffer[1000];
         memo->printer("#failure %s",
                       get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb));
         memo->printer(" %s:%d ", file, line);
-        vsprintf(buffer, (message == NULL ? "<FATAL: NULL for failure message>" : message), arguments);
-        memo->printer("%s\n", buffer);
+        if (message == NULL) {
+            memo->printer("<FATAL: NULL for failure message>");
+        } else {
+            memo->vprinter(message, arguments);
+        }
+        memo->printer("\n");
         memo->previous_error = 1;
     }
 }
