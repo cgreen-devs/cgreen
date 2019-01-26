@@ -113,7 +113,7 @@ static void text_reporter_start_suite(TestReporter *reporter, const char *name,
             memo->printer("Running \"%s\" (%d test%s)...\n",
                           get_current_from_breadcrumb((CgreenBreadcrumb *) reporter->breadcrumb),
                           number_of_tests,
-                          number_of_tests>1?"s":"");
+                          number_of_tests==1?"":"s");
         fflush(stdout);
     }
 }

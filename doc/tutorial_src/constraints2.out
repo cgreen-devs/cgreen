@@ -1,0 +1,9 @@
+Running "main" (1 tests)...
+constraints.c:57: Failure: more_complex_custom_constraint_function 
+	Expected [&piece99] to [fit in box] [&box1]
+		at offset:			[0]
+			actual value:		[0x63]
+			expected value:		[0x01]
+
+  "main": 1 failure in 42ms.
+Completed "main": 1 failure in 42ms.

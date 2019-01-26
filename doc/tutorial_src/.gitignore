@@ -41,7 +41,6 @@ formatter4
 formatter5
 stream_test4
 formatter6
-*.out
 custom_constraint1
 custom_constraint2
 custom_constraint3
