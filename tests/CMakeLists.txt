@@ -153,6 +153,11 @@ set(constraint_messages_library_SRCS constraint_messages_tests.c)
 add_library(${constraint_messages_library} SHARED ${constraint_messages_library_SRCS})
 target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY})
 
+set(custom_constraint_messages_library custom_constraint_messages_tests)
+set(custom_constraint_messages_library_SRCS custom_constraint_messages_tests.c)
+add_library(${custom_constraint_messages_library} SHARED ${custom_constraint_messages_library_SRCS})
+target_link_libraries(${custom_constraint_messages_library} ${CGREEN_LIBRARY})
+
 set(mock_messages_library mock_messages_tests)
 set(mock_messages_library_SRCS mock_messages_tests.c)
 add_library(${mock_messages_library} SHARED ${mock_messages_library_SRCS})
@@ -186,6 +191,14 @@ macro_add_test(
             constraint_messages_tests       # Name
             ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
             ${constraint_messages_library}.expected
+)
+
+macro_add_test(
+    NAME custom_constraint_messsages
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
+            custom_constraint_messages_tests       # Name
+            ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
+            ${custom_constraint_messages_library}.expected
 )
 
 macro_add_test(

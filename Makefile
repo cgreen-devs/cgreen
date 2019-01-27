@@ -85,11 +85,13 @@ unit: build-it
 	cd tests ; \
 	$(XML_DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,xml_output) ; \
 	r=$$((r + $$?)) ; \
+	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,assertion_messages) ; \
+	r=$$((r + $$?)) ; \
 	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,mock_messages) ; \
 	r=$$((r + $$?)) ; \
 	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,constraint_messages) ; \
 	r=$$((r + $$?)) ; \
-	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,assertion_messages) ; \
+	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,custom_constraint_messages) ; \
 	r=$$((r + $$?)) ; \
 	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,ignore_messages) ; \
 	r=$$((r + $$?)) ; \

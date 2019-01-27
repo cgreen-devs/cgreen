@@ -1,0 +1,15 @@
+Running "custom_constraint_messages_tests" (3 tests)...
+custom_constraint_messages_tests.c: Failure: CustomConstraint -> custom_constraint_using_a_function_with_arguments_function 
+	Expected [19] to [smaller than] [10]
+
+custom_constraint_messages_tests.c: Failure: CustomConstraint -> custom_constraint_using_static_function 
+	Expected [1] to [bigger than 5]
+
+custom_constraint_messages_tests.c: Failure: CustomConstraint -> more_complex_custom_constraint_function 
+	Expected [&piece99] to [fit in box] [&box1]
+		at offset:			[0]
+			actual value:		[0x63]
+			expected value:		[0x01]
+
+  "CustomConstraint": 3 failures in 0ms.
+Completed "custom_constraint_messages_tests": 3 failures in 0ms.
