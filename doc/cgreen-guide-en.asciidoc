@@ -41,10 +41,12 @@ Here are some of its features:
 
 - Fluent API resulting in very readable tests
 - Expressive and clear output using the default reporter
-- Fully functional mocks, both strict and loose
+- Fully functional mocks, both strict, loose and learning
+- Mocks with side effects
 - Each test runs in its own process for test suite robustness
 - Automatic discovery and running of tests using dynamic library inspection
 - Extensive and expressive constraints for many datatypes
+- Custom constraints can be constructed by user
 - BDD-flavoured test declarations with Before and After declarations
 - Extensible reporting mechanism
 - Fully composable test suites
@@ -54,10 +56,10 @@ Here are some of its features:
 porting from other frameworks.
 
 *Cgreen* was initially developed to support C programming, but there
-is also some support for C{pp}. It was initially a spinoff from a
-research project at Wordtracker and created by Marcus Baker. Significant
-additions by Matt Hargett and continuous nurturing by Thomas Nilefalk has
-made *Cgreen* what it is today.
+is also support for C{pp}. It was initially a spinoff from a research
+project at Wordtracker and created by Marcus Baker. Significant
+additions by Matt Hargett and continuous nurturing by Thomas Nilefalk
+has made *Cgreen* what it is today.
 
 
 === Cgreen - Vanilla or Chocolate?
@@ -80,7 +82,7 @@ significant.
 
 This document will present *Cgreen* using the more modern and better
 BDD-style. In a later section you can have a peek at the classic TDD
-API.
+API, but you should consider that as outdated.
 
 
 === Installing Cgreen
@@ -1589,15 +1591,25 @@ other way, from code to stub. This gets us into the same territory as
 mock objects.
 
 
-=== Executing function as a side effect
+=== Mocks with side effects
 
-There are time where we want to execute a function whenever a mock is
-invoked. One example of these cases is we want to call another diagnose
-function.
+Sometimes returning simple values is not enough. The function that you
+want to mock might have some side effect, like setting a global error
+code, or aggregate some data.
+
+Let's assume that the `reader` increments a counter every time it gets
+called and we need to mimic that behaviour. There are many ways to do
+this, but here is one using the side effect feature. It works by
+calling a callback function that you provide, allowing you to
+feed some data to it.
+
+We create the "side effect function" which needs to take a single
+argument which should be a pointer to the "side effect data". You will
+have to cast that datapointer to the correct type.
 
 [source, c]
 -----------------------
-include::tutorial_src/stream_test.c[lines=96..112]
+include::tutorial_src/side_effect.c[lines=29..44]
 -----------------------
 
 

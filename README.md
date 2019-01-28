@@ -35,6 +35,15 @@ are some of Cgreens unique selling points:
   - process isolation for each test preventing intermittent failures
     and cross-test dependencies
   - built-in mocking for C, compatible with mockitopp and other C++ mocking libraries
+  - expressive and clear output using the default reporter
+  - fully functional mocks, both strict, loose and learning
+  - mocks with side effects
+  - extensive and expressive constraints for many datatypes
+  - custom constraints can be constructed by user
+  - bdd-flavoured test declarations with Before and After declarations
+  - extensible reporting mechanism
+  - fully composable test suites
+  - a single test can be run in a single process for easier debugging
 
 ## Getting It
 
