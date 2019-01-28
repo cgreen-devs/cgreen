@@ -7,6 +7,8 @@
 # the way it is supposed to be to work as documentation examples.
 # Take care that data is printable but looks random.
 
+CFLAGS = -Wall -g
+
 .IGNORE :
 .SILENT :
 
@@ -82,7 +84,7 @@ with_main:  first0 first1 \
 # Most tests built to run with the runner we can run here, but some need special care
 # They have their output produced directly in their build rules below and are run using
 # the 'special' rule
-with_runner: stream0 stream1 stream2 stream3 stream4 stream6 \
+with_runner: side_effect stream0 stream1 stream2 stream3 stream4 stream6 \
 			 multiple_streams1 multiple_streams2 \
 			 formatter0 formatter1 formatter2 formatter3 formatter4 formatter5 formatter6
 	for f in $^ ; do echo $$f; $(RUNNER) $$f.so | $(SED) > $$f.out; done
@@ -208,6 +210,10 @@ custom_constraint3: custom_constraint3.o
 # All these examples run using the runner which automatically outputs the file name
 # Since that includes the example #, which we don't want in the tutorial, we use
 # sed to remove that number from the file name in the output
+.PHONY: side_effect
+side_effect: stream_tests0.o read_paragraph1.o
+	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
+
 .PHONY: stream0
 stream0: stream_tests0.o read_paragraph1.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen

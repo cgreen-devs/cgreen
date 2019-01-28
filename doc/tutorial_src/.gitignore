@@ -2,6 +2,7 @@
 *.so
 *.exe
 *.stackdump
+*.out
 constraints
 constraints1
 constraints2
@@ -20,6 +21,7 @@ strlen4
 strlen5
 strlen6
 strlen7
+side_effect
 suite1
 test_as_xml0
 test_as_xml1
