@@ -33,13 +33,13 @@ struct Constraint_ {
     CgreenValue expected_value;
     const char *expected_value_name;
 
-    /* Side Effect parameters */ 
-    void (*side_effect_callback)(void *);
-    void *side_effect_data;
-
     /* for PARAMETER constraints */
     const char *parameter_name;
     size_t size_of_expected_value;
+
+    /* Side Effect parameters */
+    void (*side_effect_callback)(void *);
+    void *side_effect_data;
 };
 
 #ifdef __cplusplus

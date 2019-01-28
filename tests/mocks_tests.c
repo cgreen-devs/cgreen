@@ -385,12 +385,12 @@ static int mock_with_side_effect(void) {
     return (int)mock();
 }
 static void the_sideeffect(void * data) {
-	assert_that(*(int*)data, is_equal_to(99));
+    assert_that(*(int*)data, is_equal_to(99));
     sideeffect_changed = 2;
 }
 
 Ensure(Mocks, mock_expect_with_side_effect) {
-	int data_passed_to_sideeffect = 99;
+    int data_passed_to_sideeffect = 99;
     expect(mock_with_side_effect,
            with_side_effect(&the_sideeffect, &data_passed_to_sideeffect),
            will_return(22));
