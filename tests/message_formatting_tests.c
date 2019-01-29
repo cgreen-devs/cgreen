@@ -14,7 +14,7 @@ AfterEach(MessageFormatting) {}
 
 Ensure(MessageFormatting, can_show_failure_message_containing_percent_sign) {
     const char *string_with_percent = "This contains %!";
-    Constraint *constraint =
+    CgreenConstraint *constraint =
         create_equal_to_string_constraint(string_with_percent, "string_with_percent");
 
     char *failure_message = failure_message_for(constraint, "actual_string", (intptr_t)"This contains another %!");
@@ -29,7 +29,7 @@ Ensure(MessageFormatting, can_show_failure_message_containing_percent_sign) {
 Ensure(MessageFormatting, shows_offset_as_zero_based) {
     char actual_data[] = {0x0a, 0x0b, 0x0c, 0x0d};
     char expected_data[] = {0x0b, 0x0b, 0x0c, 0x0d};
-    Constraint *constraint =
+    CgreenConstraint *constraint =
         create_equal_to_contents_constraint(expected_data, 4, "expectd_data");
 
     char *failure_message = failure_message_for(constraint, "actual_data", (intptr_t)actual_data);

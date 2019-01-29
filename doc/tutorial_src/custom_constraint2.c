@@ -7,12 +7,12 @@ Describe(TestConstraint);
 BeforeEach(TestConstraint) {}
 AfterEach(TestConstraint) {}
 
-bool compare_want_smaller_value(Constraint *constraint, CgreenValue actual) {
+bool compare_want_smaller_value(CgreenConstraint *constraint, CgreenValue actual) {
     return actual.value.integer_value < constraint->expected_value.value.integer_value ;
 }
 
-Constraint *create_smaller_than_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+CgreenConstraint *create_smaller_than_constraint(intptr_t expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint();
 
     constraint->expected_value = make_cgreen_integer_value(expected_value);
     constraint->expected_value_name = string_dup(expected_value_name);

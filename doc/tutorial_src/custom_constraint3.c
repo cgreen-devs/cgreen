@@ -16,12 +16,12 @@ typedef struct Piece {
     int size;
 } Piece;
 
-bool compare_piece_and_box_size(Constraint *constraint, CgreenValue actual) {
+bool compare_piece_and_box_size(CgreenConstraint *constraint, CgreenValue actual) {
     return ((Piece *)actual.value.pointer_value)->size
         < ((Box*)constraint->expected_value.value.pointer_value)->size ;
 }
 
-static void test_fit_piece(Constraint *constraint, const char *function_name, CgreenValue actual,
+static void test_fit_piece(CgreenConstraint *constraint, const char *function_name, CgreenValue actual,
                            const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
             reporter,
@@ -35,8 +35,8 @@ static void test_fit_piece(Constraint *constraint, const char *function_name, Cg
             constraint->parameter_name);
 }
 
-Constraint *create_piece_fit_in_box_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+CgreenConstraint *create_piece_fit_in_box_constraint(intptr_t expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint();
 
     constraint->expected_value = make_cgreen_pointer_value((void*)expected_value);
     constraint->expected_value_name = string_dup(expected_value_name);

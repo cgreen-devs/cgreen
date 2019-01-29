@@ -15,12 +15,12 @@ AfterEach(CustomConstraint) {}
 
  */
 
-bool compare_want_greater_than_5(Constraint *constraint, CgreenValue actual) {
+bool compare_want_greater_than_5(CgreenConstraint *constraint, CgreenValue actual) {
     (void)constraint;
     return actual.value.integer_value > 5;
 }
 
-Constraint static_is_bigger_than_5 = {
+CgreenConstraint static_is_bigger_than_5 = {
         /* .type */ VALUE_COMPARER,
         /* .name */ "bigger than 5",
         /* .destroy */ destroy_static_constraint,
@@ -32,12 +32,14 @@ Constraint static_is_bigger_than_5 = {
         /* .expected_value */ {INTEGER, {5}},
         /* .stored_value_name */ "null",
         /* .parameter_name */ NULL,
-        /* .size_of_stored_value */ 0
+        /* .size_of_stored_value */ 0,
+        /* .side_effect_callback */ NULL,
+        /* .side_effect_data */ NULL
 };
 
 /* Remember: failing tests to get output */
 Ensure(CustomConstraint, custom_constraint_using_static_function) {
-    Constraint * is_bigger_than_5 = &static_is_bigger_than_5;
+    CgreenConstraint * is_bigger_than_5 = &static_is_bigger_than_5;
     assert_that(1, is_bigger_than_5);
 }
 
@@ -48,12 +50,12 @@ Ensure(CustomConstraint, custom_constraint_using_static_function) {
 
  */
 
-bool compare_want_smaller_value(Constraint *constraint, CgreenValue actual) {
+bool compare_want_smaller_value(CgreenConstraint *constraint, CgreenValue actual) {
     return actual.value.integer_value < constraint->expected_value.value.integer_value ;
 }
 
-Constraint *create_smaller_than_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+CgreenConstraint *create_smaller_than_constraint(intptr_t expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint();
 
     constraint->expected_value = make_cgreen_integer_value(expected_value);
     constraint->expected_value_name = string_dup(expected_value_name);
@@ -89,12 +91,12 @@ typedef struct Piece {
     int size;
 } Piece;
 
-bool compare_piece_and_box_size(Constraint *constraint, CgreenValue actual) {
+bool compare_piece_and_box_size(CgreenConstraint *constraint, CgreenValue actual) {
     return ((Piece *)actual.value.pointer_value)->size
         < ((Box*)constraint->expected_value.value.pointer_value)->size ;
 }
 
-static void test_fit_piece(Constraint *constraint, const char *function_name, CgreenValue actual,
+static void test_fit_piece(CgreenConstraint *constraint, const char *function_name, CgreenValue actual,
                            const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
             reporter,
@@ -108,8 +110,8 @@ static void test_fit_piece(Constraint *constraint, const char *function_name, Cg
             constraint->parameter_name);
 }
 
-Constraint *create_piece_fit_in_box_constraint(intptr_t expected_value, const char *expected_value_name) {
-    Constraint *constraint = create_constraint();
+CgreenConstraint *create_piece_fit_in_box_constraint(intptr_t expected_value, const char *expected_value_name) {
+    CgreenConstraint *constraint = create_constraint();
 
     constraint->expected_value = make_cgreen_pointer_value((void*)expected_value);
     constraint->expected_value_name = string_dup(expected_value_name);

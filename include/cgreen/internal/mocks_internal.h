@@ -40,9 +40,9 @@ extern intptr_t mock_(TestReporter *test_reporter, const char *function, const c
    passes the test case. /@awilke
 
 */
-extern Constraint *when_(const char *parameter, Constraint *constraint) WARN_UNUSED_RESULT;
+extern CgreenConstraint *when_(const char *parameter, CgreenConstraint *constraint) WARN_UNUSED_RESULT;
 
-extern Constraint *times_(int number_times_called);
+extern CgreenConstraint *times_(int number_times_called);
 
 extern void clear_mocks(void);
 extern void tally_mocks(TestReporter *reporter);

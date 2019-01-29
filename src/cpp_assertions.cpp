@@ -11,17 +11,17 @@
 namespace cgreen {
 
     void assert_that_(const char *file, int line, const char *actual_string,
-                      intptr_t actual, Constraint* constraint) {
+                      intptr_t actual, CgreenConstraint* constraint) {
         assert_core_(file, line, actual_string, actual, constraint);
     }
 
     void assert_that_(const char *file, int line, const char *actual_string,
-                      double actual, Constraint* constraint) {
+                      double actual, CgreenConstraint* constraint) {
         assert_that_double_(file, line, actual_string, actual, constraint);
     }
 
     void assert_that_(const char *file, int line, const char *actual_string,
-                      const std::string& actual, Constraint* constraint) {
+                      const std::string& actual, CgreenConstraint* constraint) {
 
         // if they are using a string constraint, they are almost certainly meaning to do a deep comparison
         if (is_string_comparing(constraint)) {
@@ -34,7 +34,7 @@ namespace cgreen {
     }
 
     void assert_that_(const char *file, int line, const char *actual_string,
-                      const std::string *actual, Constraint* constraint) {
+                      const std::string *actual, CgreenConstraint* constraint) {
 
         // if they are using a string constraint, they are almost certainly meaning to do a deep comparison
         if (is_string_comparing(constraint)) {

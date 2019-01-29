@@ -49,7 +49,7 @@ void assert_double_equal_(const char *file, int line, const char *expression, do
 void assert_double_not_equal_(const char *file, int line, const char *expression, double tried, double expected);
 void assert_string_equal_(const char *file, int line, const char *expression, const char *tried, const char *expected);
 void assert_string_not_equal_(const char *file, int line, const char *expression, const char *tried, const char *expected);
-void assert_that_double_(const char *file, int line, const char *actual_string, double actual, Constraint *constraint);
+void assert_that_double_(const char *file, int line, const char *actual_string, double actual, CgreenConstraint *constraint);
 
 #ifdef __cplusplus
     }
