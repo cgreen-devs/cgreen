@@ -13,7 +13,7 @@
 # That should build Cgreen in the build directory, run some tests,
 # install it locally and generate a distributable package.
 
-all: build
+all: build/Makefile
 	cd build; make
 
 .PHONY:debug
@@ -24,15 +24,15 @@ debug: build
 	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" ..; make
 
 .PHONY:test
-test: build
+test: build/Makefile
 	cd build; make check
 
 .PHONY:clean
-clean: build
+clean: build/Makefile
 	cd build; make clean
 
 .PHONY:package
-package: build
+package: build/Makefile
 	cd build; make package
 
 .PHONY:install
@@ -123,11 +123,13 @@ valgrind: build-it
 
 ############# Internal
 
-build-it: build
+build-it: build/Makefile
 	make -C build
 
 build:
 	mkdir build
+
+build/Makefile: build
 	cd build; cmake $(ARCHS) ..
 
 .SILENT:
