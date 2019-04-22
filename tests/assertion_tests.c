@@ -15,6 +15,10 @@ Ensure(integer_one_should_assert_true) {
     assert_that(1, is_true);
 }
 
+Ensure(integer_two_should_assert_true) {
+    assert_that(2, is_true);
+}
+
 Ensure(integer_zero_should_assert_false) {
     assert_that(0, is_false);
 }
@@ -288,6 +292,7 @@ Ensure(return_value_constraints_are_not_allowed) {
 TestSuite *assertion_tests(void) {
     TestSuite *suite = create_test_suite();
     add_test(suite, integer_one_should_assert_true);
+    add_test(suite, integer_two_should_assert_true);
     add_test(suite, integer_zero_should_assert_false);
     add_test(suite, one_should_assert_equal_to_one);
     add_test(suite, zero_should_assert_not_equal_to_one);
