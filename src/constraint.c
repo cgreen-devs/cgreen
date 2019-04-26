@@ -438,9 +438,9 @@ Constraint *create_with_side_effect_constraint(void (*callback)(void *), void *d
     constraint->name = "cause side effect";
     constraint->side_effect_callback = callback;
     constraint->side_effect_data = data;
-	constraint->execute = &execute_sideeffect;
-	
-	return constraint;
+    constraint->execute = &execute_sideeffect;
+
+    return constraint;
 }
 
 bool compare_want_value(Constraint *constraint, CgreenValue actual) {
@@ -505,19 +505,19 @@ static void set_contents(Constraint *constraint, const char *function, CgreenVal
 
 static void execute_sideeffect(Constraint *constraint, const char *function, CgreenValue actual,
                                const char *test_file, int test_line, TestReporter *reporter) {
-	(void)function;
-	(void)actual;
-	
-	if (constraint->side_effect_callback == NULL) {
-		
-		(*reporter->assert_true)(
-			reporter,
-			test_file,
-			test_line,
-			false,
-			"no side effect function was set");
-	}
-	(constraint->side_effect_callback)(constraint->side_effect_data);
+    (void)function;
+    (void)actual;
+
+    if (constraint->side_effect_callback == NULL) {
+
+        (*reporter->assert_true)(
+            reporter,
+            test_file,
+            test_line,
+            false,
+            "no side effect function was set");
+    }
+    (constraint->side_effect_callback)(constraint->side_effect_data);
 }
 
 
@@ -681,7 +681,7 @@ bool values_are_strings_in(const Constraint *constraint) {
 }
 
 bool no_expected_value_in(const Constraint *constraint) {
-    return constraint->destroy == destroy_static_constraint;
+    return strlen(constraint->expected_value_message) == 0;
 }
 
 bool is_content_comparing(const Constraint *constraint) {
