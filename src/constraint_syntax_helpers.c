@@ -65,7 +65,7 @@ Constraint static_is_true_constraint = {
     /* .test */ test_want,
     /* .format_failure_message_for */ failure_message_for,
     /* .actual_value_message */ "",
-    /* .expected_message */ "",
+    /* .expected_value_message */ "",
     /* .expected_value */ {INTEGER, {false}},
     /* .stored_value_name */ "true",
     /* .parameter_name */ NULL,
