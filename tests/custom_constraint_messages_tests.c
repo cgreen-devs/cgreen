@@ -22,7 +22,7 @@ bool compare_want_greater_than_5(Constraint *constraint, CgreenValue actual) {
 
 Constraint static_is_bigger_than_5 = {
         /* .type */ VALUE_COMPARER,
-        /* .name */ "bigger than 5",
+        /* .name */ "be bigger than 5",
         /* .destroy */ destroy_static_constraint,
         /* .compare */ compare_want_greater_than_5,
         /* .test */ test_want,
@@ -32,7 +32,9 @@ Constraint static_is_bigger_than_5 = {
         /* .expected_value */ {INTEGER, {5}},
         /* .stored_value_name */ "null",
         /* .parameter_name */ NULL,
-        /* .size_of_stored_value */ 0
+        /* .size_of_stored_value */ 0,
+        /* .side_effect_callback */ NULL,
+        /* .side_effect_data */ NULL
 };
 
 /* Remember: failing tests to get output */
@@ -61,7 +63,7 @@ Constraint *create_smaller_than_constraint(intptr_t expected_value, const char *
 
     constraint->compare = &compare_want_smaller_value;
     constraint->execute = &test_want;
-    constraint->name = "smaller than";
+    constraint->name = "be smaller than";
     constraint->size_of_expected_value = sizeof(intptr_t);
 
     return constraint;

@@ -20,7 +20,7 @@ Constraint *create_smaller_than_constraint(intptr_t expected_value, const char *
 
     constraint->compare = &compare_want_smaller_value;
     constraint->execute = &test_want;
-    constraint->name = "smaller than";
+    constraint->name = "be smaller than";
     constraint->size_of_expected_value = sizeof(intptr_t);
 
     return constraint;
