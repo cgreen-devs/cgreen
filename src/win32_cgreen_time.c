@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <windows.h>
+#include <stdbool.h>
+#include <math.h>
 
 static LARGE_INTEGER qry_freq;
 static bool qry_freq_initialized = false;
