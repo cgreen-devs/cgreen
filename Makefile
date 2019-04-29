@@ -130,6 +130,10 @@ build:
 	mkdir build
 
 build/Makefile: build
-	cd build; cmake $(ARCHS) ..
+ifeq ($(OS),Msys)
+	cd build; cmake -G"MSYS Makefiles" ..
+else
+	cd build; cmake ..
+endif
 
 .SILENT:
