@@ -1,7 +1,7 @@
 #ifndef CGREEN_PIPE_HEADER
 #define CGREEN_PIPE_HEADER
 
-#include <unistd.h>
+#include <sys/types.h>
 
 #ifdef __cplusplus
 namespace cgreen {
