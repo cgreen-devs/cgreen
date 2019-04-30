@@ -29,6 +29,10 @@ Cygwin)
     prefix=cyg
     extension=dll
     ;;
+Msys)
+    prefix=lib
+    extension=dll
+    ;;
 *)
     echo "ERROR: $0 can't handle OS=$OS"
     exit 2
