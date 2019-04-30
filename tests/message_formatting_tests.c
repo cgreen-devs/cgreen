@@ -23,7 +23,6 @@ Ensure(MessageFormatting, can_show_failure_message_containing_percent_sign) {
 
     constraint->destroy(constraint);
     free(failure_message);
-    destroy_constraint(constraint);
 }
 
 Ensure(MessageFormatting, shows_offset_as_zero_based) {
