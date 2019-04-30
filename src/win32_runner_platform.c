@@ -1,4 +1,5 @@
 #ifdef WIN32
+
 #include "config.h"
 #include "runner.h"
 #include "cgreen/internal/runner_platform.h"
@@ -6,6 +7,7 @@
 #include "wincompat.h"
 #include "cgreen/internal/cgreen_time.h"
 
+#include "win32_cgreen.h"
 
 #include "Strsafe.h"
 #define SECOND  (1000)

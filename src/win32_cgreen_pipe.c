@@ -1,10 +1,11 @@
 #ifdef WIN32
 
-#include "cgreen/internal/cgreen_pipe.h"
-#include <unistd.h>
 #include <stdio.h>
 #include <winsock2.h>
-#include <wincompat.h>
+#include "cgreen/internal/windows_headers/wincompat.h"
+#include "cgreen/internal/cgreen_pipe.h"
+
+#include "win32_cgreen.h"
 
 
 ssize_t cgreen_pipe_read(int p, void *buf, size_t count)
@@ -36,7 +37,7 @@ int cgreen_pipe_open(int pipes[2])
     char handleString[256];
     DWORD result;
 
-    //figure out if we are a child process, and if so, use the handle provided by our parent
+    // Figure out if we are a child process, and if so, use the handle provided by our parent
     result = GetEnvironmentVariableA(CGREEN_READ_HANDLE,handleString,sizeof(handleString));
 
     if (result) //we are a child process
