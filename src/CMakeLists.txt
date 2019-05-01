@@ -76,23 +76,29 @@ set(cgreen_SRCS
   xml_reporter.c
 )
 
-if (UNIX)
+if (MSYS)
+  # Msys2 is difficult since it really is three different "OS":es, Msys native, W32 and W64
+  # To get somewhere, let's use the native Msys2, which actually is Cygwin/UNIX.
   LIST(APPEND cgreen_SRCS
     posix_cgreen_pipe.c
     posix_cgreen_time.c
     posix_runner_platform.c
   )
-else(UNIX)
-  if(WIN32)
+elseif (UNIX or CYGWIN)
+  LIST(APPEND cgreen_SRCS
+    posix_cgreen_pipe.c
+    posix_cgreen_time.c
+    posix_runner_platform.c
+  )
+elseif(WIN32)
     LIST(APPEND cgreen_SRCS
       win32_cgreen_pipe.c
       win32_cgreen_time.c
       win32_runner_platform.c
     )
-  else(WIN32)
-    message(FATAL_ERROR "cgreen currently only works on UNIX, Cygwin, MacOSX and Windows. Please file a bug.")
-  endif(WIN32)
-endif(UNIX)
+else()
+  message(FATAL_ERROR "Cgreen can currently only be compiled for UNIX, Msys2, Cygwin, MacOSX. Windows support is still flaky. Please file a bug.")
+endif()
 SET_SOURCE_FILES_PROPERTIES(${cgreen_SRCS} PROPERTIES LANGUAGE C)
 
 set(cgreen_SRCS ${cgreen_SRCS}

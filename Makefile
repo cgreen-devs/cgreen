@@ -36,9 +36,13 @@ package: build/Makefile
 	cd build; make package
 
 .PHONY:install
-install:
+install: build
+ifeq ($(OS),Msys)
+  # Thanks to https://stackoverflow.com/a/46027426/204658
+  cd build; make install DESTDIR=/
+else
 	cd build; make install
-
+endif
 
 # This is kind of a hack to get a quicker and clearer feedback when
 # developing Cgreen by allowing 'make unit'. Must be updated when new
@@ -58,6 +62,9 @@ ifeq ($(OS),Darwin)
 	SUFFIX=.dylib
 else ifeq ($(OS),Cygwin)
 	PREFIX=cyg
+	SUFFIX=.dll
+else ifeq ($(OS),Msys)
+	PREFIX=lib
 	SUFFIX=.dll
 else
 	PREFIX=lib
@@ -131,7 +138,8 @@ build:
 
 build/Makefile: build
 ifeq ($(OS),Msys)
-	cd build; cmake -G"MSYS Makefiles" ..
+	# Thanks to https://stackoverflow.com/a/46027426/204658
+	cd build; cmake -G"MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=/usr/local ..
 else
 	cd build; cmake ..
 endif
