@@ -51,7 +51,7 @@ fi
 
 expected=$1 ; shift 1
 
-commandfile=${sourcedir}/normalize_${name}.sed
+commandfile="${sourcedir}/normalize_${name}.sed"
 
 # Do it!
 if [ -z "$CGREEN_PER_TEST_TIMEOUT" ]; then
@@ -61,8 +61,8 @@ else
 fi
 
 # Run runner on library store output and error
-../tools/cgreen-runner ./${prefix}${name}.${extension} > ${name}.output 2> ${name}.error
-cat ${name}.error >> ${name}.output
+../tools/cgreen-runner ./${prefix}${name}.${extension} > "${name}.output" 2> "${name}.error"
+cat "${name}.error" >> "${name}.output"
 
 tempfile=`mktemp`
 
@@ -80,8 +80,8 @@ echo s/\".*${name}\"/\"${name}\"/g >> $tempfile
 echo s%${sourcedir}/%%g >> $tempfile
 
 # Do normalization using the commands in the tempfile and the specified commandfile
-sed -E -f ${tempfile} -f ${commandfile} ${name}.output  > ${name}.output.tmp
-mv ${name}.output.tmp ${name}.output
+sed -E -f "${tempfile}" -f "${commandfile}" "${name}.output"  > "${name}.output.tmp"
+mv "${name}.output.tmp" "${name}.output"
 
 # Check for color capability
 if test -t 1; then
@@ -94,14 +94,14 @@ if test -t 1; then
 fi
 
 # Compare normalized output to expected
-cmp -s ${name}.output ${sourcedir}/${expected}
+cmp -s "${name}.output" "${sourcedir}/${expected}"
 
 # If not the same, show diff
 rc=$?
 if [ $rc -ne 0 ]
 then
     echo
-    diff -c ${sourcedir}/${expected} ${name}.output
+    diff -c "${sourcedir}/${expected}" "${name}.output"
 else
     echo ${green}Ok${normal}
 fi
