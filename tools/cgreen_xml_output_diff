@@ -6,7 +6,7 @@
 # sources are in $2 for...
 # ...expected output file name in $3
 # ...and commands to normalize output (in the file normalize_{name}.sed)
-
+#
 # Determine OS
 unameo=`uname -o 1>/dev/null 2>/dev/null; echo $?`
 if [ $unameo -eq 0 ]; then
@@ -46,11 +46,13 @@ name=$1; shift 1
 
 sourcedir=$1 ; shift 1
 sourcedir=$(perl -e 'use Cwd "abs_path"; print abs_path(@ARGV[0])' -- "$sourcedir")
-#if [ "$OS" = Cygwin ]; then
-#    # On my Cygwin I have linked /home to c:/Users so absolute paths don't match what compiler prints
-#    sourcedir=`echo $sourcedir | sed -e s#/cygdrive/c/Users#/home#`
-#fi
+if [ $(uname -n) = thoni64 ]; then
+    # On my Cygwin machine I have linked /home to c:/Users so absolute paths don't match
+    # what runner prints, so try to replace that (don't know how to generalize this...)
+    sourcedir=`echo $sourcedir | sed -e s#/cygdrive/c/Users#/home#`
+fi
 
+# TODO: don't shift
 expected=$1 ; shift 1
 
 commandfile="${sourcedir}/normalize_${name}.sed"
