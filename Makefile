@@ -45,7 +45,7 @@ install:
 # test libraries or output comparisons are added.
 
 # Find out if 'uname -o' works, if it does - use it, otherwise use 'uname -s'
-UNAMEOEXISTS=$(shell uname -o 1>&2 2>/dev/null; echo $$?)
+UNAMEOEXISTS=$(shell uname -o &>/dev/null; echo $$?)
 ifeq ($(UNAMEOEXISTS),0)
   OS=$(shell uname -o)
 else
