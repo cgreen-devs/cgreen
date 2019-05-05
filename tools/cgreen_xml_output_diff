@@ -45,10 +45,10 @@ name=$1; shift 1
 
 sourcedir=$1 ; shift 1
 sourcedir=$(perl -e 'use Cwd "abs_path"; print abs_path(@ARGV[0])' -- "$sourcedir")
-if [ "$OS" = Cygwin ]; then
-    # On my Cygwin I have linked /home to c:/Users so absolute paths don't match what compiler prints
-    sourcedir=`echo $sourcedir | sed -e s#/cygdrive/c/Users#/home#`
-fi
+#if [ "$OS" = Cygwin ]; then
+#    # On my Cygwin I have linked /home to c:/Users so absolute paths don't match what compiler prints
+#    sourcedir=`echo $sourcedir | sed -e s#/cygdrive/c/Users#/home#`
+#fi
 
 expected=$1 ; shift 1
 
