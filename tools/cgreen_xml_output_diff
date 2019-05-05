@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Will run the cgreen-runner in directory ../tools
 # on library with name $1 (e.g. 'lib${name}.so')
