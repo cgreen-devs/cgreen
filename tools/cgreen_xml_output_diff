@@ -53,7 +53,7 @@ sourcedir=$(perl -e 'use Cwd "abs_path"; print abs_path(@ARGV[0])' -- "$sourcedi
 
 expected=$1 ; shift 1
 
-commandfile=${sourcedir}/normalize_${name}.sed
+commandfile="${sourcedir}/normalize_${name}.sed"
 
 # Do it!
 if [ -z "$CGREEN_PER_TEST_TIMEOUT" ]; then
@@ -63,11 +63,10 @@ else
 fi
 
 # Run runner on library store output and error
-../tools/cgreen-runner -x X ${prefix}${name}.${extension} > ${name}.output 2> ${name}.error
-cat ${name}.error >> ${name}.output
-cat X-*${name}.xml X-*${name}-default.xml >> ${name}.output
+../tools/cgreen-runner -x X "${prefix}${name}.${extension}" > "${name}.output" 2> "${name}.error"
+cat "${name}.error" >> "${name}.output"
+cat X-*${name}.xml X-*${name}-default.xml >> "${name}.output"
 
-cp ${name}.output ${name}.pristine
 tempfile=`mktemp`
 
 # sed commands to normalize...
@@ -84,10 +83,8 @@ echo s/\".*${name}\"/\"${name}\"/g >> $tempfile
 # - source path, ensure parenthesis are not interpreted by sed -E
 echo s%${sourcedir//[\(\)]/.}/%%g >> $tempfile
 
-cp $tempfile xxx
-
 # Do normalization using the commands in the tempfile and the specified commandfile
-sed -E -f ${tempfile} -f ${commandfile} ${name}.output  > ${name}.output.normalized
+sed -E -f "${tempfile}" -f "${commandfile}" "${name}.output"  > "${name}.output.normalized"
 
 # Check for color capability
 if test -t 1; then
@@ -100,14 +97,14 @@ if test -t 1; then
 fi
 
 # Compare normalized output to expected
-cmp -s ${name}.output.normalized ${sourcedir}/${expected}
+cmp -s "${name}.output.normalized" "${sourcedir}/${expected}"
 
 # If not the same, show diff
 rc=$?
 if [ $rc -ne 0 ]
 then
     echo
-    diff -c ${name}.output.norgmalized ${sourcedir}/${expected}
+    diff -c "${name}.output.normalized" "${sourcedir}/${expected}"
 else
     echo ${green}Ok${normal}
 fi
