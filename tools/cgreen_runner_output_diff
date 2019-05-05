@@ -79,8 +79,8 @@ echo "s/in [0-9]+ms\./in 0ms\./g" >> $tempfile
 # TODO: should use prefix, shouldn't it?
 echo s/\".*${name}\"/\"${name}\"/g >> $tempfile
 
-# - source path
-echo s%${sourcedir}/%%g >> $tempfile
+# - source path, ensure parenthesis are not interpreted by sed -E
+echo s%${sourcedir//[\(\)]/.}/%%g >> $tempfile
 
 # Do normalization using the commands in the tempfile and the specified commandfile
 sed -E -f "${tempfile}" -f "${commandfile}" "${name}.output"  > "${name}.output.normalized"
