@@ -91,13 +91,13 @@ elseif (UNIX or CYGWIN)
     posix_runner_platform.c
   )
 elseif(WIN32)
-    LIST(APPEND cgreen_SRCS
-      win32_cgreen_pipe.c
-      win32_cgreen_time.c
-      win32_runner_platform.c
-    )
+ LIST(APPEND cgreen_SRCS
+    win32_cgreen_pipe.c
+    win32_cgreen_time.c
+    win32_runner_platform.c
+  )
 else()
-  message(FATAL_ERROR "Cgreen can currently only be compiled for UNIX, Msys2, Cygwin, MacOSX. Windows support is still flaky. Please file a bug.")
+  message(FATAL_ERROR "Cgreen can currently only be compiled for Msys2, Cygwin, MacOSX and Windows.")
 endif()
 SET_SOURCE_FILES_PROPERTIES(${cgreen_SRCS} PROPERTIES LANGUAGE C)
 
