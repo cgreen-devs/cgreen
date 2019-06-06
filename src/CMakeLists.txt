@@ -84,7 +84,7 @@ if (MSYS)
     posix_cgreen_time.c
     posix_runner_platform.c
   )
-elseif (UNIX or CYGWIN)
+elseif (UNIX OR CYGWIN)
   LIST(APPEND cgreen_SRCS
     posix_cgreen_pipe.c
     posix_cgreen_time.c
