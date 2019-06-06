@@ -86,7 +86,6 @@ echo "s/in [0-9]+ms\./in 0ms\./g" >> $tempfile
 # TODO: should use prefix, shouldn't it?
 echo s/\".*${name}\"/\"${name}\"/g >> $tempfile
 
-echo sourcedir=${sourcedir}
 # - source path, ensure parenthesis are not interpreted by sed -E
 #                but allow any characters before sourcedir in the string
 echo s%\".*${sourcedir//[\(\)]/.}/%\"%g >> $tempfile
