@@ -15,6 +15,9 @@
 #ifdef _MSC_VER
 #include <wincompat.h>
 #endif
+#ifdef __MINGW32__
+#include "cgreen/internal/windows_headers/wincompat.h"
+#endif
 
 #include <cgreen/cdash_reporter.h>
 #include "cdash_reporter_internal.h"
@@ -85,7 +88,7 @@ TestReporter *create_cdash_reporter(CDashInfo *info) {
     memo->info = info;
     memo->begin = cdash_build_stamp(sbuildstamp, 15);
     reporter->memo = memo;
-    
+
     set_cdash_reporter_printer(reporter, fprintf);
     set_cdash_reporter_vprinter(reporter, vfprintf);
 

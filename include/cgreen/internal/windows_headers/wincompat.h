@@ -1,9 +1,10 @@
 #ifndef __WINCOMPAT_H__
 #define __WINCOMPAT_H__
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32__)
 #include "stdarg.h"
 #include "windows.h"
 #include "direct.h"
+#include <shlwapi.h>
 
 #define gmtime_r(x,y) gmtime_s(y,x)
 
@@ -25,6 +26,12 @@ typedef int pid_t;
 #define PRIdPTR     "Id"
 #endif
 
+/* Simple replacement for isatty() */
+#define isatty(x) 1
+
+/* Simple replacement for setenv() */
+#define setenv(variable, value, overwrite) SetEnvironmentVariable(variable, value)
+
+
 #endif //_MSC_VER
 #endif //__WINCOMPAT_H__
-

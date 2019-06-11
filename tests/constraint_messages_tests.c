@@ -217,6 +217,7 @@ Ensure(ConstraintMessage, for_no_mock_parameters_with_parameter_constraint) {
     forgot_to_pass_parameters_mock(0);
 }
 
+#ifndef __WIN32__
 Ensure(ConstraintMessage, increments_exception_count_when_terminating_via_SIGQUIT) {
 #ifdef HAVE_SYS_RESOURCE_H
     struct rlimit core_limit;
@@ -226,6 +227,7 @@ Ensure(ConstraintMessage, increments_exception_count_when_terminating_via_SIGQUI
 #endif
     raise(SIGQUIT);
 }
+#endif
 
 Ensure(ConstraintMessage, increments_exception_count_when_terminating_via_SIGTERM) {
     raise(SIGTERM);

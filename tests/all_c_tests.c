@@ -30,8 +30,12 @@ TestSuite *xml_reporter_tests(void);
 
 int main(int argc, char **argv) {
     int suite_result;
+#ifdef __cplusplus
+    TestSuite *suite = create_named_test_suite("all_cpp_tests");
+#else
     TestSuite *suite = create_named_test_suite("all_c_tests");
-    TestReporter *reporter = create_text_reporter(); 
+#endif
+    TestReporter *reporter = create_text_reporter();
 
     add_suite(suite, assertion_tests());
     add_suite(suite, breadcrumb_tests());

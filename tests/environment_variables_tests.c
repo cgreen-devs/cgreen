@@ -6,6 +6,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#ifdef WIN32
+#include "../include/cgreen/internal/windows_headers/wincompat.h"
+#endif
 
 #ifdef __cplusplus
 using namespace cgreen;

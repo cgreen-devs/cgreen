@@ -4,7 +4,7 @@
 #include "runner.h"
 #include "cgreen/internal/runner_platform.h"
 #include "cgreen/messaging.h"
-#include "wincompat.h"
+#include "cgreen/internal/windows_headers/wincompat.h"
 #include "cgreen/internal/cgreen_time.h"
 
 #include "win32_cgreen.h"
@@ -64,7 +64,7 @@ static void run_named_test_child(TestSuite *suite, const char *name, TestReporte
             reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
                                                                           cgreen_time_get_current_milliseconds());
 
-            (*reporter->finish_suite)(reporter, newSuite->filename, newSuite->line, test_duration);
+            (*reporter->finish_suite)(reporter, newSuite->filename, newSuite->line);
             (*suite->teardown)();
         }
     }
@@ -91,7 +91,7 @@ void run_specified_test_if_child(TestSuite *suite, TestReporter *reporter){
         reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
                                                                       cgreen_time_get_current_milliseconds());
 
-        reporter_finish_test(reporter, suite->filename, suite->line, NULL, test_duration);
+        reporter_finish_test(reporter, suite->filename, suite->line, NULL);
 
         return; //never happens because we call stop inside run_named_test_child
     }
@@ -120,7 +120,7 @@ static void AddEnvironmentVariable(struct environment* env,const char* varName, 
     StringCbCatA(env->p_head, envSize, "=");
     StringCbCatA(env->p_head, envSize, valueString);
     StringCbCatA(env->p_head, envSize, "\0");
-    len = strnlen_s(env->p_head, envSize);
+    len = strnlen(env->p_head, envSize);
     env->p_head += (len + 1);
 }
 
@@ -174,7 +174,7 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
     reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
                                                                   cgreen_time_get_current_milliseconds());
 
-    (*reporter->finish_test)(reporter, test->filename, test->line, NULL, test_duration);
+    (*reporter->finish_test)(reporter, test->filename, test->line, NULL);
 
     return;
 }

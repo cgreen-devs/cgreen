@@ -33,6 +33,7 @@ Ensure(can_send_message) {
     assert_that(receive_cgreen_message(messaging), is_equal_to(99));
 }
 
+#ifndef WIN32
 static int signal_received = 0;
 static void catch_signal(int s) {
     (void)s;
@@ -61,6 +62,7 @@ Ensure(failure_reported_and_exception_thrown_when_messaging_would_block) {
     assert_that(loop, is_less_than(LOOPS));
     assert_that(panic_message, contains_string("Too many assertions"));
 }
+#endif
 
 TestSuite *messaging_tests(void) {
     TestSuite *suite = create_test_suite();
