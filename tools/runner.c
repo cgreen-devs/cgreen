@@ -8,7 +8,11 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
+#ifdef WIN32
+#include "../include/cgreen/internal/windows_headers/wincompat.h"
+#else
 #include <fnmatch.h>
+#endif
 
 #include "utils.h"
 #include "runner.h"
@@ -29,6 +33,14 @@ typedef struct ContextSuite {
     TestSuite *suite;
     struct ContextSuite *next;
 } ContextSuite;
+
+
+#ifdef WIN32
+/*----------------------------------------------------------------------*/
+static int fnmatch(const char *pattern, const char *string, int flags) {
+    return PathMatchSpecA(string, pattern);
+}
+#endif
 
 /*----------------------------------------------------------------------*/
 static void destroy_context_suites(ContextSuite *context_suite) {

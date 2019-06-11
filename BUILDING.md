@@ -59,9 +59,8 @@ progress is being made. Here's the closest we have come so far:
     cmake -G"MSYS Makefiles" -DCMAKE_BUILD_TYPE:string=Debug ..
     make
 
-This will partially succeed. It will currently break when trying to
-build the `cgreen-runner`. (`cgreen-runner` dynamically loads
-libraries and discover tests in them and runs those.)
+This will (at this moment) build cleanly for both MSYS Native and
+MSYS/Mingw32 (haven't tried with Mingw64 yet).
 
 The current status is that this creates `libcgreen.dll` and
 `libcgreen.dll.a` which allows you to use the "main program runner"
@@ -78,7 +77,11 @@ But this is a work in progress, and we are happy to get this far.
 
 === cgreen-runner ===
 
-==== dlfcn =====
+The `cgreen-runner` can be compiled and linked without errors, but,
+again, at this time, with the libcgreen.dll in the path, it starts ok,
+but cannot load any libraries.
+
+==== Prerequisite: dlfcn =====
 
 The reflective runner `cgreen-runner` relies on Posix functionality to
 dynamically load and inspect dynamically loadable libraries (DDLs,
@@ -88,8 +91,3 @@ Fortunately there is an adapter available for the Windows API,
 dlfcn-win32. It is even available for Msys2/Mingw32. Install it with
 
     pacman -Syu mingw32/mingw-w64-i686-dlfcn
-
-
-==== fnmatch ====
-
-Current stumbling stone is fnmatch.h...

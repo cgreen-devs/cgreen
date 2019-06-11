@@ -22,9 +22,6 @@ typedef int pid_t;
 #define CGREEN_WRITE_HANDLE "CGREEN_WRITE_HANDLE"
 #define CGREEN_TEST_TO_RUN "CGREEN_TEST_TO_RUN"
 
-#ifdef __cplusplus
-#define PRIdPTR     "Id"
-#endif
 
 /* Simple replacement for isatty() */
 #define isatty(x) 1

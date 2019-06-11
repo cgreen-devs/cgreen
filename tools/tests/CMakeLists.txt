@@ -3,6 +3,12 @@ include_directories(
     ${CGREEN_PUBLIC_INCLUDE_DIRS}
     ${CURRENT_BINARY_DIR})
 
+if (WIN32)
+#  find_package(dlfcn-win32 REQUIRED)
+#  set(CMAKE_DL_LIBS dlfcn-win32::dl)
+   set(CMAKE_DL_LIBS dl shlwapi)
+endif()
+
 set(CGREEN_RUNNER_TESTS_LIBRARY
   cgreen_runner_tests
   CACHE INTERNAL "cgreen-runner tests shared library"

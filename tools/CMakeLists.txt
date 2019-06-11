@@ -9,10 +9,11 @@ if(CYGWIN)
   add_definitions(-std=gnu99)
 endif()
 
-#if (WIN32)
+if (WIN32)
 #  find_package(dlfcn-win32 REQUIRED)
 #  set(CMAKE_DL_LIBS dlfcn-win32::dl)
-#endif()
+   set(CMAKE_DL_LIBS dl shlwapi)
+endif()
 
 add_executable(cgreen-runner ${RUNNER_SRCS})
 target_link_libraries(cgreen-runner ${CGREEN_SHARED_LIBRARY} ${CMAKE_DL_LIBS})
