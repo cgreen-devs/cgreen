@@ -13,8 +13,8 @@
 #include "cgreen/internal/android_headers/androidcompat.h"
 #endif // #ifdef __ANDROID__
 
-#ifdef _MSC_VER
-#include "wincompat.h"
+#ifdef __WIN32__
+#  include "cgreen/internal/windows_headers/wincompat.h"
 #endif
 
 #include "constraint_internal.h"

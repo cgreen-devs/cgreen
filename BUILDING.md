@@ -60,7 +60,7 @@ progress is being made. Here's the closest we have come so far:
     make
 
 This will (at this moment) build cleanly for both MSYS Native and
-MSYS/Mingw32 (haven't tried with Mingw64 yet).
+MSYS/Mingw32 & MSYS/Mingw64.
 
 The current status is that this creates `libcgreen.dll` and
 `libcgreen.dll.a` which allows you to use the "main program runner"
@@ -78,8 +78,9 @@ But this is a work in progress, and we are happy to get this far.
 === cgreen-runner ===
 
 The `cgreen-runner` can be compiled and linked without errors, but,
-again, at this time, with the libcgreen.dll in the path, it starts ok,
-but cannot load any libraries.
+again, at this time, with the libcgreen.dll in the path (remember to
+". setup.sh"), it starts ok and can load libraries. But since the
+underlying runner fails, so does `cgreen-runner`.
 
 ==== Prerequisite: dlfcn =====
 
@@ -88,6 +89,6 @@ dynamically load and inspect dynamically loadable libraries (DDLs,
 .so's, .dylib's, ...)
 
 Fortunately there is an adapter available for the Windows API,
-dlfcn-win32. It is even available for Msys2/Mingw32. Install it with
+dlfcn-win32. It is even available for Msys2/Mingw32/Mingw64. Install it with
 
     pacman -Syu mingw32/mingw-w64-i686-dlfcn

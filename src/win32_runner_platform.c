@@ -146,7 +146,7 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
     PROCESS_INFORMATION piProcessInfo;
 
     //get executable path
-    GetModuleFileNameA(NULL, fname,MAX_PATH);
+    GetModuleFileNameA(NULL, fname, MAX_PATH);
 
     //launch process
     memset(&siStartupInfo, 0, sizeof(siStartupInfo));
@@ -166,8 +166,10 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
 
     uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
 
-    //success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW , p_environment, NULL, &siStartupInfo, &piProcessInfo);
-    success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS , p_environment, NULL, &siStartupInfo, &piProcessInfo);
+    //success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW ,
+    //                         p_environment, NULL, &siStartupInfo, &piProcessInfo);
+    success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS,
+                             p_environment, NULL, &siStartupInfo, &piProcessInfo);
     dispose_environment(p_environment);
     WaitForSingleObject(piProcessInfo.hProcess,INFINITE);
 

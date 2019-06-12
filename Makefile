@@ -145,6 +145,8 @@ ifeq ($(OS)/$(MSYSTEM),Msys/MINGW32)
 	# This is for a Mingw32-variant of Msys
 	# Thanks to https://stackoverflow.com/a/46027426/204658
 	cd build; cmake -G"MSYS Makefiles" $(CMAKE_SETTINGS) -DCMAKE_INSTALL_PREFIX=/usr/local ..
+else ifeq ($(OS)/$(MSYSTEM),Msys/MINGW64)
+	cd build; cmake -G"MSYS Makefiles" $(CMAKE_SETTINGS) -DCMAKE_INSTALL_PREFIX=/usr/local ..
 else
 	cd build; cmake $(CMAKE_SETTINGS) ..
 endif

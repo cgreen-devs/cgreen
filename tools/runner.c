@@ -9,7 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 #ifdef WIN32
-#include "../include/cgreen/internal/windows_headers/wincompat.h"
+#include "cgreen/internal/windows_headers/wincompat.h"
 #else
 #include <fnmatch.h>
 #endif

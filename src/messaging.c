@@ -10,13 +10,16 @@
 #include "cgreen/internal/android_headers/androidcompat.h"
 #endif // #ifdef __ANDROID__
 
-#ifdef _MSC_VER
-#include <wincompat.h>
-//disable warning on windows
-//'getpid','write': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _getpid, _write
-#pragma warning(disable:4996)
+#ifdef __WIN32__
+#  include "cgreen/internal/windows_headers/wincompat.h"
+#  ifdef _MSC_VER
+     //disable warning on windows 'getpid','write': The POSIX name for this
+     //item is deprecated. Instead, use the ISO C++ conformant name:
+     //_getpid, _write
+#    pragma warning(disable:4996)
+#  endif
 #else
-#include <sched.h>
+#  include <sched.h>
 #endif
 
 
@@ -98,7 +101,7 @@ int start_cgreen_messaging(int tag) {
 
 void send_cgreen_message(int messaging, int result) {
     CgreenMessage *message;
-    
+
     message = (CgreenMessage *) malloc(sizeof(CgreenMessage));
     if (message == NULL) {
       return;

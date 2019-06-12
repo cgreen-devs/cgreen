@@ -1,6 +1,6 @@
-#ifndef __WINCOMPAT_H__
-#define __WINCOMPAT_H__
-#if defined(_MSC_VER) || defined(__MINGW32__)
+#ifndef WINCOMPAT_H
+#define WINCOMPAT_H
+#ifdef __WIN32__
 #include "stdarg.h"
 #include "windows.h"
 #include "direct.h"
@@ -8,7 +8,8 @@
 
 #define gmtime_r(x,y) gmtime_s(y,x)
 
-typedef int pid_t;
+// This was not necessary on Msys/Mingw32/64
+//typedef int pid_t;
 
 #if _MSC_VER < 1900
    #define snprintf sprintf_s
@@ -30,5 +31,5 @@ typedef int pid_t;
 #define setenv(variable, value, overwrite) SetEnvironmentVariable(variable, value)
 
 
-#endif //_MSC_VER
-#endif //__WINCOMPAT_H__
+#endif //__WIN32__
+#endif //WINCOMPAT_H

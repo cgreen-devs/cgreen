@@ -13,15 +13,15 @@
 #include "runner.h"
 #include "discoverer.h"
 
-#ifdef __MINGW32__
-#include "../include/cgreen/internal/windows_headers/wincompat.h"
+#ifdef __WIN32__
+#include "cgreen/internal/windows_headers/wincompat.h"
 #endif
 
 /*----------------------------------------------------------------------*/
 static int file_exists(const char *filename)
 {
     if (! filename) return 0;
-#ifdef __MINGW32__
+#ifdef __WIN32__
     return PathFileExistsA(filename);
 #else
     return (access(filename, F_OK) == 0);
