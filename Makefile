@@ -17,8 +17,8 @@ all: build/Makefile
 	cd build; make
 
 .PHONY:debug
-debug: build
-	cd build; cmake -DCMAKE_BUILD_TYPE:string=Debug ..; make
+debug: CMAKE_SETTINGS=-DCMAKE_BUILD_TYPE:string=Debug
+debug: build/Makefile
 
 32bit: build
 	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" ..; make
@@ -144,9 +144,9 @@ build/Makefile: build
 ifeq ($(OS)/$(MSYSTEM),Msys/MINGW32)
 	# This is for a Mingw32-variant of Msys
 	# Thanks to https://stackoverflow.com/a/46027426/204658
-	cd build; cmake -G"MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+	cd build; cmake -G"MSYS Makefiles" $(CMAKE_SETTINGS) -DCMAKE_INSTALL_PREFIX=/usr/local ..
 else
-	cd build; cmake ..
+	cd build; cmake $(CMAKE_SETTINGS) ..
 endif
 
 .SILENT:
