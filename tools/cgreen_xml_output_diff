@@ -30,7 +30,11 @@ Cygwin)
     extension=dll
     ;;
 Msys)
-    prefix=lib
+    if [ "$MSYSTEM" = "MSYS" ]; then
+        prefix=msys-
+    else
+        prefix=lib
+    fi
     extension=dll
     ;;
 *)
@@ -83,8 +87,7 @@ echo "s/:[0-9]+:/:/g" > $tempfile
 echo "s/in [0-9]+ms\./in 0ms\./g" >> $tempfile
 
 # - library prefix
-# TODO: should use prefix, shouldn't it?
-echo s/\".*${name}\"/\"${name}\"/g >> $tempfile
+echo s/\"${prefix}${name}/\"${name}/g >> $tempfile
 
 # - source path, ensure parenthesis are not interpreted by sed -E
 #                but allow any characters before sourcedir in the string

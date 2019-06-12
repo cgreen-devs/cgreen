@@ -64,7 +64,11 @@ else ifeq ($(OS),Cygwin)
 	PREFIX=cyg
 	SUFFIX=.dll
 else ifeq ($(OS),Msys)
+  ifeq ($(MSYSTEM),MSYS)
+	PREFIX=msys-
+  else
 	PREFIX=lib
+  endif
 	SUFFIX=.dll
 else
 	PREFIX=lib
@@ -137,7 +141,8 @@ build:
 	mkdir build
 
 build/Makefile: build
-ifeq ($(OS),Msys)
+ifeq ($(OS)/$(MSYSTEM),Msys/MINGW32)
+	# This is for a Mingw32-variant of Msys
 	# Thanks to https://stackoverflow.com/a/46027426/204658
 	cd build; cmake -G"MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=/usr/local ..
 else
