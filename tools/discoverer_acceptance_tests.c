@@ -12,7 +12,7 @@ static bool verbose = false;
 
 static int count_tests_in(const char *filename) {
     char command[1000];
-    sprintf(command, "/usr/bin/nm '%s'", filename);
+    sprintf(command, "nm \"%s\"", filename);
     FILE *nm_output = popen(command, "r");
     char line[10000];
     int count = 0;
