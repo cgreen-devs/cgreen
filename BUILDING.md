@@ -44,43 +44,25 @@ Windows. However, for Msys2, read on.
 
 As Cgreen uses Posix fork() and dynamic library loading, creating a
 fully working Windows build is not straight forward. However, some
-progress is being made. Here's the closest we have come so far:
+progress is being made.
 
-- Use Msys2/Mingw32 (this is the Mingw32 cross-compilation variant of
-  Msys2, NOT the Posix-compliant variant...)
+We are, for now, primarily targeting Msys2 build environment.
 
-- Ensure that you have the Mingw32 toolchain installed, including
-  mingw32-cmake
+=== Prerequisites ===
 
-- Create a 'build' directory and 'cd' into it
+==== Prerequisites: Msys2 ====
 
-- Do
+Use Msys2/Mingw32 or Msys2/Mingw64. This is the Mingw
+cross-compilation variants of Msys2, which is different from the
+Posix-compliant variant which falls in the "just works" category as
+described above.
 
-    cmake -G"MSYS Makefiles" -DCMAKE_BUILD_TYPE:string=Debug ..
-    make
+==== Prerequisites: Mingw toolchain ====
 
-This will (at this moment) build cleanly for both MSYS Native and
-MSYS/Mingw32 & MSYS/Mingw64.
+Ensure that you have the Mingw32 or the Mingw64 toolchain installed,
+including mingw32/64-cmake
 
-The current status is that this creates `libcgreen.dll` and
-`libcgreen.dll.a` which allows you to use the "main program runner"
-strategy for creating Cgreen tests.
-
-Unfortunately, at this point tests will crash when forking so you need
-to prevent this and have all tests run in the same process:
-
-    CGREEN_NO_FORK=1 all_tests.exe
-
-It is also unknown at this time if mocks works at all.
-
-But this is a work in progress, and we are happy to get this far.
-
-=== cgreen-runner ===
-
-The `cgreen-runner` can be compiled and linked without errors, but,
-again, at this time, with the libcgreen.dll in the path (remember to
-". setup.sh"), it starts ok and can load libraries. But since the
-underlying runner fails, so does `cgreen-runner`.
+    pacman -Syu mingw32/mingw-w64-i686-gcc mingw32/mingw-w64-i686-cmake
 
 ==== Prerequisite: dlfcn =====
 
@@ -92,3 +74,37 @@ Fortunately there is an adapter available for the Windows API,
 dlfcn-win32. It is even available for Msys2/Mingw32/Mingw64. Install it with
 
     pacman -Syu mingw32/mingw-w64-i686-dlfcn
+
+=== Current status ===
+
+The top level (and basically only) Makefile is fixed to cater for a
+one command configuration of Msys2 builds. So you can just do
+
+    make
+
+Take care to do that in the correct Msys2 environment, for potentially
+Windows cross-compilation that means Msys2/Mingw32 or Msys/Mingw64
+terminal. For plain Posix in Msys2/Posix see above.
+
+Currently everything builds cleanly and creates `libcgreen.dll`,
+`libcgreen.dll.a` and `cgreen-runner`.
+
+Unfortunately, at this time tests will crash when forking so you need
+to prevent this and have all tests run in the same process:
+
+    CGREEN_NO_FORK=1 all_tests.exe
+
+or
+
+    CGREEN_NO_FORK=1 cgreen-runner <your_dll>
+
+It is also unknown at this time if mocks works at all.
+
+But this is a work in progress, and we are happy to get this far.
+
+=== cgreen-runner ===
+
+The `cgreen-runner` will also be compiled and linked without errors,
+but, again, at this time, with the libcgreen.dll in the path (remember
+to ". setup.sh"), it starts ok and can load libraries. But since the
+underlying runner fails, so does `cgreen-runner`.
