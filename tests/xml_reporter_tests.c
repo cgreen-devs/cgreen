@@ -113,7 +113,7 @@ Ensure(XmlReporter, will_report_a_failing_test) {
     reporter->start_test(reporter, "test_name");
     reporter->show_fail(reporter, "file", 2, "test_name", null_arguments);
     reporter->finish_test(reporter, "filename", line, NULL);
-    
+
     assert_that(output, contains_string("<failure message=\"test_name\">"));
     assert_that(output, contains_string("<location file=\"file\" line=\"2\"/>"));
     assert_that(strstr(output, "time="), is_less_than(strstr(output, "<failure")));

@@ -86,19 +86,31 @@ Take care to do that in the correct Msys2 environment, for potentially
 Windows cross-compilation that means Msys2/Mingw32 or Msys/Mingw64
 terminal. For plain Posix in Msys2/Posix see above.
 
+If you have run make in the wrong environment, to re-create, just do
+
+    rm -rf build; make
+
 Currently everything builds cleanly and creates `libcgreen.dll`,
 `libcgreen.dll.a` and `cgreen-runner`.
 
-Unfortunately, at this time tests will crash when forking so you need
-to prevent this and have all tests run in the same process:
+Unfortunately, at this time, tests will crash when forking. But you
+can run your tests in 'non-forking' mode, and have all tests run in
+the same process:
 
-    CGREEN_NO_FORK=1 all_tests.exe
+    CGREEN_NO_FORK=1 build/tests/all_tests.exe
 
 or
 
     CGREEN_NO_FORK=1 cgreen-runner <your_dll>
 
-It is also unknown at this time if mocks works at all.
+Of course, this creates some overhearing between your tests, and some
+of Cgreen's own tests, that are created precisely to ensure test
+isolation, fails, of course.
+
+It is also unconfirmed, at this time, if mocks works, but the unit
+tests for them passes:
+
+    CGREEN_NO_FORK=1 cgreen-runner build/tests/libmocks_tests.dll
 
 But this is a work in progress, and we are happy to get this far.
 
