@@ -74,7 +74,7 @@ static void run_named_test_child(TestSuite *suite, const char *name, TestReporte
 void run_specified_test_if_child(TestSuite *suite, TestReporter *reporter){
     //figure out if we are a child process, and if so, use the test name provided by our parent
     char testName[256];
-    DWORD result = GetEnvironmentVariableA(CGREEN_TEST_TO_RUN,testName,sizeof(testName));
+    DWORD result = GetEnvironmentVariableA(CGREEN_TEST_TO_RUN, testName, sizeof(testName));
 
     if (result) //we are a child process, only run the specified test
     {
@@ -89,7 +89,7 @@ void run_specified_test_if_child(TestSuite *suite, TestReporter *reporter){
         run_named_test_child(suite, testName, reporter);
 
         reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
-                                                                      cgreen_time_get_current_milliseconds());
+                                                                  cgreen_time_get_current_milliseconds());
 
         reporter_finish_test(reporter, suite->filename, suite->line, NULL);
 
@@ -153,7 +153,7 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
     memset(&piProcessInfo, 0, sizeof(piProcessInfo));
     siStartupInfo.cb = sizeof(siStartupInfo);
 
-    sprintf_s(handleString,sizeof(handleString), "%i", get_pipe_read_handle());
+    sprintf_s(handleString, sizeof(handleString), "%i", get_pipe_read_handle());
     AddEnvironmentVariable(p_environment, CGREEN_READ_HANDLE, handleString);
 
     sprintf_s(handleString,sizeof(handleString), "%i", get_pipe_write_handle());
@@ -171,10 +171,10 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
     success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS,
                              p_environment, NULL, &siStartupInfo, &piProcessInfo);
     dispose_environment(p_environment);
-    WaitForSingleObject(piProcessInfo.hProcess,INFINITE);
+    WaitForSingleObject(piProcessInfo.hProcess, INFINITE);
 
     reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
-                                                                  cgreen_time_get_current_milliseconds());
+                                                              cgreen_time_get_current_milliseconds());
 
     (*reporter->finish_test)(reporter, test->filename, test->line, NULL);
 
