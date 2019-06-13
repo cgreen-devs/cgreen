@@ -18,7 +18,7 @@ all: build/Makefile
 
 .PHONY:debug
 debug: CMAKE_SETTINGS=-DCMAKE_BUILD_TYPE:string=Debug
-debug: build/Makefile
+debug: all
 
 32bit: build
 	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" ..; make
