@@ -210,19 +210,20 @@ static void xml_show_fail(TestReporter *reporter, const char *file, int line, co
 }
 
 static void xml_show_incomplete(TestReporter *reporter, const char *filename, int line, const char *message, va_list arguments) {
-    XmlMemo *memo = (XmlMemo *)reporter->memo;
-    FILE *out = file_stack[file_stack_p-1];
+    char buffer[1000];
 
-    memo->printer(out, ">\n");
-    memo->printer(out, indent(reporter));
-    memo->printer(out, "<error type=\"Fatal\" message=\"");
-    memo->printer(out, message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
-    memo->printer(out, "\">\n");
-    memo->printer(out, indent(reporter));
-    memo->printer(out, "\t<location file=\"%s\" line=\"%d\"/>\n", filename, line);
-    memo->printer(out, indent(reporter));
-    memo->printer(out, "</error>\n");
-    fflush(out);
+    output = concat(output, indent(reporter));
+    output = concat(output, "<error type=\"Fatal\" message=\"");
+    vsnprintf(buffer, sizeof(buffer)/sizeof(buffer[0]),
+    		message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
+    output = concat(output, buffer);
+    output = concat(output, "\">\n");
+    output = concat(output, indent(reporter));
+    snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]),"\t<location file=\"%s\" line=\"%d\"/>\n", filename, line);
+    output = concat(output, buffer);
+    output = concat(output, indent(reporter));
+    output = concat(output, "</error>\n");
+    fputs(output, child_output_tmpfile);
 }
 
 
