@@ -33,6 +33,14 @@ static char *concat(char *output, char *buffer) {
     return output;
 }
 
+static char* pointer_to_substring(char* haystack,char* needle) {
+	return strstr(haystack,needle);
+}
+
+static char* pointer_to_second_substring(char* haystack,char* needle) {
+	return strstr(strstr(haystack,needle)+1,needle);
+}
+
 static int mocked_printf(FILE *file, const char *format, ...) {
     char buffer[10000];
     va_list ap;
@@ -119,6 +127,21 @@ Ensure(XmlReporter, will_report_a_failing_test) {
     assert_that(strstr(output, "time="), is_less_than(strstr(output, "<failure")));
 }
 
+Ensure(XmlReporter, will_report_a_failing_test_only_once) {
+    va_list null_arguments;
+    memset(&null_arguments, 0, sizeof(null_arguments));
+
+    reporter->start_test(reporter, "test_name");
+    reporter->show_fail(reporter, "file", 2, "test_failure_message", null_arguments);
+    reporter->show_fail(reporter, "file", 2, "other_message", null_arguments);
+    reporter->finish_test(reporter, "filename", line, NULL);
+
+    assert_that(pointer_to_substring(output,"<failure message=\"test_failure_message\">"),is_not_null);
+    assert_that(pointer_to_substring(output,"<failure message=\"other_message\">"),is_not_null);
+    assert_that(pointer_to_second_substring(output,"<failure message=\"test_failure_message\">"),is_null);
+}
+
+
 
 Ensure(XmlReporter, will_report_finishing_of_suite) {
     reporter->start_suite(reporter, "suite_name", 1);
@@ -175,6 +198,7 @@ TestSuite *xml_reporter_tests(void) {
     add_test_with_context(suite, XmlReporter, will_report_beginning_of_suite);
     add_test_with_context(suite, XmlReporter, will_report_beginning_and_successful_finishing_of_passing_test);
     add_test_with_context(suite, XmlReporter, will_report_a_failing_test);
+    add_test_with_context(suite, XmlReporter, will_report_a_failing_test_only_once);
     add_test_with_context(suite, XmlReporter, will_mark_ignored_test_as_skipped);
     add_test_with_context(suite, XmlReporter, will_report_finishing_of_suite);
     add_test_with_context(suite, XmlReporter, will_report_non_finishing_test);
