@@ -186,6 +186,7 @@ static void xml_show_skip(TestReporter *reporter, const char *file, int line) {
     output = concat(output, indent(reporter));
     output = concat(output, "\t<skipped />\n");
 
+    fseek(child_output_tmpfile,0,SEEK_SET);
     fputs(output, child_output_tmpfile);
 }
 
@@ -206,6 +207,7 @@ static void xml_show_fail(TestReporter *reporter, const char *file, int line, co
     output = concat(output, indent(reporter));
     output = concat(output, "</failure>\n");
 
+    fseek(child_output_tmpfile,0,SEEK_SET);
     fputs(output, child_output_tmpfile);
 }
 
@@ -223,6 +225,8 @@ static void xml_show_incomplete(TestReporter *reporter, const char *filename, in
     output = concat(output, buffer);
     output = concat(output, indent(reporter));
     output = concat(output, "</error>\n");
+
+    fseek(child_output_tmpfile,0,SEEK_SET);
     fputs(output, child_output_tmpfile);
 }
 
