@@ -155,6 +155,18 @@ Ensure(XmlReporter, will_report_non_finishing_test) {
     assert_that(output, contains_string("message=\"message\""));
 }
 
+Ensure(XmlReporter, will_report_time_correctly_for_non_finishing_test) {
+    const int line = 666;
+
+    reporter->start_suite(reporter, "suite_name", 1);
+    reporter->start_test(reporter, "test_name");
+    send_reporter_exception_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, "message");
+    reporter->finish_suite(reporter, "filename", line);
+
+    assert_that(output, contains_string("name=\"test_name\" time=\""));
+}
+
 
 TestSuite *xml_reporter_tests(void) {
     TestSuite *suite = create_test_suite();
@@ -166,6 +178,7 @@ TestSuite *xml_reporter_tests(void) {
     add_test_with_context(suite, XmlReporter, will_mark_ignored_test_as_skipped);
     add_test_with_context(suite, XmlReporter, will_report_finishing_of_suite);
     add_test_with_context(suite, XmlReporter, will_report_non_finishing_test);
+    add_test_with_context(suite, XmlReporter, will_report_time_correctly_for_non_finishing_test);
 
     set_teardown(suite, teardown_xml_reporter_tests);
     return suite;
