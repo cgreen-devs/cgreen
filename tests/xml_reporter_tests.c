@@ -33,12 +33,12 @@ static char *concat(char *output, char *buffer) {
     return output;
 }
 
-static char* pointer_to_substring(char* haystack,char* needle) {
-	return strstr(haystack,needle);
+static char* pointer_to_substring(char* haystack, const char* needle) {
+    return strstr(haystack,needle);
 }
 
-static char* pointer_to_second_substring(char* haystack,char* needle) {
-	return strstr(strstr(haystack,needle)+1,needle);
+static char* pointer_to_second_substring(char* haystack, const char* needle) {
+    return strstr(strstr(haystack,needle)+1,needle);
 }
 
 static int mocked_printf(FILE *file, const char *format, ...) {
@@ -121,7 +121,7 @@ Ensure(XmlReporter, will_report_a_failing_test) {
     reporter->start_test(reporter, "test_name");
     reporter->show_fail(reporter, "file", 2, "test_name", null_arguments);
     reporter->finish_test(reporter, "filename", line, NULL);
-    
+
     assert_that(output, contains_string("<failure message=\"test_name\">"));
     assert_that(output, contains_string("<location file=\"file\" line=\"2\"/>"));
     assert_that(strstr(output, "time="), is_less_than(strstr(output, "<failure")));
@@ -136,11 +136,10 @@ Ensure(XmlReporter, will_report_a_failing_test_only_once) {
     reporter->show_fail(reporter, "file", 2, "other_message", null_arguments);
     reporter->finish_test(reporter, "filename", line, NULL);
 
-    assert_that(pointer_to_substring(output,"<failure message=\"test_failure_message\">"),is_not_null);
-    assert_that(pointer_to_substring(output,"<failure message=\"other_message\">"),is_not_null);
-    assert_that(pointer_to_second_substring(output,"<failure message=\"test_failure_message\">"),is_null);
+    assert_that(pointer_to_substring(output, "<failure message=\"test_failure_message\">"), is_not_null);
+    assert_that(pointer_to_substring(output, "<failure message=\"other_message\">"), is_not_null);
+    assert_that(pointer_to_second_substring(output, "<failure message=\"test_failure_message\">"), is_null);
 }
-
 
 
 Ensure(XmlReporter, will_report_finishing_of_suite) {
