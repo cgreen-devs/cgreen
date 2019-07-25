@@ -14,6 +14,7 @@ extern CgreenValue make_cgreen_integer_value(intptr_t integer);
 extern CgreenValue make_cgreen_string_value(const char *string);
 extern CgreenValue make_cgreen_double_value(double value);
 extern CgreenValue make_cgreen_pointer_value(void *ptr);
+extern CgreenValue make_cgreen_by_value(void *pointer, size_t size);
 extern void destroy_cgreen_value(CgreenValue value);
 
 #ifdef __cplusplus

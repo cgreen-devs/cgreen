@@ -2,8 +2,9 @@
 #define CGREEN_VALUE_HEADER
 
 #include <stdint.h>
+#include <stddef.h>
 
-typedef enum {INTEGER, STRING, DOUBLE, POINTER} CgreenValueType;
+typedef enum {INTEGER, STRING, DOUBLE, POINTER, BYVALUE} CgreenValueType;
 
 typedef struct {
     CgreenValueType type;
@@ -13,6 +14,7 @@ typedef struct {
         void *pointer_value;
         const char *string_value;
     } value;
+    size_t value_size;
 } CgreenValue;
 
 #endif

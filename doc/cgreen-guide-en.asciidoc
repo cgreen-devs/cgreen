@@ -1734,7 +1734,8 @@ Then there are two ways to return results:
 
 |===========================================================================================
 |*Macro*                                                      |*Description*
-|`will_return(value)`                                         |Return the value from the mock function (which needs to be declared returning that type
+|`will_return(value)`                                         |Return the value from the mock function (which needs to be declared returning that type)
+|`will_return_by_value(value, size)`                          |Ditto for generic by value variables.
 |`will_return_double(value)`                                  |Ditto for double values (required because of C's type coercion rules which would otherwise convert a double into an int)
 |`will_set_contents_of_parameter(parameter_name, value, size)`|Writes the value in the referenced parameter
 |`with_side_effect(pointer_to_function, pointer_to_data)`     |Executes the side effect function and passes data to it
@@ -1800,6 +1801,23 @@ The expectation code should look like the following
   expect(mocked_file_writer,
         when(data, is_equal_to(42)),
         times(1));
+-----------------------
+
+To use a return by value function `will_return_by_value` we can use the following code:
+
+[source,c]
+-----------------------
+  expect(retrieve_box,
+        will_return_by_value(box, sizeof(Box));
+-----------------------
+
+And the mocked function need to look like:
+
+[source,c]
+-----------------------
+Box retrieve_box() {
+   return *(Box *)mock();
+}
 -----------------------
 
 It's about time we actually ran our test...

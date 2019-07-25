@@ -401,6 +401,45 @@ Ensure(Mocks, mock_expect_with_side_effect) {
 }
 
 
+typedef struct Box {
+    int height;
+    int weight;
+} Box;
+
+Box retrieveBox(void) {
+    return *(Box *)mock();
+}
+
+Ensure(Mocks, can_return_by_value) {
+    Box someBox = {.height = 10, .weight = 20};
+    expect(retrieveBox, will_return_by_value(someBox, sizeof(Box)));
+    someBox.height = 30;
+
+    Box actualBox = retrieveBox();
+    assert_that(actualBox.weight, is_equal_to(20));
+    assert_that(actualBox.height, is_equal_to(10));
+}
+
+Box retrieveSpecialBox(int boxNumber) {
+    return *(Box *)mock(boxNumber);
+}
+
+Ensure(Mocks, can_return_by_value_depending_on_input_parameter) {
+    Box box1 = {.height = 10, .weight = 20};
+    Box box2 = {.height = 5, .weight = 33};
+    expect(retrieveSpecialBox, will_return_by_value(box1, sizeof(Box)), when(boxNumber, is_equal_to(1)));
+    expect(retrieveSpecialBox, will_return_by_value(box2, sizeof(Box)), when(boxNumber, is_equal_to(2)));
+    box1.height = 30;
+
+    Box retrievedBox1 = retrieveSpecialBox(1);
+    assert_that(retrievedBox1.weight, is_equal_to(20));
+    assert_that(retrievedBox1.height, is_equal_to(10));
+    Box retrievedBox2 = retrieveSpecialBox(2);
+    assert_that(retrievedBox2.weight, is_equal_to(33));
+    assert_that(retrievedBox2.height, is_equal_to(5));
+}
+
+
 TestSuite *mock_tests(void) {
     TestSuite *suite = create_test_suite();
     add_test_with_context(suite, Mocks, default_return_value_when_no_presets_for_loose_mock);
@@ -434,6 +473,8 @@ TestSuite *mock_tests(void) {
     add_test_with_context(suite, Mocks, constraint_number_of_calls_when_multiple_expectations_are_present);
     add_test_with_context(suite, Mocks, constraint_number_of_calls_order_of_expectations_matter);
     add_test_with_context(suite, Mocks, mock_expect_with_side_effect);
+    add_test_with_context(suite, Mocks, can_return_by_value);
+    add_test_with_context(suite, Mocks, can_return_by_value_depending_on_input_parameter);
 
     return suite;
 }

@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
 
     add_suite(suite, assertion_tests());
     add_suite(suite, breadcrumb_tests());
+    add_suite(suite, cgreen_value_tests());
     add_suite(suite, cdash_reporter_tests());
     add_suite(suite, constraint_tests());
 #ifdef __cplusplus
