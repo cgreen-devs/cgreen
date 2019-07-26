@@ -1531,9 +1531,9 @@ include::tutorial_src/stream_tests4.c[lines=35..41]
 include::tutorial_src/stream_tests4.c[lines=43..46]
 -----------------------
 
-This time we musn't use `always_return()`. We want to leave the stream
-where it is, ready for the next call to `read_paragraph()`. If we call
-the stream beyond the line ending, we want to fail.
+This time we must not use `always_return()`. We want to leave the
+stream where it is, ready for the next call to `read_paragraph()`. If
+we call the stream beyond the line ending, we want to fail.
 
 Oops, that was a little too fast. Turns out we are failing anyway...
 
@@ -1730,7 +1730,7 @@ The <<floating_point_comparison_algorithm,
 section on how to work with doubles>> has a more detailed
 discussion of the algorithm used for comparing floating point numbers.
 
-Then there are two ways to return results:
+Then there are a couple of ways to return results from the mock:
 
 |===========================================================================================
 |*Macro*                                                      |*Description*
@@ -1803,15 +1803,19 @@ The expectation code should look like the following
         times(1));
 -----------------------
 
-To use a return by value function `will_return_by_value` we can use the following code:
+If the function we are mocking returns structs by value our mock
+function need to do that too. So we need use another return function,
+`will_return_by_value`. Here is some example code using an imaginary
+struct typdef'ed as `Box` and a corresponding function,
+`retrieve_box()`, which will will mock:
 
 [source,c]
 -----------------------
   expect(retrieve_box,
-        will_return_by_value(box, sizeof(Box));
+         will_return_by_value(box, sizeof(Box));
 -----------------------
 
-And the mocked function need to look like:
+And the mock function will then look like this:
 
 [source,c]
 -----------------------
@@ -1820,6 +1824,8 @@ Box retrieve_box() {
 }
 -----------------------
 
+=== Running tests with mocked functions
+
 It's about time we actually ran our test...
 
 -----------------------
@@ -1827,7 +1833,7 @@ include::tutorial_src/formatter1.out[]
 -----------------------
 
 Confident that a single character works, we can further specify the
-behaviour.  Firstly an input sequence...
+behaviour. Firstly an input sequence...
 
 [source,c]
 -----------------------
@@ -1849,7 +1855,7 @@ include::tutorial_src/formatter_tests3.c[lines=36..-1]
 -----------------------
 
 Again we can se that the `expect()` calls follow a record and playback
-model.  Each one tests a successive call.  This sequence confirms that
+model. Each one tests a successive call. This sequence confirms that
 we get `"a"`, `"b"` and `"c"` in order.
 
 -----------------------
@@ -1862,7 +1868,7 @@ the parameters given and in the specified order. In this case all the
 expected calls were made.
 
 Then we'll make sure the correct stream pointers are passed to the
-correct functions.  This is a more realistic parameter check...
+correct functions. This is a more realistic parameter check...
 
 [source,c]
 -----------------------
@@ -1920,8 +1926,9 @@ expectations means. Does it mean that all external calls must be
 declared and expected? What happens if a call was made to a mock that
 wasn't expected? And vice versa, if an expected call was not made?
 
-Actually, the thinking is not only a school of thought, but you might
-want to switch from one to the other. So *Cgreen* allows for that too.
+Actually, the thinking is not only a school of thought, you might want
+to switch from one to the other depending on the test. So *Cgreen*
+allows for that too.
 
 By default *Cgreen* mocks are 'strict', which means that a call to
 an non-expected mock will be considered a failure. So will an expected
