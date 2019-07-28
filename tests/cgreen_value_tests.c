@@ -41,7 +41,7 @@ Ensure(CgreenValue, makes_double_value) {
 }
 
 Ensure(CgreenValue, makes_by_value) {
-    char * actualString = "1234";
+    char actualString[] = "1234";
     CgreenValue value = make_cgreen_by_value(actualString, 4);
     assert_that(value.type, is_equal_to(BYVALUE));
     assert_that(value.value.pointer_value, is_equal_to_string("1234"));
