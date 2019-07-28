@@ -58,15 +58,19 @@ endif
 
 # Set prefix and suffix for shared libraries depending on platform
 ifeq ($(OS),Darwin)
+	LDPATH=DYLD_LIBRARY_PATH=$(PWD)/build/src
 	PREFIX=lib
 	SUFFIX=.dylib
 else ifeq ($(OS),Cygwin)
+	LDPATH=PATH=$(PWD)/build/src:"$$PATH"
 	PREFIX=cyg
 	SUFFIX=.dll
 else ifeq ($(OS),Msys)
+	LDPATH=PATH=$(PWD)/build/src:"$$PATH"
 	PREFIX=lib
 	SUFFIX=.dll
 else
+	LDPATH=LD_LIBRARY_PATH=$(PWD)/build/src
 	PREFIX=lib
 	SUFFIX=.so
 endif
@@ -78,31 +82,28 @@ DIFF_TOOL_ARGUMENTS = $(1)_tests \
 	$(1)_tests.expected
 
 unit: build-it
-	# Ensure the dynamic libraries can be found even on DLL-platforms without altering
-	# user process PATH
-	export PATH=$$PWD/build/src:"$$PATH" ; \
 	SOURCEDIR=$$PWD/tests/ ; \
 	cd build ; \
-	tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
+	$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
 	r=$$((r + $$?)) ; \
-	tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_cpp_tests$(SUFFIX)` ; \
+	$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_cpp_tests$(SUFFIX)` ; \
 	r=$$((r + $$?)) ; \
-	tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
+	$(LDPATH) tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
 	r=$$((r + $$?)) ; \
 	cd tests ; \
-	$(XML_DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,xml_output) ; \
+	$(LDPATH) $(XML_DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,xml_output) ; \
 	r=$$((r + $$?)) ; \
-	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,assertion_messages) ; \
+	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,assertion_messages) ; \
 	r=$$((r + $$?)) ; \
-	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,mock_messages) ; \
+	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,mock_messages) ; \
 	r=$$((r + $$?)) ; \
-	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,constraint_messages) ; \
+	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,constraint_messages) ; \
 	r=$$((r + $$?)) ; \
-	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,custom_constraint_messages) ; \
+	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,custom_constraint_messages) ; \
 	r=$$((r + $$?)) ; \
-	$(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,ignore_messages) ; \
+	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,ignore_messages) ; \
 	r=$$((r + $$?)) ; \
-	CGREEN_PER_TEST_TIMEOUT=1 $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,failure_messages) ; \
+	$(LDPATH) CGREEN_PER_TEST_TIMEOUT=1 $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,failure_messages) ; \
 	r=$$((r + $$?)) ; \
 	exit $$r
 
