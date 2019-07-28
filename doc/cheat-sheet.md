@@ -77,6 +77,8 @@
 
     will_return( <value> )
     will_return_double( <value> )
+    will_return_by(value( <value>, <size> )
+    with_side_effect( <function>, <pointer_to_data> )
     will_set_contents_of_parameter( <parameter_name>, <value>, <size> )
 
 ## C++

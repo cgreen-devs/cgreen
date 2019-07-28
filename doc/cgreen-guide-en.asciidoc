@@ -1807,7 +1807,7 @@ If the function we are mocking returns structs by value our mock
 function need to do that too. So we need use another return function,
 `will_return_by_value`. Here is some example code using an imaginary
 struct typdef'ed as `Box` and a corresponding function,
-`retrieve_box()`, which will will mock:
+`retrieve_box()`, which we want to mock:
 
 [source,c]
 -----------------------
