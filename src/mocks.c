@@ -896,7 +896,7 @@ static CgreenValue stored_result_or_default_for(CgreenVector* constraints) {
         }
     }
 
-    return (CgreenValue){INTEGER, {0}};
+    return (CgreenValue){INTEGER, {0}, 0};
 }
 
 static bool is_always_call(RecordedExpectation* expectation) {
