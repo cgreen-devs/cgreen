@@ -29,4 +29,11 @@ asciidoctor does not do natively yet. There is an extension in the
 asciidoctor-extension-lab, which I have not
 tried. [asciidoctor-chunker](https://github.com/wshito/asciidoctor-chunker)
 works well, but requires installing Roswell (a Common Lisp
-environment).
+environment). If you use asciidoctor-chunker, first generate the HTML with asciidoctor
+
+    asciidoctor cgreen-guide-en.asciidoc -o html/cgreen-guide-en.html
+
+then chunk it using asciidoctor-chunker (assuming some convenience
+links in your path...)
+
+    asciidoctor-chunker html/cgreen-guide-en.html
