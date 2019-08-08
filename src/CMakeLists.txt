@@ -20,6 +20,7 @@ else()
   # e.g. when the software is built from a source tarball
   add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/gitrevision.h
     COMMAND ${CMAKE_COMMAND} -E echo "#define GITREVISION \"unknown\"" > ${CMAKE_SOURCE_DIR}/gitrevision.h
+    VERBATIM
     )
 endif()
 
