@@ -4,7 +4,8 @@ Here's some quick notes on what we know about various problems
 building Cgreen on multiple platforms.
 
 Cgreen is CMake-based but we have tried to make building as convenient
-as possible.
+as possible by including much of the CMake configuring in a top level
+Makefile.
 
 == General instructions ==
 
@@ -30,8 +31,19 @@ To install, do
 
 == Linux/Posix/Darwin/Cygwin/Msys2 ==
 
-Everything just works as expected ;-) except that for Cygwin where you
-don't need 'sudo' to install.
+Everything just works as expected ;-) except
+
+- for Cygwin where you don't need 'sudo' to install
+
+- for MSYS2/Posix you need the correct cmake (/usr/bin/cmake) and make
+  it use the "Unix Makefiles" generator, this is not handled by the
+  Makefile magic at this time, since no simple way to identify which
+  flavour of Msys you are on, so for now you need to
+
+    mkdir build
+    cd build
+    cmake -G "Unix Makefiles"
+    make
 
 For all these platforms you get a complete native/Posix Cgreen
 installation.
@@ -60,7 +72,7 @@ described above.
 ==== Prerequisites: Mingw toolchain ====
 
 Ensure that you have the Mingw32 or the Mingw64 toolchain installed,
-including mingw32/64-cmake
+including mingw32/64-cmake (assuming Mingw32 in the commands below)
 
     pacman -Syu mingw32/mingw-w64-i686-gcc mingw32/mingw-w64-i686-cmake
 
@@ -82,8 +94,8 @@ one command configuration of Msys2 builds. So you can just do
 
     make
 
-Take care to do that in the correct Msys2 environment, for potentially
-Windows cross-compilation that means Msys2/Mingw32 or Msys/Mingw64
+Take care to do that in the correct Msys2 environment, for Windows
+cross-compilation that means Msys2/Mingw32 or Msys/Mingw64
 terminal. For plain Posix in Msys2/Posix see above.
 
 If you have run make in the wrong environment, to re-create, just do

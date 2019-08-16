@@ -1,7 +1,7 @@
 #include <cgreen/cgreen.h>
 
 /* all_c_tests.c - which also doubles as
-   all_cpp_tests.c using symbolic link and CPP conditionals */
+   all_cpp_tests.c using #include and CPP conditionals */
 
 #ifdef __cplusplus
 using namespace cgreen;

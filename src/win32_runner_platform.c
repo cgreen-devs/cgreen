@@ -11,6 +11,7 @@
 
 #include "Strsafe.h"
 #define SECOND  (1000)
+
 static void run_named_test_child(TestSuite *suite, const char *name, TestReporter *reporter);
 
 
@@ -73,9 +74,11 @@ static void run_named_test_child(TestSuite *suite, const char *name, TestReporte
 
 void run_specified_test_if_child(TestSuite *suite, TestReporter *reporter){
     //figure out if we are a child process, and if so, use the test name provided by our parent
-    char testName[256];
+    char testName[256] = "hej";
     DWORD result = GetEnvironmentVariableA(CGREEN_TEST_TO_RUN, testName, sizeof(testName));
 
+    printf("%d: %s %d\n", result, testName, GetLastError());
+    fflush(stdout);
     if (result) //we are a child process, only run the specified test
     {
         //May have to deal with some issues here.  I don't call the function pointer for
@@ -168,10 +171,16 @@ void run_test_in_its_own_process(TestSuite *suite, CgreenTest *test, TestReporte
 
     //success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW ,
     //                         p_environment, NULL, &siStartupInfo, &piProcessInfo);
-    success = CreateProcessA(fname, NULL, NULL, NULL, true, NORMAL_PRIORITY_CLASS,
+    success = CreateProcessA(NULL, fname, NULL, NULL, true, NORMAL_PRIORITY_CLASS,
                              p_environment, NULL, &siStartupInfo, &piProcessInfo);
-    dispose_environment(p_environment);
+    if (!success) {
+        char message[100];
+        int error = GetLastError();
+        StringCbPrintfA(message, 100, "CreateProcess returned error %d", error);
+        MessageBox(NULL, message, "", 0);
+    }
     WaitForSingleObject(piProcessInfo.hProcess, INFINITE);
+    dispose_environment(p_environment);
 
     reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
                                                               cgreen_time_get_current_milliseconds());
