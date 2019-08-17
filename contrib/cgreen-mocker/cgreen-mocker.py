@@ -143,9 +143,9 @@ def show_func_defs(args):
                              # Try a fake_libc in current directory
                              r'-Ipycparser/utils/fake_libc_include',
                              # Try a fake_libc in cgreen-mocker's directory
-                             r'-I' + \
-            os.path.dirname(os.path.abspath(__file__))+'/'
-            + 'pycparser/utils/fake_libc_include',
+                             r'-I' + os.path.dirname(os.path.abspath(__file__))+'/'
+                                   + 'pycparser/utils/fake_libc_include',
+                             # And add some common GNUisms
                              r'-D__attribute__(x)=',
                              r'-D__gnuc_va_list(x)=',
                              r'-D__extension__=',
