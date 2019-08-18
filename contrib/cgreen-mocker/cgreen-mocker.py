@@ -97,7 +97,7 @@ class FuncDefVisitor(c_ast.NodeVisitor):
 
     def is_return_struct_by_value(self, node):
         type = node.type
-        return not isinstance(type, c_ast.PtrDecl) and len(self._types) > 0 and not self._types[type.type.names[0]]['is_pointer']
+        return not isinstance(type, c_ast.PtrDecl) and type.type.names[0] in self._types and not self._types[type.type.names[0]]['is_pointer']
 
     def is_return_by_value_pointer(self, node):
         type = node.type
