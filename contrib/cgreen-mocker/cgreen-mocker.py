@@ -82,21 +82,22 @@ class FuncDefVisitor(c_ast.NodeVisitor):
 
     def should_return(self, node):
         generator = c_generator.CGenerator()
+        type = node.type
         if is_double_decl(node):
             print("  return unbox_double(", end="")
         elif not is_void_decl(node):
             print("  return %s(" %
-                  ("*" if self.is_return_by_value(node) else ""), end="")
+                  ("*" if self.is_return_struct_by_value(node) else ""), end="")
             print(generator.visit(node.type), end="")
-            if isinstance(node.type, c_ast.PtrDecl) or self.is_return_by_value(node):
+            if isinstance(node.type, c_ast.PtrDecl) or self.is_return_struct_by_value(node):
                 print(" *", end="")
             print(") ", end="")
         else:
             print("  ", end="")
 
-    def is_return_by_value(self, node):
+    def is_return_struct_by_value(self, node):
         type = node.type
-        return not isinstance(type, c_ast.PtrDecl) and not self._types[type.type.names[0]]['is_pointer']
+        return not isinstance(type, c_ast.PtrDecl) and len(self._types) > 0 and not self._types[type.type.names[0]]['is_pointer']
 
     def is_return_by_value_pointer(self, node):
         type = node.type
@@ -143,8 +144,9 @@ def show_func_defs(args):
                              # Try a fake_libc in current directory
                              r'-Ipycparser/utils/fake_libc_include',
                              # Try a fake_libc in cgreen-mocker's directory
-                             r'-I' + os.path.dirname(os.path.abspath(__file__))+'/'
-                                   + 'pycparser/utils/fake_libc_include',
+                             r'-I' + \
+            os.path.dirname(os.path.abspath(__file__))+'/'
+            + 'pycparser/utils/fake_libc_include',
                              # And add some common GNUisms
                              r'-D__attribute__(x)=',
                              r'-D__gnuc_va_list(x)=',
