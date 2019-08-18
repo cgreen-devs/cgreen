@@ -1,0 +1,15 @@
+#include "complex_types.h"
+#include <cgreen/mocks.h>
+
+BasicStruct return_struct_by_value(int i) { 
+  return *(BasicStruct *) mock(i);
+}
+
+BasicStructPtr return_pointer_to_struct(char string[]) { 
+  return (BasicStructPtr) mock(string);
+}
+
+BasicStruct *direct_return_pointer_to_struct(void) { 
+  return (BasicStruct *) mock();
+}
+

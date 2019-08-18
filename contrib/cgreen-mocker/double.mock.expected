@@ -1,0 +1,7 @@
+#include "double.h"
+#include <cgreen/mocks.h>
+
+double return_double(double d, int i) { 
+  return unbox_double(mock(box_double(d), i);
+}
+

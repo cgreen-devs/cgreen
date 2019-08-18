@@ -4,6 +4,6 @@ typedef struct BasicStruct {
 
 typedef BasicStruct* BasicStructPtr;
 
-BasicStruct return_by_value(void);
-BasicStructPtr return_pointer_to_struct(void);
+BasicStruct return_struct_by_value(int i);
+BasicStructPtr return_pointer_to_struct(char string[]);
 BasicStruct* direct_return_pointer_to_struct(void);
