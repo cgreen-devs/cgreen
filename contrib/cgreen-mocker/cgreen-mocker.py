@@ -6,12 +6,13 @@
 # typically in a header file.
 #
 # Usage:
-#   cgreen-mocker.py <headerfile> { <cpp_directive> }
+#   cgreen-mocker.py { <cpp_directive> } <headerfile>
+#
+# <cpp_directive>: any 'cpp' directive but most useful is e.g.
+#                  "-I <directory>" to ensure cpp finds files.
 #
 # <headerfile>: file with function declarations that you want
 #               to mock
-# <cpp_directive>: any 'cpp' directive but most useful is e.g.
-#                  "-I <directory>" to ensure cpp finds files.
 #
 # Simplistically adapted from pycparser example: func_defs.py
 #
@@ -39,6 +40,7 @@
 from __future__ import print_function
 from pycparser.plyparser import ParseError
 from pycparser import c_parser, c_ast, parse_file, c_generator
+from functools import reduce
 import sys
 import os
 
@@ -138,32 +140,44 @@ def is_ellipsis_param(node):
 def show_func_defs(args):
     # Note that cpp is used. Provide a path to your own cpp or
     # make sure one exists in PATH.
+
+    pycparser_path = None
+    # Try to find a fake_libc
+    if os.path.isdir('pycparser'):
+        # In current directory
+        pycparser_path = r'./pycparser'
+    elif os.path.isdir(os.path.dirname(os.path.join(os.path.abspath(__file__),
+                                                    'pycparser'))):
+        # In the directory of this script
+        pycparser_path = os.path.dirname(os.path.join(os.path.abspath(__file__),
+                                                      'pycparser'))
+    if pycparser_path:
+        pycparser_lib = reduce(
+            os.path.join, [pycparser_path, 'utils', 'fake_libc_include'])
+    # if pycparser_path:
+    #    print("/* Generated with cgreen-mocker and pycparser's fake_libc from %s */" %
+    #          (pycparser_path))
     try:
-        ast = parse_file(args[0], use_cpp=True,
+        ast = parse_file(args[-1], use_cpp=True,
                          cpp_args=[
-                             # Try a fake_libc in current directory
-                             r'-Ipycparser/utils/fake_libc_include',
-                             # Try a fake_libc in cgreen-mocker's directory
-                             r'-I' + \
-            os.path.dirname(os.path.abspath(__file__))+'/'
-            + 'pycparser/utils/fake_libc_include',
+                             '-I'+pycparser_lib if pycparser_lib else '',
                              # And add some common GNUisms
-                             r'-D__attribute__(x)=',
                              r'-D__gnuc_va_list(x)=',
+                             r'-D__attribute__(x)=',
                              r'-D__extension__=',
                              r'-D__restrict=',
                              r'-D__inline='
         ] +
-            args[1:])
+            args[0:-1])
     except ParseError as e:
         print("ERROR: {} - C99 parse error".format(e))
-        print("Perhaps you didn't use `fake_libc`?")
         return
 
+    print('/* -*- c -*-*/')    # Suggest c-mode for Emacs
     print('#include "%s"' % args[len(args)-1])
     print('#include <cgreen/mocks.h>')
     print()
-    v = FuncDefVisitor(args[0])
+    v = FuncDefVisitor(args[-1])
     v.visit(ast)
 
 
@@ -175,6 +189,7 @@ Usage:
     <cpp_directive>: any 'cpp' directive but most useful are e.g.
                      "-I <directory>" to ensure cpp finds files and
                      "-D <define>" to create an inline define
+
     <headerfile>:    file with function declarations that you want
                      to mock
 
