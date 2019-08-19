@@ -1,3 +1,4 @@
+/* -*- c -*-*/
 #include "multiple_types.h"
 #include <cgreen/mocks.h>
 
