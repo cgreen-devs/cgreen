@@ -16,3 +16,7 @@ all:
 	@./cgreen-mocker.py multiple_types.h > multiple_types.mock
 	@diff multiple_types.mock multiple_types.mock.expected
 	@if [ "$$?" -eq 0 ] ; then echo "Ok" ; fi
+	@echo -n "multiple_args... "
+	@./cgreen-mocker.py -Da=b -Dc=d multiple_types.h > multiple_args.mock
+	@diff multiple_args.mock multiple_types.mock.expected
+	@if [ "$$?" -eq 0 ] ; then echo "Ok" ; fi
