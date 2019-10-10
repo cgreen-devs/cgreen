@@ -23,7 +23,7 @@ Then *Cgreen* is the thing for you!
 
 **TLDR;** The full tutorial is on
 [github.io](https://cgreen-devs.github.io).  Or have a look at the
-[cheat sheet](doc/cheat_sheed.md).
+[cheat sheet](doc/cheat-sheet.md).
 
 ## What It Is
 
