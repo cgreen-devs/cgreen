@@ -2,24 +2,24 @@
 # and the .git directory is present
 find_program(GIT_SCM git DOC "Git version control")
 mark_as_advanced(GIT_SCM)
-find_file(GITDIR NAMES .git PATHS ${CMAKE_SOURCE_DIR} NO_DEFAULT_PATH)
+find_file(GITDIR NAMES .git PATHS ${PROJECT_SOURCE_DIR} NO_DEFAULT_PATH)
 if (GIT_SCM AND GITDIR)
   # Create gitrevision.h
   # that depends on the Git HEAD log
-  add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/gitrevision.h
-    COMMAND ${CMAKE_COMMAND} -E echo_append "#define GITREVISION \"" > ${CMAKE_SOURCE_DIR}/gitrevision.h.tmp
-    COMMAND ${GIT_SCM} describe --tags --always --abbrev=7 --dirty=-modified >> ${CMAKE_SOURCE_DIR}/gitrevision.h.tmp
-    COMMAND ${CMAKE_COMMAND} -E echo_append "\"" >> ${CMAKE_SOURCE_DIR}/gitrevision.h.tmp
-    COMMAND sed -e N -e "s/\\n//g" ${CMAKE_SOURCE_DIR}/gitrevision.h.tmp > ${CMAKE_SOURCE_DIR}/gitrevision.h
-    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_SOURCE_DIR}/gitrevision.h.tmp
+  add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/gitrevision.h
+    COMMAND ${CMAKE_COMMAND} -E echo_append "#define GITREVISION \"" > ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
+    COMMAND ${GIT_SCM} describe --tags --always --abbrev=7 --dirty=-modified >> ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
+    COMMAND ${CMAKE_COMMAND} -E echo_append "\"" >> ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
+    COMMAND sed -e N -e "s/\\n//g" ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp > ${PROJECT_SOURCE_DIR}/gitrevision.h
+    COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
     DEPENDS ${GITDIR}/logs/HEAD
     VERBATIM
     )
 else()
   # No version control
   # e.g. when the software is built from a source tarball
-  add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/gitrevision.h
-    COMMAND ${CMAKE_COMMAND} -E echo "#define GITREVISION \"unknown\"" > ${CMAKE_SOURCE_DIR}/gitrevision.h
+  add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/gitrevision.h
+    COMMAND ${CMAKE_COMMAND} -E echo "#define GITREVISION \"unknown\"" > ${PROJECT_SOURCE_DIR}/gitrevision.h
     VERBATIM
     )
 endif()
@@ -115,7 +115,7 @@ include_directories(
 
 ### cgreen
 set(CGREEN_LIBRARY_NAME cgreen)
-add_library(${CGREEN_SHARED_LIBRARY} SHARED ${cgreen_SRCS} ${CMAKE_SOURCE_DIR}/gitrevision.h)
+add_library(${CGREEN_SHARED_LIBRARY} SHARED ${cgreen_SRCS} ${PROJECT_SOURCE_DIR}/gitrevision.h)
 
 target_link_libraries(
   ${CGREEN_SHARED_LIBRARY}
