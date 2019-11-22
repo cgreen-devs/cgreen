@@ -1,23 +1,21 @@
-# Generate gitrevision.h if Git is available
-# and the .git directory is present
-find_program(GIT_SCM git DOC "Git version control")
-mark_as_advanced(GIT_SCM)
-find_file(GITDIR NAMES .git PATHS ${PROJECT_SOURCE_DIR} NO_DEFAULT_PATH)
-if (GIT_SCM AND GITDIR)
+# Generate gitrevision.h if Git is available and the .git directory is found.
+# NOTE: $GITDIR is determined in top-level CMakeLists.txt
+if (GITDIR)
   # Create gitrevision.h
-  # that depends on the Git HEAD log
   add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/gitrevision.h
     COMMAND ${CMAKE_COMMAND} -E echo_append "#define GITREVISION \"" > ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
-    COMMAND ${GIT_SCM} describe --tags --always --abbrev=7 --dirty=-modified >> ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
+    COMMAND ${GIT_EXECUTABLE} describe --tags --always --abbrev=7 --dirty=-modified >> ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
     COMMAND ${CMAKE_COMMAND} -E echo_append "\"" >> ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
     COMMAND sed -e N -e "s/\\n//g" ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp > ${PROJECT_SOURCE_DIR}/gitrevision.h
     COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
-    DEPENDS ${GITDIR}/logs/HEAD
+    DEPENDS ${GITDIR}
     VERBATIM
+    COMMENT "-- Generating gitrevision.h"
     )
 else()
   # No version control
   # e.g. when the software is built from a source tarball
+  message(WARNING "-- Unable to find git. Setting git revision to 'unknown'.")
   add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/gitrevision.h
     COMMAND ${CMAKE_COMMAND} -E echo "#define GITREVISION \"unknown\"" > ${PROJECT_SOURCE_DIR}/gitrevision.h
     VERBATIM
