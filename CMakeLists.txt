@@ -48,6 +48,22 @@ include(DefineCPackConfig)
 include(MacroAddPlugin)
 include(MacroCopyFile)
 
+# Generate gitrevision.h if Git is available and the .git directory is found.
+find_program(GIT_EXECUTABLE git DOC "Git version control")
+mark_as_advanced(GIT_EXECUTABLE)
+
+# Find path to .git/logs/HEAD so that the gitrevision.h generation will only
+# happen on new commits. This is done from $PROJECT_SOURCE_DIR because git rev-parse
+# doesn't always return an absolute path so need to use get_filename_component()
+# to get a cross-platform `readlink -f $(git rev-parse --git-path logs/HEAD)`
+execute_process(
+  COMMAND ${GIT_EXECUTABLE} rev-parse --git-path logs/HEAD
+  WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+  OUTPUT_VARIABLE GITDIR
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+get_filename_component(GITDIR "${GITDIR}" ABSOLUTE)
+
 # config.h checks
 include(ConfigureChecks.cmake)
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
