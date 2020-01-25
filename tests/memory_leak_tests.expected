@@ -1,0 +1,12 @@
+Running "memory_leak_tests" (9 tests)...
+memory_leak_tests.c: Failure: MemoryLeak -> fail_test_when_memory_is_leaked 
+	Memory allocated [...] was not freed [memory_leak_tests.c:46]
+
+memory_leak_tests.c: Failure: MemoryLeak -> free_null_pointer 
+	Trying to free memory using a NULL pointer
+
+memory_leak_tests.c: Failure: MemoryLeak -> free_unallocate_memory 
+	Trying to free memory [0x1] that was not previously allocated
+
+  "MemoryLeak": 3 passes, 1 failure, 2 exceptions in 0ms.
+Completed "memory_leak_tests": 3 passes, 1 failure, 2 exceptions in 0ms.

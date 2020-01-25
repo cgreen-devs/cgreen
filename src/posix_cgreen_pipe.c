@@ -18,7 +18,8 @@
      /* One way to do it the old way is: ioctl(fd, FIOBIO, &flags); */
 #endif
 
-
+#undef malloc
+#undef free
 int cgreen_pipe_open(int pipes[2])
 {
     int pipe_open_result;
@@ -70,5 +71,6 @@ ssize_t cgreen_pipe_write(int p, const void *buf, size_t count)
     }
     return pipe_write_result;
 }
-
+#define malloc cgreen_malloc
+#define free cgreen_free
 /* vim: set ts=4 sw=4 et cindent: */

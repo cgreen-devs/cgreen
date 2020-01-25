@@ -30,6 +30,10 @@ typedef struct ContextSuite {
     struct ContextSuite *next;
 } ContextSuite;
 
+#undef free
+#undef malloc
+#undef calloc
+#undef realloc
 /*----------------------------------------------------------------------*/
 static void destroy_context_suites(ContextSuite *context_suite) {
     if (context_suite != NULL) {
@@ -48,10 +52,10 @@ static char *context_name_of(const char* symbolic_name) {
     char *context_name;
 
     if (strchr(symbolic_name, ':')) {
-        context_name = string_dup(symbolic_name);
+        context_name = strdup(symbolic_name);
         *strchr(context_name, ':') = '\0';
     } else {
-        context_name = string_dup(CGREEN_DEFAULT_SUITE);
+        context_name = strdup(CGREEN_DEFAULT_SUITE);
     }
 
     return context_name;
@@ -62,10 +66,10 @@ static char *context_name_of(const char* symbolic_name) {
 static char *test_name_of(const char *symbolic_name) {
     const char *colon = strchr(symbolic_name, ':');
     if (colon) {
-        return string_dup(colon+1);
+        return strdup(colon+1);
     }
 
-    return string_dup(symbolic_name);
+    return strdup(symbolic_name);
 }
 
 
@@ -105,7 +109,7 @@ static TestSuite *find_suite_for_context(ContextSuite *suites, const char *conte
 static ContextSuite *add_new_context_suite(TestSuite *parent, const char* context_name,
                                            ContextSuite *next) {
     ContextSuite *new_context_suite = (ContextSuite *)calloc(1, sizeof(ContextSuite));
-    new_context_suite->context_name = string_dup(context_name);
+    new_context_suite->context_name = strdup(context_name);
     new_context_suite->suite = create_named_test_suite(context_name);
     new_context_suite->next = next;
     add_suite_(parent, context_name, new_context_suite->suite);

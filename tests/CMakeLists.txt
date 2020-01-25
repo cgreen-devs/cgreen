@@ -183,6 +183,11 @@ set(xml_output_library_SRCS xml_output_tests.c)
 add_library(${xml_output_library} SHARED ${xml_output_library_SRCS})
 target_link_libraries(${xml_output_library} ${CGREEN_LIBRARY})
 
+set(memory_leak_library memory_leak_tests)
+set(memory_leak_library_SRCS memory_leak_tests.c)
+add_library(${memory_leak_library} SHARED ${memory_leak_library_SRCS})
+target_link_libraries(${memory_leak_library} ${CGREEN_LIBRARY})
+
 set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
 
 macro_add_test(
@@ -235,6 +240,13 @@ macro_add_test(NAME xml_output
             xml_output_tests                # Name
             ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
             ${xml_output_library}.expected
+)
+
+macro_add_test(NAME memory_leaks
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
+        memory_leak_tests               # Name
+        ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
+        ${memory_leak_library}.expected
 )
 
 # add verification that all public api is available as it should

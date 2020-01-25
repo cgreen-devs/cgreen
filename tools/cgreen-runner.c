@@ -13,7 +13,10 @@
 #include "runner.h"
 #include "discoverer.h"
 
-
+#undef free
+#undef malloc
+#undef calloc
+#undef realloc
 /*----------------------------------------------------------------------*/
 static int file_exists(const char *filename)
 {
@@ -67,8 +70,8 @@ static char* get_a_suite_name(const char *suite_option, const char *test_library
         char *suite_name;
         char *s;
         /* basename can return the parameter or an internal static string. Work around this. */
-        s = string_dup(test_library_name);
-        suite_name = string_dup(basename(s));
+        s = strdup(test_library_name);
+        suite_name = strdup(basename(s));
         free(s);
         if ((s = strchr(suite_name, '.'))) {
             *s = '\0';

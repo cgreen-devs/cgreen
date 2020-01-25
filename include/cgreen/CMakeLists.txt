@@ -12,6 +12,7 @@ set(cgreen_HDRS
   cute_reporter.h
   legacy.h
   mocks.h
+  memory.h
   string_comparison.h
   reporter.h
   runner.h

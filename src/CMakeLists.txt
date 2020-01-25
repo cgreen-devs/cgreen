@@ -61,6 +61,7 @@ set(cgreen_SRCS
   constraint_syntax_helpers.c
   cute_reporter.c
   cdash_reporter.c
+  memory.c
   messaging.c
   message_formatting.c
   mocks.c
