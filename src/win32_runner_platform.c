@@ -29,7 +29,7 @@ static void CALLBACK stop(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR 
 void die_in(unsigned int seconds) {
     MMRESULT signal_result = timeSetEvent(seconds*SECOND,SECOND,&stop,0,TIME_ONESHOT);
     if (0 == signal_result){
-        fprintf(stderr, "could not set alarm signal hander\n");
+        fprintf(stderr, "could not set alarm signal handler\n");
         return;
     }
 }
