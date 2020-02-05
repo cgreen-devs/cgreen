@@ -80,7 +80,7 @@ static int wait_for_child_process(void) {
 void die_in(unsigned int seconds) {
     sighandler_t signal_result = signal(SIGALRM, (sighandler_t)&stop);
     if (SIG_ERR == signal_result) {
-        fprintf(stderr, "could not set alarm signal hander\n");
+        fprintf(stderr, "could not set alarm signal handler\n");
         return;
     }
 
