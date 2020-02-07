@@ -1,6 +1,6 @@
 # Generate gitrevision.h if Git is available and the .git directory is found.
 # NOTE: $GITDIR is determined in top-level CMakeLists.txt
-if (GITDIR)
+if (GITDIR AND GIT_EXECUTABLE)
   # Create gitrevision.h
   add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/gitrevision.h
     COMMAND ${CMAKE_COMMAND} -E echo_append "#define GITREVISION \"" > ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
