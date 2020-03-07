@@ -154,13 +154,12 @@ def show_func_defs(args):
     if pycparser_path:
         pycparser_lib = reduce(
             os.path.join, [pycparser_path, 'utils', 'fake_libc_include'])
-    # if pycparser_path:
-    #    print("/* Generated with cgreen-mocker and pycparser's fake_libc from %s */" %
-    #          (pycparser_path))
+        if verbose:
+            print("/* Generated with cgreen-mocker and pycparser's fake_libc from %s */" % (pycparser_path))
     try:
         ast = parse_file(args[-1], use_cpp=True,
                          cpp_args=[
-                             '-I'+pycparser_lib if pycparser_lib else '',
+                             '-I'+pycparser_lib if pycparser_path else '',
                              # And add some common GNUisms
                              r'-D__gnuc_va_list(x)=',
                              r'-D__attribute__(x)=',
