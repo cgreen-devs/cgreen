@@ -157,17 +157,17 @@ def show_func_defs(args):
         if verbose:
             print("/* Generated with cgreen-mocker and pycparser's fake_libc from %s */" % (pycparser_path))
     try:
+        cpp_args=list(filter(None, [
+            '-I'+pycparser_lib if pycparser_path else '',
+            # And add some common GNUisms
+            r'-D__gnuc_va_list(c)=',
+            r'-D__attribute__(x)=',
+            r'-D__extension__=',
+            r'-D__restrict=',
+            r'-D__inline='
+        ]))
         ast = parse_file(args[-1], use_cpp=True,
-                         cpp_args=[
-                             '-I'+pycparser_lib if pycparser_path else '',
-                             # And add some common GNUisms
-                             r'-D__gnuc_va_list(x)=',
-                             r'-D__attribute__(x)=',
-                             r'-D__extension__=',
-                             r'-D__restrict=',
-                             r'-D__inline='
-        ] +
-            args[0:-1])
+                         cpp_args=cpp_args + args[0:-1])
     except ParseError as e:
         print("ERROR: {} - C99 parse error".format(e))
         return
