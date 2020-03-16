@@ -157,15 +157,20 @@ def show_func_defs(args):
         if verbose:
             print("/* Generated with cgreen-mocker and pycparser's fake_libc from %s */" % (pycparser_path))
     try:
-        cpp_args=list(filter(None, [
-            '-I'+pycparser_lib if pycparser_path else '',
+        options = [
+            '-I'+pycparser_lib ] if pycparser_path else []
+        if add_gnuisms:
             # And add some common GNUisms
-            r'-D__gnuc_va_list(c)=',
-            r'-D__attribute__(x)=',
-            r'-D__extension__=',
-            r'-D__restrict=',
-            r'-D__inline='
-        ]))
+            options = options + [
+                r'-D__gnuc_va_list(c)=',
+                r'-D__attribute__(x)=',
+                r'-D__extension__=',
+                r'-D__restrict=',
+                r'-D__inline='
+            ]
+        if verbose:
+            print("Parsing with options = {0}".format(options))
+        cpp_args=list(filter(None, options))
         ast = parse_file(args[-1], use_cpp=True,
                          cpp_args=cpp_args + args[0:-1])
     except ParseError as e:
@@ -231,4 +236,9 @@ if __name__ == "__main__":
         sys.argv.remove('-v')
     else:
         verbose = False
+    if '-gnu' in sys.argv:
+        add_gnuisms = True
+        sys.argv.remove('-gnu')
+    else:
+        add_gnuisms = False
     show_func_defs(sys.argv[1:])
