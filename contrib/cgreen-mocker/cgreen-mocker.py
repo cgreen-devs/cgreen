@@ -143,19 +143,29 @@ def show_func_defs(args):
 
     pycparser_path = None
     # Try to find a fake_libc
+    # In current directory?
+    if verbose:
+        print("Looking for fake_lib in current directory...")
     if os.path.isdir('pycparser'):
-        # In current directory
         pycparser_path = r'./pycparser'
-    elif os.path.isdir(os.path.dirname(os.path.join(os.path.abspath(__file__),
-                                                    'pycparser'))):
-        # In the directory of this script
-        pycparser_path = os.path.dirname(os.path.join(os.path.abspath(__file__),
-                                                      'pycparser'))
+    else:
+        # In the directory of this script?
+        path = os.path.abspath(__file__)
+        if verbose:
+            print("Looking for fake_lib in directory of script ({0}...".format(path))
+        if os.path.isdir(os.path.dirname(os.path.join(os.path.abspath(__file__),
+                                                      'pycparser'))):
+            pycparser_path = os.path.dirname(os.path.join(os.path.abspath(__file__),
+                                                          'pycparser'))
+
     if pycparser_path:
         pycparser_lib = reduce(
             os.path.join, [pycparser_path, 'utils', 'fake_libc_include'])
         if verbose:
             print("/* Generated with cgreen-mocker and pycparser's fake_libc from %s */" % (pycparser_path))
+    elif verbose:
+        print("Not found")
+
     try:
         options = [
             '-I'+pycparser_lib ] if pycparser_path else []
