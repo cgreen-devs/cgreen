@@ -226,4 +226,9 @@ if __name__ == "__main__":
     if len(sys.argv) <= 1:
         usage()
         exit(-1)
+    if '-v' in sys.argv:
+        verbose = True
+        sys.argv.remove('-v')
+    else:
+        verbose = False
     show_func_defs(sys.argv[1:])
