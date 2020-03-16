@@ -1737,7 +1737,7 @@ Then there are a couple of ways to return results from the mock:
 |`will_return(value)`                                         |Return the value from the mock function (which needs to be declared returning that type)
 |`will_return_by_value(value, size)`                          |Ditto for generic by value variables.
 |`will_return_double(value)`                                  |Ditto for double values (required because of C's type coercion rules which would otherwise convert a double into an int)
-|`will_set_contents_of_parameter(parameter_name, value, size)`|Writes the value in the referenced parameter
+|`will_set_contents_of_parameter(parameter_name, pointer_to_value, size)`|Writes 'size' bytes from the pointed out value into the referenced parameter
 |`with_side_effect(pointer_to_function, pointer_to_data)`     |Executes the side effect function and passes data to it
 |===========================================================================================
 
