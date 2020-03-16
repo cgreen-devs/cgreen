@@ -85,3 +85,14 @@
 
     namespace cgreen;
     assert_throws( <exception>, <expression>);
+
+## Minimal Makefile
+
+    all: $(UNIT)_tests.so
+        cgreen-runner $^
+
+    $(UNIT)_tests.so: $(UNIT)_tests.o $(UNIT).o
+        $(CC) -shared -o $@ $^ -lcgreen
+
+    %.o: %.c
+        $(CC) $(CFLAGS) -fPIC -c -o $@ $^
