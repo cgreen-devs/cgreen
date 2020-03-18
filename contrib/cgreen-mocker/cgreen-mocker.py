@@ -221,9 +221,8 @@ Usage:
     If your header does not name some arguments you will not be able
     to use those arguments in 'expect when' statements, of course.
 
-    A tip is to ensure that the header file does not include other
-    header files that have external function definitions since they
-    will also be mocked, which is probably not what you want.
+    Cgreen-mocker will only generate mocks for the external functions
+    in the file you give as an argument, not those in included files.
 
     If cgreen-mocker encounters parse errors and they look like
     gnu-isms you should get a copy of the source for pycparser (on
