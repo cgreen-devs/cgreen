@@ -48,9 +48,16 @@ import os
 # your site-packages/ with setup.py
 sys.path.extend(['.', '..'])
 
+# Print on stderr
+
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 # A visitor for FuncDef nodes that prints the
 # Cgreen mock equivalent of the function
+
+
 class FuncDefVisitor(c_ast.NodeVisitor):
     def __init__(self, filename):
         self._types = {}
@@ -145,30 +152,42 @@ def show_func_defs(args):
     # Try to find a fake_libc
     # In current directory?
     if verbose:
-        print("Looking for fake_lib in current directory...")
+        eprint("Called in {0}".format(
+            os.path.abspath(os.path.dirname(sys.argv[0]))))
+        eprint("Looking for fake_lib in current directory...")
     if os.path.isdir('pycparser'):
         pycparser_path = r'./pycparser'
     else:
-        # In the directory of this script?
-        path = os.path.abspath(__file__)
+        this_script = os.path.abspath(__file__)
         if verbose:
-            print("Looking for fake_lib in directory of script ({0}...".format(path))
-        if os.path.isdir(os.path.dirname(os.path.join(os.path.abspath(__file__),
-                                                      'pycparser'))):
-            pycparser_path = os.path.dirname(os.path.join(os.path.abspath(__file__),
-                                                          'pycparser'))
+            eprint(
+                "Looking for fake_lib in directory of script ({0})...".format(this_script))
+        # Look in the directory of this script
+        while os.path.islink(this_script):
+            # If the script is a symlink, resolve it first, recursively...
+            # Note: can only handle absolute symlinks?
+            this_script = os.readlink(this_script)
+            if verbose:
+                eprint(
+                    "Script was a symlink, resolving it to '{0}'...".format(this_script))
+        if os.path.isdir(os.path.join(os.path.dirname(this_script),
+                                      'pycparser')):
+            # Yes, there is a pycparser symlink here
+            pycparser_path = os.path.join(os.path.dirname(this_script),
+                                          'pycparser')
 
     if pycparser_path:
         pycparser_lib = reduce(
             os.path.join, [pycparser_path, 'utils', 'fake_libc_include'])
         if verbose:
-            print("/* Generated with cgreen-mocker and pycparser's fake_libc from %s */" % (pycparser_path))
+            print("/* Generated with cgreen-mocker and pycparser's fake_libc from %s */" %
+                  (pycparser_path))
     elif verbose:
-        print("Not found")
+        eprint("Not found")
 
     try:
         options = [
-            '-I'+pycparser_lib ] if pycparser_path else []
+            '-I'+pycparser_lib] if pycparser_path else []
         if add_gnuisms:
             # And add some common GNUisms
             options = options + [
@@ -179,8 +198,8 @@ def show_func_defs(args):
                 r'-D__inline='
             ]
         if verbose:
-            print("Parsing with options = {0}".format(options))
-        cpp_args=list(filter(None, options))
+            eprint("Parsing with options = {0}".format(options))
+        cpp_args = list(filter(None, options))
         ast = parse_file(args[-1], use_cpp=True,
                          cpp_args=cpp_args + args[0:-1])
     except ParseError as e:
