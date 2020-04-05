@@ -232,6 +232,7 @@ int main(int argc, const char **argv) {
         if (!gopt_arg(options, 'c', &tmp))
             reporter_options.use_colours = false;
     }
+    panic_use_colours = reporter_options.use_colours;
 
     if (gopt_arg(options, 'q', &tmp))
         reporter_options.quiet_mode = true;
