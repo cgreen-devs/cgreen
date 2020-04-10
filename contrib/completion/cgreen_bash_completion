@@ -4,8 +4,10 @@
 
 _cgreen_runner_completion()
 {
-    local suggestions=("--colour" "--xml" "--suite" "--verbose" "--no-run" "--help" " --version")
-    suggestions+=" $(ls | grep -e '\b\.so\b')"
+    local options libraries tests
+    options=("--colour" "--xml" "--suite" "--verbose" "--no-run" "--help" " --version")
+    libraries=" $(ls | grep -e '\b\.so\b')"
+    tests=""
 
     for word in ${COMP_WORDS[@]}; do
         if echo $word | grep -q -E "\b\.so\b"; then
@@ -15,16 +17,16 @@ _cgreen_runner_completion()
             local test_names=($(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | sed -e 's/CgreenSpec__[a-zA-Z0-9]\+\?__//' -e 's/__$//'))
 
             if test $SUT = "default" ; then
-                suggestions+=" $test_names"
+                tests+=" $test_names"
             else
                 local prefix="$SUT\\:"
-                suggestions+=" ${test_names[@]/#/$prefix}"
+                tests+=" ${test_names[@]/#/$prefix}"
                 echo ${suggestions[@]} > log
             fi
         fi
     done
 
-    COMPREPLY=($(compgen -W "$(printf "%s " ${suggestions[@]})" -- "${COMP_WORDS[$COMP_CWORD]}"))
+    COMPREPLY=($(compgen -W '$(printf "%s " ${options[@]} ${libraries[@]} ${tests[@]})' -- "${COMP_WORDS[$COMP_CWORD]}"))
 }
 
-complete -o dirnames -F _cgreen_runner_completion cgreen-runner
+complete -o nosort -o dirnames -F _cgreen_runner_completion cgreen-runner
