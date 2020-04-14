@@ -2,6 +2,9 @@
 [![Coverage Status](https://coveralls.io/repos/cgreen-devs/cgreen/badge.svg?branch=master&service=github)](https://coveralls.io/github/cgreen-devs/cgreen?branch=master)
 [![Chat on Gitter](https://img.shields.io/gitter/room/badges/shields.svg)](https://gitter.im/cgreen-devs/chat)
 
+![alt text](https://github.com/cgreen-devs/cgreen/blob/master/doc/logo.png =300px "Cgreen Logo")
+
+
 Cgreen - The Modern Unit Test and Mocking Framework for C and C++
 =================================================================
 
@@ -70,6 +73,29 @@ C/C++ compilers should work. GCC definitely does.
 In the root directory run ``make``. That will configure and build the
 library and the `cgreen-runner`, both supporting both C and C++. See
 also the documentation.
+
+## Using It
+
+Tests are fairly easy write, as shown by the examples in the beginning
+of this readme. You should probably read the
+[tutorial](https://cgreen-devs.github.io) once before writing your
+first test, though.
+
+Basically you can run your tests in two ways
+
+1. Compile and link all your tests with a test driver as shown in the
+   tutorial
+2. Link your tests into separate shared libraries (`.so`, `.dylib` or
+   similar) and run them with the `cgreen-runner`
+
+Option 2 is very handy, you can run multiple libraries in the same
+run, but also specify single tests that you want to run. And with the
+completion script available for bash you can get TAB-completion not
+only for files and options but also for tests inside the libraries.
+
+`cgreen-debug` is a small script that you invoce in the same way as
+the runner but runs a single, specified, test and puts you in the
+debugger at the start of that test. Awesome!
 
 ## Using Cgreen in other CMake projects
 Once Cgreen is installed you can use ``find_package(cgreen)`` in your CMake
