@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/cgreen-devs/cgreen/badge.svg?branch=master&service=github)](https://coveralls.io/github/cgreen-devs/cgreen?branch=master)
 [![Chat on Gitter](https://img.shields.io/gitter/room/badges/shields.svg)](https://gitter.im/cgreen-devs/chat)
 
-![alt text](https://github.com/cgreen-devs/cgreen/blob/master/doc/logo.png =300px "Cgreen Logo")
+![](https://github.com/cgreen-devs/cgreen/blob/master/doc/logo.png?s=300)
 
 
 Cgreen - The Modern Unit Test and Mocking Framework for C and C++
