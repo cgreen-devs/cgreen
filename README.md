@@ -59,7 +59,7 @@ build it yourself.
 
 There are some packaging scripts floating around, some of which have unclear status:
 
-  - [debian packaging is part of cgreens source tree](https://github.com/cgreen-devs/cgreen/tree/master/debian)
+  - [debian packaging is ongoing in](https://github.com/cgreen-devs/cgreen/issues/208)
   - [fedora/rpm packaging is part of cgreens source tree](https://github.com/cgreen-devs/cgreen/tree/master/contrib/rpm)
   - [PACMAN script](https://github.com/voins/cgreen-pkg)
   - [MacOS packagesbuild](https://github.com/cgreen-devs/cgreen-macosx-packaging)
