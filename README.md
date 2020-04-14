@@ -93,7 +93,7 @@ run, but also specify single tests that you want to run. And with the
 completion script available for bash you can get TAB-completion not
 only for files and options but also for tests inside the libraries.
 
-`cgreen-debug` is a small script that you invoce in the same way as
+`cgreen-debug` is a small script that you invoke in the same way as
 the runner but runs a single, specified, test and puts you in the
 debugger at the start of that test. Awesome!
 
