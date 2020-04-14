@@ -125,7 +125,7 @@ Ensure(TextReporter, will_report_no_asserts_for_suites_with_no_asserts) {
     reporter->finish_test(reporter, "filename", line, NULL);
     reporter->finish_suite(reporter, "filename", line);
 
-    assert_that(output, contains_string("Completed \"suite_name\": No asserts"));
+    assert_that(output, contains_string("Completed \"suite_name\": No assertions"));
 }
 
 

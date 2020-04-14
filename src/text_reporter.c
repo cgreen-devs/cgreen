@@ -191,7 +191,7 @@ static void text_reporter_print_results(char *buf, char *prepend,
         }
         strcat(buf, format_duration(duration));
     } else {
-        strcat(buf, "No asserts");
+        strcat(buf, "No assertions");
     }
 }
 
