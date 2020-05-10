@@ -1,0 +1,42 @@
+#!/usr/bin/bash
+# cgreen-debug
+#
+# Script to start cgreen-runner under gdb, load a library and break
+# on a named test.
+#
+
+# If you are viewing 'cgreen-debug' this *is* that script and you'll
+# find the logic at the end of this file. To update it, edit
+# `cgreen-debug.argbash` instead.
+
+# But if you are looking at 'cgreen-debug.argbash' then this is
+# actually a template for argbash (https://argbash.io) which generates
+# argument parsing capable bash scripts from a template just like
+# this.
+
+# To generate a new 'cgreen-debug' use
+#
+#     'argbash cgreen-debug.argbash -o cgreen-debug'
+#
+# if you have argbash installed, or go to https://argbash.io and paste
+# this file into the online version.
+
+# ARG_HELP([Start cgreen-runner under GDB and break at a specific test])
+# ARG_POSITIONAL_SINGLE([library], [Dynamically loadable library with Cgreen tests], )
+# ARG_POSITIONAL_SINGLE([testname], [The test to debug, in Cgreen notation ('<Context>:<test>')], )
+# ARGBASH_GO
+
+# [ <-- needed because of Argbash
+
+bp=${2//:/__}
+echo break $bp > .cgreen-debug-commands
+echo run $1 $2 >> .cgreen-debug-commands
+if command -v cgdb ; then
+    debugger=cgdb
+else
+    debugger=gdb
+fi
+$debugger -ex "set breakpoint pending on" cgreen-runner --command=.cgreen-debug-commands
+rm .cgreen-debug-commands
+
+# ] <-- needed because of Argbash
