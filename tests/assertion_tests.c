@@ -239,6 +239,18 @@ Ensure(identical_strings_contain_eachother) {
     assert_that("Hello", contains_string("Hello"));
 }
 
+Ensure(contains_substring_at_beginning) {
+    assert_that("Hello", contains_string("Hell"));
+}
+
+Ensure(contains_substring_at_end) {
+    assert_that("Hello", contains_string("llo"));
+}
+
+Ensure(contains_substring_after_newline) {
+    assert_that("Hello\nagain", contains_string("gai"));
+}
+
 Ensure(null_string_should_only_match_another_null_string) {
     assert_string_equal(NULL, NULL);
     assert_string_not_equal(NULL, "");
