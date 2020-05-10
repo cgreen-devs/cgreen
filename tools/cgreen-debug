@@ -1,3 +1,4 @@
+#!/usr/bin/bash
 # cgreen-debug
 #
 # Script to start cgreen-runner under gdb, load a library and break
