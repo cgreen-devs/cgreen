@@ -5,14 +5,21 @@
 # on a named test.
 #
 
-# If you are viewing 'cgreen-debug' *is* that script. But if you are looking at
-# 'cgreen-debug.argbash' then this is actually a template for argbash
-# (https://argbash.io) which generates argument parsing capable bash
-# scripts from a template just like this.
+# If you are viewing 'cgreen-debug' this *is* that script and you'll
+# find the logic at the end of this file. To update it, edit
+# `cgreen-debug.argbash` instead.
 
-# To generate a new 'cgreen-debug' use 'argbash cgreen-debug.argbash -o cgreen-debug'
-# if you have argbash installed, or go to https://argbash.io and paste this file
-# into the online version.
+# But if you are looking at 'cgreen-debug.argbash' then this is
+# actually a template for argbash (https://argbash.io) which generates
+# argument parsing capable bash scripts from a template just like
+# this.
+
+# To generate a new 'cgreen-debug' use
+#
+#     'argbash cgreen-debug.argbash -o cgreen-debug'
+#
+# if you have argbash installed, or go to https://argbash.io and paste
+# this file into the online version.
 
 # ARG_HELP([Start cgreen-runner under GDB and break at a specific test])
 # ARG_POSITIONAL_SINGLE([library],[Dynamically loadable library with Cgreen tests],[])
