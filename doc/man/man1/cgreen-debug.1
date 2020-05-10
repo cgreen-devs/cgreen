@@ -1,0 +1,30 @@
+.TH CGREEN-DEBUG "1" "May 2020" "cgreen 1.2.0" "User Commands"
+.SH NAME
+cgreen-debug \- start cgreen-runner under GDB and break at a specific test
+.SH SYNOPSIS
+.B cgreen\-debug
+[\fI\,OPTION\/\fR...]
+\fILIBRARY\fR \fITEST\fR
+.SH DESCRIPTION
+.B cgreen-debug
+is a script to start cgreen-runner under gdb, load a \fILIBRARY\fR and break
+on a named \fITEST\fR.
+.TP
+.B "\-h, \-\-help"
+Print some usage information and exit.
+
+.SH "SEE ALSO"
+cgreen(5)
+cgreen-runner(1)
+
+.PP
+The full documentation for
+.B cgreen-debug
+and
+.B the Cgreen framework
+is in the
+.B Cgreen
+manual available at
+.UR https://\:cgreen-devs.github.io/
+GitHub 
+.UE .
