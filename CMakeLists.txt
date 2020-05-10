@@ -119,7 +119,7 @@ ENDIF()
 # use find_package( cgreen )
 
 set( CONFIG_INSTALL_DIR
-        "lib/cmake/${APPLICATION_NAME}" )
+        "${CMAKE_INSTALL_LIBDIR}/cmake/${APPLICATION_NAME}" )
 
 set( PROJECT_CONFIG_IN
         "${CMAKE_CURRENT_SOURCE_DIR}/cgreen-config.cmake.in" )
