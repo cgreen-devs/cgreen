@@ -37,7 +37,7 @@ Ensure(ConstraintMessage,for_is_equal_to) {
 }
 
 Ensure(ConstraintMessage, for_is_equal_to_hex) {
-    char chars[4];
+    signed char chars[4];
     memset(chars, 0xaa, sizeof(chars));
     assert_that(chars[0], is_equal_to_hex(0xbb));
 }
