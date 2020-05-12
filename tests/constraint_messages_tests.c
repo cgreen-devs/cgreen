@@ -37,9 +37,9 @@ Ensure(ConstraintMessage,for_is_equal_to) {
 }
 
 Ensure(ConstraintMessage, for_is_equal_to_hex) {
-    char chars[4];
-    memset(chars, 0xaa, sizeof(chars));
-    assert_that(chars[0], is_equal_to_hex(0xbb));
+    unsigned char bytes[4];
+    memset(bytes, 0xaa, sizeof(bytes));
+    assert_that(bytes[0], is_equal_to_hex(0xbb));
 }
 
 Ensure(ConstraintMessage, for_is_not_equal_to) {
