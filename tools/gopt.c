@@ -1,266 +1,226 @@
-/* gopt.c version 8.1: tom.viza@gmail.com PUBLIC DOMAIN 2003-8 */
-/*
-  I, Tom Vajzovic, am the author of this software and its documentation and
-  permanently abandon all copyright and other intellectual property rights in
-  them, including the right to be identified as the author.
+/* gopt.c   PUBILC DOMAIN 2015   t.gopt@purposeful.co.uk */
 
-  I am fairly certain that this software does what the documentation says it
-  does, but I cannot guarantee that it does, or that it does what you think it
-  should, and I cannot guarantee that it will not have undesirable side effects.
+/* <http:///www.purposeful.co.uk/software/gopt> */
+
+/*
+  I, Tom Vajzovic, am the author of this software and its documentation.
+  I permanently abandon all intellectual property rights in them, including
+  copyright, trademarks, design rights, database right, patents, and the right
+  to be identified as the author.
+
+  I am fairly certain that the software does what the documentation says it
+  does, but I do not guarantee that it does, or that it does what you think it
+  should.  I do not guarantee that it will not have undesirable side effects.
 
   You are free to use, modify and distribute this software as you please, but
-  you do so at your own risk.  If you remove or hide this warning then you are
-  responsible for any problems encountered by people that you make the software
-  available to.
-
-  Before modifying or distributing this software I ask that you would please
-  read http://www.purposeful.co.uk/tfl/
+  you do so at your own risk.  If you do not pass on this warning then you may
+  be responsible for any problems encountered by those who obtain the software
+  through you.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include "gopt.h"
 
-#ifdef USE_SYSEXITS
-#include <sysexits.h>
+#ifdef _WIN32
+#define strncasecmp _strnicmp
 #else
-#define EX_OSERR EXIT_FAILURE
-#define EX_USAGE EXIT_FAILURE
+#include <strings.h>
 #endif
 
-struct opt_spec_s {
-    int key;
-    int flags;
-    const char *shorts;
-    const char* const *longs;
-};
-typedef struct opt_spec_s opt_spec_t;
+#include "gopt.h"
 
-struct opt_s {
-    int key;
-    const char *arg;
-};
-typedef struct opt_s opt_t;
 
-void *gopt_sort(int *argc, const char **argv, const void *opt_specs) {
-    void *opts;
-    {{{
-                const char* const *arg_p= argv + 1;
-                size_t opt_count= 1;
-                for(; *arg_p; ++arg_p)
-                    if('-' == (*arg_p)[0] && (*arg_p)[1]) {
-                        if('-' == (*arg_p)[1])
-                            if((*arg_p)[2])
-                                ++opt_count;
-                            else
-                                break;
-                        else {
-                            const opt_spec_t *opt_spec_p= opt_specs;
-                            for(; opt_spec_p-> key; ++opt_spec_p)
-                                if(strchr(opt_spec_p-> shorts, (*arg_p)[1])) {
-                                    opt_count+= opt_spec_p-> flags & GOPT_ARG ? 1 : strlen((*arg_p) + 1);
-                                    break;
-                                }
-                        }
-                    }
-                opts= malloc(opt_count * sizeof(opt_t));
-            }}}
+/* returns index of first exact match or only prefix match, or last index */
+static unsigned int long_option_get_index (const char *arg, const struct option *options)
+{
+  unsigned int count = 0;
+  unsigned int found;
+  unsigned int i;
+
+  size_t arg_len = strcspn (arg, "=");
+
+  for (i = 0; !(options[i].flags & GOPT_LAST); i++)
+  {
+    if (options[i].long_name)
     {
-        const char **arg_p= argv + 1;
-        const char **next_operand= arg_p;
-        opt_t *next_option= opts;
-      
-        if(! opts) {
-            perror(argv[0]);
-            exit(EX_OSERR);
-        }  
-        for(; *arg_p; ++arg_p)
-            if('-' == (*arg_p)[0] && (*arg_p)[1])
-                if('-' == (*arg_p)[1])
-                    if((*arg_p)[2])
-                        {{{
-                                    const opt_spec_t *opt_spec_p= opt_specs;
-                                    const char* const *longs= opt_spec_p-> longs;
-                                    next_option-> key= 0;
-                                    while(*longs) {
-                                        const char *option_cp= (*arg_p) + 2;
-                                        const char *name_cp= *longs;
-                                        while(*option_cp && *option_cp == *name_cp) {
-                                            ++option_cp;
-                                            ++name_cp;
-                                        }
-                                        if('=' == *option_cp || !*option_cp) {
-                                            if(*name_cp) {
-                                                if(next_option-> key) {
-                                                    fprintf(stderr, "%s: --%.*s: abbreviated option is ambiguous\n", argv[0], (int)(option_cp -((*arg_p) + 2)), (*arg_p) + 2);
-                                                    free(opts);
-                                                    exit(EX_USAGE);
-                                                }
-                                                next_option-> key= opt_spec_p-> key;
-                                            }
-                                            else {
-                                                next_option-> key= opt_spec_p-> key;
-                                                goto found_long;
-                                            }
-                                        }
-                                        if(!*++longs) {
-                                            ++opt_spec_p;
-                                            if(opt_spec_p-> key)
-                                                longs= opt_spec_p-> longs;
-                                        }
-                                    }
-                                    if(! next_option-> key) {
-                                        fprintf(stderr, "%s: --%.*s: unknown option\n", argv[0], (int)strcspn((*arg_p) + 2, "="), (*arg_p) + 2);
-                                        free(opts);
-                                        exit(EX_USAGE);              
-                                    }
-                                    for(opt_spec_p= opt_specs; opt_spec_p-> key != next_option-> key; ++opt_spec_p);
-                                found_long:
-            
-                                    if(!(opt_spec_p-> flags & GOPT_REPEAT)) {
-                                        const opt_t *opt_p= opts;
-                                        for(; opt_p != next_option; ++opt_p)
-                                            if(opt_p-> key == opt_spec_p-> key) {
-                                                fprintf(stderr, "%s: --%.*s: option may not be repeated (in any long or short form)\n", argv[0], (int)strcspn((*arg_p) + 2, "="), (*arg_p) + 2);
-                                                free(opts);
-                                                exit(EX_USAGE);
-                                            }
-                                    }
-                                    if(opt_spec_p-> flags & GOPT_ARG) {
-                                        next_option-> arg= strchr((*arg_p) + 2, '=') + 1;
-                                        if((char*)0 + 1 == next_option-> arg) {
-                                            ++arg_p;
-                                            if(!*arg_p || ('-' == (*arg_p)[0] && (*arg_p)[1])) {
-                                                fprintf(stderr, "%s: --%s: option requires an option argument\n", argv[0], (*(arg_p-1)) + 2);
-                                                free(opts);
-                                                exit(EX_USAGE);
-                                            }
-                                            next_option-> arg= *arg_p;
-                                        }
-                                    }
-                                    else {
-                                        if(strchr((*arg_p) + 2, '=')) {
-                                            fprintf(stderr, "%s: --%.*s: option may not take an option argument\n", argv[0], (int)strcspn((*arg_p) + 2, "="), (*arg_p) + 2);
-                                            free(opts);
-                                            exit(EX_USAGE);
-                                        }
-                                        next_option-> arg= NULL;
-                                    }
-                                    ++next_option;
-                                }}}
-                    else {
-                        for(++arg_p; *arg_p; ++arg_p)
-                            *next_operand++= *arg_p;
-                        break;
-                    }
-                else
-                    {{{
-                                const char *short_opt= (*arg_p) + 1;
-                                for(;*short_opt; ++short_opt) {
-                                    const opt_spec_t *opt_spec_p= opt_specs;
-            
-                                    for(; opt_spec_p-> key; ++opt_spec_p)
-                                        if(strchr(opt_spec_p-> shorts, *short_opt)) {
-                                            if(!(opt_spec_p-> flags & GOPT_REPEAT)) {
-                                                const opt_t *opt_p= opts;
-                                                for(; opt_p != next_option; ++opt_p)
-                                                    if(opt_p-> key == opt_spec_p-> key) {
-                                                        fprintf(stderr, "%s: -%c: option may not be repeated (in any long or short form)\n", argv[0], *short_opt);
-                                                        free(opts);
-                                                        exit(EX_USAGE);
-                                                    }
-                                            }
-                                            next_option-> key= opt_spec_p-> key;
+      size_t full_len = strlen (options[i].long_name);
 
-                                            if(opt_spec_p-> flags & GOPT_ARG) {
-                                                if(short_opt[1])
-                                                    next_option-> arg= short_opt + 1;
-                  
-                                                else {
-                                                    ++arg_p;
-                                                    if(!*arg_p || ('-' == (*arg_p)[0] && (*arg_p)[1])) {
-                                                        fprintf(stderr, "%s: -%c: option requires an option argument\n", argv[0], *short_opt);
-                                                        free(opts);
-                                                        exit(EX_USAGE);
-                                                    }
-                                                    next_option-> arg= *arg_p;
-                                                }
-                                                ++next_option;
-                                                goto break_2;
-                                            }
-                                            next_option-> arg= NULL;
-                                            ++next_option;
-                                            goto continue_2;
-                                        }
-                                    fprintf(stderr, "%s: -%c: unknown option\n", argv[0], *short_opt);
-                                    free(opts);
-                                    exit(EX_USAGE);
-                                continue_2: ;
-                                }
-                            break_2: ;
-                            }}}
-            else
-                *next_operand++= *arg_p;
+      if ((arg_len <= full_len) && !strncasecmp (options[i].long_name, arg, arg_len))
+      {
+        if (arg_len == full_len)
+        {
+          return i;
+        }
 
-        next_option-> key= 0;
-        *next_operand= NULL;
-        *argc= next_operand - argv;
+        found = i;
+        count++;
+      }
     }
-    return opts;
+  }
+
+  return ((count == 1) ? found : i);
 }
 
-size_t gopt(const void *vptr_opts, int key) {
-    const opt_t *opts= vptr_opts;
-    size_t count= 0;
-    for(; opts-> key; ++opts)
-        count+= opts-> key == key;
+/* returns index of first match, or last index */
+static unsigned int short_option_get_index (char c, const struct option *options)
+{
+  unsigned int i;
 
-    return count;
+  for (i = 0; !(options[i].flags & GOPT_LAST); i++)
+  {
+    if (options[i].short_name == c)
+    {
+      return i;
+    }
+  }
+
+  return i;
 }
 
-size_t gopt_arg(const void *vptr_opts, int key, const char **arg) {
-    const opt_t *opts= vptr_opts;
-    size_t count= 0;
- 
-    for(; opts-> key; ++opts)
-        if(opts-> key == key) {
-            if(! count)
-                *arg= opts-> arg;
-            ++count;
+int gopt (char **argv, struct option *options)
+{
+  unsigned int operand_count = 1;
+  unsigned int doubledash    = 0;
+  unsigned int expecting     = 0;
+  unsigned int option_index;
+  unsigned int i, j;
+
+  for (i = 0; !(options[i].flags & GOPT_LAST); i++)
+  {
+    options[i].argument = NULL;
+    options[i].count    = 0;
+  }
+
+  options[i].short_name = 0;
+  options[i].long_name  = NULL;
+  options[i].argument   = NULL;
+  options[i].count      = 0;
+
+  for (i = 1; argv[i]; i++)
+  {
+    if (doubledash)
+    {
+      argv[operand_count] = argv[i];
+      operand_count++;
+      continue;
+    }
+
+    if (expecting)
+    {
+      if ((argv[i][0] != '-') || !argv[i][1] || !(options[option_index].flags & GOPT_ARGUMENT_NO_HYPHEN))
+      {
+        options[option_index].flags    |= expecting;
+        options[option_index].argument  = argv[i];
+        expecting = 0;
+        continue;
+      }
+      else
+      {
+        options[option_index].flags    |= (expecting >> 1); /* change _WITH to _WITHOUT */
+        options[option_index].argument  =  NULL;
+        expecting = 0;
+      }
+    }
+
+    if ((argv[i][0] == '-') && (argv[i][1] == '-') && (argv[i][2] == 0))
+    {
+      doubledash = 1;
+      continue;
+    }
+
+    if ((argv[i][0] == '-') && (argv[i][1] == '-'))
+    {
+      char *eq = strchr (&argv[i][2], '=');
+
+      option_index = long_option_get_index (&argv[i][2], options);
+
+      options[option_index].count++;
+
+      if ((options[option_index].flags & GOPT_LAST) && !options[option_index].long_name)
+      {
+        options[option_index].long_name = &argv[i][2];
+      }
+
+      if (eq)
+      {
+        options[option_index].argument  = (eq + 1);
+        options[option_index].flags    |= GOPT_SEEN_LONG_WITH;
+      }
+      else if (options[option_index].flags & GOPT_ARGUMENT_REQUIRED)
+      {
+        expecting = GOPT_SEEN_LONG_WITH;
+      }
+      else
+      {
+        options[option_index].argument  = NULL;
+        options[option_index].flags    |= GOPT_SEEN_LONG_WITHOUT;
+      }
+    }
+    else if ((argv[i][0] == '-') && argv[i][1])
+    {
+      for (j = 1; argv[i][j]; j++)
+      {
+        option_index = short_option_get_index (argv[i][j], options);
+
+        options[option_index].count++;
+
+        if (options[option_index].flags & GOPT_LAST)
+        {
+          if (!options[option_index].short_name)
+          {
+            options[option_index].short_name = argv[i][j];
+          }
+
+          if (argv[i][j+1])
+          {
+            options[option_index].argument  = &argv[i][j+1];
+            options[option_index].flags    |= GOPT_SEEN_SHORT_WITH;
+          }
+          else
+          {
+            options[option_index].argument  = NULL;
+            options[option_index].flags    |= GOPT_SEEN_SHORT_WITHOUT;
+          }
+          break;
         }
-    return count;
-}
 
-const char *gopt_arg_i(const void *vptr_opts, int key, size_t i) {
-    const opt_t *opts= vptr_opts;
-  
-    for(; opts-> key; ++opts)
-        if(opts-> key == key) {
-            if(! i)
-                return opts-> arg;      
-            --i;
+        if (options[option_index].flags & GOPT_ARGUMENT_FORBIDDEN)
+        {
+          options[option_index].argument  = NULL;
+          options[option_index].flags    |= GOPT_SEEN_SHORT_WITHOUT;
         }
-    return NULL;
-}
 
-size_t gopt_args(const void *vptr_opts, int key, const char **args, size_t args_len) {
-    const char **args_stop= args + args_len;
-    const char **args_ptr= args;
-    const opt_t *opts= vptr_opts;
-
-    for(; opts-> key; ++opts)
-        if(opts-> key == key) {
-            if(args_stop == args_ptr)
-                return args_len + gopt(opts, key);
-      
-            *args_ptr++= opts-> arg;
+        else if (argv[i][j+1])
+        {
+          options[option_index].argument  = &argv[i][j+1];
+          options[option_index].flags    |= GOPT_SEEN_SHORT_WITH;
+          break;
         }
-    if(args_stop != args_ptr)
-        *args_ptr= NULL;
-    return args_ptr - args;
-}
 
-void gopt_free(void *vptr_opts) {
-    free(vptr_opts);
+        else if (options[option_index].flags & GOPT_ARGUMENT_REQUIRED)
+        {
+          expecting = GOPT_SEEN_SHORT_WITH;
+        }
+
+        else
+        {
+          options[option_index].argument  = NULL;
+          options[option_index].flags    |= GOPT_SEEN_SHORT_WITHOUT;
+        }
+      }
+    }
+    else
+    {
+      argv[operand_count] = argv[i];
+      operand_count++;
+    }
+  }
+
+  if (expecting)
+  {
+    options[option_index].flags    |= (expecting >> 1); /* change _WITH to _WITHOUT */
+    options[option_index].argument  =  NULL;
+  }
+
+  argv[operand_count] = NULL;
+  return operand_count;
 }
