@@ -30,9 +30,9 @@ static void version(void) {
 
 
 /*----------------------------------------------------------------------*/
-static void usage(const char **argv) {
+static void usage(const char *program_name) {
     printf("cgreen-runner for Cgreen unittest and mocking framework v%s\n\n", VERSION);
-    printf("Usage:\n    %s [--xml <prefix>] [--suite <name>] [--verbose] [--quiet] [--no-run] [--help] (<library> [<test>])+\n\n", argv[0]);
+    printf("Usage:\n    %s [--xml <prefix>] [--suite <name>] [--verbose] [--quiet] [--no-run] [--help] (<library> [<test>])+\n\n", program_name);
     printf("Discover and run all or named cgreen test(s) from one or multiple\n");
     printf("dynamically loadable libraries.\n\n");
     printf("A single test can be run using the form [<context>:]<name> where <context> can\n");
@@ -52,14 +52,87 @@ static void usage(const char **argv) {
 
 /*======================================================================*/
 
-static void *options = NULL;
+enum option_arg {
+    HELP_OPT,
+    XML_OPT,
+    SUITE_OPT,
+    VERBOSE_OPT,
+    QUITE_OPT,
+    VERSION_OPT,
+    COLORS_OPT,
+    COLOURS_OPT,
+    NO_COLORS_OPT,
+    NO_COLOURS_OPT,
+    NO_RUN_OPT,
+    LAST_OPT,
+};
+
+static struct option options[] = {
+    [HELP_OPT] = {
+        .short_name = 'h',
+        .long_name = "help",
+        .flags = GOPT_ARGUMENT_FORBIDDEN,
+    },
+    [XML_OPT] = {
+        .short_name = 'x',
+        .long_name = "xml",
+        .flags = GOPT_ARGUMENT_REQUIRED,
+    },
+    [SUITE_OPT] = {
+        .short_name = 's',
+        .long_name = "suite",
+        .flags = GOPT_ARGUMENT_REQUIRED,
+    },
+    [VERBOSE_OPT] = {
+        .short_name = 'v',
+        .long_name = "verbose",
+        .flags = GOPT_ARGUMENT_FORBIDDEN,
+    },
+    [QUITE_OPT] = {
+        .short_name = 'q',
+        .long_name = "quite",
+        .flags = GOPT_ARGUMENT_FORBIDDEN,
+    },
+    [VERSION_OPT] = {
+        .short_name = 'V',
+        .long_name = "version",
+        .flags = GOPT_ARGUMENT_FORBIDDEN,
+    },
+    [COLORS_OPT] = {
+        .short_name = 'c',
+        .long_name = "colors",
+        .flags = GOPT_ARGUMENT_FORBIDDEN,
+    },
+    [COLOURS_OPT] = {
+        .short_name = 'c',
+        .long_name = "colours",
+        .flags = GOPT_ARGUMENT_FORBIDDEN,
+    },
+    [NO_COLORS_OPT] = {
+        .short_name = 'C',
+        .long_name = "no-colors",
+        .flags = GOPT_ARGUMENT_FORBIDDEN,
+    },
+    [NO_COLOURS_OPT] = {
+        .short_name = 'C',
+        .long_name = "no-colours",
+        .flags = GOPT_ARGUMENT_FORBIDDEN,
+    },
+    [NO_RUN_OPT] = {
+        .short_name = 'n',
+        .long_name = "no-run",
+        .flags = GOPT_ARGUMENT_FORBIDDEN,
+    },
+    [LAST_OPT] = {
+        .flags = GOPT_LAST,
+    },
+};
 static TestReporter *reporter = NULL;
 static TextReporterOptions reporter_options;
 
 static void cleanup(void)
 {
     if (reporter) reporter->destroy(reporter);
-    if (options) gopt_free(options);
 }
 
 static char* get_a_suite_name(const char *suite_option, const char *test_library_name) {
@@ -79,76 +152,9 @@ static char* get_a_suite_name(const char *suite_option, const char *test_library
     }
 }
 
-
-/*----------------------------------------------------------------------*/
-static int initialize_option_handling(int argc, const char **argv) {
-    options = gopt_sort(&argc, argv, gopt_start(
-                                                gopt_option('x',
-                                                            GOPT_ARG,
-                                                            gopt_shorts('x'),
-                                                            gopt_longs("xml")
-                                                            ),
-                                                gopt_option('s',
-                                                            GOPT_ARG,
-                                                            gopt_shorts('s'),
-                                                            gopt_longs("suite")
-                                                            ),
-                                                gopt_option('v',
-                                                            GOPT_NOARG,
-                                                            gopt_shorts('v'),
-                                                            gopt_longs("verbose")
-                                                            ),
-                                                gopt_option('V',
-                                                            GOPT_NOARG,
-                                                            gopt_shorts('V'),
-                                                            gopt_longs("version")
-                                                            ),
-                                                gopt_option('c',
-                                                            GOPT_NOARG,
-                                                            gopt_shorts('c'),
-                                                            gopt_longs("colours")
-                                                            ),
-                                                gopt_option('c',
-                                                            GOPT_NOARG,
-                                                            gopt_shorts('c'),
-                                                            gopt_longs("colors")
-                                                            ),
-                                                gopt_option('C',
-                                                            GOPT_NOARG,
-                                                            gopt_shorts('C'),
-                                                            gopt_longs("no-colors")
-                                                            ),
-                                                gopt_option('C',
-                                                            GOPT_NOARG,
-                                                            gopt_shorts('C'),
-                                                            gopt_longs("no-colours")
-                                                            ),
-                                                gopt_option('q',
-                                                            GOPT_NOARG,
-                                                            gopt_shorts('q'),
-                                                            gopt_longs("quiet")
-                                                            ),
-                                                gopt_option('n',
-                                                            GOPT_NOARG,
-                                                            gopt_shorts('n'),
-                                                            gopt_longs("no-run")
-                                                            ),
-                                                gopt_option('h',
-                                                            GOPT_NOARG,
-                                                            gopt_shorts('h'),
-                                                            gopt_longs("help")
-                                                            )
-                                                )
-                        );
-    return(argc);
-}
-
-
 /*----------------------------------------------------------------------*/
 static bool have_xml_option(void) {
-    const char *prefix_option;
-
-    return gopt_arg(options, 'x', &prefix_option);
+    return options[XML_OPT].count > 0;
 }
 
 /*----------------------------------------------------------------------*/
@@ -195,62 +201,55 @@ static void inhibit_appropriate_suite_message(int i, int library_count) {
 
 
 /*======================================================================*/
-int main(int argc, const char **argv) {
+int main(int argc, char **argv) {
     int i;
 
     bool verbose = false;
     bool no_run = false;
 
-    const char *prefix_option;
     const char *suite_name_option = NULL;
-    const char *tmp;
 
     bool any_fail = false;
 
     atexit(cleanup);
 
-    argc = initialize_option_handling(argc, argv);
+    argc = gopt(argv, options);
+    gopt_errors(argv[0], options);
 
-    if (gopt_arg(options, 'x', &prefix_option))
-        reporter = create_xml_reporter(prefix_option);
+    if (options[XML_OPT].count)
+        reporter = create_xml_reporter(options[XML_OPT].argument);
     else
         reporter = create_text_reporter();
 
-    gopt_arg(options, 's', &suite_name_option);
+    suite_name_option = options[SUITE_OPT].argument;
 
-    if (gopt_arg(options, 'v', &tmp))
-        verbose = true;
-
-    if (gopt_arg(options, 'n', &tmp))
-        no_run = true;
+    verbose = options[VERBOSE_OPT].count > 0;
+    no_run = options[NO_RUN_OPT].count > 0;
 
     reporter_options.use_colours = true;
     if (isatty(fileno(stdout))) {
-        if (gopt_arg(options, 'C', &tmp))
+        if (options[NO_COLORS_OPT].count || options[NO_COLOURS_OPT].count)
             reporter_options.use_colours = false;
     } else {
-        if (!gopt_arg(options, 'c', &tmp))
+        if (!options[COLORS_OPT].count && !options[COLOURS_OPT].count)
             reporter_options.use_colours = false;
     }
     panic_use_colours = reporter_options.use_colours;
 
-    if (gopt_arg(options, 'q', &tmp))
-        reporter_options.quiet_mode = true;
-    else
-        reporter_options.quiet_mode = false;
+    reporter_options.quiet_mode = options[QUITE_OPT].count > 0;
 
-    if (gopt_arg(options, 'h', &tmp)) {
-        usage(argv);
+    if (options[HELP_OPT].count) {
+        usage(argv[0]);
         return EXIT_SUCCESS;
     }
 
-    if (gopt_arg(options, 'V', &tmp)) {
+    if (options[VERSION_OPT].count) {
         version();
         return EXIT_SUCCESS;
     }
 
     if (argc < 2) {
-        usage(argv);
+        usage(argv[0]);
         return EXIT_FAILURE;
     }
 

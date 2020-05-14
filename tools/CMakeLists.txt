@@ -1,7 +1,7 @@
 include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${PROJECT_BINARY_DIR})
 
 set(RUNNER_SRCS
-    cgreen-runner.c gopt.c runner.c discoverer.c test_item.c io.c)
+    cgreen-runner.c gopt.c gopt-errors.c runner.c discoverer.c test_item.c io.c)
 set_source_files_properties(${RUNNER_SRCS} PROPERTIES LANGUAGE C)
 
 add_executable(cgreen-runner ${RUNNER_SRCS})
