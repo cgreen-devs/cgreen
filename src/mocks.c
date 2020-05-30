@@ -154,7 +154,7 @@ static void handle_missing_expectation_for(const char *function, const char *moc
 
 
 static CgreenValue convert_boxed_double_to_cgreen_value(CgreenValue actual) {
-    actual.type = DOUBLE;
+    actual.type = CGREEN_DOUBLE;
     actual.value.double_value = unbox_double(actual.value.integer_value);
     return actual;
 }
@@ -278,7 +278,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     expectation->times_triggered++;
     destroy_expectation_if_time_to_die(expectation);
 
-    if (stored_result.type == DOUBLE) {
+    if (stored_result.type == CGREEN_DOUBLE) {
 #ifdef V2
         /* TODO: for v2 we should ensure that the user is not trying to return a double
            through 'mock()' when there is a 'mock_double()' available, which there isn't yet.
@@ -343,7 +343,7 @@ static CgreenVector *create_vector_of_actuals(va_list actuals, int count) {
 static Constraint *create_appropriate_equal_constraint_for(const char *parameter_name,
                                                            CgreenValue actual) {
     Constraint *constraint;
-    if (actual.type == DOUBLE)
+    if (actual.type == CGREEN_DOUBLE)
         constraint = create_equal_to_double_constraint(actual.value.double_value,
                                                        parameter_name);
     else
@@ -654,7 +654,7 @@ void print_learned_mocks(void) {
         fprintf(stderr, "\texpect(%s", function_name);
         for (c = 0; c < cgreen_vector_size(expectation->constraints); c++) {
             Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, c);
-            if (constraint->expected_value.type == DOUBLE)
+            if (constraint->expected_value.type == CGREEN_DOUBLE)
                 fprintf(stderr, ", when(%s, is_equal_to_double(%f))", constraint->expected_value_name,
                         constraint->expected_value.value.double_value);
             else
@@ -896,7 +896,7 @@ static CgreenValue stored_result_or_default_for(CgreenVector* constraints) {
         }
     }
 
-    return (CgreenValue){INTEGER, {0}, 0};
+    return (CgreenValue){CGREEN_INTEGER, {0}, 0};
 }
 
 static bool is_always_call(RecordedExpectation* expectation) {

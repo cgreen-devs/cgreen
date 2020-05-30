@@ -4,7 +4,13 @@
 #include <stdint.h>
 #include <stddef.h>
 
-typedef enum {INTEGER, STRING, DOUBLE, POINTER, BYVALUE} CgreenValueType;
+typedef enum {
+              CGREEN_INTEGER,
+              CGREEN_STRING,
+              CGREEN_DOUBLE,
+              CGREEN_POINTER,
+              CGREEN_BYVALUE
+} CgreenValueType;
 
 typedef struct {
     CgreenValueType type;
