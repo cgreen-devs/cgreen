@@ -1,6 +1,6 @@
 # Cgreen Cheat Sheet
 
-## Pre-ample
+## Pre-amble
 
     #include <cgreen/cgreen.h>
     #include <cgreen/mocks.h>
