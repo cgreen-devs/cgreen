@@ -84,10 +84,11 @@ first test, though.
 
 Basically you can run your tests in two ways
 
-1. Compile and link all your tests with a test driver as shown in the
-   tutorial
+1. Compile and link all your tests with a test driver (as shown in the
+   fist chapters of the tutorial)
 2. Link your tests into separate shared libraries (`.so`, `.dylib` or
-   similar) and run them with the `cgreen-runner`
+   similar) and run them with the `cgreen-runner` (described in chapter
+   6 of the tutorial)
 
 Option 2 is very handy, you can run multiple libraries in the same
 run, but also specify single tests that you want to run. And with the
