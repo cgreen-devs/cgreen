@@ -1,0 +1,17 @@
+Source: cgreen
+Section: devel
+Priority: optional
+Maintainer: Thomas Nilefalk <thomas@nilefalk.se>
+Build-Depends: debhelper (>= 10), cmake
+Standards-Version: 4.0.0
+Homepage: https://github.com/cgreen-devs/cgreen
+Package: cgreen
+Version: 1.3.0
+Architecture: amd64
+Description: Unit tests and mocking framework for C and C++
+ A modern unit test and mocking framework for C and C++. Cgreen features
+    - fast build, clean code, highly portable
+    - simple auto-discovery of tests
+    - fluent, expressive and readable API
+    - each test runs in isolation to prevent cross-test dependencies
+    - built-in mocking for C, compatible other C++ mocking libraries
