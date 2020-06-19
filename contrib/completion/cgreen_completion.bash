@@ -4,7 +4,7 @@
 # Improved a bit by @thoni56
 
 # Thanks to https://stackoverflow.com/a/57243443/204658
-removeFromArray() {
+_removeFromArray() {
     arrayName="$1"
     arrayNameAt="$arrayName"'[@]'
     removeValue="$2"
@@ -19,7 +19,6 @@ _cgreen_runner_completion()
     libraries=( *.so )
     tests=()
 
-    # If a partial test is given we should match and only complete the matching tests
     # Look for words in the command given so far
     for word in ${COMP_WORDS[@]}; do
         if echo $word | grep -q -E "\b\.so\b"; then
@@ -40,9 +39,9 @@ _cgreen_runner_completion()
 
     # Remove all suggestions already used
     for word in ${COMP_WORDS[@]}; do
-        removeFromArray options $word
-        removeFromArray libraries $word
-        removeFromArray tests $word
+        _removeFromArray options $word
+        _removeFromArray libraries $word
+        _removeFromArray tests $word
     done
 
     # Need to double the backslashes in the completion word for them to survive into matching
