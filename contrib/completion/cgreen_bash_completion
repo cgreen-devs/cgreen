@@ -45,7 +45,7 @@ _cgreen_runner_completion()
     #echo "libraries:${libraries[@]}" >> log
     #echo "tests:${tests[@]}" >> log
     for word in ${COMP_WORDS[@]}; do
-        echo \'$word\' >> log
+        #echo \'$word\' >> log
         removeFromArray options $word
         removeFromArray libraries $word
         removeFromArray tests $word
