@@ -39,21 +39,15 @@ _cgreen_runner_completion()
     done
 
     # Remove all suggestions already used
-    #echo "options<=${options[@]}" >> log
-    #echo "libraries<=${libraries[@]}" >> log
-    #echo "tests<=${tests[@]}" >> log
     for word in ${COMP_WORDS[@]}; do
-        #echo "word:"\'$word\' >> log
         removeFromArray options $word
         removeFromArray libraries $word
         removeFromArray tests $word
     done
-    #echo "options=>${options[@]}" >> log
-    #echo "libraries=>${libraries[@]}" >> log
-    #echo "tests=>${tests[@]}" >> log
 
-
-    COMPREPLY=($(compgen -W '$(printf "%s " ${options[@]} ${libraries[@]} ${tests[@]})' -- "${COMP_WORDS[$COMP_CWORD]}"))
+    # Need to double the backslashes in the completion word for them to survive into matching
+    completion_word=${COMP_WORDS[$COMP_CWORD]/\\/\\\\}
+    COMPREPLY=($(compgen -W '$(printf "%s " ${options[@]} ${libraries[@]} ${tests[@]})' -- "$completion_word"))
 }
 
 complete -o nosort -o dirnames -F _cgreen_runner_completion cgreen-runner
