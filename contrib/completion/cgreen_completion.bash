@@ -27,19 +27,18 @@ _cgreen_runner_completion()
             if test ! -f  $word || test ! -x $word; then continue; fi
 
             local SUT="$(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | awk -F '__' '{ print $2 }' | uniq)"
-            local test_names=($(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | sed -e 's/CgreenSpec__[a-zA-Z0-9]\+\?__//' -e 's/__$//'))
+            local test_names=( $(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | sed -e 's/CgreenSpec__[a-zA-Z0-9]\+\?__//' -e 's/__$//') )
 
             if test $SUT = "default" ; then
-                tests+=" $test_names"
+                tests+=( ${test_names[@]} )
             else
                 local prefix="$SUT\\:"
-                tests+=" ${test_names[@]/#/$prefix}"
+                tests+=( ${test_names[@]/#/$prefix} )
             fi
         fi
     done
 
     # Remove all suggestions already used
-    # Strangely this only removes things from options, not libraries or tests
     #echo "options<=${options[@]}" >> log
     #echo "libraries<=${libraries[@]}" >> log
     #echo "tests<=${tests[@]}" >> log
