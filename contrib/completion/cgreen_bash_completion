@@ -16,9 +16,8 @@ _cgreen_runner_completion()
 {
     local options libraries tests
     options=("--colours" "--no-colours" "--xml" "--suite" "--verbose" "--no-run" "--help" " --version")
-    #echo options:"${options[@]}" > log
-    libraries=" $(\ls | grep -e '\b\.so\b' | tr '\n' ' ')"
-    tests=""
+    libraries=( *.so )
+    tests=()
 
     # If a partial test is given we should match and only complete the matching tests
     # Look for words in the command given so far
