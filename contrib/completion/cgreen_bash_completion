@@ -41,18 +41,18 @@ _cgreen_runner_completion()
 
     # Remove all suggestions already used
     # Strangely this only removes things from options, not libraries or tests
-    #echo "options:${options[@]}" >> log
-    #echo "libraries:${libraries[@]}" >> log
-    #echo "tests:${tests[@]}" >> log
+    #echo "options<=${options[@]}" >> log
+    #echo "libraries<=${libraries[@]}" >> log
+    #echo "tests<=${tests[@]}" >> log
     for word in ${COMP_WORDS[@]}; do
-        #echo \'$word\' >> log
+        #echo "word:"\'$word\' >> log
         removeFromArray options $word
         removeFromArray libraries $word
         removeFromArray tests $word
     done
-    #echo "options:${options[@]}" >> log
-    #echo "libraries:${libraries[@]}" >> log
-    #echo "tests:${tests[@]}" >> log
+    #echo "options=>${options[@]}" >> log
+    #echo "libraries=>${libraries[@]}" >> log
+    #echo "tests=>${tests[@]}" >> log
 
 
     COMPREPLY=($(compgen -W '$(printf "%s " ${options[@]} ${libraries[@]} ${tests[@]})' -- "${COMP_WORDS[$COMP_CWORD]}"))
