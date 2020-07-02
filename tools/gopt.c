@@ -81,7 +81,7 @@ int gopt (char **argv, struct option *options)
   unsigned int operand_count = 1;
   unsigned int doubledash    = 0;
   unsigned int expecting     = 0;
-  unsigned int option_index;
+  unsigned int option_index  = 0;
   unsigned int i, j;
 
   for (i = 0; !(options[i].flags & GOPT_LAST); i++)
