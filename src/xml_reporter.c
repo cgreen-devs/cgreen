@@ -5,6 +5,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "utils.h"
 
 #include "xml_reporter_internal.h"
 
@@ -128,7 +129,9 @@ static void xml_reporter_start_suite(TestReporter *reporter, const char *suitena
     walk_breadcrumb(reporter->breadcrumb, strcat_path_segment, &segment_decrementer);
     add_suite_name(suitename);
 
-    snprintf(filename, sizeof(filename), "%s-%s.xml", file_prefix, suite_path);
+    if (snprintf(filename, sizeof(filename), "%s-%s.xml", file_prefix, suite_path) < 0)
+        PANIC("Error when creating output filename");
+
     if (memo->printer == fprintf) {
         // If we're really printing to files, then open one...
         out = fopen(filename, "w");
@@ -217,7 +220,7 @@ static void xml_show_incomplete(TestReporter *reporter, const char *filename, in
     output = concat(output, indent(reporter));
     output = concat(output, "<error type=\"Fatal\" message=\"");
     vsnprintf(buffer, sizeof(buffer)/sizeof(buffer[0]),
-    		message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
+            message ? message: "Test terminated unexpectedly, likely from a non-standard exception or Posix signal", arguments);
     output = concat(output, buffer);
     output = concat(output, "\">\n");
     output = concat(output, indent(reporter));
