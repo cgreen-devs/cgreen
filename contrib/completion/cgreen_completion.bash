@@ -14,9 +14,6 @@ _removeFromArray() {
 
 _discover_tests()
 {
-    # If it was a library, check for tests in it
-    if test ! -f  $word || test ! -x $word; then continue; fi
-
     local SUT="$(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | awk -F '__' '{ print $2 }' | uniq)"
     local test_names=( $(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | sed -e 's/CgreenSpec__[a-zA-Z0-9]\+\?__//' -e 's/__$//') )
 
