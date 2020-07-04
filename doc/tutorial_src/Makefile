@@ -13,15 +13,13 @@ CFLAGS = -Wall -g
 .SILENT :
 
 CGREEN_ROOT=../..
-FPIC = -fPIC	# required on Linux, Darwin, ...
 
-# Local tweaks, you can also override "MYSQLROOT={somedir}" on the command line
+# Point to MySQL includes and linking for the MySQL examples
 ifeq ($(shell uname),Darwin)
 MYSQL_INCLUDE = /opt/local/include/mysql56/mysql
 MYSQL_LIB = /opt/local/lib/mysql56/mysql
 else
 ifeq ($(shell uname -o),Cygwin)
-FPIC=
 MYSQL_INCLUDE = /usr/include/mysql
 MYSQL_LIB = /usr/lib
 else
@@ -36,16 +34,21 @@ CC = gcc -c -g -Wall -I$(CGREEN_ROOT)/include -I$(CGREEN_ROOT)/src -I$(MYSQL_INC
 LINK = gcc -g
 LIBDIRS = -L$(CGREEN_BIN)/src -L$(MYSQL_LIB)
 
-# You might need to fixup the various path issues to get dynamic loading to work.
-# You could try the script ../setup.sh to ensure that the bins & libs in this
-# development tree is used
-
-# MacOSX:
+# Enviroment dependent fixup of the various paths to use bins & libs in this development tree
+FPIC = -fPIC	# required on Linux, Darwin, ...
+ifeq ($(shell uname),Darwin)
 LDPATH = DYLD_LIBRARY_PATH="$(CGREEN_BIN)/src:$(MYSQL_LIB)"
-# Cygwin?
-#LDPATH = PATH="$(CGREEN_BIN)/src:$(MYSQL_LIB)"
+else
+ifeq ($(shell uname -o),Cygwin)
+FPIC=
+LDPATH = PATH="$(CGREEN_BIN)/src:$(MYSQL_LIB)"
+else
+LDPATH = LD_LIBRARY_PATH="$(CGREEN_BIN)/src:$(MYSQL_LIB)"
+endif
+endif
 
 RUNNER = $(LDPATH) $(CGREEN_BIN)/tools/cgreen-runner
+
 
 all: with_main with_runner special
 	echo

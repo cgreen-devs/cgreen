@@ -19,7 +19,7 @@ Constraint static_is_bigger_than_5 = {
         /* .format_failure_message_for */ failure_message_for,
         /* .actual_value_message */ "",
         /* .expected_value_message */ "",
-        /* .expected_value */ {INTEGER, {5}},
+        /* .expected_value */ {CGREEN_INTEGER, {5}},
         /* .stored_value_name */ "null",
         /* .parameter_name */ NULL,
         /* .size_of_stored_value */ 0
