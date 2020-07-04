@@ -58,7 +58,6 @@ set(cgreen_SRCS
   cgreen_time.c
   cgreen_value.c
   constraint.c
-  constraint_syntax_helpers.c
   cute_reporter.c
   cdash_reporter.c
   messaging.c
