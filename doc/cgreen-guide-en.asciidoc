@@ -1591,7 +1591,29 @@ other way, from code to stub. This gets us into the same territory as
 mock objects.
 
 
-=== Mocks with side effects
+=== Other Use Cases For Mocks
+
+==== Out Parameters
+
+In C all function parameters are by value so if a function need to
+return a value through a parameter that has to be done using a
+pointer. Typically this is a pointer to the area or variable the
+function should fill.
+
+*Cgreen* provides `will_set_contents_of_parameter()` to handle this
+use case. For example
+
+[source, c]
+-----------------------
+include::tutorial_src/set_contents.c[lines=3..12]
+...
+-----------------------
+
+
+When the mock for `convert_to_uppercase()` is called it will write the
+string "UPPER CASE" in the area pointed to by `converted_string`.
+
+==== Side Effects
 
 Sometimes returning simple values is not enough. The function that you
 want to mock might have some side effect, like setting a global error
@@ -1737,7 +1759,7 @@ Then there are a couple of ways to return results from the mock:
 |`will_return(value)`                                         |Return the value from the mock function (which needs to be declared returning that type)
 |`will_return_by_value(value, size)`                          |Ditto for generic by value variables.
 |`will_return_double(value)`                                  |Ditto for double values (required because of C's type coercion rules which would otherwise convert a double into an int)
-|`will_set_contents_of_parameter(parameter_name, pointer_to_value, size)`|Writes 'size' bytes from the pointed out value into the referenced parameter
+|`will_set_contents_of_parameter(parameter_name, pointer_to_value, size)`|Writes 'size' bytes from the pointed out value into where the referenced out (pointer) parameter is pointing
 |`with_side_effect(pointer_to_function, pointer_to_data)`     |Executes the side effect function and passes data to it
 |===========================================================================================
 
