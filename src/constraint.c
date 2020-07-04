@@ -566,7 +566,7 @@ static void set_contents(Constraint *constraint, const char *function, CgreenVal
         return;
     }
 
-    memmove((void *)actual.value.integer_value, constraint->expected_value.value.pointer_value, constraint->size_of_expected_value);
+    memmove((void *)actual.value.pointer_value, constraint->expected_value.value.pointer_value, constraint->size_of_expected_value);
 }
 
 static void execute_sideeffect(Constraint *constraint, const char *function, CgreenValue actual,
