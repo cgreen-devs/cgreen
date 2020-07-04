@@ -139,6 +139,46 @@ Ensure(Mocks, expecting_once_with_non_null_parameter_checks_that_parameter) {
     string_in("anything");
 }
 
+static void string_in2(const char *s2) {
+    mock(s2);
+}
+
+Ensure(Mocks, expecting_twice_with_non_null_constraint_should_not_mix_them_up) {
+    expect(string_in, when(s, is_not_null));
+    expect(string_in2, when(s2, is_not_null));
+    string_in("anything");
+    string_in2("anything");
+}
+
+Ensure(Mocks, expecting_twice_with_is_null_constraint_should_not_mix_them_up) {
+    expect(string_in, when(s, is_null));
+    expect(string_in2, when(s2, is_null));
+    string_in(NULL);
+    string_in2(NULL);
+}
+
+
+static void bool_in(bool b) {
+    mock(b);
+}
+static void bool_in2(bool b2) {
+    mock(b2);
+}
+
+Ensure(Mocks, expecting_twice_with_is_true_constraint_should_not_mix_them_up) {
+    expect(bool_in, when(b, is_true));
+    expect(bool_in2, when(b2, is_true));
+    bool_in(true);
+    bool_in2(true);
+}
+
+Ensure(Mocks, expecting_twice_with_is_false_constraint_should_not_mix_them_up) {
+    expect(bool_in, when(b, is_false));
+    expect(bool_in2, when(b2, is_false));
+    bool_in(false);
+    bool_in2(false);
+}
+
 static void double_in(double d) {
     mock(box_double(d));
 }

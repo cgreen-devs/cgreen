@@ -18,6 +18,11 @@
 #define is_equal_to(value) create_equal_to_value_constraint((intptr_t)value, #value)
 #define is_equal_to_hex(value) create_equal_to_hexvalue_constraint((intptr_t)value, #value)
 #define is_not_equal_to(value) create_not_equal_to_value_constraint((intptr_t)value, #value)
+#define is_non_null is_not_null
+#define is_not_null create_not_null_constraint()
+#define is_null create_is_null_constraint()
+#define is_false create_is_false_constraint()
+#define is_true create_is_true_constraint()
 
 #define is_greater_than(value) create_greater_than_value_constraint((intptr_t)value, #value)
 #define is_less_than(value) create_less_than_value_constraint((intptr_t)value, #value)
@@ -46,32 +51,5 @@
 #define will_return_by_value(value, size) create_return_by_value_constraint((intptr_t)&value, size)
 #define will_return_double(value) create_return_double_value_constraint(value)
 #define will_set_contents_of_parameter(parameter_name, pointer_to_value, size) create_set_parameter_value_constraint(#parameter_name, (intptr_t)pointer_to_value, (size_t)size)
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* these constraints don't take arguments, and we don't want to force
- * users to put "()" on the end of every usage.  we also want to avoid
- * macros when practical, for the namespacing and confusing symbol
- * collision issues, so we use singleton instances.
- */
-extern Constraint static_non_null_constraint;
-extern Constraint *is_non_null;
-#define is_not_null (is_non_null)
-
-extern Constraint static_null_constraint;
-extern Constraint *is_null;
-
-extern Constraint static_false_constraint;
-extern Constraint *is_false;
-
-extern Constraint static_true_constraint;
-extern Constraint *is_true;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

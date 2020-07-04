@@ -60,6 +60,10 @@ void test_constraint(Constraint *constraint, const char *function, intptr_t actu
 Constraint *create_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name);
 Constraint *create_equal_to_hexvalue_constraint(intptr_t expected_value, const char *expected_value_name);
 Constraint *create_not_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name);
+Constraint *create_not_null_constraint(void);
+Constraint *create_is_null_constraint(void);
+Constraint *create_is_false_constraint(void);
+Constraint *create_is_true_constraint(void);
 Constraint *create_greater_than_value_constraint(intptr_t expected_value, const char *expected_value_name);
 Constraint *create_less_than_value_constraint(intptr_t expected_value, const char *expected_value_name);
 Constraint *create_equal_to_contents_constraint(void *pointer_to_compare, size_t size_to_compare, const char *compared_pointer_name);

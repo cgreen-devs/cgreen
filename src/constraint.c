@@ -87,7 +87,7 @@ static const char *default_expected_value_message = "\t\texpected value:\t\t\t[%
 static void execute_sideeffect(Constraint *constraint, const char *function, CgreenValue actual,
                          const char *test_file, int test_line, TestReporter *reporter);
 
-Constraint *create_constraint() {
+Constraint *create_constraint(void) {
     Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));
     /* TODO: setting this to NULL as an implicit type check :( */
     constraint->parameter_name = NULL;
@@ -149,6 +149,58 @@ bool constraint_is_not_for_parameter(const Constraint *constraint, const char *p
     }
 
     return strcmp(constraint->parameter_name, parameter) != 0;
+}
+
+Constraint *create_not_null_constraint(void) {
+    Constraint *constraint = create_constraint_expecting(make_cgreen_integer_value(0), "null");
+    constraint->type = VALUE_COMPARER;
+
+    constraint->name = "be non null";
+    constraint->compare = &compare_do_not_want_value;
+    constraint->execute = &test_want;
+    constraint->actual_value_message = "";
+    constraint->expected_value_message = "";
+
+    return constraint;
+}
+
+Constraint *create_is_null_constraint(void) {
+    Constraint *constraint = create_constraint_expecting(make_cgreen_integer_value(0), "null");
+    constraint->type = VALUE_COMPARER;
+
+    constraint->name = "be null";
+    constraint->compare = &compare_want_value;
+    constraint->execute = &test_want;
+    constraint->actual_value_message = "";
+    constraint->expected_value_message = "";
+
+    return constraint;
+}
+
+Constraint *create_is_false_constraint(void) {
+    Constraint *constraint = create_constraint_expecting(make_cgreen_integer_value(false), "false");
+    constraint->type = VALUE_COMPARER;
+
+    constraint->name = "be false";
+    constraint->compare = &compare_want_value;
+    constraint->execute = &test_want;
+    constraint->actual_value_message = "";
+    constraint->expected_value_message = "";
+
+    return constraint;
+}
+
+Constraint *create_is_true_constraint(void) {
+    Constraint *constraint = create_constraint_expecting(make_cgreen_integer_value(false), "true");
+    constraint->type = VALUE_COMPARER;
+
+    constraint->name = "be true";
+    constraint->compare = &compare_do_not_want_value;
+    constraint->execute = &test_want;
+    constraint->actual_value_message = "";
+    constraint->expected_value_message = "";
+
+    return constraint;
 }
 
 Constraint *create_equal_to_value_constraint(intptr_t expected_value, const char *expected_value_name) {
@@ -775,7 +827,7 @@ void significant_figures_for_assert_double_are(int figures) {
     significant_figures = figures;
 }
 
-int get_significant_figures() {
+int get_significant_figures(void) {
     return significant_figures;
 }
 
