@@ -279,10 +279,11 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     destroy_expectation_if_time_to_die(expectation);
 
     if (stored_result.type == CGREEN_DOUBLE) {
-#ifdef V2
-        /* TODO: for v2 we should ensure that the user is not trying to return a double
-           through 'mock()' when there is a 'mock_double()' available, which there isn't yet.
-           So then
+#ifdef FUTURE
+        /* TODO: for some future version we should ensure that the
+           user is not trying to return a double through 'mock()' when
+           there is a 'mock_double()' available, which there isn't
+           yet. So then
 
                return unbox_double(mock(...));
 
