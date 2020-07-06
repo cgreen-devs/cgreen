@@ -143,8 +143,7 @@ Because of the peculiarities of C programming, each test function
 is normally run in it's own process.
 
 This project is very close in scope to the "Check" unit tester and
-was influenced by it...
-http://check.sourceforge.net/projects/check/
+was initially influenced by it.
 
 The main difference from this tool and other xUnit tools, such as
 "Check",  is that test results are not stored. Instead they are
