@@ -118,7 +118,7 @@ Generate it using Asciidoctor, which can be done using the CMake
 configuration. Of course you need
 [Asciidoctor](http://www.asciidoctor.org).
 
-    make docs
+    make doc
     make pdf
 
 (Generating PDF also requires [asciidoctor-pdf](https://asciidoctor.org/docs/asciidoctor-pdf/).)
