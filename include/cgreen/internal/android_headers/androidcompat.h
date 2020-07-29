@@ -27,6 +27,4 @@
 #define printf(fmt, ...) LOGE(fmt, ##__VA_ARGS__)
 #define fprintf(stderr, ...) LOGE(__VA_ARGS__)
 #define vprintf(fmt, ...) LOGE(fmt, ##__VA_ARGS__)
-#define snprintf(buf, len, fmt, ...) LOGE(fmt, ##__VA_ARGS__)
-#define sprintf(buf, fmt, ...) LOGE(fmt, ##__VA_ARGS__)
 #endif // #ifdef __ANDROID__
