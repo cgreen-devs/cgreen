@@ -42,6 +42,9 @@ static void usage(const char *program_name) {
     printf("  -x --xml <prefix>\t\tInstead of messages on stdout, write results into one XML-file\n");
     printf("\t\t\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
     printf("\t\t\t\twill be '<prefix>-<suite>.xml'\n");
+#if HAVE_LIBXML2_REPORTER
+    printf("  -X --libxml2 <prefix>\t\tFormat the test results using libxml2\n");
+#endif
     printf("  -s --suite <name>\t\tName the top level suite\n");
     printf("  -n --no-run\t\t\tDon't run the tests\n");
     printf("  -v --verbose\t\t\tShow progress information\n");
@@ -55,6 +58,7 @@ static void usage(const char *program_name) {
 enum option_arg {
     HELP_OPT,
     XML_OPT,
+    LIBXML2_OPT,
     SUITE_OPT,
     VERBOSE_OPT,
     QUITE_OPT,
@@ -76,6 +80,13 @@ static struct option options[] = {
     [XML_OPT] = {
         .short_name = 'x',
         .long_name = "xml",
+        .flags = GOPT_ARGUMENT_REQUIRED,
+    },
+    [LIBXML2_OPT] = {
+#if HAVE_LIBXML2_REPORTER
+        .short_name = 'X',
+        .long_name = "libxml2",
+#endif
         .flags = GOPT_ARGUMENT_REQUIRED,
     },
     [SUITE_OPT] = {
@@ -154,7 +165,11 @@ static char* get_a_suite_name(const char *suite_option, const char *test_library
 
 /*----------------------------------------------------------------------*/
 static bool have_xml_option(void) {
-    return options[XML_OPT].count > 0;
+    return options[XML_OPT].count > 0 || options[LIBXML2_OPT].count > 0;
+}
+
+static bool have_libxml2_option(void) {
+    return options[LIBXML2_OPT].count > 0;
 }
 
 /*----------------------------------------------------------------------*/
@@ -216,7 +231,14 @@ int main(int argc, char **argv) {
     argc = gopt(argv, options);
     gopt_errors(argv[0], options);
 
-    if (have_xml_option())
+    if (have_libxml2_option()) {
+#if HAVE_LIBXML2_REPORTER
+        reporter = create_libxml_reporter(options[LIBXML2_OPT].argument);
+#else
+        printf("libxml2 reporter not available\n");
+        return EXIT_FAILURE;
+#endif
+    } else if (have_xml_option())
         reporter = create_xml_reporter(options[XML_OPT].argument);
     else
         reporter = create_text_reporter();

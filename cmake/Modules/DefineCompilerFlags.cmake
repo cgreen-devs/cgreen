@@ -12,7 +12,15 @@ if (UNIX)
     # add_compile_options(-Wall -Wextra -Wunused) # only since CMake 2.8.12, so...
     add_definitions(-Wall -Wextra -Wunused)
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -Weffc++")
+    if (CGREEN_WITH_LIBXML2)
+      # libxml2 headers depend on ICU library for Unicode support,
+      # but ICU headers do not even compile with C++ 98.
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+      add_definitions(-DHAVE_LIBXML2_REPORTER=1)
+    else ()
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98")
+    endif (CGREEN_WITH_LIBXML2)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wstrict-prototypes")
 
     if (CGREEN_INTERNAL_WITH_GCOV)

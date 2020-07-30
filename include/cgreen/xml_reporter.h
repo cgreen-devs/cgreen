@@ -13,6 +13,7 @@ namespace cgreen {
 #endif
 
 TestReporter *create_xml_reporter(const char *prefix);
+TestReporter *create_libxml_reporter(const char *prefix);
 
 #ifdef __cplusplus
     }

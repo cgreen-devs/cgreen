@@ -27,6 +27,7 @@ TestSuite *text_reporter_tests(void);
 TestSuite *unit_tests(void);
 TestSuite *vector_tests(void);
 TestSuite *xml_reporter_tests(void);
+TestSuite *libxml_reporter_tests(void);
 
 int main(int argc, char **argv) {
     int suite_result;
@@ -52,6 +53,9 @@ int main(int argc, char **argv) {
     add_suite(suite, unit_tests());
     add_suite(suite, vector_tests());
     add_suite(suite, xml_reporter_tests());
+#if HAVE_LIBXML2_REPORTER
+    add_suite(suite, libxml_reporter_tests());
+#endif
 
     if (argc > 1) {
         suite_result = run_single_test(suite, argv[1], reporter);

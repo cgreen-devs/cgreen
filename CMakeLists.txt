@@ -10,6 +10,11 @@ if (NOT(CMAKE_MAJOR_VERSION LESS 3) AND APPLE)
 endif()
 
 find_package (Threads)
+set(CGREEN_WITH_LIBXML2 OFF CACHE BOOL
+    "Add an XML report generator which uses libxml2 for output formatting")
+if (CGREEN_WITH_LIBXML2)
+find_package (LibXml2)
+endif (CGREEN_WITH_LIBXML2)
 
 enable_testing()
 

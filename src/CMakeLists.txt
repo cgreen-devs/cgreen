@@ -69,6 +69,9 @@ set(cgreen_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/vector.c
   ${CMAKE_CURRENT_SOURCE_DIR}/xml_reporter.c
 )
+if (CGREEN_WITH_LIBXML2)
+  LIST(APPEND cgreen_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/libxml_reporter.c)
+endif (CGREEN_WITH_LIBXML2)
 
 if (MSYS)
   # Msys2 is difficult since it really is three different "OS":es, Msys native, W32 and W64
@@ -108,6 +111,7 @@ cmake_define_relative_file_paths ("${cgreen_SRCS}")
 include_directories(
   ${CGREEN_PUBLIC_INCLUDE_DIRS}
   ${CGREEN_PRIVATE_INCLUDE_DIRS}
+  ${LIBXML2_INCLUDE_DIRS}
 )
 
 ### cgreen
@@ -120,6 +124,7 @@ target_link_libraries(
   ${CMAKE_THREAD_LIBS_INIT}
   ${MATH_LIB}
   ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
+  ${LIBXML2_LIBRARIES}
 )
 
 set_target_properties(

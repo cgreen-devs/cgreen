@@ -53,6 +53,9 @@ set(c_tests_library_SRCS
   vector_tests.c
   xml_reporter_tests.c
 )
+if (CGREEN_WITH_LIBXML2)
+  LIST(APPEND c_tests_library_SRCS libxml_reporter_tests.c)
+endif (CGREEN_WITH_LIBXML2)
 SET_SOURCE_FILES_PROPERTIES(${c_tests_library_SRCS} PROPERTIES LANGUAGE C)
 
 set(CGREEN_C_TESTS_LIBRARY
@@ -61,7 +64,13 @@ set(CGREEN_C_TESTS_LIBRARY
 )
 
 add_library(${CGREEN_C_TESTS_LIBRARY} SHARED ${c_tests_library_SRCS})
-target_link_libraries(${CGREEN_C_TESTS_LIBRARY} ${CGREEN_LIBRARY})
+if (CGREEN_WITH_LIBXML2)
+  target_link_libraries(${CGREEN_C_TESTS_LIBRARY} ${CGREEN_LIBRARY}
+      ${LIBXML2_LIBRARIES})
+  include_directories(${LIBXML2_INCLUDE_DIRS})
+else ()
+  target_link_libraries(${CGREEN_C_TESTS_LIBRARY} ${CGREEN_LIBRARY})
+endif (CGREEN_WITH_LIBXML2)
 macro_add_valgrind_test(${CGREEN_C_TESTS_LIBRARY})
 
 
@@ -148,6 +157,10 @@ foreach(case
   add_library(${${case}_tests_library} SHARED ${${case}_tests_SRCS})
   target_link_libraries(${${case}_tests_library} ${CGREEN_LIBRARY})
 endforeach(case)
+if (CGREEN_WITH_LIBXML2)
+  add_library(${libxml_reporter_tests_library} SHARED libxml_reporter_tests.c)
+  target_link_libraries(${libxml_reporter_tests_library} ${CGREEN_LIBRARY})
+endif (CGREEN_WITH_LIBXML2)
 
 
 # Libraries for a set of output comparing tests to run with runner
@@ -186,6 +199,13 @@ set(xml_output_library xml_output_tests)
 set(xml_output_library_SRCS xml_output_tests.c)
 add_library(${xml_output_library} SHARED ${xml_output_library_SRCS})
 target_link_libraries(${xml_output_library} ${CGREEN_LIBRARY})
+
+if (CGREEN_WITH_LIBXML2)
+  set(libxml_output_library libxml_output_tests)
+  set(libxml_output_library_SRCS libxml_output_tests.c)
+  add_library(${libxml_output_library} SHARED ${libxml_output_library_SRCS})
+  target_link_libraries(${libxml_output_library} ${CGREEN_LIBRARY})
+endif (CGREEN_WITH_LIBXML2)
 
 set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
 
@@ -241,6 +261,15 @@ macro_add_test(NAME xml_output
             ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
             ${xml_output_library}.expected
 )
+
+if (CGREEN_WITH_LIBXML2)
+  macro_add_test(NAME libxml_output
+      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_libxml_output_diff
+      	libxml_output_tests
+      	${CMAKE_CURRENT_SOURCE_DIR}
+      	${libxml_output_library}.expected
+  )
+endif (CGREEN_WITH_LIBXML2)
 
 # add verification that all public api is available as it should
 add_subdirectory(api)
