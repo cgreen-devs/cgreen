@@ -41,7 +41,7 @@ static void catch_signal(int s) {
 }
 
 Ensure(failure_reported_and_exception_thrown_when_messaging_would_block) {
-    const int LOOPS = 65536;
+    const int LOOPS = 65537;
     int messaging = start_cgreen_messaging(33);
     int loop;
     char panic_message[1000];
