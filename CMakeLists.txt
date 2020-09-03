@@ -62,7 +62,9 @@ execute_process(
   OUTPUT_VARIABLE GITDIR
   OUTPUT_STRIP_TRAILING_WHITESPACE
   )
-get_filename_component(GITDIR "${GITDIR}" ABSOLUTE)
+if (GITDIR)
+  get_filename_component(GITDIR "${GITDIR}" ABSOLUTE)
+endif()
 
 # config.h checks
 include(ConfigureChecks.cmake)
