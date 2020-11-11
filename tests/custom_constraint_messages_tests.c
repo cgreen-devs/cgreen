@@ -82,12 +82,12 @@ Ensure(CustomConstraint, custom_constraint_using_a_function_with_arguments_funct
 
 */
 typedef struct Box {
-    int id;
+    char id;
     int size;
 } Box;
 
 typedef struct Piece {
-    int id;
+    char id;
     int size;
 } Piece;
 
@@ -127,7 +127,7 @@ Constraint *create_piece_fit_in_box_constraint(intptr_t expected_value, const ch
 #define can_fit_in_box(box) create_piece_fit_in_box_constraint((intptr_t)box, #box)
 
 Ensure(CustomConstraint, more_complex_custom_constraint_function) {
-    Box box1 = {.id = 1, .size = 5};
-    Piece piece99 = {.id = 99, .size = 6};
+    Box box1 = {.id = (char)1, .size = 5};
+    Piece piece99 = {.id = (char)99, .size = 6};
     assert_that(&piece99, can_fit_in_box(&box1));
 }

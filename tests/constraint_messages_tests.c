@@ -39,7 +39,7 @@ Ensure(ConstraintMessage,for_is_equal_to) {
 Ensure(ConstraintMessage, for_is_equal_to_hex) {
     unsigned char bytes[4];
     memset(bytes, 0xaa, sizeof(bytes));
-    assert_that(bytes[0], is_equal_to_hex(0xbb));
+    assert_that((unsigned char) bytes[0], is_equal_to_hex(0xbb));
 }
 
 Ensure(ConstraintMessage, for_is_not_equal_to) {
@@ -60,8 +60,8 @@ Ensure(ConstraintMessage, for_is_less_than) {
 
 // Contents of struct/memory
 Ensure(ConstraintMessage, for_is_equal_to_contents_of) {
-    int forty_five[45] = {45, 44, 43}, thirty_three[33] = {45, 44, 33};
-    assert_that(thirty_three, is_equal_to_contents_of(forty_five, 55));
+    char forty_five[45] = {45, 44, 43}, thirty_three[33] = {45, 44, 33};
+    assert_that(thirty_three, is_equal_to_contents_of(forty_five, 45));
 }
 
 Ensure(ConstraintMessage, for_is_not_equal_to_contents_of) {
