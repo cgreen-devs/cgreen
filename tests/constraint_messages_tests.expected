@@ -52,7 +52,7 @@ constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to_contents_of 
 	Expected [thirty_three] to [equal contents of] [forty_five]
-		at offset:			[8]
+		at offset:			[2]
 			actual value:		[0x21]
 			expected value:		[0x2b]
 
@@ -62,7 +62,7 @@ constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to_doubl
 		expected value:			[3.300000]
 
 constraint_messages_tests.c: Failure: ConstraintMessage -> for_is_equal_to_hex 
-	Expected [bytes[0]] to [equal] [0xbb]
+	Expected [(unsigned char) bytes[0]] to [equal] [0xbb]
 		actual value:			[0xaa]
 		expected value:			[0xbb]
 
