@@ -230,7 +230,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
             continue;
         }
 
-        if(constraint->type == CALL_COUNTER) {
+        if(constraint->type == CGREEN_CALL_COUNTER_CONSTRAINT) {
             expectation->number_times_called++;
             continue;
         }
@@ -328,7 +328,7 @@ static void apply_side_effect(TestReporter *test_reporter,
 }
 static
 bool
-is_side_effect_constraint(const Constraint *constraint) { return constraint->type == CALL; }
+is_side_effect_constraint(const Constraint *constraint) { return constraint->type == CGREEN_CALL_CONSTRAINT; }
 
 static CgreenVector *create_vector_of_actuals(va_list actuals, int count) {
     int i;
@@ -396,7 +396,7 @@ Constraint *times_(const int number_times_called) {
     Constraint * time_constraint = create_constraint();
     time_constraint->expected_value = make_cgreen_integer_value(number_times_called);
     time_constraint->expected_value_name = string_dup("times");
-    time_constraint->type = CALL_COUNTER;
+    time_constraint->type = CGREEN_CALL_COUNTER_CONSTRAINT;
 
     time_constraint->compare = &compare_want_value;
     time_constraint->execute = &test_times_called;
@@ -467,7 +467,7 @@ void expect_(TestReporter* test_reporter, const char *function, const char *test
     expectation->time_to_live = 1;
     for (int i = 0 ; i < cgreen_vector_size(expectation->constraints) ; i++) {
         Constraint * constraint = cgreen_vector_get(expectation->constraints, i);
-        if (constraint && constraint->type == CALL_COUNTER) {
+        if (constraint && constraint->type == CGREEN_CALL_COUNTER_CONSTRAINT) {
             expectation->time_to_live = (int)constraint->expected_value.value.integer_value;
             break;
         }
@@ -788,7 +788,7 @@ static void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, Te
         bool call_counter_present = false;
         for (int c = 0; c < cgreen_vector_size(expectation->constraints); c++) {
             Constraint *constraint = (Constraint *) cgreen_vector_get(expectation->constraints, c);
-            if(constraint->type == CALL_COUNTER) {
+            if(constraint->type == CGREEN_CALL_COUNTER_CONSTRAINT) {
                 constraint->execute(
                         constraint,
                         expectation->function,
@@ -848,7 +848,7 @@ static void apply_any_read_only_parameter_constraints(RecordedExpectation *expec
             continue;
         }
 
-        if (constraint->type == CONTENT_SETTER) {
+        if (constraint->type == CGREEN_CONTENT_SETTER_CONSTRAINT) {
             continue;
         }
 
@@ -871,7 +871,7 @@ static void apply_any_content_setting_parameter_constraints(RecordedExpectation 
             continue;
         }
 
-        if (constraint->type != CONTENT_SETTER) {
+        if (constraint->type != CGREEN_CONTENT_SETTER_CONSTRAINT) {
             continue;
         }
 
@@ -890,9 +890,9 @@ static CgreenValue stored_result_or_default_for(CgreenVector* constraints) {
     for (i = 0; i < cgreen_vector_size(constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(constraints, i);
 
-        if (constraint->type == RETURN_VALUE) {
+        if (constraint->type == CGREEN_RETURN_VALUE_CONSTRAINT) {
             return constraint->expected_value;
-        } else if (constraint->type == RETURN_POINTER) {
+        } else if (constraint->type == CGREEN_RETURN_POINTER_CONSTRAINT) {
             return constraint->expected_value;
         }
     }

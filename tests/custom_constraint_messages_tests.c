@@ -21,7 +21,7 @@ bool compare_want_greater_than_5(Constraint *constraint, CgreenValue actual) {
 }
 
 Constraint static_is_bigger_than_5 = {
-        /* .type */ VALUE_COMPARER,
+        /* .type */ CGREEN_VALUE_COMPARER_CONSTRAINT,
         /* .name */ "be bigger than 5",
         /* .destroy */ destroy_static_constraint,
         /* .compare */ compare_want_greater_than_5,
@@ -59,7 +59,7 @@ Constraint *create_smaller_than_constraint(intptr_t expected_value, const char *
 
     constraint->expected_value = make_cgreen_integer_value(expected_value);
     constraint->expected_value_name = string_dup(expected_value_name);
-    constraint->type = VALUE_COMPARER;
+    constraint->type = CGREEN_VALUE_COMPARER_CONSTRAINT;
 
     constraint->compare = &compare_want_smaller_value;
     constraint->execute = &test_want;
@@ -115,7 +115,7 @@ Constraint *create_piece_fit_in_box_constraint(intptr_t expected_value, const ch
 
     constraint->expected_value = make_cgreen_pointer_value((void*)expected_value);
     constraint->expected_value_name = string_dup(expected_value_name);
-    constraint->type = CONTENT_COMPARER;
+    constraint->type = CGREEN_CONTENT_COMPARER_CONSTRAINT;
 
     constraint->compare = &compare_piece_and_box_size;
     constraint->execute = &test_fit_piece;

@@ -40,7 +40,7 @@ void assert_core_(const char *file, int line, const char *actual_string, intptr_
         return;
     }
 
-    if (constraint->type == DOUBLE_COMPARER) {
+    if (constraint->type == CGREEN_DOUBLE_COMPARER_CONSTRAINT) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
                 file,
@@ -98,7 +98,7 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
         return;
     }
 
-    if (constraint->type != DOUBLE_COMPARER) {
+    if (constraint->type != CGREEN_DOUBLE_COMPARER_CONSTRAINT) {
         (*get_test_reporter()->assert_true)(
                 get_test_reporter(),
                 file,

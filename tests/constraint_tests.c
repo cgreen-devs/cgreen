@@ -61,7 +61,7 @@ Ensure(Constraint, default_destroy_clears_state) {
 Ensure(Constraint, parameter_name_matches_correctly) {
     Constraint *constraint =
             create_constraint();
-    constraint->type = VALUE_COMPARER;
+    constraint->type = CGREEN_VALUE_COMPARER_CONSTRAINT;
     constraint->parameter_name = "label";
 
     assert_that(constraint_is_not_for_parameter(constraint, "wrong_label"), is_true);

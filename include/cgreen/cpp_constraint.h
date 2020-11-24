@@ -52,10 +52,10 @@ template<typename T>
 CppConstraint<T> *create_equal_to_value_constraint(CgreenValue cgreen_value, T expected_value, const char *expected_value_name) {
     CppConstraint<T> *constraint;// = create_cpp_constraint<T>();
     constraint = new CppConstraint<T>();
-    constraint->type = VALUE_COMPARER;
+    constraint->type = CGREEN_VALUE_COMPARER_CONSTRAINT;
 
     (void)cgreen_value;         /* Avoid warnings for UNUSED, which it is for now */
-    
+
     constraint->Constraint::compare = &compare_want_value;
     constraint->execute = &test_want;
     constraint->name = "equal";
