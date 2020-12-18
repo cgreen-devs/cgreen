@@ -45,6 +45,7 @@
 #define is_less_than_double(value) create_less_than_double_constraint(value, #value)
 #define is_greater_than_double(value) create_greater_than_double_constraint(value, #value)
 
+#define is_nearly_double(value) create_nearly_double_constraint(value, #value)
 
 #define with_side_effect(callback, data) create_with_side_effect_constraint(callback, data)
 #define will_return(value) create_return_value_constraint((intptr_t)value)
