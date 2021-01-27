@@ -117,7 +117,7 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
             "Expected [%s] to [%s] [%s] with [%g] relative and [%g] absolute tolerance\n"
             "\t\tactual value:\t\t\t[%g]\n"
             "\t\texpected value:\t\t\t[%g]\n"
-            "\t\tactual - expected:\t\t[%g]",
+            "\t\tactual - expected:\t\t[%g]\n",
             expression,
             constraint->name,
             constraint->expected_value_name,
