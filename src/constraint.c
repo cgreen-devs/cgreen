@@ -42,13 +42,8 @@
 #define min(a,b) ((a) > (b) ? (b) : (a))
 
 
-static int significant_figures = 8;
-static double absolute_tolerance = DBL_MIN / 1.0e-8;
-
 static double double_absolute_tolerance = 1e-15;
-static double double_relative_tolerance = 1e-15;
-
-static double accuracy(int significant_figures, double largest);
+static double double_relative_tolerance = 1e-7;
 
 static bool compare_want_greater_value(Constraint *constraint, CgreenValue actual);
 
@@ -841,26 +836,22 @@ bool constraint_is_for_parameter_in(const Constraint *constraint, const char *na
 
 bool doubles_are_equal(double tried, double expected) {
     double abs_diff = fabs(tried - expected);
-    if (abs_diff < absolute_tolerance) return true;
-    return abs_diff < accuracy(significant_figures, max(fabs(tried), fabs(expected)));
+    if (abs_diff < double_absolute_tolerance) return true;
+    return abs_diff < max(fabs(tried), fabs(expected))*double_relative_tolerance;
 }
 
 bool double_is_lesser(double actual, double expected) {
-    return expected < actual + accuracy(significant_figures, max(actual, expected));
+    return expected < actual + max(actual, expected)*double_relative_tolerance;
 }
 
 bool double_is_greater(double actual, double expected) {
-    return expected > actual - accuracy(significant_figures, max(actual, expected));
+    return expected > actual - max(actual, expected)*double_relative_tolerance;
 }
 
 bool doubles_are_nearly(double tried, double expected) {
     double abs_diff = fabs(tried - expected);
     double abs_max = fmax(fabs(tried), fabs(expected));
     return abs_diff < double_relative_tolerance*abs_max + double_absolute_tolerance;
-}
-
-static double accuracy(int figures, double largest) {
-    return pow(10.0, 1.0 + floor(log10(fabs(largest))) - figures);
 }
 
 void double_relative_tolerance_is(double tol) {
@@ -880,11 +871,11 @@ double get_double_absolute_tolerance(void) {
 }
 
 void significant_figures_for_assert_double_are(int figures) {
-    significant_figures = figures;
+    double_relative_tolerance = pow(10, 1 - figures);
 }
 
 int get_significant_figures(void) {
-    return significant_figures;
+    return 1 - log10(double_relative_tolerance);
 }
 
 /* vim: set ts=4 sw=4 et cindent: */
