@@ -1,15 +1,35 @@
-#/usr/bin/env bash
-#
 # Contributed by Yavor Lulchev @RookieWookiee
 # Improved a bit by @thoni56
 
-# Thanks to https://stackoverflow.com/a/57243443/204658
-_removeFromArray() {
-    arrayName="$1"
-    arrayNameAt="$arrayName"'[@]'
-    removeValue="$2"
-    mapfile -d '' -t "$arrayName" < <(
-        printf %s\\0 "${!arrayNameAt}" | grep -zvFx -- "$removeValue")
+# Could not find a way to do these three in a general function (bash isn't my first language...)
+_removeFromOptions() {
+    new_array=()
+    for value in "${options[@]}"
+    do
+        [[ $value != $1 ]] && new_array+=($value)
+    done
+    options=("${new_array[@]}")
+    unset new_array
+}
+
+_removeFromLibraries() {
+    new_array=()
+    for value in "${libraries[@]}"
+    do
+        [[ $value != $1 ]] && new_array+=($value)
+    done
+    libraries=("${new_array[@]}")
+    unset new_array
+}
+
+_removeFromTests() {
+    new_array=()
+    for value in "${tests[@]}"
+    do
+        [[ $value != $1 ]] && new_array+=($value)
+    done
+    tests=("${new_array[@]}")
+    unset new_array
 }
 
 _discover_tests()
@@ -41,9 +61,9 @@ _cgreen_runner_completion()
 
     # Remove all suggestions already used
     for word in ${COMP_WORDS[@]}; do
-        _removeFromArray options $word
-        _removeFromArray libraries $word
-        _removeFromArray tests $word
+        _removeFromOptions $word
+        _removeFromLibraries $word
+        _removeFromTests $word
     done
 
     # Need to double the backslashes in the completion word for them to survive into matching
