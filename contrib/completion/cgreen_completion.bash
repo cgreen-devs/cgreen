@@ -34,14 +34,16 @@ _removeFromTests() {
 
 _discover_tests()
 {
-    local SUT="$(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | awk -F '__' '{ print $2 }' | uniq)"
-    local test_names=( $(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | sed -e 's/CgreenSpec__[a-zA-Z0-9]\+\?__//' -e 's/__$//') )
+    if test -f $word ; then
+        local SUT="$(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | awk -F '__' '{ print $2 }' | uniq)"
+        local test_names=( $(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | sed -e 's/CgreenSpec__[a-zA-Z0-9]\+\?__//' -e 's/__$//') )
 
-    if test $SUT = "default" ; then
-        tests+=( ${test_names[@]} )
-    else
-        local prefix="$SUT\\:"
-        tests+=( ${test_names[@]/#/$prefix} )
+        if test $SUT = "default" ; then
+            tests+=( ${test_names[@]} )
+        else
+            local prefix="$SUT\\:"
+            tests+=( ${test_names[@]/#/$prefix} )
+        fi
     fi
 }
 
