@@ -45,16 +45,28 @@ _discover_tests()
     fi
 }
 
+case $OSTYPE in
+    darwin* )
+        LIBEXT=dylib
+        ;;
+    linux* )
+        LIBEXT=so
+        ;;
+    cygwin )
+        LIBEXT=dll
+        ;;
+esac
+
 _cgreen_runner_completion()
 {
     local options libraries tests
     options=("--colours" "--no-colours" "--xml" "--suite" "--verbose" "--no-run" "--help" " --version")
-    libraries=( *.so )
+    libraries=( *.$LIBEXT )
     tests=()
 
     # Look for words in the command given so far
     for word in ${COMP_WORDS[@]}; do
-        if echo $word | grep -q -E "\b\.so\b"; then
+        if echo $word | grep -q -E "\b\.$LIBEXT\b"; then
             _discover_tests
         fi
     done
@@ -74,12 +86,12 @@ _cgreen_runner_completion()
 _cgreen_debug_completion()
 {
     local libraries tests
-    libraries=( *.so )
+    libraries=( *.$LIBEXT )
     tests=()
 
     # Look for words in the command given so far
     for word in ${COMP_WORDS[@]}; do
-        if echo $word | grep -q -E "\b\.so\b"; then
+        if echo $word | grep -q -E "\b\.$LIBEXT\b"; then
             _discover_tests
         fi
     done
