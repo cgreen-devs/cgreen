@@ -41,6 +41,7 @@
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) > (b) ? (b) : (a))
 
+static int significant_figures = 8;
 
 static double double_absolute_tolerance = 1e-15;
 static double double_relative_tolerance = 1e-7;
@@ -834,18 +835,23 @@ bool constraint_is_for_parameter_in(const Constraint *constraint, const char *na
     return found;
 }
 
+static double accuracy(double largest) {
+    return pow(10.0, 1.0 + floor(log10(fabs(largest))) - significant_figures);
+}
+
 bool doubles_are_equal(double tried, double expected) {
     double abs_diff = fabs(tried - expected);
     if (abs_diff < double_absolute_tolerance) return true;
-    return abs_diff < max(fabs(tried), fabs(expected))*double_relative_tolerance;
+    double max_abs = max(fabs(tried), fabs(expected));
+    return abs_diff < accuracy(max_abs);
 }
 
 bool double_is_lesser(double actual, double expected) {
-    return expected < actual + max(actual, expected)*double_relative_tolerance;
+    return expected < actual + accuracy(max(actual, expected));
 }
 
 bool double_is_greater(double actual, double expected) {
-    return expected > actual - max(actual, expected)*double_relative_tolerance;
+    return expected > actual - accuracy(max(actual, expected));
 }
 
 bool doubles_are_nearly(double tried, double expected) {
@@ -871,11 +877,11 @@ double get_double_absolute_tolerance(void) {
 }
 
 void significant_figures_for_assert_double_are(int figures) {
-    double_relative_tolerance = pow(10, 1 - figures);
+    significant_figures = figures;
 }
 
 int get_significant_figures(void) {
-    return 1 - log10(double_relative_tolerance);
+    return significant_figures;
 }
 
 /* vim: set ts=4 sw=4 et cindent: */
