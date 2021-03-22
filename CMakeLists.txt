@@ -37,8 +37,8 @@ set(BASHCOMPLETION_STATUS "Unavailable")
 find_package(bash-completion QUIET)
 if(BASH_COMPLETION_FOUND OR UNIX)
   set(BASHCOMPLETION_STATUS "Available")
-  install(FILES contrib/completion/cgreen_completion.bash DESTINATION "${CMAKE_INSTALL_DATADIR}/bash-completion/completions" RENAME "cgreen-runner")
-  install(FILES contrib/completion/cgreen_completion.bash DESTINATION "${CMAKE_INSTALL_DATADIR}/bash-completion/completions" RENAME  "cgreen-debug")
+  install(FILES tools/cgreen_completion.bash DESTINATION "${CMAKE_INSTALL_DATADIR}/bash-completion/completions" RENAME "cgreen-runner")
+  install(FILES tools/cgreen_completion.bash DESTINATION "${CMAKE_INSTALL_DATADIR}/bash-completion/completions" RENAME  "cgreen-debug")
 endif()
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
