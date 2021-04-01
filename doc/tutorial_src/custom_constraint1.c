@@ -11,7 +11,7 @@ bool compare_want_greater_than_5(Constraint *constraint, CgreenValue actual) {
 }
 
 Constraint static_is_bigger_than_5 = {
-        /* .type */ VALUE_COMPARER,
+        /* .type */ CGREEN_VALUE_COMPARER_CONSTRAINT,
         /* .name */ "be bigger than 5",
         /* .destroy */ destroy_static_constraint,
         /* .compare */ compare_want_greater_than_5,
