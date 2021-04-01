@@ -16,7 +16,7 @@ Constraint *create_smaller_than_constraint(intptr_t expected_value, const char *
 
     constraint->expected_value = make_cgreen_integer_value(expected_value);
     constraint->expected_value_name = string_dup(expected_value_name);
-    constraint->type = VALUE_COMPARER;
+    constraint->type = CGREEN_VALUE_COMPARER_CONSTRAINT;
 
     constraint->compare = &compare_want_smaller_value;
     constraint->execute = &test_want;
