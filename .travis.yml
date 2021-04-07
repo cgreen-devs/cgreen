@@ -1,4 +1,3 @@
-sudo: false
 language: c
 
 # Build matrix
@@ -41,4 +40,6 @@ after_success:
     fi
 
 notifications:
-  slack: cgreen:EC3bZqwnyBsaqyeIndEewwNT
+  slack:
+    rooms:
+      secure: "Tobw+sqwGWscQo/mnBiO/+CQDMu8of5kXUhFKK1GblxTqxvJGGRVVvjt5ZlYaTyJD6YCzaVAO9hSjMvebnTTIqqP5WFmhpO3Du3khZJhFjzhqfjIUmK4S0rAMs3BBvLTGAUa0Hvnrt1VOkOJUdwdSW8nmnw9uFx3rVCthAOLkQugUY4s8tCc/QHBJPUSqdKntTq9e4bapaMl4gREPFvtneOyN7LQp0JtI/nyrdTVlONaqkPv7M8sEC7a6ec6RK/AiEurp8XczNW0ifTwqCg2y/sLfnRg+wzG1H9sMmzs+Kx7akcGdGzi/rqWRnBDF3mKL4pt8YhmBy/znDnMAR559puRiyz6ZZhlBKRviZrsfQmC0F3IyTZY/S3SjvatT9DrAIsHDLbDNxRxzO0GC+cpkq4HU8VnF4rQ31VVb75igMHzgw3SvDOqsZ3g0jPiBybEi0jVRUzmDWrw7p6qtl5hwQam6dxfmO6xXpwOTqPI9WQEOZeZfOw7eIeEbpB5wJ723z2cEwutoDdConIZElJBKjcjFp5rjR/yG94H/0OEgCmC/JRrdd71BB9vPh4SO40RvKkxV0adY7Xk2vkAxwLFhxS7QIdNfyQBFFEBnR+JFBHE+9XwEH1JmaAbrSYgg0+vVUZPOuqcqvz+9PUTlAb5rqYB97XEbF//5t8URrriuB0="
