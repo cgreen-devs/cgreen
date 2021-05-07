@@ -37,7 +37,7 @@ Ensure(using_side_effect) {
                   will_return(EOF),
                   with_side_effect(&update_counter,
                                   &number_of_times_reader_was_called));
-    expect_never(writer);
+    never_expect(writer);
     by_paragraph(&reader, NULL, &writer, NULL);
 
     assert_that(number_of_times_reader_was_called, is_equal_to(1));
