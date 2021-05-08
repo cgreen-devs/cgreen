@@ -1,4 +1,5 @@
 #include <cgreen/cgreen.h>
+#include <cgreen/filename.h>
 
 #include "../src/utils.h"
 
@@ -19,5 +20,5 @@ Ensure(Utils, panic_output_contains_filename) {
     char buffer[100];
     panic_set_output_buffer(buffer);
     PANIC("");
-    assert_that(buffer, contains_string(__FILE__));
+    assert_that(buffer, contains_string(FILENAME));
 }

@@ -9,8 +9,6 @@
 #cmakedefine LIBDIR "${LIBDIR}"
 #cmakedefine PLUGINDIR "${PLUGINDIR}"
 #cmakedefine SYSCONFDIR "${SYSCONFDIR}"
-#cmakedefine BINARYDIR "${BINARYDIR}"
-#cmakedefine SOURCEDIR "${SOURCEDIR}"
 
 /************************** HEADER FILES *************************/
 

@@ -52,47 +52,47 @@ if (WIN32 AND NOT CYGWIN)
 endif(WIN32 AND NOT CYGWIN)
 
 set(cgreen_SRCS
-  assertions.c
-  boxed_double.c
-  breadcrumb.c
-  cgreen_time.c
-  cgreen_value.c
-  constraint.c
-  cute_reporter.c
-  cdash_reporter.c
-  messaging.c
-  message_formatting.c
-  mocks.c
-  parameters.c
-  reporter.c
-  runner.c
-  string_comparison.c
-  suite.c
-  text_reporter.c
-  utils.c
-  vector.c
-  xml_reporter.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/assertions.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/boxed_double.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/breadcrumb.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/cgreen_time.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/cgreen_value.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/constraint.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/cute_reporter.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/cdash_reporter.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/messaging.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/message_formatting.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mocks.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/parameters.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/reporter.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/runner.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/string_comparison.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/suite.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/text_reporter.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/utils.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/vector.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/xml_reporter.c
 )
 
 if (MSYS)
   # Msys2 is difficult since it really is three different "OS":es, Msys native, W32 and W64
   # To get somewhere, let's use the native Msys2, which actually is Cygwin/UNIX.
   LIST(APPEND cgreen_SRCS
-    posix_cgreen_pipe.c
-    posix_cgreen_time.c
-    posix_runner_platform.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/posix_cgreen_pipe.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/posix_cgreen_time.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/posix_runner_platform.c
   )
 elseif (UNIX OR CYGWIN)
   LIST(APPEND cgreen_SRCS
-    posix_cgreen_pipe.c
-    posix_cgreen_time.c
-    posix_runner_platform.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/posix_cgreen_pipe.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/posix_cgreen_time.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/posix_runner_platform.c
   )
 elseif(WIN32)
  LIST(APPEND cgreen_SRCS
-    win32_cgreen_pipe.c
-    win32_cgreen_time.c
-    win32_runner_platform.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/win32_cgreen_pipe.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/win32_cgreen_time.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/win32_runner_platform.c
   )
 else()
   message(FATAL_ERROR "Cgreen can currently only be compiled for Msys2, Cygwin, MacOSX and Windows.")
@@ -100,10 +100,14 @@ endif()
 SET_SOURCE_FILES_PROPERTIES(${cgreen_SRCS} PROPERTIES LANGUAGE C)
 
 set(cgreen_SRCS ${cgreen_SRCS}
-  cpp_assertions.cpp
-  cpp_constraint.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/cpp_assertions.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/cpp_constraint.cpp
 )
 SET_SOURCE_FILES_PROPERTIES(cpp_assertions.cpp cpp_constraint.cpp PROPERTIES LANGUAGE CXX )
+
+
+include(DefineRelativeFilePaths)
+cmake_define_relative_file_paths ("${cgreen_SRCS}")
 
 include_directories(
   ${CGREEN_PUBLIC_INCLUDE_DIRS}

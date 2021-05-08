@@ -82,7 +82,6 @@ DIFF_TOOL_ARGUMENTS = $(1)_tests \
 	$(1)_tests.expected
 
 unit: build-it
-	SOURCEDIR=$$PWD/tests/ ; \
 	cd build ; \
 	$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
 	r=$$((r + $$?)) ; \

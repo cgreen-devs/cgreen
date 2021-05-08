@@ -1,6 +1,8 @@
 #ifndef UNIT_IMPLEMENTATION_HEADER
 #define UNIT_IMPLEMENTATION_HEADER
 
+#include <cgreen/filename.h>
+
 #ifdef __cplusplus
 #include <cstddef>
 #endif
@@ -45,20 +47,20 @@ typedef struct {
 
 #define EnsureWithContextAndSpecificationName(skip, contextName, specName) \
     static void contextName##__##specName (void);\
-    CgreenTest spec_name(contextName, specName) = { skip, &contextFor##contextName, STRINGIFY_TOKEN(specName), &contextName##__##specName, __FILE__, __LINE__ }; \
+    CgreenTest spec_name(contextName, specName) = { skip, &contextFor##contextName, STRINGIFY_TOKEN(specName), &contextName##__##specName, FILENAME, __LINE__ }; \
     static void contextName##__##specName (void)
 
 extern CgreenContext defaultContext;
 
 #define EnsureWithSpecificationName(skip, specName) \
     static void specName (void);\
-    CgreenTest spec_name(default, specName) = { skip, &defaultContext, STRINGIFY_TOKEN(specName), &specName, __FILE__, __LINE__ }; \
+    CgreenTest spec_name(default, specName) = { skip, &defaultContext, STRINGIFY_TOKEN(specName), &specName, FILENAME, __LINE__ }; \
     static void specName (void)
 
 #define DescribeImplementation(subject) \
         static void setup(void);                \
         static void teardown(void);                                     \
-        static CgreenContext contextFor##subject = { STRINGIFY_TOKEN(subject), __FILE__, &setup, &teardown }; \
+        static CgreenContext contextFor##subject = { STRINGIFY_TOKEN(subject), FILENAME, &setup, &teardown }; \
         extern void(*BeforeEach_For_##subject)(void);                   \
         extern void(*AfterEach_For_##subject)(void);                    \
         static void setup(void) {                                       \
