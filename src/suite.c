@@ -1,3 +1,4 @@
+#include <cgreen/filename.h>
 #include <cgreen/suite.h>
 #include <cgreen/unit.h>
 #include <cgreen/vector.h>
@@ -13,7 +14,7 @@
 
 CgreenContext defaultContext = {
     /* name     */ "",
-    /* filename */ __FILE__,
+    /* filename */ FILENAME,
     /* setup    */ &do_nothing,
     /* teardown */ &do_nothing
 };

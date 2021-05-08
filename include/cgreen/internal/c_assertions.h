@@ -2,12 +2,13 @@
 #define C_ASSERTIONS_HEADER
 
 #include <cgreen/constraint.h>
+#include <cgreen/filename.h>
 #include <inttypes.h>
 
 #include "stringify_token.h"
 
 #ifndef __cplusplus
-#define assert_that_constraint(actual, constraint) assert_core_(__FILE__, __LINE__, STRINGIFY_TOKEN(actual), (intptr_t)(actual), (constraint))
+#define assert_that_constraint(actual, constraint) assert_core_(FILENAME, __LINE__, STRINGIFY_TOKEN(actual), (intptr_t)(actual), (constraint))
 #endif
 
 #ifdef __cplusplus
