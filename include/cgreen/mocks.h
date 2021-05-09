@@ -4,6 +4,7 @@
 #include <cgreen/internal/mocks_internal.h>
 #include <cgreen/internal/stringify_token.h>
 #include <cgreen/constraint.h>
+#include <cgreen/filename.h>
 #include <cgreen/reporter.h>
 
 #ifdef __cplusplus
@@ -17,20 +18,20 @@ namespace cgreen {
 
    expect(<function>, when(<parameter>, <constraint>), will_return(<value>));
 */
-#define expect(f, ...) expect_(get_test_reporter(), STRINGIFY_TOKEN(f), __FILE__, __LINE__, \
+#define expect(f, ...) expect_(get_test_reporter(), STRINGIFY_TOKEN(f), FILENAME, __LINE__, \
                                (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
-#define always_expect(f, ...) always_expect_(get_test_reporter(), STRINGIFY_TOKEN(f), __FILE__, __LINE__, \
+#define always_expect(f, ...) always_expect_(get_test_reporter(), STRINGIFY_TOKEN(f), FILENAME, __LINE__, \
                                              (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
-#define never_expect(f, ...) never_expect_(get_test_reporter(), STRINGIFY_TOKEN(f), __FILE__, __LINE__, \
+#define never_expect(f, ...) never_expect_(get_test_reporter(), STRINGIFY_TOKEN(f), FILENAME, __LINE__, \
                                            (Constraint *)__VA_ARGS__ +0, (Constraint *)0)
 
 
 #ifdef _MSC_VER
 // another workaround for fundamental variadic macro deficiencies in Visual C++ 2012
-#define mock(...) PP_NARG(__VA_ARGS__)(get_test_reporter(), __func__, __FILE__, __LINE__, #__VA_ARGS__ "", \
+#define mock(...) PP_NARG(__VA_ARGS__)(get_test_reporter(), __func__, FILENAME, __LINE__, #__VA_ARGS__ "", \
                                        __VA_ARGS__)
 #else
-#define mock(...) PP_NARG(__VA_ARGS__)(get_test_reporter(), __func__, __FILE__, __LINE__, #__VA_ARGS__ "", \
+#define mock(...) PP_NARG(__VA_ARGS__)(get_test_reporter(), __func__, FILENAME, __LINE__, #__VA_ARGS__ "", \
                                        __VA_ARGS__ +0)
 #endif
 

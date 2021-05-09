@@ -1,6 +1,7 @@
 #ifndef UTILS_HEADER
 #define UTILS_HEADER
 
+#include <cgreen/filename.h>
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -10,7 +11,7 @@ namespace cgreen {
 
         extern bool panic_use_colours;
 
-#define PANIC(...) panic(__FILE__, __LINE__, __VA_ARGS__)
+#define PANIC(...) panic(FILENAME, __LINE__, __VA_ARGS__)
         extern char *string_dup(const char *original);
         extern void panic_set_output_buffer(const char *buffer);
         extern void panic(const char *filename, int line, const char *fmt, ...);
