@@ -2,6 +2,11 @@
 
 #include "io.h"
 
+// bfd.h needs to have PACKAGE and PACKAGE_VERSION defined
+#define PACKAGE "cgreen-runner"
+#define PACKAGE_VERSION "unknown"
+#include <bfd.h>
+
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -21,52 +26,84 @@ static bool contains_cgreen_spec(const char *line) {
     return cgreen_spec_start_of(line) != NULL;
 }
 
-static bool is_definition(const char *line) {
-    return strstr(line, " D ") != NULL;
-}
+static void add_all_tests_from(asymbol **symbols, long symbol_count, CgreenVector *tests, bool verbose) {
 
-static bool complete_line_read(char line[]) {
-    return line[strlen(line)-1] == '\n';
-}
+    for (long index = 0; index < symbol_count; ++index, ++symbols) {
+        bfd *cur_bfd;
 
-
-static void strip_newline_from(char *name) {
-    if (name[strlen(name)-1] == '\n')
-        name[strlen(name)-1] = '\0';
-}
-
-static void add_all_tests_from(FILE *nm_output_pipe, CgreenVector *tests, bool verbose) {
-    char line[1000];
-    int length = read_line(nm_output_pipe, line, sizeof(line)-1);
-    while (length > -1) {       /* TODO: >0 ? */
-        if (!complete_line_read(line))
-            PANIC("Too long line in nm output");
-        if (contains_cgreen_spec(line) && is_definition(line)) {
-            strip_newline_from(line);
-            TestItem *test_item = create_test_item_from(cgreen_spec_start_of(line));
+        if ((*symbols != NULL)
+            && ((cur_bfd = bfd_asymbol_bfd(*symbols)) != NULL)
+            && (!bfd_is_target_special_symbol(cur_bfd, *symbols))
+            && contains_cgreen_spec((*symbols)->name)) {
+            TestItem *test_item = create_test_item_from(cgreen_spec_start_of((*symbols)->name));
             if (verbose)
                 printf("Discovered %s:%s (%s)\n", test_item->context_name, test_item->test_name,
                        test_item->specification_name);
             cgreen_vector_add(tests, test_item);
         }
-        length = read_line(nm_output_pipe, line, sizeof(line)-1);
     }
 }
 
-CgreenVector *discover_tests_in(const char *filename, bool verbose) {
-    FILE *library = open_file(filename, "r");
-    if (library == NULL)
-        return NULL;
-    close_file(library);
+/* Read in the dynamic symbols.  */
 
-    char nm_command[1000];
-    sprintf(nm_command, "/usr/bin/nm '%s'", filename);
-    FILE *nm_output_pipe = open_process(nm_command, "r");
-    if (nm_output_pipe == NULL)
+static asymbol **get_symbols_table(bfd *abfd, long *symbol_count, bool verbose)
+{
+    long storage = bfd_get_dynamic_symtab_upper_bound(abfd);
+    if (storage < 0) {
+        if (!(bfd_get_file_flags(abfd) & DYNAMIC))
+            if (verbose)
+                printf("%s: not a dynamic object\n", bfd_get_filename(abfd));
+
+        *symbol_count = 0;
         return NULL;
+    }
+    
+    asymbol **symbols = (asymbol **) malloc(storage);
+    if (symbols == NULL) {
+        if (verbose)
+            printf("malloc failed while retrieving symbols\n");
+        *symbol_count = 0;
+        return NULL;
+    }
+
+    *symbol_count = bfd_canonicalize_dynamic_symtab(abfd, symbols);
+    if (*symbol_count < 0) {
+        if (verbose)
+            printf("%s: failed to get symbols count\n", bfd_get_filename(abfd));
+        *symbol_count = 0;
+        free(symbols);
+        return NULL;
+    }
+
+  return symbols;
+}
+
+CgreenVector *discover_tests_in(const char *filename, bool verbose) {
+    bfd* abfd = bfd_openr(filename, NULL);
+    if (!abfd) {
+        if (verbose)
+            printf("%s: bfd_openr failed\n", filename);
+        return NULL;
+    }
+
+    bfd_check_format(abfd, bfd_object);
+    if ((bfd_get_file_flags(abfd) & HAS_SYMS) == 0) {
+        if (verbose)
+            printf("%s: incorrect format\n", filename);
+        bfd_close(abfd);
+        return NULL;
+    }
+
+    asymbol **symbols;
+    long symbol_count;
+    symbols = get_symbols_table(abfd, &symbol_count, verbose);
+
+    if ((symbols == NULL) || (symbol_count <= 0)) {
+        bfd_close(abfd);
+        return NULL;
+    }
 
     CgreenVector *tests = create_cgreen_vector((GenericDestructor)&destroy_test_item);
-    add_all_tests_from(nm_output_pipe, tests, verbose);
-    close_process(nm_output_pipe);
+    add_all_tests_from(symbols, symbol_count, tests, verbose);
     return tests;
 }
