@@ -15,6 +15,7 @@ addons:
     - cmake
     - lcov
     - g++
+    - binutils-dev
 
 before_install:
   - if [[ $CC == gcc ]] ; then export CXX=g++ ; else export CXX=clang++ ; fi
