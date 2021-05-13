@@ -10,13 +10,45 @@ set(CGREEN_RUNNER_TESTS_LIBRARY
 set(RUNNER_TESTS_SRCS
   runnerTests.c
   ../discoverer.c
-  ../io.c
+  ../bfd_adapter.c
   ../test_item.c)
 add_library(${CGREEN_RUNNER_TESTS_LIBRARY} SHARED ${RUNNER_TESTS_SRCS})
 
 target_link_libraries(${CGREEN_RUNNER_TESTS_LIBRARY} ${CGREEN_SHARED_LIBRARY} ${CMAKE_DL_LIBS})
 
+find_package(LibBfd)
+
+set(DISCOVERER_ACCEPTANCE_TESTS_LIBRARY
+  discoverer_acceptance_tests
+  CACHE INTERNAL "discoverer acceptance tests"
+)
+set(DISCOVERER_ACCEPTANCE_TESTS_SRCS
+  discoverer_acceptance_tests.c
+  ../discoverer.c
+  ../bfd_adapter.c
+  ../test_item.c)
+add_library(${DISCOVERER_ACCEPTANCE_TESTS_LIBRARY} SHARED ${DISCOVERER_ACCEPTANCE_TESTS_SRCS})
+
+target_link_libraries(${DISCOVERER_ACCEPTANCE_TESTS_LIBRARY}
+  ${CGREEN_SHARED_LIBRARY}
+  ${CMAKE_DL_LIBS}
+  ${LIBBFD_LIBRARIES})
+
+set(DISCOVERER_UNIT_TESTS_LIBRARY
+  discoverer_unit_tests
+  CACHE INTERNAL "discoverer unit tests"
+)
+set(DISCOVERER_UNIT_TESTS_SRCS
+  discoverer_unit_tests.c
+  ../discoverer.c)
+add_library(${DISCOVERER_UNIT_TESTS_LIBRARY} SHARED ${DISCOVERER_UNIT_TESTS_SRCS})
+
+target_compile_definitions(${DISCOVERER_UNIT_TESTS_LIBRARY} PUBLIC UNITTESTING)
+target_link_libraries(${DISCOVERER_UNIT_TESTS_LIBRARY} ${CMAKE_DL_LIBS})
+
 SET(CGREEN_RUNNER_TESTS_LIBRARY "$<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests>")
+SET(DISCOVERER_ACCEPTANCE_TESTS_LIBRARY "$<TARGET_FILE_DIR:discoverer_acceptance_tests>/$<TARGET_FILE_NAME:discoverer_acceptance_tests>")
+SET(DISCOVERER_UNIT_TESTS_LIBRARY "$<TARGET_FILE_DIR:discoverer_unit_tests>/$<TARGET_FILE_NAME:discoverer_unit_tests>")
 
 # Due to some (of many) CMake irregularities to reference the test libraries
 # we can't just use its CMake name variable, but have to look it up with
@@ -58,3 +90,9 @@ macro_add_test(NAME cgreen_runner_with_xml_reporter
 
 macro_add_test(NAME cgreen_runner_multiple_libraries
   COMMAND cgreen-runner ${CGREEN_RUNNER_TESTS_LIBRARY} ${CGREEN_RUNNER_TESTS_LIBRARY} ${CGREEN_RUNNER_TESTS_LIBRARY})
+
+macro_add_test(NAME discoverer_acceptance_tests
+  COMMAND cgreen-runner ${DISCOVERER_ACCEPTANCE_TESTS_LIBRARY})
+
+macro_add_test(NAME discoverer_unit_tests
+  COMMAND cgreen-runner ${DISCOVERER_UNIT_TESTS_LIBRARY})

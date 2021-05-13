@@ -9,7 +9,7 @@ set(RUNNER_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/runner.c
   ${CMAKE_CURRENT_SOURCE_DIR}/discoverer.c
   ${CMAKE_CURRENT_SOURCE_DIR}/test_item.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/io.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bfd_adapter.c
 )
 set_source_files_properties(${RUNNER_SRCS} PROPERTIES LANGUAGE C)
 

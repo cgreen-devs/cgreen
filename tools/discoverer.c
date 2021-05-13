@@ -1,22 +1,22 @@
 #include "discoverer.h"
 
-#include "io.h"
-
-// bfd.h needs to have PACKAGE and PACKAGE_VERSION defined
-#define PACKAGE "cgreen-runner"
-#define PACKAGE_VERSION "unknown"
-#include <bfd.h>
+#include "bfd_adapter.h"
 
 #include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include <cgreen/internal/unit_implementation.h>
 
 #include "../src/utils.h"
 
-
 #include "test_item.h"
+
+#ifdef UNITTESTING
+int printf_unittesting(const char *fmt, ...);
+#define printf printf_unittesting
+#endif
 
 static const char *cgreen_spec_start_of(const char *line) {
     return strstr(line, CGREEN_SPEC_PREFIX CGREEN_SEPARATOR);
@@ -27,13 +27,11 @@ static bool contains_cgreen_spec(const char *line) {
 }
 
 static void add_all_tests_from(asymbol **symbols, long symbol_count, CgreenVector *tests, bool verbose) {
-
     for (long index = 0; index < symbol_count; ++index, ++symbols) {
         bfd *cur_bfd;
-
         if ((*symbols != NULL)
-            && ((cur_bfd = bfd_asymbol_bfd(*symbols)) != NULL)
-            && (!bfd_is_target_special_symbol(cur_bfd, *symbols))
+            && ((cur_bfd = bfd_adapter_asymbol_bfd(*symbols)) != NULL)
+            && (!bfd_adapter_is_target_special_symbol(cur_bfd, *symbols))
             && contains_cgreen_spec((*symbols)->name)) {
             TestItem *test_item = create_test_item_from(cgreen_spec_start_of((*symbols)->name));
             if (verbose)
@@ -46,32 +44,30 @@ static void add_all_tests_from(asymbol **symbols, long symbol_count, CgreenVecto
 
 /* Read in the dynamic symbols.  */
 
-static asymbol **get_symbols_table(bfd *abfd, long *symbol_count, bool verbose)
+static asymbol **get_symbols_table(bfd *abfd, long *symbol_count, bool verbose, const char *filename)
 {
-    long storage = bfd_get_dynamic_symtab_upper_bound(abfd);
+    long storage = bfd_adapter_get_dynamic_symtab_upper_bound(abfd);
     if (storage < 0) {
-        if (!(bfd_get_file_flags(abfd) & DYNAMIC))
-            if (verbose)
-                printf("%s: not a dynamic object\n", bfd_get_filename(abfd));
+        if (verbose)
+            printf("%s: not symbols\n", filename);
 
         *symbol_count = 0;
         return NULL;
     }
-    
-    asymbol **symbols = (asymbol **) malloc(storage);
+
+    asymbol **symbols = (asymbol **) bfd_adapter_alloc(abfd, storage);
     if (symbols == NULL) {
         if (verbose)
-            printf("malloc failed while retrieving symbols\n");
+            printf("%s: bfd_alloc failed while retrieving symbols\n", filename);
         *symbol_count = 0;
         return NULL;
     }
 
-    *symbol_count = bfd_canonicalize_dynamic_symtab(abfd, symbols);
+    *symbol_count = bfd_adapter_canonicalize_dynamic_symtab(abfd, symbols);
     if (*symbol_count < 0) {
         if (verbose)
-            printf("%s: failed to get symbols count\n", bfd_get_filename(abfd));
+            printf("%s: failed to get symbols count\n", filename);
         *symbol_count = 0;
-        free(symbols);
         return NULL;
     }
 
@@ -79,31 +75,34 @@ static asymbol **get_symbols_table(bfd *abfd, long *symbol_count, bool verbose)
 }
 
 CgreenVector *discover_tests_in(const char *filename, bool verbose) {
-    bfd* abfd = bfd_openr(filename, NULL);
+    bfd* abfd = bfd_adapter_openr(filename, NULL);
     if (!abfd) {
         if (verbose)
-            printf("%s: bfd_openr failed\n", filename);
+            printf("%s: bfd_adapter_openr failed\n", filename);
         return NULL;
     }
 
-    bfd_check_format(abfd, bfd_object);
-    if ((bfd_get_file_flags(abfd) & HAS_SYMS) == 0) {
+    bfd_adapter_check_format(abfd, bfd_object);
+    if ((bfd_adapter_get_file_flags(abfd) & HAS_SYMS) == 0) {
         if (verbose)
             printf("%s: incorrect format\n", filename);
-        bfd_close(abfd);
+        bfd_adapter_close(abfd);
         return NULL;
     }
 
     asymbol **symbols;
     long symbol_count;
-    symbols = get_symbols_table(abfd, &symbol_count, verbose);
+    symbols = get_symbols_table(abfd, &symbol_count, verbose, filename);
 
     if ((symbols == NULL) || (symbol_count <= 0)) {
-        bfd_close(abfd);
+        bfd_adapter_close(abfd);
         return NULL;
     }
 
     CgreenVector *tests = create_cgreen_vector((GenericDestructor)&destroy_test_item);
     add_all_tests_from(symbols, symbol_count, tests, verbose);
+
+    bfd_adapter_close(abfd);
+
     return tests;
 }
