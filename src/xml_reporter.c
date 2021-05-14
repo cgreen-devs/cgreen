@@ -193,14 +193,44 @@ static void xml_show_skip(TestReporter *reporter, const char *file, int line) {
     fputs(output, child_output_tmpfile);
 }
 
+static void xml_concat_escaped_message(const char *message, va_list arguments) {
+    char buffer[1000];
+    snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), message, arguments);
+
+    size_t current_char_position = 0;
+    for (; current_char_position < strlen(buffer); current_char_position++) {
+        switch (buffer[current_char_position]) {
+            case '"':
+                output = concat(output, "&quot;");
+                break;
+            case '&':
+                output = concat(output, "&amp;");
+                break;
+            case '<':
+                output = concat(output, "&lt;");
+                break;
+            case '>':
+                output = concat(output, "&gt;");
+                break;
+            case '\'':
+                output = concat(output, "&apos;");
+                break;
+            default: {
+                char single_char[2] = {0};
+                single_char[0] = buffer[current_char_position];
+                output = concat(output, single_char);
+            }
+        }
+    }
+}
+
 static void xml_show_fail(TestReporter *reporter, const char *file, int line, const char *message, va_list arguments) {
     char buffer[1000];
 
     output = concat(output, indent(reporter));
     output = concat(output, "<failure message=\"");
 
-    vsnprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), message, arguments);
-    output = concat(output, buffer);
+    xml_concat_escaped_message(message, arguments);
     output = concat(output, "\">\n");
     output = concat(output, indent(reporter));
 
