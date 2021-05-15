@@ -890,13 +890,25 @@ static CgreenValue stored_result_or_default_for(CgreenVector* constraints) {
     for (i = 0; i < cgreen_vector_size(constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(constraints, i);
 
-        if (constraint->type == CGREEN_RETURN_VALUE_CONSTRAINT) {
+        switch (constraint->type) {
+        case CGREEN_RETURN_VALUE_CONSTRAINT:
+        case CGREEN_RETURN_POINTER_CONSTRAINT:
             return constraint->expected_value;
-        } else if (constraint->type == CGREEN_RETURN_POINTER_CONSTRAINT) {
-            return constraint->expected_value;
+        case CGREEN_RETURN_BY_VALUE_CONSTRAINT: {
+            /* When returning a struct by value we need to copy the struct
+               pointed out by the Cgreen pointer value so that it does
+               not get lost when the constraint is destroyed. The user
+               will be responsible for deallocating the copy of the struct. */
+            CgreenValue returnable = constraint->expected_value;
+            void *the_struct = malloc(returnable.value_size);
+            memcpy(the_struct, returnable.value.pointer_value, returnable.value_size);
+            returnable.value.pointer_value = the_struct;
+            return returnable;
+        }
+        default:
+            break;
         }
     }
-
     return (CgreenValue){CGREEN_INTEGER, {0}, 0};
 }
 
