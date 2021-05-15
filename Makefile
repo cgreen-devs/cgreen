@@ -128,12 +128,15 @@ chunked: doc
 
 .PHONY:valgrind
 valgrind: build-it
-	> valgrind.log
-	for lib in `ls build/tests/$(PREFIX)*_tests$(SUFFIX)` ; \
+	@echo -n "Running all tests under Valgrind "
+	@> valgrind.log
+	@for lib in `ls build/tests/$(PREFIX)*_tests$(SUFFIX)` ; \
 	do \
+		echo -n "." ; \
 		LD_LIBRARY_PATH=build/src valgrind --leak-check=full build/tools/cgreen-runner $$lib >> valgrind.log 2>&1 ; \
 	done
-	grep " lost:" valgrind.log | grep -v " 0 bytes" | wc -l
+	@echo
+	grep --with-filename --line-number " lost:" valgrind.log | grep -v " 0 bytes"
 
 
 
