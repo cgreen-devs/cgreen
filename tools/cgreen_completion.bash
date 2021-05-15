@@ -1,8 +1,5 @@
 # Contributed by Yavor Lulchev @RookieWookiee
-# Improved a bit by @thoni56
-
-# NOTE we can't handle libraries in other directories yet. See issue #250
-# https://github.com/cgreen-devs/cgreen/issues/250
+# Improved by @thoni56
 
 # Could not find a way to do these three in a general function (bash isn't my native language...)
 _removeFromOptions() {
@@ -38,15 +35,25 @@ _removeFromTests() {
 _discover_tests()
 {
     if test -f $word ; then
-        local SUT="$(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | awk -F '__' '{ print $2 }' | uniq)"
-        local test_names=( $(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b' | sed -e 's/CgreenSpec__[a-zA-Z0-9]\+\?__//' -e 's/__$//') )
+        local raw=$(nm -f posix $word | grep -o -E 'CgreenSpec\w*?\b')
+        local specs=( $(echo "$raw" | sed 's/^CgreenSpec__//g' | sed 's/__$//g') )
+        # specs should be an array with all <SUT>__<testname> from the library in $word
+        local SUTs=( $(printf "%s\n" "${specs[@]}" | awk -F '__' '{ print $1 }' | sort | uniq) )
+        # SUTs should now contain all SUTs present in the library
 
-        if test $SUT = "default" ; then
-            tests+=( ${test_names[@]} )
-        else
-            local prefix="$SUT\\:"
-            tests+=( ${test_names[@]/#/$prefix} )
-        fi
+        for SUT in "${SUTs[@]}"; do
+            if test $SUT = "default" ; then
+                tests+=( ${test_names[@]} )
+            else
+                sut_tests=()
+                for spec in "${specs[@]}"; do
+                    if [[ $spec == "$SUT"* ]] ; then
+                        sut_tests+=( $spec )
+                    fi
+                done
+                tests+=( ${sut_tests[@]/__/:} )
+            fi
+        done
     fi
 }
 
