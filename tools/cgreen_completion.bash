@@ -1,7 +1,10 @@
 # Contributed by Yavor Lulchev @RookieWookiee
 # Improved a bit by @thoni56
 
-# Could not find a way to do these three in a general function (bash isn't my first language...)
+# NOTE we can't handle libraries in other directories yet. See issue #250
+# https://github.com/cgreen-devs/cgreen/issues/250
+
+# Could not find a way to do these three in a general function (bash isn't my native language...)
 _removeFromOptions() {
     new_array=()
     for value in "${options[@]}"
@@ -63,11 +66,17 @@ _cgreen_runner_completion()
 {
     local options libraries tests
     options=("--colours" "--no-colours" "--xml" "--suite" "--verbose" "--no-run" "--help" " --version")
-    libraries=( *.$LIBEXT )
+    libraries=()
     tests=()
 
     # Look for words in the command given so far
     for word in ${COMP_WORDS[@]}; do
+        # Matching loadable libraries?
+        if compgen -G "$word*.$LIBEXT" > /dev/null; then
+            # Add that pattern
+            libraries+=($word*.$LIBEXT)
+        fi
+        # Is it a library?
         if echo $word | grep -q -E "\b\.$LIBEXT\b"; then
             _discover_tests
         fi
@@ -75,9 +84,11 @@ _cgreen_runner_completion()
 
     # Remove all suggestions already used
     for word in ${COMP_WORDS[@]}; do
-        _removeFromOptions $word
-        _removeFromLibraries $word
-        _removeFromTests $word
+        if [[ "$word" != "${COMP_WORDS[0]}" ]] ; then
+            _removeFromOptions $word
+            _removeFromLibraries $word
+            _removeFromTests $word
+        fi
     done
 
     # Need to double the backslashes in the completion word for them to survive into matching
@@ -88,11 +99,16 @@ _cgreen_runner_completion()
 _cgreen_debug_completion()
 {
     local libraries tests
-    libraries=( *.$LIBEXT )
+    libraries=()
     tests=()
 
     # Look for words in the command given so far
     for word in ${COMP_WORDS[@]}; do
+        # Matching loadable libraries?
+        if compgen -G "$word*.$LIBEXT" > /dev/null; then
+            # Add that pattern
+            libraries+=($word*.$LIBEXT)
+        fi
         if echo $word | grep -q -E "\b\.$LIBEXT\b"; then
             _discover_tests
         fi
@@ -100,7 +116,7 @@ _cgreen_debug_completion()
 
     # Remove libraries and tests if already used (only one library and one test allowed)
     for word in ${COMP_WORDS[@]}; do
-        if [[ $word == *".so" ]]; then
+        if [[ $word == *".$LIBEXT" ]]; then
             # Only one library allowed
             libraries=()
         fi
@@ -117,5 +133,5 @@ _cgreen_debug_completion()
     COMPREPLY=($(compgen -W '$(printf "%s " ${options[@]} ${libraries[@]} ${tests[@]})' -- "$completion_word"))
 }
 
-complete -o nosort -o dirnames -F _cgreen_runner_completion cgreen-runner
-complete -o nosort -F _cgreen_debug_completion cgreen-debug
+complete -o nosort -o dirnames -A directory -F _cgreen_runner_completion cgreen-runner
+complete -o nosort -A directory -F _cgreen_debug_completion cgreen-debug
