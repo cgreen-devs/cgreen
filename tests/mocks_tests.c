@@ -447,7 +447,10 @@ typedef struct Box {
 } Box;
 
 Box retrieveBox(void) {
-    return *(Box *)mock();
+    Box *box_p = (Box *)mock();
+    Box the_box = *box_p;
+    free(box_p);
+    return the_box;
 }
 
 Ensure(Mocks, can_return_by_value) {
@@ -461,7 +464,10 @@ Ensure(Mocks, can_return_by_value) {
 }
 
 Box retrieveSpecialBox(int boxNumber) {
-    return *(Box *)mock(boxNumber);
+    Box *box_p = (Box *)mock(boxNumber);
+    Box the_box = *box_p;
+    free(box_p);
+    return the_box;
 }
 
 Ensure(Mocks, can_return_by_value_depending_on_input_parameter) {
