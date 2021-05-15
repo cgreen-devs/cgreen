@@ -150,3 +150,5 @@ build:
 
 build/Makefile: build
 	cd build; cmake ..
+
+.SILENT:

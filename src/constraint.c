@@ -467,6 +467,7 @@ Constraint *create_return_by_value_constraint(intptr_t value_to_return, size_t s
     constraint->execute = &test_true;
     constraint->name = "return value";
     constraint->expected_value = make_cgreen_by_value((void*)actual_return, size);
+    constraint->destroy = &destroy_by_value_constraint;
 
     return constraint;
 }
@@ -721,6 +722,13 @@ void destroy_double_constraint(Constraint *constraint) {
 
 void destroy_string_constraint(Constraint *constraint) {
     destroy_cgreen_value(constraint->expected_value);
+    destroy_empty_constraint(constraint);
+}
+
+void destroy_by_value_constraint(Constraint *constraint) {
+    // TODO: we should return the allocated area, but that conflicts with reporter printing it
+    // Now, how does the string constraints do it?
+    // destroy_cgreen_value(constraint->expected_value);
     destroy_empty_constraint(constraint);
 }
 
