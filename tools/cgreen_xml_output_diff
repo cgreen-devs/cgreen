@@ -90,7 +90,7 @@ echo "s/in [0-9]+ms\./in 0ms\./g" >> $tempfile
 
 # - library prefix
 echo s/\"${prefix}${name}\"/\"${name}\"/g >> $tempfile
-exit -1
+
 # - source path, ensure parenthesis are not interpreted by sed -E
 #                but allow any characters before sourcedir in the string
 echo s%\".*${sourcedir//[\(\)]/.}/%\"%g >> $tempfile

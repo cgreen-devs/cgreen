@@ -13,6 +13,10 @@
 # That should build Cgreen in the build directory, run some tests,
 # install it locally and generate a distributable package.
 
+ifndef VERBOSE
+MAKEFLAGS += --no-print-directory
+endif
+
 all: build/Makefile
 	cd build; make
 
@@ -143,5 +147,3 @@ build:
 
 build/Makefile: build
 	cd build; cmake ..
-
-.SILENT:
