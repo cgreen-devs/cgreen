@@ -9,6 +9,8 @@
 # TODO: refactor the duplication in this and cgreen_xml_output_diff to something
 # not having the duplication, common sub-script, maybe?
 #
+# TODO: make 'prefix' and 'extension' into arguments instead of evaluating them here
+
 # Determine OS
 unameo=`uname -o 1>/dev/null 2>/dev/null; echo $?`
 if [ $unameo -eq 0 ]; then
@@ -32,7 +34,7 @@ Cygwin)
     extension=dll
     ;;
 Msys)
-    prefix=lib
+    prefix=msys-
     extension=dll
     ;;
 *)
@@ -54,7 +56,8 @@ sourcedir=$1 ; shift 1
 sourcedir=$(perl -e 'use Cwd "abs_path"; print abs_path(@ARGV[0])' -- "$sourcedir")
 if [ $(uname -n) = thoni64 ]; then
     # On my Cygwin machine I have linked /home to c:/Users so absolute paths don't match
-    # what runner prints, so try to replace that (don't know how to generalize this...)
+    # what runner prints, so try to replace that
+    # TODO: generalize this...
     sourcedir=`echo $sourcedir | sed -e s#/cygdrive/c/Users#/home#`
 fi
 
@@ -84,8 +87,7 @@ echo "s/:[0-9]+:/:/g" > $tempfile
 echo "s/in [0-9]+ms\./in 0ms\./g" >> $tempfile
 
 # - library prefix
-# TODO: should use prefix, shouldn't it?
-echo s/\".*${name}\"/\"${name}\"/g >> $tempfile
+echo s/\"${prefix}${name}\"/\"${name}\"/g >> $tempfile
 
 # - source path, ensure parenthesis are not interpreted by sed -E
 echo s%.*${sourcedir//[\(\)]/.}/%%g >> $tempfile

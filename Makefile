@@ -66,14 +66,19 @@ else ifeq ($(OS),Cygwin)
 	PREFIX=cyg
 	SUFFIX=.dll
 else ifeq ($(OS),Msys)
+# This is for Msys "proper"
+# TODO: handle Msys/Mingw32/64
 	LDPATH=PATH=$(PWD)/build/src:"$$PATH"
-	PREFIX=lib
+	PREFIX=msys-
 	SUFFIX=.dll
 else
 	LDPATH=LD_LIBRARY_PATH=$(PWD)/build/src
 	PREFIX=lib
 	SUFFIX=.so
 endif
+
+# TODO: the diff_tools scripts determine prefix and extension by themselves
+# Would be better if those were arguments, since we do it here anyway
 
 DIFF_TOOL=../../tools/cgreen_runner_output_diff
 XML_DIFF_TOOL=../../tools/cgreen_xml_output_diff
@@ -137,11 +142,6 @@ build:
 	mkdir build
 
 build/Makefile: build
-ifeq ($(OS),Msys)
-	# Thanks to https://stackoverflow.com/a/46027426/204658
-	cd build; cmake -G"MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=/usr/local ..
-else
 	cd build; cmake ..
-endif
 
 .SILENT:
