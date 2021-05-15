@@ -1546,18 +1546,22 @@ There is a multitude of constraints available (actually, exactly the same as for
 For the double valued constraints you can set the number of significant digits to consider a match with a call to `significant_figures_for_assert_double_are(int figures)`.
 The <<floating_point_comparison_algorithm, section on how to work with doubles>> has a more detailed discussion of the algorithm used for comparing floating point numbers.
 
-Then there are a couple of ways to return results from the mocks:
+Then there are a couple of ways to return results from the mocks.
+They all provide ways to return various types of values through `mock()`.
+In your mocked function you can then simply return that value, or manipulate it as necessary.
 
 |===========================================================================================
 |*Macro*                                                      |*Description*
-|`will_return(value)`                                         |Return the value from the mock function (which needs to be declared returning that type)
-|`will_return_by_value(value, size)`                          |Ditto for generic by value variables
-|`will_return_double(value)`                                  |Ditto for double values (required because of C's type coercion rules which would otherwise convert a double into an int)
+|`will_return(value)`                                         |`mock()` returns `value`, for integer types
+|`will_return_by_value(struct, size)`                         |`mock()` returns a pointer to an allocated copy of the struct that can be copied and returned by value from the mocked function
+|`will_return_double(value)`                                  |`mock()` returns `value`, for double floats (required because of C's type coercion rules which would otherwise convert a double into an int)
 |`will_set_contents_of_parameter(parameter_name, pointer_to_value, size)`|Writes 'size' bytes from the pointed out value into where the referenced out (pointer) parameter is pointing
 |`with_side_effect(pointer_to_function, pointer_to_data)`     |Executes the side effect function and passes data to it
 |===========================================================================================
 
 Note: The `pointer_to_data` passed to `with_side_effect` need to fit inside a `intptr_t`.
+
+Note: The memory allocated to the copy of the struct returned using a pointer in `will_return_by_value` need to be deallocated by the caller of `mock()` or it will be lost. See example code below.
 
 You can combine these in various ways:
 
@@ -1631,6 +1635,20 @@ And the mock function will then look like this:
 -----------------------
 Box retrieve_box() {
    return *(Box *)mock();
+}
+-----------------------
+
+But this would cause a memory leak.
+The area allocated for the struct, and that is pointed to by the pointer returned by `mock()`, need to be deallocated.
+Here's a better, although a bit more complicated, version:
+
+[source,c]
+-----------------------
+Box retrieve_box() {
+    Box *box_p = (Box *)mock(); /* Get the pointer */
+    Box the_box = *box_p;       /* Dereference to get a struct */
+    free(box_p);                /* Deallocate the returned area */
+    return the_box;             /* Finally we can return the struct by value */
 }
 -----------------------
 
