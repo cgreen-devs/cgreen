@@ -136,7 +136,8 @@ valgrind: build-it
 		LD_LIBRARY_PATH=build/src valgrind --leak-check=full build/tools/cgreen-runner $$lib >> valgrind.log 2>&1 ; \
 	done
 	@echo
-	grep --with-filename --line-number " lost:" valgrind.log | grep -v " 0 bytes"
+	grep --with-filename --line-number " lost: " valgrind.log | grep -v " 0 bytes" ; \
+	if [ $$? -eq 1 ] ; then echo "Nothing lost" ; fi
 
 
 
