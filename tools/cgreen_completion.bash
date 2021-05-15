@@ -42,15 +42,16 @@ _discover_tests()
         # SUTs should now contain all SUTs present in the library
 
         for SUT in "${SUTs[@]}"; do
+            sut_tests=()
+            for spec in "${specs[@]}"; do
+                if [[ $spec == "$SUT"* ]] ; then
+                    sut_tests+=( $spec )
+                fi
+            done
             if test $SUT = "default" ; then
-                tests+=( ${test_names[@]} )
+                # Tests have no SUT in its name
+                tests+=( ${sut_tests[@]/default__/} )
             else
-                sut_tests=()
-                for spec in "${specs[@]}"; do
-                    if [[ $spec == "$SUT"* ]] ; then
-                        sut_tests+=( $spec )
-                    fi
-                done
                 tests+=( ${sut_tests[@]/__/:} )
             fi
         done
