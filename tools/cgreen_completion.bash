@@ -99,8 +99,7 @@ _cgreen_runner_completion()
         fi
     done
 
-    # Need to double the backslashes in the completion word for them to survive into matching
-    completion_word=${COMP_WORDS[$COMP_CWORD]/\\/\\\\}
+    completion_word=${COMP_WORDS[$COMP_CWORD]}
     COMPREPLY=($(compgen -W '$(printf "%s " ${options[@]} ${libraries[@]} ${tests[@]})' -- "$completion_word"))
 }
 
@@ -136,8 +135,7 @@ _cgreen_debug_completion()
         fi
     done
 
-    # Need to double the backslashes in the completion word for them to survive into matching
-    completion_word=${COMP_WORDS[$COMP_CWORD]/\\/\\\\}
+    completion_word=${COMP_WORDS[$COMP_CWORD]}
     COMPREPLY=($(compgen -W '$(printf "%s " ${options[@]} ${libraries[@]} ${tests[@]})' -- "$completion_word"))
 }
 
