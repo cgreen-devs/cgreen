@@ -1496,6 +1496,8 @@ That call must have the string `"a"` for the `paragraph` parameter.
 If the actual value of that parameter does not match, the mock function will issue a failure straight to the test suite.
 This is what saves us writing a lot of assertions.
 
+=== Mock Macros
+
 When specifying behavior of mocks there are three parts.
 First, how often the specified behaviour or expectation will be executed:
 
@@ -1551,17 +1553,19 @@ They all provide ways to return various types of values through `mock()`.
 In your mocked function you can then simply return that value, or manipulate it as necessary.
 
 |===========================================================================================
-|*Macro*                                                      |*Description*
-|`will_return(value)`                                         |`mock()` returns `value`, for integer types
-|`will_return_by_value(struct, size)`                         |`mock()` returns a pointer to an allocated copy of the struct that can be copied and returned by value from the mocked function
-|`will_return_double(value)`                                  |`mock()` returns `value`, for double floats (required because of C's type coercion rules which would otherwise convert a double into an int)
-|`will_set_contents_of_parameter(parameter_name, pointer_to_value, size)`|Writes 'size' bytes from the pointed out value into where the referenced out (pointer) parameter is pointing
-|`with_side_effect(pointer_to_function, pointer_to_data)`     |Executes the side effect function and passes data to it
+|*Macro*                                                      |*`mock()` will...*
+|`will_return(value)`                                         | return `value`, for integer types
+|`will_return_by_value(struct, size)`                         | return a pointer to an allocated copy of the `struct` that can be copied and returned by value from the mocked function
+|`will_return_double(value)`                                  | return `value` as a "boxed double", for double floats (required because of C's type coercion rules which would otherwise convert a double into an int)
+|`will_set_contents_of_parameter(parameter_name, pointer_to_value, size)`| write `size` bytes from the pointed out value (`pointer_to_value`) into where the referenced out parameter (`parameter_name`) is pointing
+|`with_side_effect(function, pointer_to_data)`                | call the side effect `function` and pass `pointer_to_data` to it
 |===========================================================================================
 
-Note: The `pointer_to_data` passed to `with_side_effect` need to fit inside a `intptr_t`.
-
 Note: The memory allocated to the copy of the struct returned using a pointer in `will_return_by_value` need to be deallocated by the caller of `mock()` or it will be lost. See example code below.
+
+Note: The "boxed double" returned by `mock()` if instructed with `will_return_double()` have to be "unboxed", see <<double_mocks>> for details.
+
+Note: The `pointer_to_data` passed to `with_side_effect` need to fit inside a `intptr_t`.
 
 You can combine these in various ways:
 
@@ -1887,7 +1891,7 @@ include::tutorial_src/double1.out[lines=2..5]
 
 
 [[double_mocks]]
-==== Mocks
+==== Double Mocks
 
 The general mechanism *Cgreen* uses to transport values to and from mock functions is based on the simple idea that most types fit into a "large" integer and can be type converted to and from whatever type you need.
 
