@@ -17,7 +17,7 @@ ifdef::env-github[]
 endif::[]
 
 = Cgreen : Unit Tests, Stubbing and Mocking for C and C++
-v{VERSION}
+v{VERSION} - Generated {localdate}
 
 
 == Cgreen Quickstart Guide
@@ -2950,8 +2950,6 @@ But as mentioned before, this is, at least at this point in time, incompatible w
 
 So, it's coverage __or__ POSIX-correct child exits and guaranteed output consistency.
 You can't have both...
-
-
 
 
 [appendix]
