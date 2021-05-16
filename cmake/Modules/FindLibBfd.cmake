@@ -46,13 +46,42 @@ find_library (LIBBFD_BFD_LIBRARY
     ENV LIBRARY_PATH
     ENV LD_LIBRARY_PATH)
 
-include (FindPackageHandleStandardArgs)
+find_library (LIBIBERTY_LIBRARY
+  NAMES
+    iberty
+  PATHS
+    /usr/lib
+    /usr/lib64
+    /usr/local/lib
+    /usr/local/lib64
+    /usr/include
+    /opt/local/lib
+    /opt/usr/lib64
+    ENV LIBRARY_PATH
+    ENV LD_LIBRARY_PATH)
 
+find_library (LIBZ_LIBRARY
+  NAMES
+    z
+  PATHS
+    /usr/lib
+    /usr/lib64
+    /usr/local/lib
+    /usr/local/lib64
+    /usr/include
+    /opt/local/lib
+    /opt/usr/lib64
+    ENV LIBRARY_PATH
+    ENV LD_LIBRARY_PATH)
+
+include (FindPackageHandleStandardArgs)
 
 # handle the QUIETLY and REQUIRED arguments and set LIBBFD_FOUND to TRUE if all listed variables are TRUE
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(LibBfd DEFAULT_MSG
   LIBBFD_BFD_LIBRARY
-  LIBBFD_INCLUDE_DIRS)
+  LIBBFD_INCLUDE_DIRS
+  LIBIBERTY_LIBRARY
+  LIBZ_LIBRARY)
 
-set(LIBBFD_LIBRARIES "${LIBBFD_BFD_LIBRARY}")
-mark_as_advanced(LIBBFD_INCLUDE_DIRS LIBBFD_LIBRARIES LIBBFD_BFD_LIBRARY)
+set(LIBBFD_LIBRARIES "${LIBBFD_BFD_LIBRARY}" "${LIBIBERTY_LIBRARY}" "${LIBZ_LIBRARY}")
+mark_as_advanced(LIBBFD_INCLUDE_DIRS LIBBFD_LIBRARIES LIBBFD_BFD_LIBRARY LIBIBERTY_LIBRARY LIBZ_LIBRARY)

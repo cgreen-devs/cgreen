@@ -17,8 +17,8 @@ ifndef VERBOSE
 MAKEFLAGS += --no-print-directory
 endif
 
-all: build/Makefile
-	cd build; make
+.PHONY:all
+all: build-it
 
 .PHONY:debug
 debug: build
@@ -90,30 +90,33 @@ DIFF_TOOL_ARGUMENTS = $(1)_tests \
 	../../tests \
 	$(1)_tests.expected
 
+.PHONY: unit
 unit: build-it
-	cd build ; \
-	$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_cpp_tests$(SUFFIX)` ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
-	r=$$((r + $$?)) ; \
-	cd tests ; \
-	$(LDPATH) $(XML_DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,xml_output) ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,assertion_messages) ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,mock_messages) ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,constraint_messages) ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,custom_constraint_messages) ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,ignore_messages) ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) CGREEN_PER_TEST_TIMEOUT=1 $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,failure_messages) ; \
-	r=$$((r + $$?)) ; \
-	exit $$r
+	if [ -f ../build/tools/cgreen-runner ]; then \
+		cd build ; \
+		$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_cpp_tests$(SUFFIX)` ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
+		r=$$((r + $$?)) ; \
+		cd tests ; \
+		$(LDPATH) $(XML_DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,xml_output) ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,assertion_messages) ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,mock_messages) ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,constraint_messages) ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,custom_constraint_messages) ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,ignore_messages) ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) CGREEN_PER_TEST_TIMEOUT=1 $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,failure_messages) ; \
+		r=$$((r + $$?)) ; \
+		exit $$r; \
+	fi
 
 .PHONY: doc
 doc: build
@@ -142,14 +145,14 @@ valgrind: build-it
 
 
 ############# Internal
-
+.PHONY:build-it
 build-it: build/Makefile
-	make -C build
+	$(MAKE) -C build
 
 build:
-	mkdir build
+	mkdir -p build
 
-build/Makefile: build
+build/Makefile: | build
 	cd build; cmake ..
 
 .SILENT:
