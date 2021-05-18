@@ -365,6 +365,19 @@ Ensure(Mocks, can_stub_an_out_parameter) {
     assert_that(&local, is_equal_to_contents_of(&actual, sizeof(LargerThanIntptr)));
 }
 
+static void mocked_read(char *ch) {
+    mock(ch);
+}
+
+Ensure(Mocks, can_stub_a_char_out_parameter) {
+    char stubbed_char = 'a';
+    char returned_char;
+    expect(mocked_read,
+           will_set_contents_of_parameter(ch, &stubbed_char, 1));
+    mocked_read(&returned_char);
+    assert_that(returned_char, is_equal_to(stubbed_char));
+}
+
 // function which when mocked will be referred to by preprocessor macro
 static void function_macro_mock(void) {
     mock();
