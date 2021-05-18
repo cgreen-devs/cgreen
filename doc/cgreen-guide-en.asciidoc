@@ -1561,11 +1561,11 @@ In your mocked function you can then simply return that value, or manipulate it 
 |`with_side_effect(function, pointer_to_data)`                | call the side effect `function` and pass `pointer_to_data` to it
 |===========================================================================================
 
-Note: The memory allocated to the copy of the struct returned using a pointer in `will_return_by_value` need to be deallocated by the caller of `mock()` or it will be lost. See example code below.
+NOTE: The memory allocated to the copy of the struct returned using a pointer in `will_return_by_value` need to be deallocated by the caller of `mock()` or it will be lost. See example code below.
 
-Note: The "boxed double" returned by `mock()` if instructed with `will_return_double()` have to be "unboxed", see <<double_mocks>> for details.
+NOTE: The "boxed double" returned by `mock()` if instructed with `will_return_double()` have to be "unboxed", see <<double_mocks>> for details.
 
-Note: The `pointer_to_data` passed to `with_side_effect` need to fit inside a `intptr_t`.
+NOTE: The `pointer_to_data` passed to `with_side_effect` need to fit inside an `intptr_t`.
 
 You can combine these in various ways:
 
@@ -1927,7 +1927,11 @@ Ensure(Readline, can_read_some_characters) {
    ...
 -----------------------------
 
+<<<<<<< HEAD
 Ok, so then it must exist. But the problem then becomes the three consequtive calls to `expect_char().
+=======
+Ok, so then it must exist. But the problem then becomes the three consequtive calls to `expect_char()`.
+>>>>>>> [doc][tips] Document common problem when refactoring tests with expect()
 
 [source,c]
 -----------------------------
@@ -1978,7 +1982,6 @@ So we don't have to make the local character variables in the test local, becaus
 And this is the moral here, you cannot use local variables in an extracted function as data for a mocked function call.
 
 CAUTION: Variables that are to be sent to a mocked function MUST be live at the call to that mocked function.
-
 
 
 == Special Cases
