@@ -106,6 +106,7 @@ _cgreen_runner_completion()
 _cgreen_debug_completion()
 {
     local libraries tests
+    options=("--debugger")
     libraries=()
     tests=()
 
@@ -132,6 +133,9 @@ _cgreen_debug_completion()
                 # Only one test allowed
                 tests=()
             fi
+        fi
+        if [[ "$word" != "${COMP_WORDS[0]}" ]] ; then
+            _removeFromOptions $word
         fi
     done
 
