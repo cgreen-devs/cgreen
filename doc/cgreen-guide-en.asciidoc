@@ -1829,6 +1829,157 @@ I.e. write functions that replaces the real functions and instead calls `mock()`
 TIP: You can try the `cgreen-mocker` for this, as described in <<cgreen-mocker>>.
 
 
+=== Refactoring Tests with Mocks - CAUTION!
+
+After a while you are bound to get tests with calls to `expect()`.
+You might even have common patterns in multiple tests.
+So your urge to refactor starts to set in.
+And that is good, go with it, we have tests to rely on.
+
+But there are a lot of things going on behind the scenes, often with the help of some serious macro-magic, so special care needs to be taken when refactoring tests that have `expect()` in them.
+
+For example, consider this code
+
+[source,c]
+-----------------------------
+Ensure(Readline, can_read_some_characters) {
+    char canned_a = 'a';
+    char canned_b = 'b';
+    char canned_c = 'c';
+
+    expect(mocked_read,
+           will_set_contents_of_parameter(buf, &canned_a, sizeof(char)),
+           will_return(1));
+    expect(mocked_read,
+           will_set_contents_of_parameter(buf, &canned_b, sizeof(char)),
+           will_return(1));
+    expect(mocked_read,
+           will_set_contents_of_parameter(buf, &canned_c, sizeof(char)),
+           will_return(1));
+
+    ...
+    <call something that calls mocked_read()>
+    ...
+-----------------------------
+
+It is very tempting to break out the common expect:
+
+[source,c]
+-----------------------------
+static void expect_char(char ch) {
+    expect(mocked_read,
+        will_set_contents_of_parameter(buf, &ch, sizeof(char)),
+        will_return(1));
+}
+
+Ensure(Readline, can_read_some_characters) {
+    char canned_a = 'a';
+    char canned_b = 'b';
+    char canned_c = 'c';
+
+    expect_char(canned_a);
+    expect_char(canned_b);
+    expect_char(canned_c);
+
+    ...
+    <call something that calls mocked_read()>
+    ...
+-----------------------------
+
+Much nicer, right?
+
+This will most likely lead to a segmentation fault or illegal memory reference, something that can be really tricky to track down.
+The problem is that when `mocked_read()` is actually called, as an effect of calling something that calls `mocked_read()`, the parameter `ch` to the nicely extracted `expect_char()` does not exist anymore.
+
+Good thing that you run the tests after each and every little refactoring, right?
+Because then you know that it was the extraction you just did that was the cause.
+Then you can come here and read up on what the problem might be and what to do about it.
+
+At first glance the fix might look easy:
+
+[source,c]
+-----------------------------
+static void expect_char(char ch) {
+    char saved_ch = ch;
+    expect(mocked_read,
+        will_set_contents_of_parameter(buf, &saved_ch, sizeof(char)),
+        will_return(1));
+}
+
+Ensure(Readline, can_read_some_characters) {
+   ...
+-----------------------------
+
+Close! But the local variable is also gone at the call to `mocked_read(). Of course.
+
+Ok, so let's make it static:
+
+[source,c]
+-----------------------------
+static void expect_char(char ch) {
+    static char saved_ch = ch;
+    expect(mocked_read,
+        will_set_contents_of_parameter(buf, &saved_ch, sizeof(char)),
+        will_return(1));
+}
+
+Ensure(Readline, can_read_some_characters) {
+   ...
+-----------------------------
+
+Ok, so then it must exist. But the problem then becomes the three consequtive calls to `expect_char().
+
+[source,c]
+-----------------------------
+Ensure(Readline, can_read_some_characters) {
+    char canned_a = 'a';
+    char canned_b = 'b';
+    char canned_c = 'c';
+
+    expect_char(canned_a);
+    expect_char(canned_b);
+    expect_char(canned_c);
+
+    ...
+    <call something that calls mocked_read()>
+    ...
+-----------------------------
+
+Each of those have a different actual parameter, which is hard to store in one variable.
+Even if it is static.
+
+The solution is now quite obvious:
+
+[source,c]
+-----------------------------
+static void expect_char(char *ch_p) {
+    expect(mocked_read,
+        will_set_contents_of_parameter(buf, ch_p, sizeof(char)),
+        will_return(1));
+}
+
+Ensure(Readline, can_read_some_characters) {
+    char canned_a = 'a';
+    char canned_b = 'b';
+    char canned_c = 'c';
+
+    expect_char(&canned_a);
+    expect_char(&canned_b);
+    expect_char(&canned_c);
+
+    ...
+    <call something that calls mocked_read()>
+    ...
+-----------------------------
+
+By using pointers to the variables in the test we can ensure that the values are live when the expected call is made.
+So we don't have to make the local character variables in the test local, because those will remain live long enough.
+
+And this is the moral here, you cannot use local variables in an extracted function as data for a mocked function call.
+
+CAUTION: Variables that are to be sent to a mocked function MUST be live at the call to that mocked function.
+
+
 
 == Special Cases
 
