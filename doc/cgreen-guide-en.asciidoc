@@ -1561,13 +1561,14 @@ In your mocked function you can then simply return that value, or manipulate it 
 |`with_side_effect(function, pointer_to_data)`                | call the side effect `function` and pass `pointer_to_data` to it
 |===========================================================================================
 
-NOTE: The memory allocated to the copy of the struct returned using a pointer in `will_return_by_value` need to be deallocated by the caller of `mock()` or it will be lost. See example code below.
+NOTE: The "boxed double" returned by `mock()` if instructed with `will_return_double()` have to be "unboxed", by the caller see <<double_mocks>> for details.
 
-NOTE: The "boxed double" returned by `mock()` if instructed with `will_return_double()` have to be "unboxed", see <<double_mocks>> for details.
+NOTE: The memory allocated to the copy of the struct returned using a pointer in `will_return_by_value` need to be deallocated by the caller of `mock()` or it will be lost. You can do this with the code in the `Box` example below.
 
-NOTE: The `pointer_to_data` passed to `with_side_effect` need to fit inside an `intptr_t`.
 
-You can combine these in various ways:
+=== Combining expectations
+
+You can combine the expectations for a `mock()` in various ways:
 
 [source,c]
 -----------------------
