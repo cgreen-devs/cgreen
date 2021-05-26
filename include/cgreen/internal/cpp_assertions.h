@@ -2,6 +2,7 @@
 #define INTERNAL_CPP_ASSERTIONS_HEADER
 
 #include <cgreen/constraint.h>
+#include <cgreen/filename.h>
 #include <stdint.h>
 #include <string>
 #include <typeinfo>
@@ -10,7 +11,7 @@
 
 namespace cgreen {
 
-#define assert_that_constraint(actual, constraint) assert_that_(__FILE__, __LINE__, STRINGIFY_TOKEN(actual), actual, constraint)
+#define assert_that_constraint(actual, constraint) assert_that_(FILENAME, __LINE__, STRINGIFY_TOKEN(actual), actual, constraint)
 
     void assert_that_(const char *file, int line, const char *actual_string, const std::string& actual, Constraint *constraint);
     void assert_that_(const char *file, int line, const char *actual_string, const std::string *actual, Constraint *constraint);

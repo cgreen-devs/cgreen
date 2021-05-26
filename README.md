@@ -24,13 +24,13 @@ And you want output like this
 Then *Cgreen* is the thing for you!
 
 **TLDR;** The full tutorial is on
-[github.io](https://cgreen-devs.github.io).  Or have a look at the
-[cheat sheet](doc/cheat-sheet.md).
+[github.io](https://cgreen-devs.github.io).
+Or have a look at the [cheat sheet](doc/cheat-sheet.md).
 
 ## What It Is
 
-Cgreen is a modern unit test and mocking framework for C and C++. Here
-are some of Cgreens unique selling points:
+Cgreen is a modern unit test and mocking framework for C and C++.
+Here are some of Cgreens unique selling points:
 
   - fast build, clean code, highly portable
   - auto-discovery of tests without the abuse of static initializers or globals
@@ -51,24 +51,21 @@ are some of Cgreens unique selling points:
 
 ## Getting It
 
-Cgreen is hosted on GitHub. As of now there are no pre-built packages
-to download, so you have to clone the repository or download the
-source zip from [GitHub](http://www.github.com/cgreen-devs/cgreen) and
-build it yourself.
+Cgreen is hosted on [GitHub](https://github.com/cgreen-devs/cgreen).
+As of now there are no pre-built packages to download, but Cgreen is available in [Debian, Fedora and some other package repositories](https://repology.org/project/cgreen/versions), although some are lagging.
 
-We are hoping to get Cgreen into Debian and Fedora repositories, but in
-the mean time there are some packaging scripts available, not all official:
+There are also some other packaging scripts available, not all official:
 
-  - [debian packaging is ongoing in #208](https://github.com/cgreen-devs/cgreen/issues/208)
-  - [fedora/rpm packaging is part of cgreens source tree](https://github.com/cgreen-devs/cgreen/tree/master/contrib/rpm) and actual Fedora repo work is ongoing in [#225](https://github.com/cgreen-devs/cgreen/issues/225)
   - [PACMAN script](https://github.com/voins/cgreen-pkg)
   - [MacOS packagesbuild](https://github.com/cgreen-devs/cgreen-macosx-packaging)
   - [Cygwin package script](https://github.com/cgreen-devs/cgreen-cygport)
 
+You can also clone the repository or download the source zip from [GitHub](http://www.github.com/cgreen-devs/cgreen) and build it yourself.
+
 ## Building It
 
-You need the [CMake](http://www.cmake.org) build system. Most standard
-C/C++ compilers should work. GCC definitely does.
+You need the [CMake](http://www.cmake.org) build system.
+Most standard C/C++ compilers should work. GCC definitely does.
 
 In the root directory run ``make``. That will configure and build the
 library and the `cgreen-runner`, both supporting both C and C++. See

@@ -3,6 +3,16 @@
 </testsuite>
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 	<testsuite name="xml_output_tests-default">
+		<testcase classname="xml_output_tests/default" name="error_message_gets_escaped_by_xml_reporter" time="0.00000">
+			<failure message="Expected [test_string] to [contain string] [expected_string]
+		actual value:			[&quot;&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot; ?&gt;
+&lt;example name=&quot;arbitrary xml content&quot;&gt;
+    &lt;content&gt;I&apos;m the content &amp; have chars which have to be escaped, if put in outer XML.&lt;/content&gt;
+&lt;/example&gt;&quot;]
+		expected to contain:		[&quot;I&apos;m not to be found!&quot;]">
+				<location file="xml_output_tests.c" line="0"/>
+			</failure>
+		</testcase>
 		<testcase classname="xml_output_tests/default" name="failing_test_is_listed_by_xml_reporter" time="0.00000">
 			<failure message="Expected [0] to [be true]">
 				<location file="xml_output_tests.c" line="0"/>

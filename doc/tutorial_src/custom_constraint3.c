@@ -40,7 +40,7 @@ Constraint *create_piece_fit_in_box_constraint(intptr_t expected_value, const ch
 
     constraint->expected_value = make_cgreen_pointer_value((void*)expected_value);
     constraint->expected_value_name = string_dup(expected_value_name);
-    constraint->type = CONTENT_COMPARER;
+    constraint->type = CGREEN_CONTENT_COMPARER_CONSTRAINT;
 
     constraint->compare = &compare_piece_and_box_size;
     constraint->execute = &test_fit_piece;

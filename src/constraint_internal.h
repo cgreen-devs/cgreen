@@ -11,6 +11,7 @@ extern void destroy_empty_constraint(Constraint *constraint);
 extern void destroy_static_constraint(Constraint *constraint);
 extern void destroy_string_constraint(Constraint *constraint);
 extern void destroy_double_constraint(Constraint *constraint);
+extern void destroy_by_value_constraint(Constraint *constraint);
 extern void destroy_constraint(Constraint *);
 extern void destroy_constraints(va_list constraints);
 

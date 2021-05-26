@@ -13,6 +13,10 @@
 # That should build Cgreen in the build directory, run some tests,
 # install it locally and generate a distributable package.
 
+ifndef VERBOSE
+MAKEFLAGS += --no-print-directory
+endif
+
 all: build/Makefile
 	cd build; make
 
@@ -66,14 +70,19 @@ else ifeq ($(OS),Cygwin)
 	PREFIX=cyg
 	SUFFIX=.dll
 else ifeq ($(OS),Msys)
+# This is for Msys "proper"
+# TODO: handle Msys/Mingw32/64
 	LDPATH=PATH=$(PWD)/build/src:"$$PATH"
-	PREFIX=lib
+	PREFIX=msys-
 	SUFFIX=.dll
 else
 	LDPATH=LD_LIBRARY_PATH=$(PWD)/build/src
 	PREFIX=lib
 	SUFFIX=.so
 endif
+
+# TODO: the diff_tools scripts determine prefix and extension by themselves
+# Would be better if those were arguments, since we do it here anyway
 
 DIFF_TOOL=../../tools/cgreen_runner_output_diff
 XML_DIFF_TOOL=../../tools/cgreen_xml_output_diff
@@ -82,7 +91,6 @@ DIFF_TOOL_ARGUMENTS = $(1)_tests \
 	$(1)_tests.expected
 
 unit: build-it
-	SOURCEDIR=$$PWD/tests/ ; \
 	cd build ; \
 	$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
 	r=$$((r + $$?)) ; \
@@ -120,12 +128,16 @@ chunked: doc
 
 .PHONY:valgrind
 valgrind: build-it
-	> valgrind.log
-	for lib in `ls build/tests/$(PREFIX)*_tests$(SUFFIX)` ; \
+	@echo -n "Running all tests under Valgrind "
+	@> valgrind.log
+	@for lib in `ls build/tests/$(PREFIX)*_tests$(SUFFIX)` ; \
 	do \
+		echo -n "." ; \
 		LD_LIBRARY_PATH=build/src valgrind --leak-check=full build/tools/cgreen-runner $$lib >> valgrind.log 2>&1 ; \
 	done
-	grep " lost:" valgrind.log | grep -v " 0 bytes" | wc -l
+	@echo
+	grep --with-filename --line-number " lost: " valgrind.log | grep -v " 0 bytes" ; \
+	if [ $$? -eq 1 ] ; then echo "Nothing lost" ; fi
 
 
 
@@ -138,11 +150,6 @@ build:
 	mkdir build
 
 build/Makefile: build
-ifeq ($(OS),Msys)
-	# Thanks to https://stackoverflow.com/a/46027426/204658
-	cd build; cmake -G"MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=/usr/local ..
-else
 	cd build; cmake ..
-endif
 
 .SILENT:

@@ -10,6 +10,7 @@ set(cgreen_HDRS
   cpp_assertions.h
   cpp_constraint.h
   cute_reporter.h
+  filename.h
   legacy.h
   mocks.h
   string_comparison.h

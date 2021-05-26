@@ -1,5 +1,5 @@
 # Required cmake version
-cmake_minimum_required(VERSION 2.8.5)
+cmake_minimum_required(VERSION 2.8.12)
 
 project(cgreen)
 
@@ -16,7 +16,7 @@ enable_testing()
 # global needed variables
 set(APPLICATION_NAME ${PROJECT_NAME})
 set(APPLICATION_VERSION_MAJOR "1")
-set(APPLICATION_VERSION_MINOR "3")
+set(APPLICATION_VERSION_MINOR "4")
 set(APPLICATION_VERSION_PATCH "0")
 
 set(APPLICATION_VERSION ${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}.${APPLICATION_VERSION_PATCH}${APPLICATION_VERSION_STATUS})
@@ -32,6 +32,14 @@ if(MSVC)
   set(CMAKE_INSTALL_BINDIR ".")
   set(CMAKE_INSTALL_LIBDIR ".")
 endif(MSVC)
+
+set(BASHCOMPLETION_STATUS "Unavailable")
+find_package(bash-completion QUIET)
+if(BASH_COMPLETION_FOUND OR UNIX)
+  set(BASHCOMPLETION_STATUS "Available")
+  install(FILES tools/cgreen_completion.bash DESTINATION "${CMAKE_INSTALL_DATADIR}/bash-completion/completions" RENAME "cgreen-runner")
+  install(FILES tools/cgreen_completion.bash DESTINATION "${CMAKE_INSTALL_DATADIR}/bash-completion/completions" RENAME  "cgreen-debug")
+endif()
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH
