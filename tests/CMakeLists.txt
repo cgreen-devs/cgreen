@@ -62,6 +62,8 @@ set(CGREEN_C_TESTS_LIBRARY
 
 add_library(${CGREEN_C_TESTS_LIBRARY} SHARED ${c_tests_library_SRCS})
 target_link_libraries(${CGREEN_C_TESTS_LIBRARY} ${CGREEN_LIBRARY})
+macro_add_valgrind_test(${CGREEN_C_TESTS_LIBRARY})
+
 
 set(c_tests_SRCS
   all_c_tests.c
@@ -102,6 +104,8 @@ set(CGREEN_CPP_TESTS_LIBRARY
 )
 add_library(${CGREEN_CPP_TESTS_LIBRARY} SHARED ${cpp_tests_library_SRCS})
 target_link_libraries(${CGREEN_CPP_TESTS_LIBRARY} ${CGREEN_LIBRARY} ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
+macro_add_valgrind_test(${CGREEN_CPP_TESTS_LIBRARY})
+
 
 set(cpp_tests_SRCS
   all_cpp_tests.cpp
@@ -148,6 +152,7 @@ if(LibBfd_FOUND)
     )
     add_library(${${case}_tests_library} SHARED ${${case}_tests_SRCS})
     target_link_libraries(${${case}_tests_library} ${CGREEN_LIBRARY})
+    macro_add_valgrind_test(${${case}_tests_library})
   endforeach(case)
 
 
@@ -157,36 +162,43 @@ if(LibBfd_FOUND)
   set(constraint_messages_library_SRCS constraint_messages_tests.c)
   add_library(${constraint_messages_library} SHARED ${constraint_messages_library_SRCS})
   target_link_libraries(${constraint_messages_library} ${CGREEN_LIBRARY})
+  macro_add_valgrind_test(${constraint_messages_library})
 
   set(custom_constraint_messages_library custom_constraint_messages_tests)
   set(custom_constraint_messages_library_SRCS custom_constraint_messages_tests.c)
   add_library(${custom_constraint_messages_library} SHARED ${custom_constraint_messages_library_SRCS})
   target_link_libraries(${custom_constraint_messages_library} ${CGREEN_LIBRARY})
+  macro_add_valgrind_test(${custom_constraint_messages_library})
 
   set(mock_messages_library mock_messages_tests)
   set(mock_messages_library_SRCS mock_messages_tests.c)
   add_library(${mock_messages_library} SHARED ${mock_messages_library_SRCS})
   target_link_libraries(${mock_messages_library} ${CGREEN_LIBRARY})
+  macro_add_valgrind_test(${mock_messages_library})
 
   set(failure_messages_library failure_messages_tests)
   set(failure_messages_library_SRCS failure_messages_tests.c)
   add_library(${failure_messages_library} SHARED ${failure_messages_library_SRCS})
   target_link_libraries(${failure_messages_library} ${CGREEN_LIBRARY})
+  macro_add_valgrind_test(${failure_messages_library})
 
   set(assertion_messages_library assertion_messages_tests)
   set(assertion_messages_library_SRCS assertion_messages_tests.c)
   add_library(${assertion_messages_library} SHARED ${assertion_messages_library_SRCS})
   target_link_libraries(${assertion_messages_library} ${CGREEN_LIBRARY})
+  macro_add_valgrind_test(${assertion_messages_library})
 
   set(ignore_messages_library ignore_messages_tests)
   set(ignore_messages_library_SRCS ignore_messages_tests.c)
   add_library(${ignore_messages_library} SHARED ${ignore_messages_library_SRCS})
   target_link_libraries(${ignore_messages_library} ${CGREEN_LIBRARY})
+  macro_add_valgrind_test(${ignore_messages_library})
 
   set(xml_output_library xml_output_tests)
   set(xml_output_library_SRCS xml_output_tests.c)
   add_library(${xml_output_library} SHARED ${xml_output_library_SRCS})
   target_link_libraries(${xml_output_library} ${CGREEN_LIBRARY})
+  macro_add_valgrind_test(${xml_output_library})
 
   set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
 

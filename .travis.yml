@@ -16,6 +16,7 @@ addons:
     - lcov
     - g++
     - binutils-dev
+    - valgrind
 
 before_install:
   - if [[ $CC == gcc ]] ; then export CXX=g++ ; else export CXX=clang++ ; fi
