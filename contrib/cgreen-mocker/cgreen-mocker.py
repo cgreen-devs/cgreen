@@ -41,8 +41,10 @@ from __future__ import print_function
 from pycparser.plyparser import ParseError
 from pycparser import c_parser, c_ast, parse_file, c_generator
 from functools import reduce
+from packaging import version
 import sys
 import os
+import pycparser
 
 # This is not required if you've installed pycparser into
 # your site-packages/ with setup.py
@@ -98,7 +100,9 @@ class FuncDefVisitor(c_ast.NodeVisitor):
             print("  return %s(" %
                   ("*" if self.is_return_struct_by_value(node) else ""), end="")
             print(generator.visit(node.type), end="")
-            if isinstance(node.type, c_ast.PtrDecl) or self.is_return_struct_by_value(node):
+            if version.parse(pycparser.__version__) <= version.parse('2.19') \
+                and isinstance(node.type, c_ast.PtrDecl) \
+                or self.is_return_struct_by_value(node):
                 print(" *", end="")
             print(") ", end="")
         else:
