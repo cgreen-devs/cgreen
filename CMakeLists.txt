@@ -91,6 +91,7 @@ endif(UNIX OR MSYS)
 if (CGREEN_WITH_UNIT_TESTS)
   include(MacroAddUnitTest)
   include(MacroAddTest)
+  include(MacroAddValgrindTest)
   add_subdirectory(tests)
   if (UNIX OR MSYS)
     # reflective runner only supported on UNIX/binutils platforms

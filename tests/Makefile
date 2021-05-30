@@ -40,6 +40,8 @@ TEST_LIBRARIES = $(patsubst %.c,lib%.so, $(TEST_SOURCES))
 
 all: $(TEST_LIBRARIES)
 	cd ..; make --no-print-directory
-	$(LOAD_PATH) ../build/tools/cgreen-runner -s unittests $?
+	if [ -f ../build/tools/cgreen-runner ]; then \
+		$(LOAD_PATH) ../build/tools/cgreen-runner -s unittests $?; \
+	fi
 
 lib%_tests.so : %_tests.o ; $(CC) -shared -o $@ $^ -L$(LIBRARY_PATH) -lcgreen
