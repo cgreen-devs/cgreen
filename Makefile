@@ -150,6 +150,10 @@ build:
 	mkdir build
 
 build/Makefile: build
+ifeq ($(OS),Darwin)
+	cd build; cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" ..
+else
 	cd build; cmake ..
+endif
 
 .SILENT:
