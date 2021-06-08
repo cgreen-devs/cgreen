@@ -18,34 +18,34 @@ MAKEFLAGS += --no-print-directory
 endif
 
 all: build/Makefile
-	cd build; make
+	cd build; $(MAKE)
 
 .PHONY:debug
 debug: build
-	cd build; cmake -DCMAKE_BUILD_TYPE:string=Debug ..; make
+	cd build; cmake -DCMAKE_BUILD_TYPE:string=Debug ..; $(MAKE)
 
 32bit: build
-	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" ..; make
+	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" ..; $(MAKE)
 
 .PHONY:test
-test: build/Makefile
-	cd build; make check
+test: build-it
+	cd build; $(MAKE) check
 
 .PHONY:clean
 clean: build/Makefile
-	cd build; make clean
+	cd build; $(MAKE) clean
 
 .PHONY:package
 package: build/Makefile
-	cd build; make package
+	cd build; $(MAKE) package
 
 .PHONY:install
 install: build
 ifeq ($(OS),Msys)
   # Thanks to https://stackoverflow.com/a/46027426/204658
-  cd build; make install DESTDIR=/
+  cd build; $(MAKE) install DESTDIR=/
 else
-	cd build; make install
+	cd build; $(MAKE) install
 endif
 
 # This is kind of a hack to get a quicker and clearer feedback when
