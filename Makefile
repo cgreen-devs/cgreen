@@ -117,10 +117,10 @@ unit: build-it
 
 .PHONY: doc
 doc: build
-	cd build; cmake -DCGREEN_WITH_HTML_DOCS:bool=TRUE ..; make; cmake -DCGREEN_WITH_HTML_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.html
+	cd build; cmake -DCGREEN_WITH_HTML_DOCS:bool=TRUE ..; $(MAKE); cmake -DCGREEN_WITH_HTML_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.html
 
 pdf: build
-	cd build; cmake -DCGREEN_WITH_PDF_DOCS:bool=TRUE ..; make; cmake -DCGREEN_WITH_PDF_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.pdf
+	cd build; cmake -DCGREEN_WITH_PDF_DOCS:bool=TRUE ..; $(MAKE); cmake -DCGREEN_WITH_PDF_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.pdf
 
 chunked: doc
 	asciidoctor-chunker build/doc/cgreen-guide-en.html -o docs
@@ -143,8 +143,9 @@ valgrind: build-it
 
 ############# Internal
 
+.PHONY: build-it
 build-it: build/Makefile
-	make -C build
+	$(MAKE) -C build
 
 build:
 	mkdir build
