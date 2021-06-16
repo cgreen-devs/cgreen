@@ -235,7 +235,8 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
             continue;
         }
 
-        if (!is_parameter(constraint)) continue;
+        if (!is_parameter(constraint))
+            continue;
 
         if (!constraint_is_for_parameter_in(constraint, parameters)) {
             // if expectation parameter name isn't in parameter_names,
@@ -326,9 +327,10 @@ static void apply_side_effect(TestReporter *test_reporter,
                     expectation->test_line,
                     test_reporter);
 }
-static
-bool
-is_side_effect_constraint(const Constraint *constraint) { return constraint->type == CGREEN_CALL_CONSTRAINT; }
+
+static bool is_side_effect_constraint(const Constraint *constraint) {
+    return constraint->type == CGREEN_CALL_CONSTRAINT;
+}
 
 static CgreenVector *create_vector_of_actuals(va_list actuals, int count) {
     int i;
@@ -844,11 +846,14 @@ static void apply_any_read_only_parameter_constraints(RecordedExpectation *expec
     for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
-        if (constraint_is_not_for_parameter(constraint, parameter)) {
+        if (is_content_setting(constraint)) {
             continue;
         }
 
-        if (constraint->type == CGREEN_CONTENT_SETTER_CONSTRAINT) {
+        /* TODO: we need to classify constraints better, now this
+           filters on COMPARING to not execute RETURN constraints
+           here...*/
+        if (constraint_is_not_for_parameter(constraint, parameter)) {
             continue;
         }
 

@@ -80,12 +80,13 @@ static bool compare_want_greater_double(Constraint *constraint, CgreenValue actu
 
 static void set_contents(Constraint *constraint, const char *function, CgreenValue actual,
                          const char *test_file, int test_line, TestReporter *reporter);
+static void execute_sideeffect(Constraint *constraint, const char *function, CgreenValue actual,
+                               const char *test_file, int test_line, TestReporter *reporter);
+static void capture_parameter(Constraint *constraint, const char *function, CgreenValue actual,
+                              const char *test_file, int test_line, TestReporter *reporter);
 
 static const char *default_actual_value_message = "\n\t\tactual value:\t\t\t[%" PRIdPTR "]";
 static const char *default_expected_value_message = "\t\texpected value:\t\t\t[%" PRIdPTR "]";
-
-static void execute_sideeffect(Constraint *constraint, const char *function, CgreenValue actual,
-                               const char *test_file, int test_line, TestReporter *reporter);
 
 Constraint *create_constraint(void) {
     Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));
@@ -144,6 +145,7 @@ bool constraint_is_for_parameter(const Constraint *constraint, const char *param
 }
 
 bool constraint_is_not_for_parameter(const Constraint *constraint, const char *parameter) {
+    /* TODO: This should not test for types of constraints... Or it actually checks for something else ... */
     if (is_not_comparing(constraint) && is_not_content_setting(constraint)) {
         return true;
     }
@@ -510,6 +512,20 @@ Constraint *create_with_side_effect_constraint(void (*callback)(void *), void *d
     return constraint;
 }
 
+Constraint *create_capture_parameter_constraint(const char *parameter_name, void *capture_to, size_t size_to_capture) {
+    Constraint* constraint = create_constraint();
+    constraint->type = CGREEN_CAPTURE_PARAMETER_CONSTRAINT;
+
+    constraint->compare = &compare_true;
+    constraint->execute = &capture_parameter;
+    constraint->name = "capture parameter";
+    constraint->expected_value = make_cgreen_pointer_value(capture_to);
+    constraint->size_of_expected_value = size_to_capture;
+    constraint->parameter_name = parameter_name;
+
+    return constraint;
+}
+
 bool compare_want_value(Constraint *constraint, CgreenValue actual) {
     return constraint->expected_value.value.integer_value == actual.value.integer_value;
 }
@@ -555,7 +571,6 @@ static void set_contents(Constraint *constraint, const char *function, CgreenVal
     /* TODO: should propagate the whole actual */
     if (parameters_are_not_valid_for(constraint, actual.value.integer_value)) {
         message = validation_failure_message_for(constraint, actual.value.integer_value);
-
         (*reporter->assert_true)(
                 reporter,
                 test_file,
@@ -576,7 +591,6 @@ static void execute_sideeffect(Constraint *constraint, const char *function, Cgr
     (void)actual;
 
     if (constraint->side_effect_callback == NULL) {
-
         (*reporter->assert_true)(
             reporter,
             test_file,
@@ -585,6 +599,16 @@ static void execute_sideeffect(Constraint *constraint, const char *function, Cgr
             "no side effect function was set");
     }
     (constraint->side_effect_callback)(constraint->side_effect_data);
+}
+
+static void capture_parameter(Constraint *constraint, const char *function, CgreenValue actual,
+                              const char *test_file, int test_line, TestReporter *reporter) {
+    (void)function;
+    (void)test_file;
+    (void)test_line;
+    (void)reporter;
+
+    memmove(constraint->expected_value.value.pointer_value, &actual.value, constraint->size_of_expected_value);
 }
 
 
@@ -780,9 +804,10 @@ bool is_double_comparing(const Constraint *constraint) {
 
 bool is_comparing(const Constraint *constraint) {
     return is_string_comparing(constraint) ||
-            is_content_comparing(constraint) ||
-            is_double_comparing(constraint) ||
-            constraint->type == CGREEN_VALUE_COMPARER_CONSTRAINT;
+        is_content_comparing(constraint) ||
+        is_double_comparing(constraint) ||
+        constraint->type == CGREEN_VALUE_COMPARER_CONSTRAINT ||
+        constraint->type == CGREEN_CAPTURE_PARAMETER_CONSTRAINT;
 }
 
 bool is_not_comparing(const Constraint *constraint) {
