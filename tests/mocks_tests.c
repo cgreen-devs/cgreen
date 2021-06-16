@@ -433,6 +433,18 @@ Ensure(Mocks, constraint_number_of_calls_order_of_expectations_matter) {
     simple_mocked_function(1, 2);
 }
 
+Ensure(Mocks, can_capture_parameter) {
+    int captured_first = 0;
+    int captured_second = 0;
+
+    expect(simple_mocked_function,
+           will_capture_parameter(first, captured_first),
+           will_capture_parameter(second, captured_second));
+    simple_mocked_function(1, 2);
+    assert_that(captured_first, is_equal_to(1));
+    assert_that(captured_second, is_equal_to(2));
+}
+
 static int changed_by_sideeffect = 1;
 static int mock_with_side_effect(void) {
     return (int)mock();
@@ -499,7 +511,6 @@ Ensure(Mocks, can_return_by_value_depending_on_input_parameter) {
     assert_that(retrievedStruct2.weight, is_equal_to(33));
     assert_that(retrievedStruct2.height, is_equal_to(5));
 }
-
 
 TestSuite *mock_tests(void) {
     TestSuite *suite = create_test_suite();
