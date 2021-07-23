@@ -8,7 +8,7 @@
 #endif // #ifdef __ANDROID__
 
 /* TODO: this should really be handle by CMake config... */
-#if defined(__FreeBSD__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__)
+#if defined(__FreeBSD__) || defined(__linux__) || defined(__APPLE__) || defined(__CYGWIN__) || defined(__OpenBSD__)
 #  include <sys/time.h>
 #  define HAVE_GETTIMEOFDAY 1
 #else
