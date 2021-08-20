@@ -165,8 +165,8 @@ char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
 }
 
 
-static bool is_not_equal_to_string_constraint(Constraint *constraint) {
-    return strstr(constraint->name, "not ") != NULL && strstr(constraint->name, "equal ") != NULL;
+static bool is_equal_to_string_constraint(Constraint *constraint) {
+    return strstr(constraint->name, "not ") == NULL || strstr(constraint->name, "equal ") == NULL;
 }
 
 
@@ -235,7 +235,7 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
         snprintf(message + strlen(message), message_size - strlen(message) - 1,
                  actual_value_string_format,
                  (const char *)actual_value);
-        if (!is_not_equal_to_string_constraint(constraint)) {
+        if (is_equal_to_string_constraint(constraint)) {
             strcat(message, "\n");
             snprintf(message + strlen(message), message_size - strlen(message) - 1,
                      constraint->expected_value_message,
