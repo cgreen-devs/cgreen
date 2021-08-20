@@ -170,11 +170,11 @@ static bool is_equal_to_string_constraint(Constraint *constraint) {
 }
 
 /* Formats for printing actual and expected values */
-static const char *actual_value_string_format = "\n\t\tactual value:\t\t\t[\"%s\"]";
-static const char *expected_value_string_format =  "[%s]";
-static const char *constraint_as_string_format = "Expected [%s] to [%s]";
-static const char *at_offset = "\n\t\tat offset:\t\t\t[%d]";
-static const char *expected_content = "\n\t\t\tactual value:\t\t[0x%02x]\n\t\t\texpected value:\t\t[0x%02x]";
+static const char actual_value_string_format[] = "\n\t\tactual value:\t\t\t[\"%s\"]";
+static const char expected_value_string_format[] =  "[%s]";
+static const char constraint_as_string_format[] = "Expected [%s] to [%s]";
+static const char at_offset[] = "\n\t\tat offset:\t\t\t[%d]";
+static const char expected_content[] = "\n\t\t\tactual value:\t\t[0x%02x]\n\t\t\texpected value:\t\t[0x%02x]";
 
 
 static void format_actual_string_value(intptr_t actual_value, char *message, size_t message_size) {
