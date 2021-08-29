@@ -1930,11 +1930,7 @@ Ensure(Readline, can_read_some_characters) {
    ...
 -----------------------------
 
-<<<<<<< HEAD
-Ok, so then it must exist. But the problem then becomes the three consequtive calls to `expect_char().
-=======
 Ok, so then it must exist. But the problem then becomes the three consequtive calls to `expect_char()`.
->>>>>>> [doc][tips] Document common problem when refactoring tests with expect()
 
 [source,c]
 -----------------------------
