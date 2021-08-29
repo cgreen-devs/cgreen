@@ -7,7 +7,8 @@ This creates nice diffs.
 :numbered:
 :toc: left
 :pp: ++
-
+:title-page:
+:title-logo-image: logo.png
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
