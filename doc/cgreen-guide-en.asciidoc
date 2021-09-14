@@ -2995,9 +2995,9 @@ Of course, you would pipe this output to a file.
 
 To use `cgreen-mocker` you need Python, and the following packages:
 
-* `packaging` -- [https://github.com/pypa/packaging]
+* `packaging` -- (https://github.com/pypa/packaging)
 
-* `pycparser` -- [https://github.com/eliben/pycparser]
+* `pycparser` -- (https://github.com/eliben/pycparser)
 
 These can easily be installed with:
 
