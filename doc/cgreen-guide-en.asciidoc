@@ -2993,11 +2993,16 @@ CgreenValue make_cgreen_string_value(const char *string) {
 
 Of course, you would pipe this output to a file.
 
-To use `cgreen-mocker` you need Python and `pycparser`.
-The latter can be found at [https://github.com/eliben/pycparser] or can easily be installed with
+To use `cgreen-mocker` you need Python, and the following packages:
+
+* `packaging` -- [https://github.com/pypa/packaging]
+
+* `pycparser` -- [https://github.com/eliben/pycparser]
+
+These can easily be installed with:
 
 ----------------
-$ pip install pycparser
+$ pip install -r requirements.txt
 ----------------
 
 NOTE: `cgreen-mocker` is an unsupported contribution to the *Cgreen*
