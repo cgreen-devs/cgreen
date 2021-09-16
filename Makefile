@@ -17,35 +17,42 @@ ifndef VERBOSE
 MAKEFLAGS += --no-print-directory
 endif
 
+ifneq ($shell command ninja,)
+BUILDER = ninja
+GENERATOR = -G Ninja
+else
+BUILDER = $(MAKE)
+endif
+
 all: build/Makefile
-	cd build; $(MAKE)
+	cd build; $(BUILDER)
 
 .PHONY:debug
 debug: build
-	cd build; cmake -DCMAKE_BUILD_TYPE:string=Debug ..; $(MAKE)
+	cd build; cmake -DCMAKE_BUILD_TYPE:string=Debug ..; $(BUILDER)
 
 32bit: build
-	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" ..; $(MAKE)
+	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" $(GENERATOR) ..; $(BUILDER)
 
 .PHONY:test
 test: build-it
-	cd build; $(MAKE) check
+	cd build; $(BUILDER) check
 
 .PHONY:clean
 clean: build/Makefile
-	cd build; $(MAKE) clean
+	cd build; $(BUILDER) clean
 
 .PHONY:package
 package: build/Makefile
-	cd build; $(MAKE) package
+	cd build; $(BUILDER) package
 
 .PHONY:install
 install: build
 ifeq ($(OS),Msys)
   # Thanks to https://stackoverflow.com/a/46027426/204658
-  cd build; $(MAKE) install DESTDIR=/
+  cd build; $(BUILDER) install DESTDIR=/
 else
-	cd build; $(MAKE) install
+	cd build; $(BUILDER) install
 endif
 
 # This is kind of a hack to get a quicker and clearer feedback when
@@ -117,10 +124,10 @@ unit: build-it
 
 .PHONY: doc
 doc: build
-	cd build; cmake -DCGREEN_WITH_HTML_DOCS:bool=TRUE ..; $(MAKE); cmake -DCGREEN_WITH_HTML_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.html
+	cd build; cmake -DCGREEN_WITH_HTML_DOCS:bool=TRUE ..; $(BUILDER); cmake -DCGREEN_WITH_HTML_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.html
 
 pdf: build
-	cd build; cmake -DCGREEN_WITH_PDF_DOCS:bool=TRUE ..; $(MAKE); cmake -DCGREEN_WITH_PDF_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.pdf
+	cd build; cmake -DCGREEN_WITH_PDF_DOCS:bool=TRUE ..; $(BUILDER); cmake -DCGREEN_WITH_PDF_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.pdf
 
 chunked: doc
 	asciidoctor-chunker build/doc/cgreen-guide-en.html -o docs
@@ -145,16 +152,16 @@ valgrind: build-it
 
 .PHONY: build-it
 build-it: build/Makefile
-	$(MAKE) -C build
+	$(BUILDER) -C build
 
 build:
 	mkdir build
 
 build/Makefile: build
 ifeq ($(OS),Darwin)
-	cd build; cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" ..
+	cd build; cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" $(GENERATOR) ..
 else
-	cd build; cmake ..
+	cd build; cmake $(GENERATOR) ..
 endif
 
 .SILENT:
