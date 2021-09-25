@@ -17,6 +17,7 @@ TestSuite *cpp_assertion_tests(void);
 #endif
 TestSuite *cute_reporter_tests(void);
 TestSuite *cgreen_value_tests(void);
+TestSuite *fake_tests(void);
 TestSuite *message_formatting_tests(void);
 TestSuite *messaging_tests(void);
 TestSuite *mock_tests(void);
@@ -42,6 +43,7 @@ int main(int argc, char **argv) {
     add_suite(suite, cpp_assertion_tests());
 #endif
     add_suite(suite, cute_reporter_tests());
+    add_suite(suite, fake_tests());
     add_suite(suite, message_formatting_tests());
     add_suite(suite, messaging_tests());
     add_suite(suite, mock_tests());

@@ -3,11 +3,17 @@
 
 #include <cgreen/reporter.h>
 #include <cgreen/cgreen_value.h>
+#include <cgreen/vector.h>
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
 #include <stddef.h>
 #include <stdint.h>
+
+#ifdef __cplusplus
+namespace cgreen {
+    extern "C" {
+#endif
 
 typedef enum {
     CGREEN_VALUE_COMPARER_CONSTRAINT,
@@ -19,7 +25,8 @@ typedef enum {
     CGREEN_RETURN_POINTER_CONSTRAINT,
     CGREEN_CALL_CONSTRAINT,
     CGREEN_CALL_COUNTER_CONSTRAINT,
-    CGREEN_RETURN_BY_VALUE_CONSTRAINT
+    CGREEN_RETURN_BY_VALUE_CONSTRAINT,
+    CGREEN_FAKE_IMPLEMENTATION_CONSTRAINT
 } ConstraintType;
 
 typedef struct Constraint_ Constraint;
@@ -42,12 +49,10 @@ struct Constraint_ {
     /* Side Effect parameters */
     void (*side_effect_callback)(void *);
     void *side_effect_data;
-};
 
-#ifdef __cplusplus
-namespace cgreen {
-    extern "C" {
-#endif
+    /* Fake implementation (const CgreenVector *const params, CgreenValue *const result) */
+    void (*fake_implementation)(const CgreenVector *const, CgreenValue *const);
+};
 
 Constraint *create_constraint(void);
 Constraint *create_parameter_constraint_for(const char *parameter_name);
@@ -85,6 +90,7 @@ Constraint *create_greater_than_double_constraint(double expected_value, const c
 Constraint *create_return_value_constraint(intptr_t value_to_return);
 Constraint *create_return_by_value_constraint(intptr_t value_to_return, size_t size);
 Constraint *create_return_double_value_constraint(double value_to_return);
+Constraint *create_fake_implementation_constraint(void (*fake_implementation)(const CgreenVector *const, CgreenValue *const));
 Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set, size_t size_to_set);
 Constraint *create_with_side_effect_constraint(void (*callback)(void *), void *data);
 

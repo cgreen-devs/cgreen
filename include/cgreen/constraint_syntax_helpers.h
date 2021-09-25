@@ -51,5 +51,6 @@
 #define will_return_by_value(value, size) create_return_by_value_constraint((intptr_t)&value, size)
 #define will_return_double(value) create_return_double_value_constraint(value)
 #define will_set_contents_of_parameter(parameter_name, pointer_to_value, size) create_set_parameter_value_constraint(#parameter_name, (intptr_t)pointer_to_value, (size_t)size)
+#define with_fake_implementation(fake_implementation) create_fake_implementation_constraint(fake_implementation)
 
 #endif

@@ -64,6 +64,8 @@ static void apply_any_content_setting_parameter_constraints(RecordedExpectation 
                                                      const char *parameter,
                                                      CgreenValue actual,
                                                      TestReporter* test_reporter);
+static bool apply_fake_implementation(CgreenVector* constraints, CgreenVector *actual_values, 
+                                      CgreenValue *stored_result);
 static CgreenValue stored_result_or_default_for(CgreenVector* constraints);
 static int number_of_parameters_in(const char *parameter_list);
 static bool is_always_call(RecordedExpectation* expectation);
@@ -217,7 +219,8 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     ensure_successfully_mocked_calls_list_exists();
     cgreen_vector_add(successfully_mocked_calls, (void*)function);
 
-    stored_result = stored_result_or_default_for(expectation->constraints);
+    if (!apply_fake_implementation(expectation->constraints, actual_values, &stored_result))
+        stored_result = stored_result_or_default_for(expectation->constraints);
     // FIXME: Should verify that return value is not a DOUBLE as `mock_()' can not
     // return them. There should also be a 'mock_double_()' which does the same except
     // returning a double.
@@ -883,6 +886,21 @@ static void apply_any_content_setting_parameter_constraints(RecordedExpectation 
             expectation->test_line,
             test_reporter);
     }
+}
+
+static bool apply_fake_implementation(CgreenVector* constraints, CgreenVector *actual_values, 
+                                      CgreenValue *stored_result) {
+    int i;
+    for (i = 0; i < cgreen_vector_size(constraints); i++) {
+        Constraint *constraint = (Constraint *)cgreen_vector_get(constraints, i);
+
+        if ((constraint->type == CGREEN_FAKE_IMPLEMENTATION_CONSTRAINT)
+            && (constraint->fake_implementation != NULL)) {
+            constraint->fake_implementation(actual_values, stored_result);
+            return true;
+        }
+    }
+    return false;
 }
 
 static CgreenValue stored_result_or_default_for(CgreenVector* constraints) {

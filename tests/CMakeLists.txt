@@ -42,6 +42,7 @@ set(c_tests_library_SRCS
   cute_reporter_tests.c
   double_tests.c
   environment_variables_tests.c
+  fake_tests.c
   message_formatting_tests.c
   messaging_tests.c
   mocks_tests.c
@@ -124,6 +125,7 @@ foreach(case
     constraint
     cute_reporter
     double
+    fake
     message_formatting
     messaging
     mocks

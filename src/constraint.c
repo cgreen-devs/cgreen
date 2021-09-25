@@ -3,7 +3,6 @@
 #include <cgreen/constraint.h>
 #include <cgreen/message_formatting.h>
 #include <cgreen/string_comparison.h>
-#include <cgreen/vector.h>
 #include <inttypes.h>
 #include <float.h>
 #include <limits.h>
@@ -480,6 +479,18 @@ Constraint *create_return_double_value_constraint(double value_to_return) {
     constraint->execute = &test_true;
     constraint->name = "return value";
     constraint->expected_value = make_cgreen_double_value(value_to_return);
+
+    return constraint;
+}
+
+Constraint *create_fake_implementation_constraint(void (*fake_implementation)(const CgreenVector *const, CgreenValue *const)) {
+    Constraint* constraint = create_constraint();
+    constraint->type = CGREEN_FAKE_IMPLEMENTATION_CONSTRAINT;
+
+    constraint->compare = &compare_true;
+    constraint->execute = &test_true;
+    constraint->name = "fake implementation";
+    constraint->fake_implementation = fake_implementation;
 
     return constraint;
 }
