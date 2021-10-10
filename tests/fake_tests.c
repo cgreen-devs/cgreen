@@ -84,6 +84,9 @@ Ensure(Fake, conditional_return_values) {
     assert_that(function_mock(0, dont_care), is_equal_to(1));
     assert_that(function_mock(1, dont_care), is_equal_to(0));
     assert_that(function_mock(-1, dont_care), is_equal_to(0));
+
+    // Cleanup
+    free(dont_care);
 }
 
 Ensure(Fake, retruns_parameter_contents) {
@@ -97,6 +100,10 @@ Ensure(Fake, retruns_parameter_contents) {
     // Act & Assert
     assert_that(function_mock(0, test_string), is_equal_to_string(test_string));
     assert_that(function_mock(0, empty_string), is_equal_to_string(empty_string));
+
+    // Cleanup
+    free(test_string);
+    free(empty_string);
 }
 
 Ensure(Fake, capture_value_for_return_in_other_mock) {
@@ -121,6 +128,9 @@ Ensure(Fake, compare_params_with_each_other) {
 
     // Act & Assert
     assert_that(function_mock(test_int, test_string), is_equal_to(1));
+
+    // Cleanup
+    free(test_string);
 }
 
 // ################# SUITE SETUP ####################################
