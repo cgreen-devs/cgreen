@@ -34,7 +34,8 @@ Constraint static_is_bigger_than_5 = {
         /* .parameter_name */ NULL,
         /* .size_of_stored_value */ 0,
         /* .side_effect_callback */ NULL,
-        /* .side_effect_data */ NULL
+        /* .side_effect_data */ NULL,
+        /* .fake_implementation */ NULL
 };
 
 /* Remember: failing tests to get output */
