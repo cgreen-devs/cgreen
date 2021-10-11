@@ -1,14 +1,20 @@
-# Generate gitrevision.h if Git is available and the .git directory is found.
-# NOTE: $GITDIR is determined in top-level CMakeLists.txt
-if (GITDIR AND GIT_EXECUTABLE)
-  execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --always --abbrev=7 --dirty=-modified
-                  OUTPUT_VARIABLE GITREVISION
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+# Generate gitrevision.h
+if (GITREVISION)
+  # Allow GITREVISION to be overridden manually / externally. This useful for vendoring.
+  message(INFO, "GITREVISION manually overridden: ${GITREVISION}")
 else()
-  # No version control
-  # e.g. when the software is built from a source tarball
-  message(WARNING "-- Unable to find git. Setting git revision to 'unknown'.")
-  set(GITREVISION "unknown")
+  if (GITDIR AND GIT_EXECUTABLE)
+    # Use the git version if Git is available and the .git directory is found.
+    # NOTE: $GITDIR is determined in top-level CMakeLists.txt
+    execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --always --abbrev=7 --dirty=-modified
+                    OUTPUT_VARIABLE GITREVISION
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+  else()
+    # No version control
+    # e.g. when the software is built from a source tarball
+    message(WARNING "-- Unable to find git. Setting git revision to 'unknown'.")
+    set(GITREVISION "unknown")
+  endif()
 endif()
 
 configure_file(${PROJECT_SOURCE_DIR}/gitrevision.h.in ${PROJECT_SOURCE_DIR}/gitrevision.h @ONLY)
