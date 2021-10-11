@@ -1,27 +1,17 @@
 # Generate gitrevision.h if Git is available and the .git directory is found.
 # NOTE: $GITDIR is determined in top-level CMakeLists.txt
 if (GITDIR AND GIT_EXECUTABLE)
-  # Create gitrevision.h
-  add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/gitrevision.h
-    COMMAND ${CMAKE_COMMAND} -E echo_append "#define GITREVISION \"" > ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
-    COMMAND ${GIT_EXECUTABLE} describe --tags --always --abbrev=7 --dirty=-modified >> ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
-    COMMAND ${CMAKE_COMMAND} -E echo_append "\"" >> ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
-    COMMAND sed -e N -e "s/\\n//g" ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp > ${PROJECT_SOURCE_DIR}/gitrevision.h
-    COMMAND ${CMAKE_COMMAND} -E remove -f ${PROJECT_SOURCE_DIR}/gitrevision.h.tmp
-    DEPENDS ${GITDIR}
-    VERBATIM
-    COMMENT "-- Generating gitrevision.h"
-    )
+  execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --always --abbrev=7 --dirty=-modified
+                  OUTPUT_VARIABLE GITREVISION
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
 else()
   # No version control
   # e.g. when the software is built from a source tarball
   message(WARNING "-- Unable to find git. Setting git revision to 'unknown'.")
-  add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/gitrevision.h
-    COMMAND ${CMAKE_COMMAND} -E echo "#define GITREVISION \"unknown\"" > ${PROJECT_SOURCE_DIR}/gitrevision.h
-    VERBATIM
-    )
+  set(GITREVISION "unknown")
 endif()
 
+configure_file(${PROJECT_SOURCE_DIR}/gitrevision.h.in ${PROJECT_SOURCE_DIR}/gitrevision.h @ONLY)
 
 set(CGREEN_PUBLIC_INCLUDE_DIRS
   ${PROJECT_SOURCE_DIR}/
