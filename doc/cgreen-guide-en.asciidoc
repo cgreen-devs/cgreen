@@ -7,7 +7,8 @@ This creates nice diffs.
 :numbered:
 :toc: left
 :pp: ++
-
+:title-page:
+:title-logo-image: logo.png
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -24,7 +25,7 @@ v{VERSION} - Generated {localdate}
 
 === What is Cgreen?
 
-*Cgreen* is a unit tester for the C and C++ software developer, a test automation and software quality assurance tool for programmers and development teams.
+*Cgreen* is a unit testing framework for the C and C++ software developer, a test automation and software quality assurance tool for programmers and development teams.
 The tool is completely open source published under the https://github.com/cgreen-devs/cgreen/blob/master/LICENSE[ISC, OpenBSD, license].
 
 Unit testing is a development practice popularised by the agile development community.
@@ -78,20 +79,21 @@ There are two ways to install *Cgreen* in your system.
 
 ==== Installing a package
 
-NOTE: At this point there are few supported pre-built packages available.
-For now you'll probably have to build from source.
-
-The first way is to use packages provided by the *Cgreen* Team.
-If your system uses a package manager ('apt' or 'port' and so on) there might be a prebuilt package that you can just install using your systems package manager.
+The first way is to use packages provided by the *Cgreen* Team and porters for the various operating systems.
+If your system uses a package manager ('apt', 'yum', 'brew' and so on) there might be a prebuilt package that you can just install using your systems package manager.
 
 If no *Cgreen* package is distributed for your system you can download a package from https://github.com/cgreen-devs/cgreen/releases[Cgreen GitHub project].
 Install it using the normal procedures for your system.
 
+NOTE: At this point there are pre-built packages available for quite a few environments.
+They are not all using the latest version, though.
+If you need that, you can still build from source.
+
 
 ==== Installing from source
 
-The second way is available for developers and advanced users.
-Basically this consists of fetching the sources of the project on https://github.com/cgreen-devs/cgreen[GitHub], just click on "Download ZIP", and compiling them.
+A second way is available for developers and advanced users.
+Basically this consists of fetching the sources of the project on https://github.com/cgreen-devs/cgreen[GitHub], just click on "Download ZIP", and then compile them.
 To do this you need the http://www.cmake.org[CMake] build system.
 
 Once you have the CMake tool installed, the steps are:
@@ -111,11 +113,11 @@ This helps the overall file organization and enables multi-target builds from th
 
 TIP: Experienced users may tweak the build configuration by going to the build subdirectory and use `ccmake ..` to modify the build configuration in that subtree.
 
-TIP: The Makefile is just there for convenience, it just creates the build directory and invokes *CMake* there, so that you don't have to.
+TIP: The Makefile is just there for convenience, it creates the build directory and invokes *CMake* there, so that you don't have to.
 This means that experienced *CMake* users can just do as they normally do with a *CMake*-based project instead of invoking `make`.
 
 The build process will create a library (on unix called `libcgreen.so`) which can be used in conjunction with the `cgreen.h` header file to compile and link your test code.
-The created library is installed in the system, by default in the `/usr/local/lib/`.
+The created library is installed in the system directories, by default in `/usr/local/lib/`.
 
 
 ==== Your First Test
@@ -1928,11 +1930,7 @@ Ensure(Readline, can_read_some_characters) {
    ...
 -----------------------------
 
-<<<<<<< HEAD
-Ok, so then it must exist. But the problem then becomes the three consequtive calls to `expect_char().
-=======
 Ok, so then it must exist. But the problem then becomes the three consequtive calls to `expect_char()`.
->>>>>>> [doc][tips] Document common problem when refactoring tests with expect()
 
 [source,c]
 -----------------------------
@@ -2995,11 +2993,16 @@ CgreenValue make_cgreen_string_value(const char *string) {
 
 Of course, you would pipe this output to a file.
 
-To use `cgreen-mocker` you need Python and `pycparser`.
-The latter can be found at [https://github.com/eliben/pycparser] or can easily be installed with
+To use `cgreen-mocker` you need Python, and the following packages:
+
+* `packaging` -- (https://github.com/pypa/packaging)
+
+* `pycparser` -- (https://github.com/eliben/pycparser)
+
+These can easily be installed with:
 
 ----------------
-$ pip install pycparser
+$ pip install -r requirements.txt
 ----------------
 
 NOTE: `cgreen-mocker` is an unsupported contribution to the *Cgreen*

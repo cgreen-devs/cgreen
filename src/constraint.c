@@ -86,7 +86,7 @@ static const char *default_actual_value_message = "\n\t\tactual value:\t\t\t[%" 
 static const char *default_expected_value_message = "\t\texpected value:\t\t\t[%" PRIdPTR "]";
 
 static void execute_sideeffect(Constraint *constraint, const char *function, CgreenValue actual,
-                         const char *test_file, int test_line, TestReporter *reporter);
+                               const char *test_file, int test_line, TestReporter *reporter);
 
 Constraint *create_constraint(void) {
     Constraint *constraint = (Constraint *)malloc(sizeof(Constraint));

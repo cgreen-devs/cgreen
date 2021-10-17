@@ -433,13 +433,13 @@ Ensure(Mocks, constraint_number_of_calls_order_of_expectations_matter) {
     simple_mocked_function(1, 2);
 }
 
-static int sideeffect_changed = 1;
+static int changed_by_sideeffect = 1;
 static int mock_with_side_effect(void) {
     return (int)mock();
 }
 static void the_sideeffect(void * data) {
     assert_that(*(int*)data, is_equal_to(99));
-    sideeffect_changed = 2;
+    changed_by_sideeffect = 2;
 }
 
 Ensure(Mocks, mock_expect_with_side_effect) {
@@ -450,7 +450,7 @@ Ensure(Mocks, mock_expect_with_side_effect) {
 
     assert_that(mock_with_side_effect(), is_equal_to(22));
 
-    assert_that(sideeffect_changed, is_equal_to(2));
+    assert_that(changed_by_sideeffect, is_equal_to(2));
 }
 
 

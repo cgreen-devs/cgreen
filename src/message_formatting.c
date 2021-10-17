@@ -165,18 +165,34 @@ char *validation_failure_message_for(Constraint *constraint, intptr_t actual) {
 }
 
 
-static bool is_not_equal_to_string_constraint(Constraint *constraint) {
-    return strstr(constraint->name, "not ") != NULL && strstr(constraint->name, "equal ") != NULL;
+static bool is_equal_to_string_constraint(Constraint *constraint) {
+    return strstr(constraint->name, "not ") == NULL || strstr(constraint->name, "equal ") == NULL;
+}
+
+/* Formats for printing actual and expected values */
+static const char actual_value_string_format[] = "\n\t\tactual value:\t\t\t[\"%s\"]";
+static const char expected_value_string_format[] =  "[%s]";
+static const char constraint_as_string_format[] = "Expected [%s] to [%s]";
+static const char at_offset[] = "\n\t\tat offset:\t\t\t[%d]";
+static const char expected_content[] = "\n\t\t\tactual value:\t\t[0x%02x]\n\t\t\texpected value:\t\t[0x%02x]";
+
+
+static void format_actual_string_value(intptr_t actual_value, char *message, size_t message_size) {
+    snprintf(message + strlen(message), message_size - strlen(message) - 1,
+             actual_value_string_format,
+             (const char *)actual_value);
+}
+
+
+static void format_expected_string_value(Constraint *constraint, char *message, size_t message_size) {
+    snprintf(message + strlen(message), message_size - strlen(message) - 1,
+             constraint->expected_value_message,
+             constraint->expected_value.value.string_value);
 }
 
 
 char *failure_message_for(Constraint *constraint, const char *actual_string, intptr_t actual_value) {
     char actual_int_value_string[32];
-    const char *constraint_as_string_format = "Expected [%s] to [%s]";
-    const char *expected_value_string_format =  "[%s]";
-    const char *actual_value_string_format = "\n\t\tactual value:\t\t\t[\"%s\"]";
-    const char *at_offset = "\n\t\tat offset:\t\t\t[%d]";
-    const char *expected_content = "\n\t\t\tactual value:\t\t[0x%02x]\n\t\t\texpected value:\t\t[0x%02x]";
     const char *actual_value_as_string;
     char *message;
     size_t message_size = strlen(constraint_as_string_format) +
@@ -232,14 +248,10 @@ char *failure_message_for(Constraint *constraint, const char *actual_string, int
 
     /* for string constraints, print out the strings encountered and not their pointer values */
     if (values_are_strings_in(constraint)) {
-        snprintf(message + strlen(message), message_size - strlen(message) - 1,
-                 actual_value_string_format,
-                 (const char *)actual_value);
-        if (!is_not_equal_to_string_constraint(constraint)) {
+        format_actual_string_value(actual_value, message, message_size);
+        if (is_equal_to_string_constraint(constraint)) {
             strcat(message, "\n");
-            snprintf(message + strlen(message), message_size - strlen(message) - 1,
-                     constraint->expected_value_message,
-                     constraint->expected_value.value.string_value);
+            format_expected_string_value(constraint, message, message_size);
         }
         /* The final string may have percent characters, so, since it is
            later used in a (v)printf, we have to double them

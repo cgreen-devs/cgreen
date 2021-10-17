@@ -22,8 +22,10 @@ if (UNIX)
     endif (CGREEN_INTERNAL_WITH_GCOV)
 
     add_definitions(-D_REENTRANT)           # for gmtime_r()
-    add_definitions(-D_XOPEN_SOURCE)        # for popen() and pclose()
-    add_definitions(-D_XOPEN_SOURCE_EXTENDED) # for strdup(), which isn't part of C99
+    if (NOT ${CMAKE_SYSTEM_NAME} MATCHES ".*OpenBSD.*")
+      add_definitions(-D_XOPEN_SOURCE)        # for popen() and pclose()
+      add_definitions(-D_XOPEN_SOURCE_EXTENDED) # for strdup(), which isn't part of C99
+    endif()
     add_definitions(-D__STDC_FORMAT_MACROS) # for PRI*PTR format macros, required by C99
 
     if (NOT CYGWIN)
