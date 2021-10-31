@@ -17,7 +17,9 @@ ifndef VERBOSE
 MAKEFLAGS += --no-print-directory
 endif
 
-NINJA_EXISTS := $(shell command -v ninja 2>/dev/null)
+# Removing ninja support as it does not build the same way and somehow
+# trashes the output comparison tests with different paths and library names
+#NINJA_EXISTS := $(shell command -v ninja 2>/dev/null)
 ifdef NINJA_EXISTS
 BUILDER = ninja
 GENERATOR = -G Ninja
