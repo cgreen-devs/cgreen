@@ -26,6 +26,15 @@ AfterEach(Unittests) {
     unit_tests_teardown();
 }
 
+Ensure(Unittests, can_see_correct_version_marking) {
+    char version_string[20];
+
+    sprintf(version_string, "%d.%d.%d", CGREEN_VERSION_MAJOR, CGREEN_VERSION_MINOR, CGREEN_VERSION_PATCH);
+
+    assert_that(cgreen_library_version, is_equal_to_string(CGREEN_VERSION));
+    assert_that(CGREEN_VERSION, is_equal_to_string(version_string));
+}
+
 Ensure(Unittests, count_tests_return_zero_for_empty_suite) {
     assert_that(count_tests(suite), is_equal_to(0));
 }
