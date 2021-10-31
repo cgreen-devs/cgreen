@@ -1626,36 +1626,46 @@ The expectation code should look like the following
         times(1));
 -----------------------
 
-If the function we are mocking returns structs by value our mock function need to do that too.
-So we need use another return function, `will_return_by_value`.
-Here is some example code using an imaginary struct typedef'ed as `Box` and a corresponding function, `retrieve_box()`, which we want to mock:
+
+=== Returning structs
+
+If the function we are mocking returns structs by value, then our mock function need to do that too.
+To do this we should use another return macro, `will_return_by_value()`.
+Below is some example code using an imaginary struct typedef'ed as `Struct` and a corresponding function, `retrieve_struct()`, which we want to mock.
+
+The underlying mechanism of this is that in the test we create the struct that we want to return, the macro `will_return_by_value()` copies that to a dynamically allocated area.
+A pointer to that area will be returned by `mock()`.
 
 [source,c]
 -----------------------
-  expect(retrieve_box,
-         will_return_by_value(box, sizeof(Box));
+  Struct returned_struct = {...};
+  expect(retrieve_struct,
+         will_return_by_value(returned_struct, sizeof(Struct));
+         /* `returned_struct` has been copied to an allocated area */
 -----------------------
 
-And the mock function will then look like this:
+The mock function will then look like this:
 
 [source,c]
 -----------------------
-Box retrieve_box() {
-   return *(Box *)mock();
+Struct retrieve_struct() {
+   return *(Struct *)mock();       /* De-reference the returned pointer to the allocated area */
 }
 -----------------------
 
-But this would cause a memory leak.
-The area allocated for the struct, and that is pointed to by the pointer returned by `mock()`, need to be deallocated.
-Here's a better, although a bit more complicated, version:
+But this would cause a memory leak since the area allocated by the `return_by_value()` macro is not deallocated.
+This might not be a big problem, and you could make do with that simple version.
+But to be sure we should free the allocated area.
+It is referred to by the pointer returned from `mock()`.
+So, here's a better, although a bit more complicated, version:
 
 [source,c]
 -----------------------
-Box retrieve_box() {
-    Box *box_p = (Box *)mock(); /* Get the pointer */
-    Box the_box = *box_p;       /* Dereference to get a struct */
-    free(box_p);                /* Deallocate the returned area */
-    return the_box;             /* Finally we can return the struct by value */
+Struct retrieve_struct() {
+    Struct *struct_p = (Struct *)mock(); /* Get the pointer */
+    Struct the_struct = *struct_p;       /* Dereference to get a struct */
+    free(struct_p);                      /* Deallocate the returned area */
+    return the_struct;                   /* Finally we can return the struct by value */
 }
 -----------------------
 
