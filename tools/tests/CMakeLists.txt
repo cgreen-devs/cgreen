@@ -48,7 +48,10 @@ if(LibBfd_FOUND)
   add_library(${DISCOVERER_UNIT_TESTS_LIBRARY} SHARED ${DISCOVERER_UNIT_TESTS_SRCS})
 
   target_compile_definitions(${DISCOVERER_UNIT_TESTS_LIBRARY} PUBLIC UNITTESTING)
-  target_link_libraries(${DISCOVERER_UNIT_TESTS_LIBRARY} ${CMAKE_DL_LIBS})
+  target_link_libraries(${DISCOVERER_UNIT_TESTS_LIBRARY}
+    ${CGREEN_LIBRARY}
+    ${CMAKE_DL_LIBS}
+    ${LIBBFD_LIBRARIES})
 
   SET(CGREEN_RUNNER_TESTS_LIBRARY "$<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests>")
   SET(DISCOVERER_ACCEPTANCE_TESTS_LIBRARY "$<TARGET_FILE_DIR:discoverer_acceptance_tests>/$<TARGET_FILE_NAME:discoverer_acceptance_tests>")
