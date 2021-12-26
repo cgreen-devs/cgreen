@@ -19,7 +19,7 @@ if(LibBfd_FOUND)
 
   add_executable(cgreen-runner ${RUNNER_SRCS})
   target_link_libraries(cgreen-runner PRIVATE
-    ${CGREEN_SHARED_LIBRARY}
+    ${CGREEN_LIBRARY}
     ${CMAKE_DL_LIBS}
     ${LIBBFD_LIBRARIES}
   )
