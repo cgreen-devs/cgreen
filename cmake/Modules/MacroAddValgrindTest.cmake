@@ -7,7 +7,6 @@
 # @thoni56/Thomas Nilefalk 2015-09-13
 
 macro (macro_add_valgrind_test)
-  find_package(Valgrind)
   if (Valgrind_FOUND)
     set(
       libname
