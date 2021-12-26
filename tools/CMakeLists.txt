@@ -3,7 +3,11 @@ include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${PROJECT_BINARY_DIR})
 find_package(LibBfd)
 
 # Need to explicitly add libintl - Cygwin issue
-find_library(INTL NAMES intl libintl)
+if (CYGWIN)
+  find_library(INTL NAMES intl libintl)
+else ()
+  set(INTL "")
+endif()
 
 if(LibBfd_FOUND)
   set(RUNNER_SRCS
