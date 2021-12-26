@@ -454,48 +454,50 @@ Ensure(Mocks, mock_expect_with_side_effect) {
 }
 
 
-typedef struct Box {
+typedef struct Struct {
     int height;
     int weight;
-} Box;
+} Struct;
 
-Box retrieveBox(void) {
-    Box *box_p = (Box *)mock();
-    Box the_box = *box_p;
-    free(box_p);
-    return the_box;
+Struct retrieveStruct(void) {
+    Struct *struct_p = (Struct *)mock();
+    Struct the_struct = *struct_p;
+    free(struct_p);
+    return the_struct;
 }
 
 Ensure(Mocks, can_return_by_value) {
-    Box someBox = {.height = 10, .weight = 20};
-    expect(retrieveBox, will_return_by_value(someBox, sizeof(Box)));
-    someBox.height = 30;
+    Struct someStruct = {.height = 10, .weight = 20};
+    expect(retrieveStruct, will_return_by_value(someStruct, sizeof(Struct)));
+    someStruct.height = 30;
 
-    Box actualBox = retrieveBox();
-    assert_that(actualBox.weight, is_equal_to(20));
-    assert_that(actualBox.height, is_equal_to(10));
+    Struct actualStruct = retrieveStruct();
+    assert_that(actualStruct.weight, is_equal_to(20));
+    assert_that(actualStruct.height, is_equal_to(10));
 }
 
-Box retrieveSpecialBox(int boxNumber) {
-    Box *box_p = (Box *)mock(boxNumber);
-    Box the_box = *box_p;
-    free(box_p);
-    return the_box;
+Struct retrieveSpecialStruct(int structNumber) {
+    Struct *struct_p = (Struct *)mock(structNumber);
+    Struct the_struct = *struct_p;
+    free(struct_p);
+    return the_struct;
 }
 
 Ensure(Mocks, can_return_by_value_depending_on_input_parameter) {
-    Box box1 = {.height = 10, .weight = 20};
-    Box box2 = {.height = 5, .weight = 33};
-    expect(retrieveSpecialBox, will_return_by_value(box1, sizeof(Box)), when(boxNumber, is_equal_to(1)));
-    expect(retrieveSpecialBox, will_return_by_value(box2, sizeof(Box)), when(boxNumber, is_equal_to(2)));
-    box1.height = 30;
+    Struct struct1 = {.height = 10, .weight = 20};
+    Struct struct2 = {.height = 5, .weight = 33};
+    expect(retrieveSpecialStruct, will_return_by_value(struct1, sizeof(Struct)),
+           when(structNumber, is_equal_to(1)));
+    expect(retrieveSpecialStruct, will_return_by_value(struct2, sizeof(Struct)),
+           when(structNumber, is_equal_to(2)));
+    struct1.height = 30;
 
-    Box retrievedBox1 = retrieveSpecialBox(1);
-    assert_that(retrievedBox1.weight, is_equal_to(20));
-    assert_that(retrievedBox1.height, is_equal_to(10));
-    Box retrievedBox2 = retrieveSpecialBox(2);
-    assert_that(retrievedBox2.weight, is_equal_to(33));
-    assert_that(retrievedBox2.height, is_equal_to(5));
+    Struct retrievedStruct1 = retrieveSpecialStruct(1);
+    assert_that(retrievedStruct1.weight, is_equal_to(20));
+    assert_that(retrievedStruct1.height, is_equal_to(10));
+    Struct retrievedStruct2 = retrieveSpecialStruct(2);
+    assert_that(retrievedStruct2.weight, is_equal_to(33));
+    assert_that(retrievedStruct2.height, is_equal_to(5));
 }
 
 

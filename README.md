@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/cgreen-devs/cgreen.svg?branch=master)](https://travis-ci.com/cgreen-devs/cgreen)
+[![Build Status](https://app.travis-ci.com/cgreen-devs/cgreen.svg?branch=master)](https://app.travis-ci.com/github/cgreen-devs/cgreen)
 [![Coverage Status](https://coveralls.io/repos/cgreen-devs/cgreen/badge.svg?branch=master&service=github)](https://coveralls.io/github/cgreen-devs/cgreen?branch=master)
 
 ![](https://github.com/cgreen-devs/cgreen/blob/master/doc/logo.png?s=300)
