@@ -17,14 +17,6 @@ endif(MSVC)
 
 include_directories(${CGREEN_TEST_INCLUDE_DIRS})
 
-# Dependency on our own library
-if (CGREEN_WITH_STATIC_LIBRARY)
-  set(CGREEN_LIBRARY ${CGREEN_STATIC_LIBRARY})
-else ()
-  set(CGREEN_LIBRARY ${CGREEN_SHARED_LIBRARY})
-endif()
-
-
 # C tests, library to use with runner, and a main program
 # NOTE that some of these are "pure" unit tests which only
 # need to work in C, since Cgreen's internal is C.

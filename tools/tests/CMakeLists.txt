@@ -17,12 +17,10 @@ if(LibBfd_FOUND)
     ../bfd_adapter.c
     ../test_item.c)
   add_library(${CGREEN_RUNNER_TESTS_LIBRARY} SHARED ${RUNNER_TESTS_SRCS})
-
   target_link_libraries(${CGREEN_RUNNER_TESTS_LIBRARY}
-    ${CGREEN_SHARED_LIBRARY}
+    ${CGREEN_LIBRARY}
     ${CMAKE_DL_LIBS}
     ${LIBBFD_LIBRARIES})
-
 
   set(DISCOVERER_ACCEPTANCE_TESTS_LIBRARY
     discoverer_acceptance_tests
@@ -36,7 +34,7 @@ if(LibBfd_FOUND)
   add_library(${DISCOVERER_ACCEPTANCE_TESTS_LIBRARY} SHARED ${DISCOVERER_ACCEPTANCE_TESTS_SRCS})
 
   target_link_libraries(${DISCOVERER_ACCEPTANCE_TESTS_LIBRARY}
-    ${CGREEN_SHARED_LIBRARY}
+    ${CGREEN_LIBRARY}
     ${CMAKE_DL_LIBS}
     ${LIBBFD_LIBRARIES})
 
