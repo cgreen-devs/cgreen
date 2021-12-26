@@ -92,7 +92,7 @@ DIFF_TOOL_ARGUMENTS = $(1)_tests \
 
 .PHONY: unit
 unit: build-it
-	if [ -f ../build/tools/cgreen-runner ]; then \
+	if [ -f build/tools/cgreen-runner ]; then \
 		cd build ; \
 		$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
 		r=$$((r + $$?)) ; \
