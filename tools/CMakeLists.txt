@@ -2,11 +2,11 @@ include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${PROJECT_BINARY_DIR})
 
 find_package(LibBfd)
 
-# Need to explicitly add libintl - Cygwin issue
+# Need to explicitly add libintl - Cygwin issue with binutils-2.37-2
 if (CYGWIN)
-  find_library(INTL NAMES intl libintl)
+  find_library(EXPLICIT_INTLIB_ONLY_REQUIRED_FOR_CYGWIN NAMES intl libintl)
 else ()
-  set(INTL "")
+  set(EXPLICIT_INTLIB_ONLY_REQUIRED_FOR_CYGWIN "")
 endif()
 
 if(LibBfd_FOUND)
@@ -29,7 +29,7 @@ if(LibBfd_FOUND)
     ${CGREEN_LIBRARY}
     ${CMAKE_DL_LIBS}
     ${LIBBFD_LIBRARIES}
-    ${INTL}
+    ${EXPLICIT_INTLIB_ONLY_REQUIRED_FOR_CYGWIN}
   )
 
   install(TARGETS cgreen-runner

@@ -3,8 +3,6 @@ include_directories(
     ${CGREEN_PUBLIC_INCLUDE_DIRS}
     ${CURRENT_BINARY_DIR})
 
-find_package(LibBfd)
-
 if(LibBfd_FOUND)
 
   set(CGREEN_RUNNER_TESTS_LIBRARY
