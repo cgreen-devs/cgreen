@@ -46,11 +46,15 @@ static void add_all_tests_from(asymbol **symbols, long symbol_count, CgreenVecto
 
 static asymbol **get_symbols_table(bfd *abfd, long *symbol_count, bool verbose, const char *filename)
 {
-    long storage = bfd_adapter_get_dynamic_symtab_upper_bound(abfd);
-    if (storage < 0) {
-        if (verbose)
-            printf("%s: not symbols\n", filename);
 
+    long storage = bfd_adapter_get_dynamic_symtab_upper_bound(abfd);
+    if (storage <= 0) {
+        if (verbose) {
+            if (storage < 0)
+                printf("%s: bfd_get_dynamic_symtab_upper_bounds returned %ld\n", filename, storage);
+            else
+                printf("%s: no symbols\n", filename);
+        }
         *symbol_count = 0;
         return NULL;
     }
