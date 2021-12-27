@@ -42,7 +42,8 @@ if(LibBfd_FOUND)
   )
   set(DISCOVERER_UNIT_TESTS_SRCS
     discoverer_unit_tests.c
-    ../discoverer.c)
+    ../discoverer.c
+    ../test_item.c)
   add_library(${DISCOVERER_UNIT_TESTS_LIBRARY} SHARED ${DISCOVERER_UNIT_TESTS_SRCS})
 
   target_compile_definitions(${DISCOVERER_UNIT_TESTS_LIBRARY} PUBLIC UNITTESTING)
