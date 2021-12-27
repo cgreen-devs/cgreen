@@ -16,8 +16,7 @@ else
   OS=$(shell uname -s)
 endif
 
-COMMONFLAGS = -g
-CFLAGS = $(COMMONFLAGS) -Wall -Wextra -I../include -MMD -DUNITTESTING
+CFLAGS = -Wall -g -I../include -MMD -DUNITTESTING -I.
 ifneq ($(OS),Cygwin)
   CFLAGS+=-fPIC
 endif
@@ -45,30 +44,32 @@ all:
 tests: unit_tests acceptance_tests
 
 #----------------------------------------------------------------------
-main: main.o discoverer_acceptance_tests.o discoverer.o test_item.o io.o utils.o
+unit unit_tests: discoverer_unit_tests
+	./discoverer_unit_tests
+
+discoverer_unit_tests: discoverer_unit_test_runner.o discoverer.o test_item.o
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBRARIES)
 
-utils.o: ../src/utils.c
-
-#----------------------------------------------------------------------
-unit_tests: libdiscoverer_unit_tests.so
-	$(CGREEN_RUNNER) $^
-
-libdiscoverer_unit_tests.so: discoverer_unit_tests.o discoverer.o test_item.o
-	$(CC) -shared -o $@ $^ $(LIBRARIES)
-
-io.mocks : io.h
-	../contrib/cgreen-mocker/cgreen-mocker.py -I../../pycparser-master/utils/fake_libc_include io.h > io.mocks
+discoverer_unit_test_runner.c : tests/discoverer_unit_tests.c
+	echo "#include \"tests/discoverer_unit_tests.c\"" > discoverer_unit_test_runner.c
+	echo "TestSuite *discoverer_unit_tests() {" >> discoverer_unit_test_runner.c
+	echo "    TestSuite *suite = create_test_suite();" >> discoverer_unit_test_runner.c
+	grep Ensure tests/discoverer_unit_tests.c | sed -e 's/Ensure(/    add_test_with_context(suite, /g' -e 's/) {/);/g' >> discoverer_unit_test_runner.c
+	echo "    return suite;" >> discoverer_unit_test_runner.c
+	echo "}" >> discoverer_unit_test_runner.c
+	echo "int main(int argc, char **argv) {" >> discoverer_unit_test_runner.c
+	echo "    return run_test_suite(discoverer_unit_tests(), create_text_reporter());" >> discoverer_unit_test_runner.c
+	echo "}" >> discoverer_unit_test_runner.c
 
 #----------------------------------------------------------------------
 acceptance_tests: libdiscoverer_acceptance_tests.so
 	$(CGREEN_RUNNER) $^
 
-libdiscoverer_acceptance_tests.so: discoverer_acceptance_tests.o discoverer.o test_item.o io.o
+libdiscoverer_acceptance_tests.so: tests/discoverer_acceptance_tests.o discoverer.o test_item.o io.o
 	$(CC) -shared -o $@ $^ $(LIBRARIES)
 
 #----------------------------------------------------------------------
 clean:
-	-rm *.o *.so
+	-rm *.o *.so *.dll
 
 -include *.d

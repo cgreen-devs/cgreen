@@ -1,3 +1,4 @@
 *.o
 *.d
 lib*.so
+discoverer_unit_test_runner.c
