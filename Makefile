@@ -17,18 +17,8 @@ ifndef VERBOSE
 MAKEFLAGS += --no-print-directory
 endif
 
-# Removing ninja support as it does not build the same way and somehow
-# trashes the output comparison tests with different paths and library names
-#NINJA_EXISTS := $(shell command -v ninja 2>/dev/null)
-ifdef NINJA_EXISTS
-BUILDER = ninja
-GENERATOR = -G Ninja
-else
-BUILDER = $(MAKE)
-endif
-
-all: build/Makefile
-	cd build; $(BUILDER)
+.PHONY:all
+all: build-it
 
 .PHONY:debug
 debug: build
@@ -100,30 +90,33 @@ DIFF_TOOL_ARGUMENTS = $(1)_tests \
 	../../tests \
 	$(1)_tests.expected
 
+.PHONY: unit
 unit: build-it
-	cd build ; \
-	$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_cpp_tests$(SUFFIX)` ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
-	r=$$((r + $$?)) ; \
-	cd tests ; \
-	$(LDPATH) $(XML_DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,xml_output) ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,assertion_messages) ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,mock_messages) ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,constraint_messages) ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,custom_constraint_messages) ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,ignore_messages) ; \
-	r=$$((r + $$?)) ; \
-	$(LDPATH) CGREEN_PER_TEST_TIMEOUT=1 $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,failure_messages) ; \
-	r=$$((r + $$?)) ; \
-	exit $$r
+	if [ -f build/tools/cgreen-runner ]; then \
+		cd build ; \
+		$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_c_tests$(SUFFIX)` ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_cpp_tests$(SUFFIX)` ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
+		r=$$((r + $$?)) ; \
+		cd tests ; \
+		$(LDPATH) $(XML_DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,xml_output) ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,assertion_messages) ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,mock_messages) ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,constraint_messages) ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,custom_constraint_messages) ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,ignore_messages) ; \
+		r=$$((r + $$?)) ; \
+		$(LDPATH) CGREEN_PER_TEST_TIMEOUT=1 $(DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,failure_messages) ; \
+		r=$$((r + $$?)) ; \
+		exit $$r; \
+	fi
 
 .PHONY: doc
 doc: build
@@ -136,35 +129,19 @@ chunked: doc
 	asciidoctor-chunker build/doc/cgreen-guide-en.html -o docs
 	echo open $(PWD)/docs/index.html
 
-.PHONY:valgrind
-valgrind: build-it
-	@echo -n "Running all tests under Valgrind "
-	@> valgrind.log
-	@for lib in `ls build/tests/$(PREFIX)*_tests$(SUFFIX)` ; \
-	do \
-		echo -n "." ; \
-		LD_LIBRARY_PATH=build/src valgrind --leak-check=full build/tools/cgreen-runner $$lib >> valgrind.log 2>&1 ; \
-	done
-	@echo
-	grep --with-filename --line-number " lost: " valgrind.log | grep -v " 0 bytes" ; \
-	if [ $$? -eq 1 ] ; then echo "Nothing lost" ; fi
-
-
-
 ############# Internal
-
-.PHONY: build-it
+.PHONY:build-it
 build-it: build/Makefile
-	$(BUILDER) -C build
+	$(MAKE) -C build
 
 build:
-	mkdir build
+	mkdir -p build
 
-build/Makefile: build
+build/Makefile: | build
 ifeq ($(OS),Darwin)
-	cd build; cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" $(GENERATOR) ..
+	cd build; cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" ..
 else
-	cd build; cmake $(GENERATOR) ..
+	cd build; cmake ..
 endif
 
 .SILENT:

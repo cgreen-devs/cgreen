@@ -79,9 +79,16 @@ include(ConfigureChecks.cmake)
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # check subdirectories
+add_subdirectory(src)
+# Dependency on our own library so we can use CGREEN_LIBRARY in all subdirectories
+if (CGREEN_WITH_STATIC_LIBRARY)
+  set(CGREEN_LIBRARY ${CGREEN_STATIC_LIBRARY})
+else ()
+  set(CGREEN_LIBRARY ${CGREEN_SHARED_LIBRARY})
+endif()
+
 add_subdirectory(doc)
 add_subdirectory(include)
-add_subdirectory(src)
 if (UNIX OR MSYS)
   # reflective runner only supported on UNIX/binutils platforms
   add_subdirectory(tools)
@@ -91,6 +98,7 @@ endif(UNIX OR MSYS)
 if (CGREEN_WITH_UNIT_TESTS)
   include(MacroAddUnitTest)
   include(MacroAddTest)
+  include(MacroAddValgrindTest)
   add_subdirectory(tests)
   if (UNIX OR MSYS)
     # reflective runner only supported on UNIX/binutils platforms
