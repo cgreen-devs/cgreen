@@ -22,30 +22,30 @@ all: build-it
 
 .PHONY:debug
 debug: build
-	cd build; cmake -DCMAKE_BUILD_TYPE:string=Debug ..; make
+	cd build; cmake -DCMAKE_BUILD_TYPE:string=Debug ..; $(BUILDER)
 
 32bit: build
-	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" ..; make
+	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" $(GENERATOR) ..; $(BUILDER)
 
 .PHONY:test
-test: build/Makefile
-	cd build; make check
+test: build-it
+	cd build; $(BUILDER) check
 
 .PHONY:clean
 clean: build/Makefile
-	cd build; make clean
+	cd build; $(BUILDER) clean
 
 .PHONY:package
 package: build/Makefile
-	cd build; make package
+	cd build; $(BUILDER) package
 
 .PHONY:install
 install: build
 ifeq ($(OS),Msys)
   # Thanks to https://stackoverflow.com/a/46027426/204658
-  cd build; make install DESTDIR=/
+  cd build; $(BUILDER) install DESTDIR=/
 else
-	cd build; make install
+	cd build; $(BUILDER) install
 endif
 
 # This is kind of a hack to get a quicker and clearer feedback when
@@ -120,10 +120,10 @@ unit: build-it
 
 .PHONY: doc
 doc: build
-	cd build; cmake -DCGREEN_WITH_HTML_DOCS:bool=TRUE ..; make; cmake -DCGREEN_WITH_HTML_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.html
+	cd build; cmake -DCGREEN_WITH_HTML_DOCS:bool=TRUE ..; $(BUILDER); cmake -DCGREEN_WITH_HTML_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.html
 
 pdf: build
-	cd build; cmake -DCGREEN_WITH_PDF_DOCS:bool=TRUE ..; make; cmake -DCGREEN_WITH_PDF_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.pdf
+	cd build; cmake -DCGREEN_WITH_PDF_DOCS:bool=TRUE ..; $(BUILDER); cmake -DCGREEN_WITH_PDF_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.pdf
 
 chunked: doc
 	asciidoctor-chunker build/doc/cgreen-guide-en.html -o docs
@@ -138,6 +138,10 @@ build:
 	mkdir -p build
 
 build/Makefile: | build
+ifeq ($(OS),Darwin)
+	cd build; cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" ..
+else
 	cd build; cmake ..
+endif
 
 .SILENT:

@@ -314,8 +314,8 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
 }
 
 static void apply_side_effect(TestReporter *test_reporter,
-                  const RecordedExpectation *expectation,
-                  Constraint *constraint)
+                              const RecordedExpectation *expectation,
+                              Constraint *constraint)
 {
     CgreenValue actual = {};
     constraint->execute(

@@ -216,7 +216,7 @@ int main(int argc, char **argv) {
     argc = gopt(argv, options);
     gopt_errors(argv[0], options);
 
-    if (options[XML_OPT].count)
+    if (have_xml_option())
         reporter = create_xml_reporter(options[XML_OPT].argument);
     else
         reporter = create_text_reporter();

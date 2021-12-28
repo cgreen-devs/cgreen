@@ -81,10 +81,10 @@ Ensure(CustomConstraint, custom_constraint_using_a_function_with_arguments_funct
    Using custom data types.
 
 */
-typedef struct Box {
+typedef struct Struct {
     char id;
     int size;
-} Box;
+} Struct;
 
 typedef struct Piece {
     char id;
@@ -93,7 +93,7 @@ typedef struct Piece {
 
 bool compare_piece_and_box_size(Constraint *constraint, CgreenValue actual) {
     return ((Piece *)actual.value.pointer_value)->size
-        < ((Box*)constraint->expected_value.value.pointer_value)->size ;
+        < ((Struct*)constraint->expected_value.value.pointer_value)->size ;
 }
 
 static void test_fit_piece(Constraint *constraint, const char *function_name, CgreenValue actual,
@@ -105,7 +105,7 @@ static void test_fit_piece(Constraint *constraint, const char *function_name, Cg
             (*constraint->compare)(constraint, actual),
             "Piece [%f], does not fit in [%f] in function [%s] parameter [%s]",
             ((Piece *)constraint->expected_value.value.pointer_value)->id,
-            ((Box *)actual.value.pointer_value)->id,
+            ((Struct *)actual.value.pointer_value)->id,
             function_name,
             constraint->parameter_name);
 }
@@ -127,7 +127,7 @@ Constraint *create_piece_fit_in_box_constraint(intptr_t expected_value, const ch
 #define can_fit_in_box(box) create_piece_fit_in_box_constraint((intptr_t)box, #box)
 
 Ensure(CustomConstraint, more_complex_custom_constraint_function) {
-    Box box1 = {.id = (char)1, .size = 5};
+    Struct box1 = {.id = (char)1, .size = 5};
     Piece piece99 = {.id = (char)99, .size = 6};
     assert_that(&piece99, can_fit_in_box(&box1));
 }

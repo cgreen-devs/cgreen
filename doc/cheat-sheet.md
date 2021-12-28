@@ -45,7 +45,7 @@
     ends_with_string( <value> )
     does_not_end_with_string( <value> )
 
-### Doubles
+### Floating point values (Doubles)
 
     is_equal_to_double( <value> )
     is_not_equal_to_double( <value> )
