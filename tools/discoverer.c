@@ -42,45 +42,16 @@ static void add_all_tests_from(asymbol **symbols, long symbol_count, CgreenVecto
     }
 }
 
-/* Read in the dynamic symbols.  */
-
-static asymbol **get_dynamic_symbols_table(bfd *abfd, long *symbol_count, bool verbose, const char *filename)
+/* Read in the symbols.  */
+static asymbol **get_symbols_table(bfd *abfd, long *symbol_count, bool verbose, const char *filename)
 {
-    long storage = bfd_adapter_get_dynamic_symtab_upper_bound(abfd);
-    if (storage <= 0) {
-        if (verbose) {
-            if (storage < 0)
-                printf("%s: bfd_get_dynamic_symtab_upper_bounds returned %ld\n", filename, storage);
-            else
-                printf("%s: no symbols\n", filename);
-        }
-        *symbol_count = 0;
-        return NULL;
-    }
+    bool dynamic = (bfd_adapter_get_file_flags(abfd) & DYNAMIC) != 0;
+    long storage;
 
-    asymbol **symbols = (asymbol **) bfd_adapter_alloc(abfd, storage);
-    if (symbols == NULL) {
-        if (verbose)
-            printf("%s: bfd_alloc failed while retrieving symbols\n", filename);
-        *symbol_count = 0;
-        return NULL;
-    }
-
-    *symbol_count = bfd_adapter_canonicalize_dynamic_symtab(abfd, symbols);
-    if (*symbol_count < 0) {
-        if (verbose)
-            printf("%s: failed to get symbols count\n", filename);
-        *symbol_count = 0;
-        return NULL;
-    }
-
-  return symbols;
-}
-
-
-static asymbol **get_static_symbols_table(bfd *abfd, long *symbol_count, bool verbose, const char *filename)
-{
-    long storage = bfd_adapter_get_symtab_upper_bound(abfd);
+    if (dynamic)
+        storage = bfd_adapter_get_dynamic_symtab_upper_bound(abfd);
+    else
+        storage = bfd_adapter_get_symtab_upper_bound(abfd);
     if (storage <= 0) {
         if (verbose) {
             if (storage < 0)
@@ -100,7 +71,10 @@ static asymbol **get_static_symbols_table(bfd *abfd, long *symbol_count, bool ve
         return NULL;
     }
 
-    *symbol_count = bfd_adapter_canonicalize_symtab(abfd, symbols);
+    if (dynamic)
+        *symbol_count = bfd_adapter_canonicalize_dynamic_symtab(abfd, symbols);
+    else
+        *symbol_count = bfd_adapter_canonicalize_symtab(abfd, symbols);
     if (*symbol_count < 0) {
         if (verbose)
             printf("%s: failed to get symbols count\n", filename);
@@ -109,15 +83,6 @@ static asymbol **get_static_symbols_table(bfd *abfd, long *symbol_count, bool ve
     }
 
     return symbols;
-}
-
-
-static asymbol **get_symbols_table(bfd *abfd, long *symbol_count, bool verbose, const char *filename)
-{
-    if ((bfd_adapter_get_file_flags(abfd) & DYNAMIC) == 0){
-        return get_static_symbols_table(abfd, symbol_count, verbose, filename);
-    } else
-        return get_dynamic_symbols_table(abfd, symbol_count, verbose, filename);
 }
 
 CgreenVector *discover_tests_in(const char *filename, bool verbose) {
