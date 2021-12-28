@@ -37,9 +37,9 @@ static void given_a_file_with_dynamic_symbols(const char *filename, bfd *expect_
     expect(bfd_adapter_check_format,
            when(abfd, is_equal_to(expect_abfd)),
            when(format, is_equal_to(bfd_object)));
-    expect(bfd_adapter_get_file_flags,
+    always_expect(bfd_adapter_get_file_flags,
            when(abfd, is_equal_to(expect_abfd)),
-           will_return(HAS_SYMS));
+           will_return(HAS_SYMS|DYNAMIC));
 }
 
 static void given_a_file_with_two_lines(const char *filename, const char *line1, const char *line2) {
