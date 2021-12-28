@@ -32,6 +32,16 @@ static void expect_open_file(const char *filename, void *result) {
            will_return(result));
 }
 
+static void given_a_file_with_dynamic_symbols(const char *filename, bfd *expect_abfd) {
+    expect_open_file(filename, expect_abfd);
+    expect(bfd_adapter_check_format,
+           when(abfd, is_equal_to(expect_abfd)),
+           when(format, is_equal_to(bfd_object)));
+    expect(bfd_adapter_get_file_flags,
+           when(abfd, is_equal_to(expect_abfd)),
+           will_return(HAS_SYMS));
+}
+
 static void given_a_file_with_two_lines(const char *filename, const char *line1, const char *line2) {
     static bfd *expect_abfd = (bfd *) 1;
     static long expect_storage = 1;
@@ -41,13 +51,8 @@ static void given_a_file_with_two_lines(const char *filename, const char *line1,
     static asymbol *symbols_ptr[2] = { &symbols[0], &symbols[1] };
     static asymbol **expect_symbols = (asymbol **) &symbols_ptr;
 
-    expect_open_file(filename, expect_abfd);
-    expect(bfd_adapter_check_format,
-           when(abfd, is_equal_to(expect_abfd)),
-           when(format, is_equal_to(bfd_object)));
-    expect(bfd_adapter_get_file_flags,
-           when(abfd, is_equal_to(expect_abfd)),
-           will_return(HAS_SYMS));
+    given_a_file_with_dynamic_symbols(filename, expect_abfd);
+
     expect(bfd_adapter_get_dynamic_symtab_upper_bound,
            when(abfd, is_equal_to(expect_abfd)),
            will_return(expect_storage));
@@ -85,13 +90,8 @@ static void given_a_file_with_one_line(const char *filename, const char *line) {
     static asymbol *symbols_ptr = symbols;
     static asymbol **expect_symbols = (asymbol **) &symbols_ptr;
 
-    expect_open_file(filename, expect_abfd);
-    expect(bfd_adapter_check_format,
-           when(abfd, is_equal_to(expect_abfd)),
-           when(format, is_equal_to(bfd_object)));
-    expect(bfd_adapter_get_file_flags,
-           when(abfd, is_equal_to(expect_abfd)),
-           will_return(HAS_SYMS));
+    given_a_file_with_dynamic_symbols(filename, expect_abfd);
+
     expect(bfd_adapter_get_dynamic_symtab_upper_bound,
            when(abfd, is_equal_to(expect_abfd)),
            will_return(expect_storage));
@@ -152,13 +152,8 @@ Ensure(Discoverer, should_find_no_tests_if_file_has_no_dynamic_symbol) {
     const char *filename = "no-dynamic-symbol";
     bfd *expect_abfd = (bfd *)1;
 
-    expect_open_file(filename, expect_abfd);
-    expect(bfd_adapter_check_format,
-           when(abfd, is_equal_to(expect_abfd)),
-           when(format, is_equal_to(bfd_object)));
-    expect(bfd_adapter_get_file_flags,
-           when(abfd, is_equal_to(expect_abfd)),
-           will_return(HAS_SYMS));
+    given_a_file_with_dynamic_symbols(filename, expect_abfd);
+
     expect(bfd_adapter_get_dynamic_symtab_upper_bound,
            when(abfd, is_equal_to(expect_abfd)),
            will_return(-1));
@@ -177,13 +172,8 @@ Ensure(Discoverer, should_find_no_tests_if_bdf_alloc_fail) {
     bfd *expect_abfd = (bfd *)1;
     long expect_storage = 1;
 
-    expect_open_file(filename, expect_abfd);
-    expect(bfd_adapter_check_format,
-           when(abfd, is_equal_to(expect_abfd)),
-           when(format, is_equal_to(bfd_object)));
-    expect(bfd_adapter_get_file_flags,
-           when(abfd, is_equal_to(expect_abfd)),
-           will_return(HAS_SYMS));
+    given_a_file_with_dynamic_symbols(filename, expect_abfd);
+
     expect(bfd_adapter_get_dynamic_symtab_upper_bound,
            when(abfd, is_equal_to(expect_abfd)),
            will_return(expect_storage));
@@ -207,13 +197,8 @@ Ensure(Discoverer, should_find_no_tests_if_bfd_canonicalize_dynamic_symtab_fails
     long expect_storage = 1;
     asymbol **expect_symbols = (asymbol **) 2;
 
-    expect_open_file(filename, expect_abfd);
-    expect(bfd_adapter_check_format,
-           when(abfd, is_equal_to(expect_abfd)),
-           when(format, is_equal_to(bfd_object)));
-    expect(bfd_adapter_get_file_flags,
-           when(abfd, is_equal_to(expect_abfd)),
-           will_return(HAS_SYMS));
+    given_a_file_with_dynamic_symbols(filename, expect_abfd);
+
     expect(bfd_adapter_get_dynamic_symtab_upper_bound,
            when(abfd, is_equal_to(expect_abfd)),
            will_return(expect_storage));
@@ -241,13 +226,8 @@ Ensure(Discoverer, should_find_no_tests_if_get_symbols_table_return_zero_symbol)
     long expect_storage = 1;
     asymbol **expect_symbols = (asymbol **) 2;
 
-    expect_open_file(filename, expect_abfd);
-    expect(bfd_adapter_check_format,
-           when(abfd, is_equal_to(expect_abfd)),
-           when(format, is_equal_to(bfd_object)));
-    expect(bfd_adapter_get_file_flags,
-           when(abfd, is_equal_to(expect_abfd)),
-           will_return(HAS_SYMS));
+    given_a_file_with_dynamic_symbols(filename, expect_abfd);
+
     expect(bfd_adapter_get_dynamic_symtab_upper_bound,
            when(abfd, is_equal_to(expect_abfd)),
            will_return(expect_storage));
@@ -277,13 +257,8 @@ Ensure(Discoverer, should_find_no_tests_if_bfd_asymbol_bfd_fails) {
     asymbol *symbols_ptr = symbols;
     asymbol **expect_symbols = (asymbol **) &symbols_ptr;
 
-    expect_open_file(filename, expect_abfd);
-    expect(bfd_adapter_check_format,
-           when(abfd, is_equal_to(expect_abfd)),
-           when(format, is_equal_to(bfd_object)));
-    expect(bfd_adapter_get_file_flags,
-           when(abfd, is_equal_to(expect_abfd)),
-           will_return(HAS_SYMS));
+    given_a_file_with_dynamic_symbols(filename, expect_abfd);
+
     expect(bfd_adapter_get_dynamic_symtab_upper_bound,
            when(abfd, is_equal_to(expect_abfd)),
            will_return(expect_storage));
@@ -316,13 +291,8 @@ Ensure(Discoverer, should_find_no_tests_if_bfd_is_target_special_symbol_returns_
     asymbol *symbols_ptr = symbols;
     asymbol **expect_symbols = (asymbol **) &symbols_ptr;
 
-    expect_open_file(filename, expect_abfd);
-    expect(bfd_adapter_check_format,
-           when(abfd, is_equal_to(expect_abfd)),
-           when(format, is_equal_to(bfd_object)));
-    expect(bfd_adapter_get_file_flags,
-           when(abfd, is_equal_to(expect_abfd)),
-           will_return(HAS_SYMS));
+    given_a_file_with_dynamic_symbols(filename, expect_abfd);
+
     expect(bfd_adapter_get_dynamic_symtab_upper_bound,
            when(abfd, is_equal_to(expect_abfd)),
            will_return(expect_storage));
