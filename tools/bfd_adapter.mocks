@@ -13,6 +13,10 @@ long bfd_adapter_get_dynamic_symtab_upper_bound(bfd *abfd) {
     return (long) mock(abfd);
 }
 
+long bfd_adapter_get_symtab_upper_bound(bfd *abfd) {
+    return (long) mock(abfd);
+}
+
 flagword bfd_adapter_get_file_flags(const bfd *abfd){
     return (flagword) mock(abfd);
 }
@@ -26,6 +30,10 @@ bfd_boolean bfd_adapter_is_target_special_symbol(bfd *abfd, asymbol *symbols) {
 }
 
 long bfd_adapter_canonicalize_dynamic_symtab(bfd *abfd, asymbol **symbols) {
+    return (long) mock(abfd, symbols);
+}
+
+long bfd_adapter_canonicalize_symtab(bfd *abfd, asymbol **symbols) {
     return (long) mock(abfd, symbols);
 }
 

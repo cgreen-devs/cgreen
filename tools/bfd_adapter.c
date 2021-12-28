@@ -15,6 +15,10 @@ long bfd_adapter_get_dynamic_symtab_upper_bound(bfd *abfd) {
     return bfd_get_dynamic_symtab_upper_bound(abfd);
 }
 
+long bfd_adapter_get_symtab_upper_bound(bfd *abfd) {
+    return bfd_get_symtab_upper_bound(abfd);
+}
+
 flagword bfd_adapter_get_file_flags(const bfd *abfd){
     return bfd_get_file_flags(abfd);
 }
@@ -29,6 +33,10 @@ bfd_boolean bfd_adapter_is_target_special_symbol(bfd *abfd, asymbol *symbols) {
 
 long bfd_adapter_canonicalize_dynamic_symtab(bfd *abfd, asymbol **symbols) {
     return bfd_canonicalize_dynamic_symtab(abfd, symbols);
+}
+
+long bfd_adapter_canonicalize_symtab(bfd *abfd, asymbol **symbols) {
+    return bfd_canonicalize_symtab(abfd, symbols);
 }
 
 bfd_boolean bfd_adapter_check_format(bfd *abfd, bfd_format format) {
