@@ -3,6 +3,7 @@ include_directories(
     ${CGREEN_PUBLIC_INCLUDE_DIRS}
     ${CURRENT_BINARY_DIR})
 
+find_package(LibBfd)
 if(LibBfd_FOUND)
 
   set(CGREEN_RUNNER_TESTS_LIBRARY
@@ -10,7 +11,7 @@ if(LibBfd_FOUND)
     CACHE INTERNAL "cgreen-runner tests shared library"
   )
   set(RUNNER_TESTS_SRCS
-    runnerTests.c
+    runner_unit_tests.c
     ../discoverer.c
     ../bfd_adapter.c
     ../test_item.c)
