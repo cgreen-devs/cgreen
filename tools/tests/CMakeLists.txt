@@ -78,6 +78,15 @@ if(LibBfd_FOUND)
   macro_add_test(NAME cgreen_runner_suite_name
     COMMAND cgreen-runner -s Suite ${CGREEN_RUNNER_TESTS_LIBRARY})
 
+  macro_add_test(NAME cgreen_runner_fail_on_non_existing_library
+    COMMAND cgreen-runner Suite non_existent_library)
+  set_tests_properties(cgreen_runner_fail_on_non_existing_library PROPERTIES WILL_FAIL true)
+
+  macro_add_test(NAME cgreen_runner_fail_on_non_existing_library_with_suite
+    COMMAND cgreen-runner -s Suite non_existent_library
+    WILL_FAIL)
+  set_tests_properties(cgreen_runner_fail_on_non_existing_library_with_suite PROPERTIES WILL_FAIL true)
+
   macro_add_test(NAME cgreen_runner_verbose
     COMMAND cgreen-runner -v -C ${CGREEN_RUNNER_TESTS_LIBRARY})
 
