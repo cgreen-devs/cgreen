@@ -287,6 +287,7 @@ int main(int argc, char **argv) {
         for (i = 0; i<library_count; i++) {
             if (!file_exists(libraries[i])) {
                 printf("Couldn't find library: %s\n", libraries[i]);
+                any_fail = true;
                 break;
             }
 
@@ -303,6 +304,7 @@ int main(int argc, char **argv) {
 
         if (!file_exists(libraries[i])) {
             printf("Couldn't find library: %s\n", libraries[i]);
+            any_fail = true;
             break;
         }
 
