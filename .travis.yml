@@ -18,6 +18,7 @@ addons:
     - lcov
     - g++
     - binutils-dev
+    - libiberty-dev
     - valgrind
 
 before_install:
