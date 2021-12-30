@@ -15,6 +15,10 @@ Ensure(integer_one_should_assert_true) {
     assert_that(1, is_true);
 }
 
+Ensure(integer_one_should_assert_true_short) {
+    assert_that(1);
+}
+
 Ensure(integer_two_should_assert_true) {
     assert_that(2, is_true);
 }

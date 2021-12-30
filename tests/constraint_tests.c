@@ -124,6 +124,46 @@ Ensure(Constraint, matching_strings_as_equal) {
     destroy_constraint(equals_string_hello_constraint);
 }
 
+Ensure(Constraint, matching_beginning_of_string) {
+    Constraint *beginning_of_string_hello_constraint =
+        create_begins_with_string_constraint("Hell", "user_greeting");
+
+    assert_that(compare_string_constraint(beginning_of_string_hello_constraint, "Hello"), is_true);
+    assert_that(compare_string_constraint(beginning_of_string_hello_constraint, "Goodbye"), is_false);
+
+    destroy_constraint(beginning_of_string_hello_constraint);
+}
+
+Ensure(Constraint, not_matching_beginning_of_string) {
+    Constraint *beginning_of_string_hello_constraint =
+        create_does_not_begin_with_string_constraint("Goodby", "user_greeting");
+
+    assert_that(compare_string_constraint(beginning_of_string_hello_constraint, "Hello"), is_true);
+    assert_that(compare_string_constraint(beginning_of_string_hello_constraint, "Goodbye"), is_false);
+
+    destroy_constraint(beginning_of_string_hello_constraint);
+}
+
+Ensure(Constraint, matching_end_of_string) {
+    Constraint *end_of_string_hello_constraint =
+        create_ends_with_string_constraint("ello", "user_greeting");
+
+    assert_that(compare_string_constraint(end_of_string_hello_constraint, "Hello"), is_true);
+    assert_that(compare_string_constraint(end_of_string_hello_constraint, "Goodbye"), is_false);
+
+    destroy_constraint(end_of_string_hello_constraint);
+}
+
+Ensure(Constraint, not_matching_end_of_string) {
+    Constraint *end_of_string_hello_constraint =
+        create_does_not_end_with_string_constraint("oodbye", "user_greeting");
+
+    assert_that(compare_string_constraint(end_of_string_hello_constraint, "Hello"), is_true);
+    assert_that(compare_string_constraint(end_of_string_hello_constraint, "Goodbye"), is_false);
+
+    destroy_constraint(end_of_string_hello_constraint);
+}
+
 Ensure(Constraint, matching_null_string_against_non_null_string) {
     Constraint *equals_string_hello_constraint =
             create_equal_to_string_constraint("Hello", "user_greeting");
