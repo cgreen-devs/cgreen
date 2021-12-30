@@ -71,6 +71,9 @@ if(LibBfd_FOUND)
   macro_add_test(NAME cgreen_runner_quiet
     COMMAND cgreen-runner -q ${CGREEN_RUNNER_TESTS_LIBRARY})
 
+  macro_add_test(NAME cgreen_runner_suite_name
+    COMMAND cgreen-runner -s Suite ${CGREEN_RUNNER_TESTS_LIBRARY})
+
   macro_add_test(NAME cgreen_runner_verbose
     COMMAND cgreen-runner -v -C ${CGREEN_RUNNER_TESTS_LIBRARY})
 

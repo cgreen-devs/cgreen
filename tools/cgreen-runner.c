@@ -281,7 +281,7 @@ int main(int argc, char **argv) {
     reporter_options.inhibit_finish_suite_message = false;
 
     int test_count = 0;
-    if (!have_xml_option() && suite_name_option != NULL) {
+    if (!have_xml_option() && (suite_name_option != NULL)) {
 
         /* Count all tests */
         for (i = 0; i<library_count; i++) {
@@ -306,7 +306,7 @@ int main(int argc, char **argv) {
             break;
         }
 
-        if (!have_xml_option() && suite_name_option != NULL)
+        if (!have_xml_option() && (suite_name_option != NULL))
             inhibit_appropriate_suite_message(i, library_count);
 
         fail = run_tests_in_library(suite_name_option, testname[i], libraries[i],

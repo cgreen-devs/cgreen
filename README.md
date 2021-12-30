@@ -67,10 +67,10 @@ You can also clone the repository or download the source zip from [GitHub](http:
 You need the [CMake](http://www.cmake.org) build system.
 Most standard C/C++ compilers should work. GCC definitely does.
 
-Perl, diff, find and sed are quired to run unit-tests. Most distro will have
+Perl, diff, find and sed are required to run unit-tests. Most distro will have
 those already installed.
 
-To build the dynamicly loading `cgreen-runner`, you need binutils development package. At runtime,
+To build the dynamically loading `cgreen-runner`, you need binutils development package. At runtime,
 cgreen-runner only requires binutils library. Some distro do not distinguish the
 two.
 
