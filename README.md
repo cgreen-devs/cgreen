@@ -70,21 +70,23 @@ Most standard C/C++ compilers should work. GCC definitely does.
 Perl, diff, find and sed are quired to run unit-tests. Most distro will have
 those already installed.
 
-To build cgreen-runner, you need binutils development package. At runtime,
+To build the dynamicly loading `cgreen-runner`, you need binutils development package. At runtime,
 cgreen-runner only requires binutils library. Some distro do not distinguish the
 two.
 
 |Distro | Build | Run |
 --- | --- | ---
-|Arch|bintuils|bintuils|
-|Cygwin|cygwin64-libbfd|cygwin64-libbfd|
+|Arch|binutils|binutils|
+|Cygwin|binutils|binutils|
 |Debian|binutils-dev|libbinutils|
-|Fedora|bintuils-devel|bintuils-devel|
-|OpenSUSE|bintuils-devel|bintuils-devel|
+|Fedora|binutils-devel|binutils-devel|
+|OpenSUSE|binutils-devel|binutils-devel|
 
-In the root directory run ``make``. That will configure and build the
-library and the `cgreen-runner`, both supporting both C and C++. See
-also the documentation. The later will only be build if build requirements are met.
+In the root directory run ``make``. That will configure and build,
+actually by setting up and handing over to `CMake`, the library and
+the `cgreen-runner`, both supporting both C and C++. See also the
+documentation which will only be built if build requirements are
+met.
 
 Here are some example of how to build using docker for various distro:
 
