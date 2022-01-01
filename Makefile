@@ -146,9 +146,10 @@ build:
 
 build/Makefile: | build
 ifeq ($(OS),Darwin)
-	cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" --build build
+	#cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" -S . -B build
+	cmake -S . -B build
 else
-	cmake --build build
+	cmake -S . -B build
 endif
 
 .SILENT:
