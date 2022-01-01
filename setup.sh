@@ -39,6 +39,9 @@ else
     # On linux we need LD_LIBRARY_PATH...
     export LD_LIBRARY_PATH="$PWD/build/src":$PATH
 
+    # MacOS..
+    export DYLD_LIBRARY_PATH="$PWD/build/src":$PATH
+
     # ...but on Cygwin DLL:s are searched using the path...
     export PATH="$PWD/build/src":$PATH
 fi
