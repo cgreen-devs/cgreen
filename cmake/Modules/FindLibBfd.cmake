@@ -66,11 +66,12 @@ find_library (LIBBFD_LIBRARY
     ENV LD_LIBRARY_PATH)
 #message("LIBBFD_LIBRARY = ${LIBBFD_LIBRARY}")
 
-# required on Homebrew
-find_library (LIBIBERTY_LIBRARY
-  NAMES
+if (CMAKE_HOST_APPLE)
+  # required on Homebrew
+  find_library (LIBIBERTY_LIBRARY
+    NAMES
     iberty
-  PATHS
+    PATHS
     /usr/lib
     /usr/lib64
     /usr/local/lib
@@ -81,12 +82,12 @@ find_library (LIBIBERTY_LIBRARY
     ${HOMEBREW_ONLY_SEARCH_PATH_FOR_LIB}
     ENV LIBRARY_PATH
     ENV LD_LIBRARY_PATH)
-#message("LIBIBERTY_LIBRARY = ${LIBIBERTY_LIBRARY}")
+  #message("LIBIBERTY_LIBRARY = ${LIBIBERTY_LIBRARY}")
 
-find_library (LIBZ_LIBRARY
-  NAMES
+  find_library (LIBZ_LIBRARY
+    NAMES
     z
-  PATHS
+    PATHS
     /usr/lib
     /usr/lib64
     /usr/local/lib
@@ -97,16 +98,24 @@ find_library (LIBZ_LIBRARY
     ${HOMEBREW_ONLY_SEARCH_PATH_FOR_LIB}
     ENV LIBRARY_PATH
     ENV LD_LIBRARY_PATH)
-#message("LIBZ_LIBRARY = ${LIBZ_LIBRARY}")
+  #message("LIBZ_LIBRARY = ${LIBZ_LIBRARY}")
+endif()
 
 include (FindPackageHandleStandardArgs)
 
 # handle the QUIETLY and REQUIRED arguments and set LIBBFD_FOUND to TRUE if all listed variables are TRUE
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(LibBfd DEFAULT_MSG
-  LIBBFD_LIBRARY
-  LIBIBERTY_LIBRARY
-  LIBZ_LIBRARY
-  LIBBFD_INCLUDE_DIRS)
+if (CMAKE_HOST_APPLE)
+  FIND_PACKAGE_HANDLE_STANDARD_ARGS(LibBfd DEFAULT_MSG
+    LIBBFD_LIBRARY
+    LIBIBERTY_LIBRARY
+    LIBZ_LIBRARY
+    LIBBFD_INCLUDE_DIRS)
+else()
+  FIND_PACKAGE_HANDLE_STANDARD_ARGS(LibBfd DEFAULT_MSG
+    LIBBFD_LIBRARY
+    LIBBFD_INCLUDE_DIRS)
+endif()
+
 
 set(LIBBFD_LIBRARIES "${LIBBFD_LIBRARY}" "${LIBIBERTY_LIBRARY}" "${LIBZ_LIBRARY}")
 mark_as_advanced(LIBBFD_INCLUDE_DIRS LIBBFD_LIBRARIES LIBBFD_BFD_LIBRARY)
