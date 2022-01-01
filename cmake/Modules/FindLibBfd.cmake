@@ -106,7 +106,7 @@ endif()
 find_library (LIBIBERTY_LIBRARY
   NAMES
     iberty
-  PATHS
+    PATHS
     /usr/lib
     /usr/lib64
     /usr/local/lib
@@ -117,12 +117,12 @@ find_library (LIBIBERTY_LIBRARY
     ${HOMEBREW_ONLY_SEARCH_PATH_FOR_LIB}
     ENV LIBRARY_PATH
     ENV LD_LIBRARY_PATH)
-#message("LIBIBERTY_LIBRARY = ${LIBIBERTY_LIBRARY}")
+  #message("LIBIBERTY_LIBRARY = ${LIBIBERTY_LIBRARY}")
 
-find_library (LIBZ_LIBRARY
-  NAMES
+  find_library (LIBZ_LIBRARY
+    NAMES
     z
-  PATHS
+    PATHS
     /usr/lib
     /usr/lib64
     /usr/local/lib
@@ -133,7 +133,8 @@ find_library (LIBZ_LIBRARY
     ${HOMEBREW_ONLY_SEARCH_PATH_FOR_LIB}
     ENV LIBRARY_PATH
     ENV LD_LIBRARY_PATH)
-#message("LIBZ_LIBRARY = ${LIBZ_LIBRARY}")
+  #message("LIBZ_LIBRARY = ${LIBZ_LIBRARY}")
+endif()
 
 include (FindPackageHandleStandardArgs)
 
