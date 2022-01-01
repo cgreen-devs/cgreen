@@ -22,14 +22,15 @@ all: build-it
 
 .PHONY:debug
 debug: build
-	cd build; cmake -DCMAKE_BUILD_TYPE:string=Debug ..; $(MAKE)
+	cmake -DCMAKE_BUILD_TYPE:string=Debug -S . -B build
+	cmake --build build
 
 32bit: build
 	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" $(GENERATOR) ..; $(MAKE)
 
 .PHONY:test
 test: build-it
-	cd build; $(MAKE) check
+	ctest --test-dir build
 
 .PHONY:clean
 clean: build/Makefile
@@ -120,10 +121,16 @@ unit: build-it
 
 .PHONY: doc
 doc: build
-	cd build; cmake -DCGREEN_WITH_HTML_DOCS:bool=TRUE ..; $(MAKE); cmake -DCGREEN_WITH_HTML_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.html
+	cmake -DCGREEN_WITH_HTML_DOCS:bool=TRUE -S . -B build
+	cmake --build build
+	cmake -DCGREEN_WITH_HTML_DOCS:bool=False
+	echo open $(PWD)/build/doc/cgreen-guide-en.html
 
 pdf: build
-	cd build; cmake -DCGREEN_WITH_PDF_DOCS:bool=TRUE ..; $(MAKE); cmake -DCGREEN_WITH_PDF_DOCS:bool=False ..; echo open $(PWD)/build/doc/cgreen-guide-en.pdf
+	cmake -DCGREEN_WITH_PDF_DOCS:bool=TRUE -S . -B build
+	cmake --build build
+	cmake -DCGREEN_WITH_PDF_DOCS:bool=FALSE -S . -B build
+	echo open $(PWD)/build/doc/cgreen-guide-en.pdf
 
 chunked: doc
 	asciidoctor-chunker build/doc/cgreen-guide-en.html -o docs
@@ -132,16 +139,16 @@ chunked: doc
 ############# Internal
 .PHONY:build-it
 build-it: build/Makefile
-	$(MAKE) -C build
+	cmake --build build
 
 build:
 	mkdir -p build
 
 build/Makefile: | build
 ifeq ($(OS),Darwin)
-	cd build; cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" ..
+	cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" --build build
 else
-	cd build; cmake ..
+	cmake --build build
 endif
 
 .SILENT:
