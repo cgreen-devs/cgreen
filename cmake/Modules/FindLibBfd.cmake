@@ -114,9 +114,10 @@ find_library (LIBIBERTY_LIBRARY
     /usr/include
     /opt/local/lib
     /opt/usr/lib64
-    /usr/local/opt/binutils/lib
+    ${HOMEBREW_ONLY_SEARCH_PATH_FOR_LIB}
     ENV LIBRARY_PATH
     ENV LD_LIBRARY_PATH)
+#message("LIBIBERTY_LIBRARY = ${LIBIBERTY_LIBRARY}")
 
 find_library (LIBZ_LIBRARY
   NAMES
@@ -129,9 +130,10 @@ find_library (LIBZ_LIBRARY
     /usr/include
     /opt/local/lib
     /opt/usr/lib64
-    /usr/local/opt/binutils/lib
+    ${HOMEBREW_ONLY_SEARCH_PATH_FOR_LIB}
     ENV LIBRARY_PATH
     ENV LD_LIBRARY_PATH)
+#message("LIBZ_LIBRARY = ${LIBZ_LIBRARY}")
 
 include (FindPackageHandleStandardArgs)
 
