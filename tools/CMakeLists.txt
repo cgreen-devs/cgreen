@@ -1,15 +1,15 @@
-include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${PROJECT_BINARY_DIR})
-
 find_package(LibBfd)
 
-# Need to explicitly add libintl - Cygwin issue with binutils-2.37-2
-if (CYGWIN)
-  find_library(EXPLICIT_INTLIB_ONLY_REQUIRED_FOR_CYGWIN NAMES intl libintl)
-else ()
-  set(EXPLICIT_INTLIB_ONLY_REQUIRED_FOR_CYGWIN "")
-endif()
-
 if(LibBfd_FOUND)
+  include_directories(${CGREEN_PUBLIC_INCLUDE_DIRS} ${PROJECT_BINARY_DIR} ${LIBBFD_INCLUDE_DIRS})
+
+  # Need to explicitly add libintl - Cygwin issue with binutils-2.37-2
+  if (CYGWIN)
+    find_library(EXPLICIT_INTLIB_ONLY_REQUIRED_FOR_CYGWIN NAMES intl libintl)
+  else ()
+    set(EXPLICIT_INTLIB_ONLY_REQUIRED_FOR_CYGWIN "")
+  endif()
+
   set(RUNNER_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/cgreen-runner.c
     ${CMAKE_CURRENT_SOURCE_DIR}/gopt.c
