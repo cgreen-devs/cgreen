@@ -61,7 +61,6 @@ find_library (LIBBFD_LIBRARY
     /opt/local/lib
     /opt/usr/lib64
     ${HOMEBREW_ONLY_SEARCH_PATH_FOR_LIB}
-    /usr/local/opt/binutils/lib
     ENV LIBRARY_PATH
     ENV LD_LIBRARY_PATH)
 #message("LIBBFD_LIBRARY = ${LIBBFD_LIBRARY}")
@@ -117,7 +116,6 @@ else()
     LIBBFD_LIBRARY
     LIBBFD_INCLUDE_DIRS)
 endif()
-
 
 set(LIBBFD_LIBRARIES "${LIBBFD_LIBRARY}" "${LIBIBERTY_LIBRARY}" "${LIBZ_LIBRARY}")
 mark_as_advanced(LIBBFD_INCLUDE_DIRS LIBBFD_LIBRARIES LIBBFD_BFD_LIBRARY)
