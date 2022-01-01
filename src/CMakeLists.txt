@@ -12,7 +12,7 @@ else()
   else()
     # No version control
     # e.g. when the software is built from a source tarball
-    message(WARNING "-- Unable to find git. Setting git revision to 'unknown'.")
+    message(WARNING "-- Unable to find git, or not a repo. Setting git revision to 'unknown'.")
     set(GITREVISION "unknown")
   endif()
 endif()
