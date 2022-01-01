@@ -102,6 +102,37 @@ if (CMAKE_HOST_APPLE OR CYGWIN)
   #message("LIBZ_LIBRARY = ${LIBZ_LIBRARY}")
 endif()
 
+# required on Homebrew
+find_library (LIBIBERTY_LIBRARY
+  NAMES
+    iberty
+  PATHS
+    /usr/lib
+    /usr/lib64
+    /usr/local/lib
+    /usr/local/lib64
+    /usr/include
+    /opt/local/lib
+    /opt/usr/lib64
+    /usr/local/opt/binutils/lib
+    ENV LIBRARY_PATH
+    ENV LD_LIBRARY_PATH)
+
+find_library (LIBZ_LIBRARY
+  NAMES
+    z
+  PATHS
+    /usr/lib
+    /usr/lib64
+    /usr/local/lib
+    /usr/local/lib64
+    /usr/include
+    /opt/local/lib
+    /opt/usr/lib64
+    /usr/local/opt/binutils/lib
+    ENV LIBRARY_PATH
+    ENV LD_LIBRARY_PATH)
+
 include (FindPackageHandleStandardArgs)
 
 # handle the QUIETLY and REQUIRED arguments and set LIBBFD_FOUND to TRUE if all listed variables are TRUE
