@@ -155,16 +155,17 @@ valgrind: build-it
 
 .PHONY: build-it
 build-it: build/Makefile
-	$(BUILDER) -C build
+	cmake --build build
 
 build:
 	mkdir build
 
 build/Makefile: build
 ifeq ($(OS),Darwin)
-	cd build; cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" $(GENERATOR) ..
+	#cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" -S . -B build
+	cmake -S . -B build
 else
-	cd build; cmake $(GENERATOR) ..
+	cmake -S . -B build
 endif
 
 .SILENT:
