@@ -1,7 +1,7 @@
-.TH CGREEN-DEBUG "1" "May 2020" "cgreen 1.2.0" "User Commands"
+.TH CGREEN-DEBUG 1
 
 .SH NAME
-cgreen-debug \- start cgreen-runner under GDB and break at a specific test
+cgreen-debug \- start cgreen-runner under a debugger and break at a specific test
 
 .SH SYNOPSIS
 .B cgreen\-debug
@@ -11,15 +11,21 @@ cgreen-debug \- start cgreen-runner under GDB and break at a specific test
 
 .SH DESCRIPTION
 .B cgreen-debug
-is a script to start cgreen-runner under gdb, load a \fILIBRARY\fR and break on
-a named \fITEST\fR.  Where \fILIBRARY\fR is a filename of the shared library of
-Cgreen tests, usually .so or .dll depending on your platform. \fITEST\fR is the
+is a script to start cgreen-runner under a debugger (primarily gdb), load a \fILIBRARY\fR
+and break on a named \fITEST\fR.  Where \fILIBRARY\fR is a filename of the shared library of
+Cgreen tests, usually .so, .dll or .dylib, depending on your platform. \fITEST\fR is the
 name of a test in that library in the format <context>:<test_name>.
 
 .SS OPTIONS
 .TP
 .B "\-h, \-\-help"
 Print some usage information and exit.
+
+.TP
+.B "\-d, \-\-debugger" debugger
+Instead of default (gdb) use
+.I debugger
+as the debugger. Allowed values are "gdb", "cgdb", "lldb".
 
 .SH "SEE ALSO"
 cgreen(5)
@@ -33,6 +39,6 @@ and
 is in the
 .B Cgreen
 manual available at
-.UR https://\:cgreen-devs.github.io/
+.UR https://cgreen-devs.github.io/
 GitHub
 .UE .
