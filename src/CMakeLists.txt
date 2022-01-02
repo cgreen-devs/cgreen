@@ -91,7 +91,7 @@ elseif(WIN32)
     ${CMAKE_CURRENT_SOURCE_DIR}/win32_runner_platform.c
   )
 else()
-  message(FATAL_ERROR "Cgreen can currently only be compiled for Msys2, Cygwin, MacOSX and Windows.")
+  message(FATAL_ERROR "Cgreen can currently only be compiled for Linux, Cygwin, MacOSX and Msys2 (native, not MingW versions). Patches are welcome!")
 endif()
 SET_SOURCE_FILES_PROPERTIES(${cgreen_SRCS} PROPERTIES LANGUAGE C)
 
