@@ -66,8 +66,9 @@ find_library (LIBBFD_LIBRARY
     ENV LD_LIBRARY_PATH)
 #message("LIBBFD_LIBRARY = ${LIBBFD_LIBRARY}")
 
-if (CMAKE_HOST_APPLE)
-  # required on Homebrew
+if (CMAKE_HOST_APPLE OR CYGWIN)
+  # required on Homebrew, Cygwin
+  # but not on Ubuntu, MSYS2
   find_library (LIBIBERTY_LIBRARY
     NAMES
     iberty
