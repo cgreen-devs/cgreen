@@ -20,6 +20,7 @@ set(cgreen_HDRS
   text_reporter.h
   unit.h
   vector.h
+  xml_reporter.h
 )
 
 install(
