@@ -39,13 +39,14 @@ The Makefile is mainly for convenience as `Cgreen` is actually built
 using `CMake`. So you can tweak the build using normal `CMake`
 settings.
 
-Optional: If you have `ninja` installed the underlying `CMake` builder
-will use that, which is faster.
-
 You can run some tests using
 
     $ make unit
     $ make test
+
+NOTE: to also build the dynamically auto-discovering runner
+`cgreen-runner`, which `make unit` uses, you need `binutils` as per
+the description in the README.md.
 
 ### Build options
 

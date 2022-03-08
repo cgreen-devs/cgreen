@@ -84,7 +84,7 @@ two.
 |Fedora|binutils-devel|binutils-devel||
 |OpenSUSE|binutils-devel|binutils-devel||
 |Darwin| - | - | 
-|Darwin/Homebrew|binutils|binutils| There is no equivalent to `libbfd` for Apple Clang but you can compile with Apple Clang and link with the brew versions. NOTE: `binutils´ need to be re-installed with `--enable-install-libiberty` https://stackoverflow.com/a/65978315/204658. |
+|Darwin/Homebrew|binutils|binutils| There is no equivalent to `libbfd` for Apple Clang but you can compile with Apple Clang and link with the brew versions. NOTE: `binutils` need to be re-installed with `--enable-install-libiberty` as per https://stackoverflow.com/a/65978315/204658. |
 
 In the root directory, run ``make``. That will configure CMake and
 then build the library and the `cgreen-runner`. See also the
