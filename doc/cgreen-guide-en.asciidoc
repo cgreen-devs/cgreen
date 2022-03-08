@@ -1557,16 +1557,20 @@ In your mocked function you can then simply return that value, or manipulate it 
 |===========================================================================================
 |*Macro*                                                      |*`mock()` will...*
 |`will_return(value)`                                         | return `value`, for integer types
-|`will_return_by_value(struct, size)`                         | return a pointer to an allocated copy of the `struct` that can be copied and returned by value from the mocked function
 |`will_return_double(value)`                                  | return `value` as a "boxed double", for double floats (required because of C's type coercion rules which would otherwise convert a double into an int)
+|`will_return_by_value(struct, size)`                         | return a pointer to an allocated copy of the `struct` that can be copied and returned by value from the mocked function
 |`will_set_contents_of_parameter(parameter_name, pointer_to_value, size)`| write `size` bytes from the pointed out value (`pointer_to_value`) into where the referenced out parameter (`parameter_name`) is pointing
+|`will_capture_parameter(parameter_name, pointer_to_local_variable)`|capture the value of the parameter and store it in the local variable
 |`with_side_effect(function, pointer_to_data)`                | call the side effect `function` and pass `pointer_to_data` to it
 |===========================================================================================
 
-NOTE: The "boxed double" returned by `mock()` if instructed with `will_return_double()` have to be "unboxed", by the caller see <<double_mocks>> for details.
+NOTE: *`will_return_double()`*: The "boxed double" returned by `mock()` have to be "unboxed" by the caller see <<double_mocks>> for details.
 
-NOTE: The memory allocated to the copy of the struct returned using a pointer in `will_return_by_value` need to be deallocated by the caller of `mock()` or it will be lost. You can do this with the code in the `Box` example below.
+NOTE: *`will_return_by_value`*: The memory allocated for the copy of the struct returned by `mock()` needs to be deallocated by the caller or it will be lost. You can do this with the code in the `Box` example below.
 
+NOTE: *`will_set_contents_of_parameter`*: The data to set must be correct at the time of the call to the mock function, and not be overwritten or released between the call to the `expect()` and the mock function. See <<refactoring-tests>> for details.
+
+NOTE: *`will_capture_parameter`*: The local variable to capture the value in must be live at the time of the call to the mock function, so using a local variable in a function called by your test will not work. See <<refactoring-tests>> for details.
 
 === Combining expectations
 
@@ -1842,6 +1846,7 @@ I.e. write functions that replaces the real functions and instead calls `mock()`
 TIP: You can try the `cgreen-mocker` for this, as described in <<cgreen-mocker>>.
 
 
+[[refactoring-tests]]
 === Refactoring Tests with Mocks - CAUTION!
 
 After a while you are bound to get tests with calls to `expect()`.
