@@ -3144,10 +3144,14 @@ You can use them to conditionally check for Cgreen features introduced as declar
 Since 1.2.0 Cgreen has featured a public version variable in the loaded library, `cgreen_library_version`.
 This is mainly used by the `cgreen-runner` to present version of the loaded library, but it can also be used to check for availability of features in the same way.
 
+=== 1.5.1
+
+- Fixed a problem with `ends_with_string()` which randomly crashed
+
 === 1.5.0
 
 - Replaced calling `nm` with BFD library calls, this makes the `cgreen-runner` a bit more fiddly to build on some systems
-- Added `will_capture_parameter()` constraint
+- Introduced `will_capture_parameter()`
 
 === 1.4.0
 
@@ -3159,8 +3163,8 @@ This is mainly used by the `cgreen-runner` to present version of the loaded libr
 
 === 1.2.0
 
-- Introduction of `will_return_by_value()`
-- Introduction of `with_side_effect()`
+- Introduced `will_return_by_value()`
+- Introduced `with_side_effect()`
 
 === 1.1.0
 
