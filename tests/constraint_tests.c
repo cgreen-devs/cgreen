@@ -150,6 +150,7 @@ Ensure(Constraint, matching_end_of_string) {
 
     assert_that(compare_string_constraint(end_of_string_hello_constraint, "Hello"), is_true);
     assert_that(compare_string_constraint(end_of_string_hello_constraint, "Goodbye"), is_false);
+    assert_that(compare_string_constraint(end_of_string_hello_constraint, "Hello ello"), is_true);
 
     destroy_constraint(end_of_string_hello_constraint);
 }
@@ -283,14 +284,19 @@ TestSuite *constraint_tests(void) {
     TestSuite *suite = create_test_suite();
     add_test_with_context(suite, Constraint, default_destroy_clears_state);
     add_test_with_context(suite, Constraint, parameter_name_matches_correctly);
+    add_test_with_context(suite, Constraint, compare_contents_is_correct_on_larger_than_intptr_array);
     add_test_with_context(suite, Constraint, compare_is_correct_when_using_integers);
+    add_test_with_context(suite, Constraint, compare_to_is_null_correctly);
     add_test_with_context(suite, Constraint, string_constraint_destroy_clears_state);
     add_test_with_context(suite, Constraint, matching_strings_as_equal);
+    add_test_with_context(suite, Constraint, matching_beginning_of_string);
+    add_test_with_context(suite, Constraint, not_matching_beginning_of_string);
+    add_test_with_context(suite, Constraint, matching_end_of_string);
+    add_test_with_context(suite, Constraint, not_matching_end_of_string);
     add_test_with_context(suite, Constraint, matching_null_string_against_non_null_string);
     add_test_with_context(suite, Constraint, matching_against_null_string);
     add_test_with_context(suite, Constraint, matching_doubles_as_equal_with_default_significance);
     add_test_with_context(suite, Constraint, matching_doubles_respects_significant_figure_setting);
-    add_test_with_context(suite, Constraint, compare_contents_is_correct_on_larger_than_intptr_array);
     add_test_with_context(suite, Constraint, compare_equal_to_contents_is_false_on_null);
     add_test_with_context(suite, Constraint, compare_not_equal_to_contents_is_false_on_null);
     add_test_with_context(suite, Constraint, can_compare_to_hex);

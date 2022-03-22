@@ -683,13 +683,15 @@ static bool compare_do_not_want_beginning_of_string(Constraint *constraint, Cgre
 }
 
 static bool compare_want_end_of_string(Constraint *constraint, CgreenValue actual) {
-    return strpos(actual.value.string_value, constraint->expected_value.value.string_value) ==
-        strlen(actual.value.string_value) - strlen(constraint->expected_value.value.string_value);
+    int match_length = strlen(constraint->expected_value.value.string_value);
+    int start_position = strlen(actual.value.string_value) - match_length;
+    if (start_position < 0)
+        return false;
+    return strcmp(&actual.value.string_value[start_position], constraint->expected_value.value.string_value) == 0;
 }
 
 static bool compare_do_not_want_end_of_string(Constraint *constraint, CgreenValue actual) {
-    return strpos(actual.value.string_value, constraint->expected_value.value.string_value) !=
-        strlen(actual.value.string_value) - strlen(constraint->expected_value.value.string_value);
+    return !compare_want_end_of_string(constraint, actual);
 }
 
 
