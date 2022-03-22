@@ -17,7 +17,7 @@ enable_testing()
 set(APPLICATION_NAME ${PROJECT_NAME})
 set(APPLICATION_VERSION_MAJOR "1")
 set(APPLICATION_VERSION_MINOR "5")
-set(APPLICATION_VERSION_PATCH "0")
+set(APPLICATION_VERSION_PATCH "1")
 # If you change here, also change in include/cgreen/cgreen.h
 # unless you write some code that automatically updates that...
 
