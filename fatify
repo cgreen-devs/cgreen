@@ -2,12 +2,18 @@
 #
 # This script is a part of Cgreen and creates fat versions of
 # cgreen-runner and libcgreen.dylib which is necessary if you are
-# using e.g. MacPorts gcc which don't have suppport for fat binaries
-# built in.
+# using e.g. Homebrew/MacPorts gcc which don't have suppport for fat
+# binaries built in.
 #
-# It ensures that both architectures are built, saving them under
-# descriptive names and then uses lipo to merge them into fat
-# binaries.
+# NOTE: This does not work completely automatic for x86_64/M1 since
+# Homebrew GCC can only compile for the current architecture.
+#
+# Since automatically ensuring that both architectures are built is
+# currently impossible from a single environment, you have to run this
+# script once on each architecture. The script will save the built
+# binaries under descriptive names and if it discovers that binaries
+# for the other architecture already exists it uses lipo to merge them
+# into fat binaries.
 #
 # At this point there is no way to run this as part of the CMake build
 # and install, and since the install target of CMake always rebuilds
@@ -16,34 +22,40 @@
 # /thoni56
 #
 function buildfor() {
-    cmake -DCMAKE_OSX_ARCHITECTURES=$1 ..
+    rm -rf build
     make
-    cp tools/cgreen-runner tools/cgreen-runner.$1
-    cp src/libcgreen.dylib src/libcgreen.$1.dylib
+    cp build/tools/cgreen-runner cgreen-runner.$1
+    cp build/src/libcgreen.dylib libcgreen.$1.dylib
 }
-
-# Ensure there is at least a build directory
-if [ ! -d "build" ]; then
-   mkdir build
-fi
-cd build
-
-buildfor i386
-buildfor x86_64
-
-lipo -create -o tools/cgreen-runner.fat -arch i386 tools/cgreen-runner.i386 -arch x86_64 tools/cgreen-runner.x86_64
-lipo -create -o src/libcgreen.dylib.fat -arch i386 src/libcgreen.i386.dylib -arch x86_64 src/libcgreen.x86_64.dylib
-
-if [ -z "$1" ]; then
-   echo "Fat binaries build for build/tools/cgreen-runner and build/src/libcgreen.dylib"
-   echo "Install with:"
-   echo "    sudo cp build/tools/cgreen-runner.fat <installpath>/bin/cgreen-runner"
-   echo "    sudo cp src/libcgreen.dylib.fat <installpath>/lib/libcgreen.dylib"
-   echo
-   echo "If <installpath> is the same for bin and lib, such as '/usr/local',"
-   echo "you can give that as an argument and the script will do that for you."
+arch=`arch`
+if [ $arch == "arm64" ] ; then
+    buildfor arm64
+    if [ ! -f libcgreen.x86_64.dylib ] ; then
+       echo "You need to run this aldo in an x86_64 environment to create fat binaries."
+       exit
+    fi
 else
-   echo "Installing 'cgreen-runner' in $1/bin and 'libcgreen.dylib' in $1/lib..."
-   sudo cp tools/cgreen-runner.fat $1/bin/cgreen-runner
-   sudo cp src/libcgreen.dylib.fat $1/lib/libcgreen.dylib
+    buildfor x86_64
+    if [ ! -f libcgreen.arm64.dylib ] ; then
+       echo "You need to run this in an arm64 environment to create fat binaries."
+       exit
+    fi
+fi
+
+lipo -create -o cgreen-runner -arch arm64 cgreen-runner.arm64 -arch x86_64 cgreen-runner.x86_64
+lipo -create -o libcgreen.dylib -arch arm64 libcgreen.arm64.dylib -arch x86_64 libcgreen.x86_64.dylib
+
+if [ -z "$1" ] ; then
+    echo "Fat binaries of cgreen-runner and libcgreen.dylib built:"
+    file cgreen-runner libcgreen.dylib
+    echo "Install with:"
+    echo "    sudo cp cgreen-runner <installpath>/bin/cgreen-runner"
+    echo "    sudo cp libcgreen.dylib <installpath>/lib/libcgreen.dylib"
+    echo
+    echo "If <installpath> is the same for bin and lib, such as '/usr/local',"
+    echo "you can give that as an argument and the script will do that for you."
+else
+    echo "Installing fat 'cgreen-runner' in $1/bin and 'libcgreen.dylib' in $1/lib..."
+    sudo cp cgreen-runner $1/bin/cgreen-runner
+    sudo cp libcgreen.dylib $1/lib/libcgreen.dylib
 fi
