@@ -25,9 +25,6 @@ debug: build
 	cmake -DCMAKE_BUILD_TYPE:string=Debug -S . -B build
 	cmake --build build
 
-32bit: build
-	-rm -rf build; mkdir build; cd build; cmake -DCMAKE_C_FLAGS="-m32" -DCMAKE_CXX_FLAGS="-m32" $(GENERATOR) ..; $(MAKE)
-
 .PHONY:test
 test: build-it
 	ctest --test-dir build
@@ -123,7 +120,7 @@ unit: build-it
 doc: build
 	cmake -DCGREEN_WITH_HTML_DOCS:bool=TRUE -S . -B build
 	cmake --build build
-	cmake -DCGREEN_WITH_HTML_DOCS:bool=False
+	cmake -DCGREEN_WITH_HTML_DOCS:bool=False -S . -B build
 	echo open $(PWD)/build/doc/cgreen-guide-en.html
 
 pdf: build
