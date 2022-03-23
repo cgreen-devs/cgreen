@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////
-In this Asciidoc document we use the convention that one sentence is kept one a single line.
+In this Asciidoc document we use the convention that one sentence is kept on a single line.
 This creates nice diffs.
 //////////////////////////////////////////////////////////////////////
 :source-highlighter: highlightjs
@@ -1425,6 +1425,29 @@ include::tutorial_src/set_contents.c[lines=3..12]
 
 
 When the mock for `convert_to_uppercase()` is called it will write the string "UPPER CASE" in the area pointed to by `converted_string`.
+
+==== Setting fields
+
+Sometimes you need to set a field in a struct sent by reference to a mock function.
+You cannot use the `will_set_contents_of_parameter()` directly since you can't, or even don't want to, know the complete information in the structure.
+But with a little bit of boilerplate in your mock function you can still write to a single field.
+
+In the mock function you need to create a local variable that points to the field you want to update.
+You can then use this pointer variable in the mock call to supplement the real parameters.
+
+This local variable will then be accessible in `expect()` calls as if it was a parameter, and you can use it to wrote data to where it points, which then should be the field in the incoming structure.
+
+[source, c]
+-----------------------
+include::tutorial_src/set_field.c[lines=3..18]
+...
+-----------------------
+
+The local variable `field` in the mock function is set to point to the field that we need to update.
+It is then exposed by including it in the `mock()` call, and `will_set_contents_of_parameter()` will use it to update whatever it points to with the data provided in the `expect()`.
+
+NOTE: Both the local variable and the data argument in the call to `will_set_contents_of_parameter()` must be pointers.
+You cannot use literals as data, except when it is a string literal which as per C convention is converted to a pointer.
 
 ==== Side Effects
 

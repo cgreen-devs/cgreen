@@ -8,7 +8,7 @@ void convert_to_uppercase(char *converted_string, const char *original_string) {
 Ensure(setting_content_of_out_parameter) {
     expect(convert_to_uppercase,
            when(original_string, is_equal_to_string("upper case")),
-           will_set_content_of_parameter(converted_string,
-                                         "UPPER CASE", 11));
+           will_set_contents_of_parameter(converted_string,
+                                          "UPPER CASE", 11));
 
 }
