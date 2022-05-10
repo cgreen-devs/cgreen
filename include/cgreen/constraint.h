@@ -20,6 +20,7 @@ typedef enum {
     CGREEN_CALL_CONSTRAINT,
     CGREEN_CALL_COUNTER_CONSTRAINT,
     CGREEN_RETURN_BY_VALUE_CONSTRAINT,
+    CGREEN_RETURN_BY_REFERENCE_CONSTRAINT,
     CGREEN_CAPTURE_PARAMETER_CONSTRAINT
 } ConstraintType;
 
@@ -85,6 +86,7 @@ Constraint *create_less_than_double_constraint(double expected_value, const char
 Constraint *create_greater_than_double_constraint(double expected_value, const char *expected_value_name);
 Constraint *create_return_value_constraint(intptr_t value_to_return);
 Constraint *create_return_by_value_constraint(intptr_t value_to_return, size_t size);
+Constraint *create_return_by_reference_constraint(void *ref_to_value_to_return);
 Constraint *create_return_double_value_constraint(double value_to_return);
 Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set, size_t size_to_set);
 Constraint *create_with_side_effect_constraint(void (*callback)(void *), void *data);

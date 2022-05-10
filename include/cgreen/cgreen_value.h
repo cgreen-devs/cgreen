@@ -9,7 +9,8 @@ typedef enum {
               CGREEN_STRING,
               CGREEN_DOUBLE,
               CGREEN_POINTER,
-              CGREEN_BYVALUE
+              CGREEN_BYVALUE,
+              CGREEN_BYREFERENCE
 } CgreenValueType;
 
 typedef struct {

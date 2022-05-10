@@ -49,6 +49,7 @@
 #define with_side_effect(callback, data) create_with_side_effect_constraint(callback, data)
 #define will_return(value) create_return_value_constraint((intptr_t)value)
 #define will_return_by_value(value, size) create_return_by_value_constraint((intptr_t)&value, size)
+#define will_return_by_reference(value) create_return_by_reference_constraint(&value)
 #define will_return_double(value) create_return_double_value_constraint(value)
 #define will_set_contents_of_parameter(parameter_name, pointer_to_value, size) create_set_parameter_value_constraint(#parameter_name, (intptr_t)pointer_to_value, (size_t)size)
 #define will_capture_parameter(parameter_name, local_variable) create_capture_parameter_constraint(#parameter_name, &local_variable, sizeof(local_variable))

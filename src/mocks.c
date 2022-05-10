@@ -310,6 +310,8 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
         */
         return box_double(stored_result.value.double_value);
 #endif
+    } else if (stored_result.type == CGREEN_BYREFERENCE) {
+        return (*((intptr_t *)(stored_result.value.pointer_value)));
     } else
         return stored_result.value.integer_value;
 }
@@ -898,6 +900,7 @@ static CgreenValue stored_result_or_default_for(CgreenVector* constraints) {
         switch (constraint->type) {
         case CGREEN_RETURN_VALUE_CONSTRAINT:
         case CGREEN_RETURN_POINTER_CONSTRAINT:
+        case CGREEN_RETURN_BY_REFERENCE_CONSTRAINT:
             return constraint->expected_value;
         case CGREEN_RETURN_BY_VALUE_CONSTRAINT: {
             /* When returning a struct by value we need to copy the struct

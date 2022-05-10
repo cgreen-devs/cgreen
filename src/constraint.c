@@ -474,6 +474,19 @@ Constraint *create_return_by_value_constraint(intptr_t value_to_return, size_t s
     return constraint;
 }
 
+Constraint *create_return_by_reference_constraint(void *ref_to_value_to_return) {
+    Constraint* constraint = create_constraint();
+    constraint->type = CGREEN_RETURN_BY_REFERENCE_CONSTRAINT;
+
+    constraint->compare = &compare_true;
+    constraint->execute = &test_true;
+    constraint->name = "return by reference";
+    constraint->expected_value = make_cgreen_pointer_value(ref_to_value_to_return);
+    constraint->expected_value.type = CGREEN_BYREFERENCE;
+
+    return constraint;
+}
+
 Constraint *create_return_double_value_constraint(double value_to_return) {
     Constraint* constraint = create_constraint();
     constraint->type = CGREEN_RETURN_VALUE_CONSTRAINT;
