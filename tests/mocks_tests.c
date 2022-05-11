@@ -512,6 +512,15 @@ Ensure(Mocks, can_return_by_value_depending_on_input_parameter) {
     assert_that(retrievedStruct2.height, is_equal_to(5));
 }
 
+Ensure(Mocks, can_return_value_given_as_input_parameter) {
+    int i_capture = 0;
+
+    expect(sample_mock, will_capture_parameter(i, i_capture),
+           will_return_by_reference(i_capture));
+
+    assert_that(sample_mock(42, NULL), is_equal_to(42));
+}
+
 TestSuite *mock_tests(void) {
     TestSuite *suite = create_test_suite();
     add_test_with_context(suite, Mocks, default_return_value_when_no_presets_for_loose_mock);
@@ -547,6 +556,7 @@ TestSuite *mock_tests(void) {
     add_test_with_context(suite, Mocks, mock_expect_with_side_effect);
     add_test_with_context(suite, Mocks, can_return_by_value);
     add_test_with_context(suite, Mocks, can_return_by_value_depending_on_input_parameter);
+    add_test_with_context(suite, Mocks, can_return_value_given_as_input_parameter);
 
     return suite;
 }
