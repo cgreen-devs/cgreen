@@ -27,7 +27,7 @@ debug: build
 
 .PHONY:test
 test: build-it
-	ctest --test-dir build
+	cd build; ctest
 
 .PHONY:clean
 clean: build/Makefile
