@@ -41,5 +41,5 @@ if(LibBfd_FOUND)
   install(PROGRAMS cgreen-debug
       DESTINATION ${CMAKE_INSTALL_BINDIR})
 else()
-  message(WARNING "libbfd not found, cgreen-runner will not be built")
+  message(WARNING “libbfd not found, cgreen-runner will not be built”)
 endif()
