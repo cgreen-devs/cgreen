@@ -67,9 +67,8 @@ find_library (LIBBFD_LIBRARY
 #message("LIBBFD_LIBRARY = ${LIBBFD_LIBRARY}")
 
 if (CMAKE_HOST_APPLE OR CYGWIN)
-  # These are not required on Ubuntu, MSYS2
-  # but are required on Homebrew, Cygwin
-  # Homebrew requires a re-install of binutils with '--enable-install-libiberty'
+  # required on Homebrew, Cygwin
+  # but not on Ubuntu, MSYS2
   find_library (LIBIBERTY_LIBRARY
     NAMES
     iberty
