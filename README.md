@@ -70,21 +70,17 @@ Most standard C/C++ compilers should work. GCC definitely does.
 Perl, diff, find and sed are required to run unit-tests. Most distro will have
 those already installed.
 
-To build the dynamically loading `cgreen-runner` you need the `libbfd`
-libraries which are available with the binutils development
-package. At runtime, `cgreen-runner` only requires the run-time
-version of the libraries. Some distros do not distinguish between the
+To build the dynamically loading `cgreen-runner`, you need binutils development package. At runtime,
+cgreen-runner only requires binutils library. Some distro do not distinguish the
 two.
 
-|Distro | Build | Run | Comments |
+|Distro | Build | Run |
 --- | --- | ---
-|Arch|binutils|binutils||
-|Cygwin|binutils|binutils||
-|Debian|binutils-dev|libbinutils||
-|Fedora|binutils-devel|binutils-devel||
-|OpenSUSE|binutils-devel|binutils-devel||
-|Darwin| - | - | 
-|Darwin/Homebrew|binutils|binutils| There is no equivalent to `libbfd` for Apple Clang but you can compile with Apple Clang and link with the brew versions. NOTE: `binutils` need to be re-installed with `--enable-install-libiberty` as per https://stackoverflow.com/a/65978315/204658. |
+|Arch|binutils|binutils|
+|Cygwin|binutils|binutils|
+|Debian|binutils-dev|libbinutils|
+|Fedora|binutils-devel|binutils-devel|
+|OpenSUSE|binutils-devel|binutils-devel|
 
 In the root directory run ``make``. That will configure and build,
 actually by setting up and handing over to `CMake`, the library and

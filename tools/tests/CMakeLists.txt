@@ -1,12 +1,10 @@
-find_package(LibBfd)
-
-if(LibBfd_FOUND)
-
-  include_directories(
+include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CGREEN_PUBLIC_INCLUDE_DIRS}
-    ${CURRENT_BINARY_DIR}
-    ${LIBBFD_INCLUDE_DIRS})
+    ${CURRENT_BINARY_DIR})
+
+find_package(LibBfd)
+if(LibBfd_FOUND)
 
   set(CGREEN_RUNNER_TESTS_LIBRARY
     cgreen_runner_tests

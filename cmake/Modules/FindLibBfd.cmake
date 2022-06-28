@@ -34,40 +34,9 @@ find_path (LIBBFD_INCLUDE_DIRS
     ENV CPATH)
 
 # Ugly, yes ugly...
-find_library (LIBBFD_LIBRARY
+find_library (LIBBFD_BFD_LIBRARY
   NAMES
     bfd
-  PATHS
-    /usr/lib
-    /usr/lib64
-    /usr/local/lib
-    /usr/local/lib64
-    /usr/include
-    /opt/local/lib
-    /opt/usr/lib64
-    /usr/local/opt/binutils/lib
-    ENV LIBRARY_PATH
-    ENV LD_LIBRARY_PATH)
-
-# required on Homebrew
-find_library (LIBIBERTY_LIBRARY
-  NAMES
-    iberty
-  PATHS
-    /usr/lib
-    /usr/lib64
-    /usr/local/lib
-    /usr/local/lib64
-    /usr/include
-    /opt/local/lib
-    /opt/usr/lib64
-    /usr/local/opt/binutils/lib
-    ENV LIBRARY_PATH
-    ENV LD_LIBRARY_PATH)
-
-find_library (LIBZ_LIBRARY
-  NAMES
-    z
   PATHS
     /usr/lib
     /usr/lib64
@@ -84,10 +53,8 @@ include (FindPackageHandleStandardArgs)
 
 # handle the QUIETLY and REQUIRED arguments and set LIBBFD_FOUND to TRUE if all listed variables are TRUE
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(LibBfd DEFAULT_MSG
-  LIBBFD_LIBRARY
-  LIBIBERTY_LIBRARY
-  LIBZ_LIBRARY
+  LIBBFD_BFD_LIBRARY
   LIBBFD_INCLUDE_DIRS)
 
-set(LIBBFD_LIBRARIES "${LIBBFD_LIBRARY}" "${LIBIBERTY_LIBRARY}" "${LIBZ_LIBRARY}")
+set(LIBBFD_LIBRARIES "${LIBBFD_BFD_LIBRARY}")
 mark_as_advanced(LIBBFD_INCLUDE_DIRS LIBBFD_LIBRARIES LIBBFD_BFD_LIBRARY)
