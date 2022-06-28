@@ -8,4 +8,4 @@ if (NOT Valgrind_FOUND)
   set(Valgrind_FOUND ${Valgrind_FOUND} CACHE BOOL "Flag whether Valgrind package was found")
   mark_as_advanced(Valgrind_FOUND Valgrind_EXECUTABLE)
 
-endif ()
+endif()

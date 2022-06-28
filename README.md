@@ -67,43 +67,12 @@ You can also clone the repository or download the source zip from [GitHub](http:
 You need the [CMake](http://www.cmake.org) build system.
 Most standard C/C++ compilers should work. GCC definitely does.
 
-Perl, diff, find and sed are required to run unit-tests. Most distro will have
-those already installed.
-
-To build cgreen-runner, you need binutils development package. At runtime,
-cgreen-runner only requires binutils library. Some distro do not distinguish the
-two.
-
-|Distro | Build | Run |
---- | --- | ---
-|Arch|bintuils|bintuils|
-|Cygwin|cygwin64-libbfd|cygwin64-libbfd|
-|Debian|binutils-dev|libbinutils|
-|Fedora|bintuils-devel|bintuils-devel|
-|OpenSUSE|bintuils-devel|bintuils-devel|
+Perl, diff, find and sed are required to run Cgreen's own
+unit-tests. Most distro will have those already installed.
 
 In the root directory run ``make``. That will configure and build the
 library and the `cgreen-runner`, both supporting both C and C++. See
-also the documentation. The later will only be build if build requirements are met.
-
-Here are some example of how to build using docker for various distro:
-
-```
-# debian build (will not clean)
-$ docker run --rm -v $PWD:/cgreen debian bash -c \
-    "apt update && apt -y install git cmake gcc g++ binutils-dev && cd /cgreen && make unit test"
-# debian run (we cannot use make unit test since cmake will want to recompile)
-$ docker run --rm -v $PWD:/cgreen debian bash -c \
-    'apt update && apt -y install libbinutils && cd /cgreen && ./build/tools/cgreen-runner $(find . -name *.so) rm -rf build'
-
-# Fedora
-$ docker run -t --rm -v $PWD:/cgreen fedora bash -c \
-    "/usr/bin/yum -y install cmake gcc g++ git diffutils findutils && cd /cgreen && make unit test && make clean"
-
-# OpenSUSE
-$ docker run --rm -v $PWD:/cgreen opensuse/tumbleweed bash -c \
-    '/usr/bin/zypper refresh && /usr/bin/zypper --non-interactive install git cmake gcc gcc-c++ git binutils-devel diffutils findutils  && cd /cgreen && make unit test && make clean'
-```
+also the documentation.
 
 ## Using It
 

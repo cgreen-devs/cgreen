@@ -19,7 +19,7 @@ macro (macro_add_valgrind_test)
     )
     set_tests_properties(
       valgrind_${libname} PROPERTIES
-      FAIL_REGULAR_EXPRESSION "(definitely|indirectly|possible) lost: [1-9]"
+      FAIL_REGULAR_EXPRESSION "(definitely|indirectly|possibly) lost: [1-9]"
     )
     if (CYGWIN OR WIN32)
       set_tests_properties(${ARGV1} PROPERTIES ENVIRONMENT PATH=${PROJECT_BINARY_DIR}/src:$ENV{PATH})

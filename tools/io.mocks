@@ -1,0 +1,22 @@
+#include "io.h"
+
+FILE *open_file(const char *filename, const char *mode) { 
+  return (FILE *) mock(filename, mode);
+}
+
+int close_file(FILE *file) { 
+  return (int) mock(file);
+}
+
+FILE *open_process(const char *command, const char *mode) { 
+  return (FILE *) mock(command, mode);
+}
+
+int close_process(FILE *file) { 
+  return (int) mock(file);
+}
+
+int read_line(FILE *file, char *buffer, int max_length) { 
+  return (int) mock(file, buffer, max_length);
+}
+
