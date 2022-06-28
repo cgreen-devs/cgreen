@@ -21,20 +21,6 @@ if (LIBBFD_LIBRARIES AND LIBBFD_INCLUDE_DIRS)
   set (LIBBFD_FIND_QUIETLY TRUE)
 endif ()
 
-if (CMAKE_HOST_APPLE)
-  # Prefer brew/gcc compilation since that allows cgreen-runner be built with libbfd
-  find_program(BREW_FOUND NAMES brew)
-  if (BREW_FOUND)
-    set(HOMEBREW_HOME "/usr/local")
-    exec_program(brew ARGS "--prefix" OUTPUT_VARIABLE HOMEBREW_HOME)
-    set(HOMEBREW_ONLY_SEARCH_PATH "${HOMEBREW_HOME}/opt/binutils")
-    set(HOMEBREW_ONLY_SEARCH_PATH_FOR_INCLUDE "${HOMEBREW_ONLY_SEARCH_PATH}/include")
-    set(HOMEBREW_ONLY_SEARCH_PATH_FOR_LIB "${HOMEBREW_ONLY_SEARCH_PATH}/lib")
-  endif()
-endif()
-
-#message("HOMEBREW_ONLY_SEARCH_PATH = ${HOMEBREW_ONLY_SEARCH_PATH}")
-
 find_path (LIBBFD_INCLUDE_DIRS
   NAMES
     bfd.h
@@ -44,9 +30,8 @@ find_path (LIBBFD_INCLUDE_DIRS
     /usr/local/include
     /opt/local/include
     /opt/include
-    ${HOMEBREW_ONLY_SEARCH_PATH_FOR_INCLUDE}
+    /usr/local/opt/binutils/include
     ENV CPATH)
-#message("LIBBFD_INCLUDE_DIRS = ${LIBBFD_INCLUDE_DIRS}")
 
 # Ugly, yes ugly...
 find_library (LIBBFD_LIBRARY
@@ -60,11 +45,9 @@ find_library (LIBBFD_LIBRARY
     /usr/include
     /opt/local/lib
     /opt/usr/lib64
-    ${HOMEBREW_ONLY_SEARCH_PATH_FOR_LIB}
     /usr/local/opt/binutils/lib
     ENV LIBRARY_PATH
     ENV LD_LIBRARY_PATH)
-#message("LIBBFD_LIBRARY = ${LIBBFD_LIBRARY}")
 
 # required on Homebrew
 find_library (LIBIBERTY_LIBRARY
@@ -78,10 +61,9 @@ find_library (LIBIBERTY_LIBRARY
     /usr/include
     /opt/local/lib
     /opt/usr/lib64
-    ${HOMEBREW_ONLY_SEARCH_PATH_FOR_LIB}
+    /usr/local/opt/binutils/lib
     ENV LIBRARY_PATH
     ENV LD_LIBRARY_PATH)
-#message("LIBIBERTY_LIBRARY = ${LIBIBERTY_LIBRARY}")
 
 find_library (LIBZ_LIBRARY
   NAMES
@@ -94,10 +76,9 @@ find_library (LIBZ_LIBRARY
     /usr/include
     /opt/local/lib
     /opt/usr/lib64
-    ${HOMEBREW_ONLY_SEARCH_PATH_FOR_LIB}
+    /usr/local/opt/binutils/lib
     ENV LIBRARY_PATH
     ENV LD_LIBRARY_PATH)
-#message("LIBZ_LIBRARY = ${LIBZ_LIBRARY}")
 
 include (FindPackageHandleStandardArgs)
 

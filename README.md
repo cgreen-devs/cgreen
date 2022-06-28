@@ -77,7 +77,7 @@ version of the libraries. Some distros do not distinguish between the
 two.
 
 |Distro | Build | Run | Comments |
---- | --- | --- | ---
+--- | --- | ---
 |Arch|binutils|binutils||
 |Cygwin|binutils|binutils||
 |Debian|binutils-dev|libbinutils||
@@ -86,12 +86,11 @@ two.
 |Darwin| - | - | 
 |Darwin/Homebrew|binutils|binutils| There is no equivalent to `libbfd` for Apple Clang but you can compile with Apple Clang and link with the brew versions. NOTE: `binutils` need to be re-installed with `--enable-install-libiberty` as per https://stackoverflow.com/a/65978315/204658. |
 
-In the root directory, run ``make``. That will configure CMake and
-then build the library and the `cgreen-runner`. See also the
-[documentation](https://cgreen-devs.github.io). If you have
-`asciidoctor` installed you can build it locally using
-
-    make doc
+In the root directory run ``make``. That will configure and build,
+actually by setting up and handing over to `CMake`, the library and
+the `cgreen-runner`, both supporting both C and C++. See also the
+documentation which will only be built if build requirements are
+met.
 
 Here are some example of how to build using docker for various distro:
 
@@ -114,11 +113,10 @@ $ docker run --rm -v $PWD:/cgreen opensuse/tumbleweed bash -c \
 
 ## Using It
 
-Tests are easy write, as shown by the examples in the beginning of
-this readme. But more importantly, they are extremely easy to
-read. You should probably read the
-[tutorial](https://cgreen-devs.github.io) before writing your first
-test, though.
+Tests are fairly easy write, as shown by the examples in the beginning
+of this readme. You should probably read the
+[tutorial](https://cgreen-devs.github.io) once before writing your
+first test, though.
 
 Basically you can run your tests in two ways
 
