@@ -42,20 +42,21 @@ static void add_all_tests_from(asymbol **symbols, long symbol_count, CgreenVecto
     }
 }
 
-/* Read in the symbols.  */
+/* Read in the dynamic symbols.  */
+
 static asymbol **get_symbols_table(bfd *abfd, long *symbol_count, bool verbose, const char *filename)
 {
-    bool dynamic = (bfd_adapter_get_file_flags(abfd) & DYNAMIC) != 0;
-    long storage;
+    if ((bfd_adapter_get_file_flags(abfd) & DYNAMIC) == 0){
+        printf("%s: can only handle libraries with dynamic symbol tables for now\n");
+        *symbol_count = 0;
+        return NULL;
+    }
 
-    if (dynamic)
-        storage = bfd_adapter_get_dynamic_symtab_upper_bound(abfd);
-    else
-        storage = bfd_adapter_get_symtab_upper_bound(abfd);
+    long storage = bfd_adapter_get_dynamic_symtab_upper_bound(abfd);
     if (storage <= 0) {
         if (verbose) {
             if (storage < 0)
-                printf("%s: bfd_get_symtab_upper_bounds returned %ld\n", filename, storage);
+                printf("%s: bfd_get_dynamic_symtab_upper_bounds returned %ld\n", filename, storage);
             else
                 printf("%s: no symbols\n", filename);
         }
@@ -71,10 +72,7 @@ static asymbol **get_symbols_table(bfd *abfd, long *symbol_count, bool verbose, 
         return NULL;
     }
 
-    if (dynamic)
-        *symbol_count = bfd_adapter_canonicalize_dynamic_symtab(abfd, symbols);
-    else
-        *symbol_count = bfd_adapter_canonicalize_symtab(abfd, symbols);
+    *symbol_count = bfd_adapter_canonicalize_dynamic_symtab(abfd, symbols);
     if (*symbol_count < 0) {
         if (verbose)
             printf("%s: failed to get symbols count\n", filename);
@@ -82,7 +80,7 @@ static asymbol **get_symbols_table(bfd *abfd, long *symbol_count, bool verbose, 
         return NULL;
     }
 
-    return symbols;
+  return symbols;
 }
 
 CgreenVector *discover_tests_in(const char *filename, bool verbose) {
@@ -96,7 +94,7 @@ CgreenVector *discover_tests_in(const char *filename, bool verbose) {
     bfd_adapter_check_format(abfd, bfd_object);
     if ((bfd_adapter_get_file_flags(abfd) & HAS_SYMS) == 0) {
         if (verbose)
-            printf("%s: file flags indicate no symbols\n", filename);
+            printf("%s: incorrect format\n", filename);
         bfd_adapter_close(abfd);
         return NULL;
     }
