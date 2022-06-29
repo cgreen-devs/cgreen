@@ -67,58 +67,19 @@ You can also clone the repository or download the source zip from [GitHub](http:
 You need the [CMake](http://www.cmake.org) build system.
 Most standard C/C++ compilers should work. GCC definitely does.
 
-Perl, diff, find and sed are required to run unit-tests. Most distro will have
-those already installed.
+Perl, diff, find and sed are required to run Cgreen's own
+unit-tests. Most distro will have those already installed.
 
-To build the dynamically loading `cgreen-runner` you need the `libbfd`
-libraries which are available with the binutils development
-package. At runtime, `cgreen-runner` only requires the run-time
-version of the libraries. Some distros do not distinguish between the
-two.
-
-|Distro | Build | Run | Comments |
---- | --- | --- | ---
-|Arch|binutils|binutils||
-|Cygwin|binutils|binutils||
-|Debian|binutils-dev|libbinutils||
-|Fedora|binutils-devel|binutils-devel||
-|OpenSUSE|binutils-devel|binutils-devel||
-|Darwin| - | - | 
-|Darwin/Homebrew|binutils|binutils| There is no equivalent to `libbfd` for Apple Clang but you can compile with Apple Clang and link with the brew versions. NOTE: `binutils` need to be re-installed with `--enable-install-libiberty` as per https://stackoverflow.com/a/65978315/204658. |
-
-In the root directory, run ``make``. That will configure CMake and
-then build the library and the `cgreen-runner`. See also the
-[documentation](https://cgreen-devs.github.io). If you have
-`asciidoctor` installed you can build it locally using
-
-    make doc
-
-Here are some example of how to build using docker for various distro:
-
-```
-# debian build (will not clean)
-$ docker run --rm -v $PWD:/cgreen debian bash -c \
-    "apt update && apt -y install git cmake gcc g++ binutils-dev && cd /cgreen && make unit test"
-# debian run (we cannot use make unit test since cmake will want to recompile)
-$ docker run --rm -v $PWD:/cgreen debian bash -c \
-    'apt update && apt -y install libbinutils && cd /cgreen && ./build/tools/cgreen-runner $(find . -name *.so) rm -rf build'
-
-# Fedora
-$ docker run -t --rm -v $PWD:/cgreen fedora bash -c \
-    "/usr/bin/yum -y install cmake gcc g++ git diffutils findutils && cd /cgreen && make unit test && make clean"
-
-# OpenSUSE
-$ docker run --rm -v $PWD:/cgreen opensuse/tumbleweed bash -c \
-    '/usr/bin/zypper refresh && /usr/bin/zypper --non-interactive install git cmake gcc gcc-c++ git binutils-devel diffutils findutils  && cd /cgreen && make unit test && make clean'
-```
+In the root directory run ``make``. That will configure and build the
+library and the `cgreen-runner`, both supporting both C and C++. See
+also the documentation.
 
 ## Using It
 
-Tests are easy write, as shown by the examples in the beginning of
-this readme. But more importantly, they are extremely easy to
-read. You should probably read the
-[tutorial](https://cgreen-devs.github.io) before writing your first
-test, though.
+Tests are fairly easy write, as shown by the examples in the beginning
+of this readme. You should probably read the
+[tutorial](https://cgreen-devs.github.io) once before writing your
+first test, though.
 
 Basically you can run your tests in two ways
 

@@ -17,7 +17,6 @@ addons:
     - cmake
     - lcov
     - g++
-    - binutils-dev
     - valgrind
 
 before_install:
