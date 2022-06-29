@@ -21,9 +21,9 @@ endif
 all: build-it
 
 .PHONY:debug
-debug: build
+debug:
 	cmake -DCMAKE_BUILD_TYPE:string=Debug -S . -B build
-	cmake --build build
+	$(MAKE) -C build
 
 .PHONY:test
 test: build-it
@@ -31,19 +31,19 @@ test: build-it
 
 .PHONY:clean
 clean: build/Makefile
-	cd build; $(MAKE) clean
+	$(MAKE) -C build clean
 
 .PHONY:package
 package: build/Makefile
-	cd build; $(MAKE) package
+	$(MAKE) -C build package
 
 .PHONY:install
 install: build
 ifeq ($(OS),Msys)
-  # Thanks to https://stackoverflow.com/a/46027426/204658
-  cd build; $(MAKE) install DESTDIR=/
+	# Thanks to https://stackoverflow.com/a/46027426/204658
+	$(MAKE) -C build install DESTDIR=/
 else
-	cd build; $(MAKE) install
+	$(MAKE) -C build install
 endif
 
 # This is kind of a hack to get a quicker and clearer feedback when
