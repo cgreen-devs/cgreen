@@ -60,7 +60,7 @@ CgreenVector *discover_tests_in(const char *filename, bool verbose) {
     close_file(library);
 
     char nm_command[1000];
-    sprintf(nm_command, "/usr/bin/nm '%s'", filename);
+    sprintf(nm_command, "/usr/bin/nm '%s' 2>&1", filename);
     FILE *nm_output_pipe = open_process(nm_command, "r");
     if (nm_output_pipe == NULL)
         return NULL;
@@ -68,5 +68,6 @@ CgreenVector *discover_tests_in(const char *filename, bool verbose) {
     CgreenVector *tests = create_cgreen_vector((GenericDestructor)&destroy_test_item);
     add_all_tests_from(nm_output_pipe, tests, verbose);
     close_process(nm_output_pipe);
+
     return tests;
 }
