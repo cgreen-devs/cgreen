@@ -60,7 +60,7 @@ CgreenVector *discover_tests_in(const char *filename, bool verbose) {
     close_file(library);
 
     char nm_command[1000];
-    sprintf(nm_command, "/usr/bin/nm '%s' 2>&1", filename);
+    sprintf(nm_command, "%s '%s' 2>&1", NM_EXECUTABLE, filename);
     FILE *nm_output_pipe = open_process(nm_command, "r");
     if (nm_output_pipe == NULL)
         return NULL;
