@@ -189,6 +189,7 @@ target_link_libraries(${xml_output_library} ${CGREEN_LIBRARY})
 
 set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
 
+# TODO We should not add these if the cgreen-runner was not built e.g. no 'nm' available
 macro_add_test(
     NAME constraint_messsages
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_runner_output_diff
