@@ -5,6 +5,7 @@ CMakeFiles
 Testing
 *.exe
 *.stackdump
+*.so
 build-stamp
 configure-stamp
 *~

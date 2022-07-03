@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <fnmatch.h>
 
-#include "utils.h"
+#include "../src/utils.h"
 #include "runner.h"
 #include "test_item.h"
 

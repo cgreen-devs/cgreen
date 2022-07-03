@@ -55,7 +55,7 @@ static void given_a_file_with_two_lines(const char *filename, const char *line1,
     static char command[100];
     expect_open_file(filename, (void *)1);
     expect(close_file, when(file, is_equal_to(1)));
-    sprintf(command, "nm %s", filename);
+    sprintf(command, "nm '%s'", filename);
     expect_open_process(command, (void *)2);
     expect_read_line_from(2, line1);
     expect_read_line_from(2, line2);

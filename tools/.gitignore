@@ -2,3 +2,6 @@
 *.d
 lib*.so
 discoverer_unit_test_runner.c
+discoverer_unit_tests
+runner_unit_test_runner.c
+runner_unit_tests

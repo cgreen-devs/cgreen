@@ -1,13 +1,18 @@
 #include <cgreen/cgreen.h>
 
-#include "utils.h"
+#include "../src/utils.h"
 
 #ifdef __cplusplus
 using namespace cgreen;
 #endif
 
-#include "../runner.c"
+#include "runner.c"
+
 #include "test_item.h"
+
+#include "discoverer.mock"
+#include "io.mock"
+
 
 Describe(Runner);
 
