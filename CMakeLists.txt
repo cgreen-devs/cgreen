@@ -92,12 +92,6 @@ add_subdirectory(src)
 add_subdirectory(doc)
 add_subdirectory(include)
 
-if (UNIX OR MSYS)
-  # reflective runner only supported on UNIX/binutils platforms
-  add_subdirectory(tools)
-endif(UNIX OR MSYS)
-# add_subdirectory(samples)
-
 if (CGREEN_WITH_UNIT_TESTS)
   include(MacroAddUnitTest)
   include(MacroAddTest)
@@ -105,7 +99,7 @@ if (CGREEN_WITH_UNIT_TESTS)
   add_subdirectory(tests)
   if (UNIX OR MSYS)
     # reflective runner only supported on UNIX/binutils platforms
-    add_subdirectory(tools/tests)
+    add_subdirectory(tools)
   endif(UNIX OR MSYS)
 endif (CGREEN_WITH_UNIT_TESTS)
 

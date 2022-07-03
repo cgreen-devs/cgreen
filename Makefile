@@ -95,7 +95,7 @@ unit: build-it
 	r=$$((r + $$?)) ; \
 	$(LDPATH) tools/cgreen-runner -c `find tests -name $(PREFIX)cgreen_cpp_tests$(SUFFIX)` ; \
 	r=$$((r + $$?)) ; \
-	$(LDPATH) tools/cgreen-runner -c `find tools/tests -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
+	$(LDPATH) tools/cgreen-runner -c `find tools -name $(PREFIX)cgreen_runner_tests$(SUFFIX)` ; \
 	r=$$((r + $$?)) ; \
 	cd tests ; \
 	$(LDPATH) $(XML_DIFF_TOOL) $(call DIFF_TOOL_ARGUMENTS,xml_output) ; \
