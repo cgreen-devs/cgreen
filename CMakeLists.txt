@@ -15,11 +15,14 @@ enable_testing()
 
 # global needed variables
 set(APPLICATION_NAME ${PROJECT_NAME})
+
+# VERSION:
+# NOTE: If you change version here, also change in
+# include/cgreen/cgreen.h unless you write some code that
+# automatically updates that...
 set(APPLICATION_VERSION_MAJOR "1")
 set(APPLICATION_VERSION_MINOR "6")
 set(APPLICATION_VERSION_PATCH "0")
-# If you change here, also change in include/cgreen/cgreen.h
-# unless you write some code that automatically updates that...
 
 set(APPLICATION_VERSION ${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}.${APPLICATION_VERSION_PATCH}${APPLICATION_VERSION_STATUS})
 add_definitions(-DVERSION="${APPLICATION_VERSION}")
@@ -27,6 +30,8 @@ add_definitions(-DVERSION="${APPLICATION_VERSION}")
 set(LIBRARY_VERSION ${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}.${APPLICATION_VERSION_PATCH})
 set(LIBRARY_SOVERSION ${APPLICATION_VERSION_MAJOR})
 
+
+# INSTALL:
 include(GNUInstallDirs)
 
 if(MSVC)
@@ -35,6 +40,13 @@ if(MSVC)
   set(CMAKE_INSTALL_LIBDIR ".")
 endif(MSVC)
 
+# If OSX and using Homebrew use its install prefix
+find_program(BREW brew)
+if (BREW)
+  execute_process(COMMAND brew --prefix OUTPUT_VARIABLE CMAKE_INSTALL_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
+
+# COMPLETION:
 set(BASHCOMPLETION_STATUS "Unavailable")
 find_package(bash-completion QUIET)
 if(BASH_COMPLETION_FOUND OR UNIX)
@@ -43,6 +55,7 @@ if(BASH_COMPLETION_FOUND OR UNIX)
   install(FILES tools/cgreen_completion.bash DESTINATION "${CMAKE_INSTALL_DATADIR}/bash-completion/completions" RENAME  "cgreen-debug")
 endif()
 
+# CMAKE MODULES:
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH
   ${PROJECT_SOURCE_DIR}/cmake/Modules
@@ -58,6 +71,7 @@ include(DefineCPackConfig)
 include(MacroAddPlugin)
 include(MacroCopyFile)
 
+# GIT REVISION:
 # Generate gitrevision.h if Git is available and the .git directory is found.
 find_program(GIT_EXECUTABLE git DOC "Git version control")
 mark_as_advanced(GIT_EXECUTABLE)
