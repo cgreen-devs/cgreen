@@ -3167,6 +3167,10 @@ You can use them to conditionally check for Cgreen features introduced as declar
 Since 1.2.0 Cgreen has featured a public version variable in the loaded library, `cgreen_library_version`.
 This is mainly used by the `cgreen-runner` to present version of the loaded library, but it can also be used to check for availability of features in the same way.
 
+=== 1.6.0
+
+- Reverted use of `libbfd` introduced in 1.5.0 due to portability issues and Debian deeming it to be a serious bug due to `libbfd` not having a stable interface
+
 === 1.5.1
 
 - Fixed a problem with `ends_with_string()` which randomly crashed

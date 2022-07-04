@@ -16,8 +16,8 @@ enable_testing()
 # global needed variables
 set(APPLICATION_NAME ${PROJECT_NAME})
 set(APPLICATION_VERSION_MAJOR "1")
-set(APPLICATION_VERSION_MINOR "5")
-set(APPLICATION_VERSION_PATCH "1")
+set(APPLICATION_VERSION_MINOR "6")
+set(APPLICATION_VERSION_PATCH "0")
 # If you change here, also change in include/cgreen/cgreen.h
 # unless you write some code that automatically updates that...
 
