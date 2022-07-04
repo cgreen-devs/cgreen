@@ -150,8 +150,8 @@ valgrind: build-it
 .PHONY:build-it
 build-it:
 ifeq ($(OS),Darwin)
-	#cmake -DCMAKE_OSX_ARCHITECTURES="arm64e;x86_64" -S . -B build
-	cmake -S . -B build
+	cmake -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -S . -B build
+	#cmake -S . -B build
 else
 	cmake -S . -B build
 endif
