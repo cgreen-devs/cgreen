@@ -21,7 +21,7 @@ if (NM_FOUND)
    cmake_define_relative_file_paths("${RUNNER_SRCS}")
 
    add_executable(cgreen-runner ${RUNNER_SRCS})
-   target_link_libraries(cgreen-runner ${CGREEN_SHARED_LIBRARY} ${CMAKE_DL_LIBS})
+   target_link_libraries(cgreen-runner ${CGREEN_LIBRARY} ${CMAKE_DL_LIBS})
 
    install(TARGETS cgreen-runner
      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -39,8 +39,10 @@ if (NM_FOUND)
    )
    set(RUNNER_TESTS_SRCS
      runner_unit_tests.c
+     test_item.c
    )
    add_library(${CGREEN_RUNNER_TESTS_LIBRARY} SHARED ${RUNNER_TESTS_SRCS})
+   target_link_libraries(${CGREEN_RUNNER_TESTS_LIBRARY} ${CGREEN_LIBRARY})
 
    # Due to some (of many) CMake irregularities to reference the test libraries
    # we can't just use its CMake name variable, but have to look it up with

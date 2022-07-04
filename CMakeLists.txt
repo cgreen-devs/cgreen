@@ -80,17 +80,17 @@ endif()
 include(ConfigureChecks.cmake)
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
+# check subdirectories
+add_subdirectory(src)
+add_subdirectory(doc)
+add_subdirectory(include)
+
 # Dependency on our own library so we can use CGREEN_LIBRARY in all subdirectories
 if (CGREEN_WITH_STATIC_LIBRARY)
   set(CGREEN_LIBRARY ${CGREEN_STATIC_LIBRARY})
 else ()
   set(CGREEN_LIBRARY ${CGREEN_SHARED_LIBRARY})
 endif()
-
-# check subdirectories
-add_subdirectory(src)
-add_subdirectory(doc)
-add_subdirectory(include)
 
 if (CGREEN_WITH_UNIT_TESTS)
   include(MacroAddUnitTest)
