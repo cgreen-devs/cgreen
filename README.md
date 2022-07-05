@@ -24,8 +24,8 @@ And you want output like this
 Then *Cgreen* is the thing for you!
 
 **TLDR;** The full tutorial is on
-[github.io](https://cgreen-devs.github.io).
-Or have a look at the [cheat sheet](doc/cheat-sheet.md).
+[github.io](https://cgreen-devs.github.io/cgreen/cgreen-guide-en.html).
+Or have a look at the [cheat sheet](https://cgreen-devs.github.io/cgreen/cheat-sheet.html).
 
 ## What It Is
 

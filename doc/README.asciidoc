@@ -1,0 +1,7 @@
+// Converted to index.html by asciidoctor-ghpages GitHub Action
+= Cgreen documentation
+
+- link:cgreen-guide-en.html[The Guide]
+- link:cheat-sheet.html[Cheat Sheet]
+
+
