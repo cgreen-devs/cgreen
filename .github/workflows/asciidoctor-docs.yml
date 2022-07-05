@@ -1,0 +1,23 @@
+name: asciidoctor-docs
+
+on: [push]
+
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v3
+      
+    # Includes the AsciiDoctor GitHub Pages Action to convert adoc files to html and publish to gh-pages branch
+    - name: asciidoctor-ghpages
+      uses: manoelcampos/asciidoctor-ghpages-action@v2.2.4
+      with:
+        asciidoctor_params: -r asciidoctor-diagram -a VERSION=1.6.0
+        source_dir: doc
+        post_build: git add -f *.png
+        adoc_file_ext: .asciidoc
