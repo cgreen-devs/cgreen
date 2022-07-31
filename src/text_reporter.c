@@ -279,6 +279,8 @@ static void show_incomplete(TestReporter *reporter, const char *file, int line,
                             const char *message, va_list arguments) {
     TextMemo *memo = (TextMemo *)reporter->memo;
 
+    if (have_quiet_mode(reporter))
+        memo->printer("\n");    /* To break line of "....." for error message parsing */
     memo->printer("%s:%d: ", file, line);
     memo->printer("Exception: ");
 
