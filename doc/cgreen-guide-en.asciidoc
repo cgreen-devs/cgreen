@@ -1680,11 +1680,12 @@ Struct retrieve_struct() {
 }
 -----------------------
 
-But this would cause a memory leak since the area allocated by the `return_by_value()` macro is not deallocated.
-This might not be a big problem, and you could make do with that simple version.
-But to be sure we should free the allocated area.
-It is referred to by the pointer returned from `mock()`.
-So, here's a better, although a bit more complicated, version:
+This would cause a memory leak since the area allocated by the `return_by_value()` macro is not deallocated.
+And in many scenarious this might not be a big problem, and you could make do with that simple version.
+
+In case we wanted to be sure, we should free the area automatically allocated by `will_return_by_value()`.
+The pointer returned by `mock()` will point to that area.
+So, here's a better, although slightly more complicated, version:
 
 [source,c]
 -----------------------
@@ -1696,8 +1697,10 @@ Struct retrieve_struct() {
 }
 -----------------------
 
-=== Running tests with mocked functions
+NOTE: In some future version the `size` argument will be removed from `will_return_by_value()` size since the macro can easily calculate that for you.
 
+
+=== Running tests with mocked functions
 
 It's about time we actually ran our test...
 
