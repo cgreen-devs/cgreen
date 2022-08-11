@@ -1,6 +1,9 @@
 name: asciidoctor-docs
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   # This workflow contains a single job called "build"
