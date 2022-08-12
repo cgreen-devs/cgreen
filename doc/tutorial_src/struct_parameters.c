@@ -30,12 +30,12 @@ int function_checking_a_field(Struct s) {
 
 
 Ensure(StructParameters, can_mock_field_in_parameter) {
-    Struct s = { .i = 12, .string = "hello" };
+    Struct struct_to_send = { .i = 12, .string = "hello" };
 
     expect(function_checking_a_field, when(s.i, is_equal_to(12)),
            will_return(12));
 
-    assert_that(function_checking_a_field(s), is_equal_to(12));
+    assert_that(function_checking_a_field(struct_to_send), is_equal_to(12));
 
 }
 
@@ -44,12 +44,12 @@ int function_checking_multiple_fields(Struct s) {
 }
 
 Ensure(StructParameters, can_mock_muultiple_fields_in_parameter) {
-    Struct s = { .i = 13, .string = "hello world!" };
+    Struct struct_to_send = { .i = 13, .string = "hello world!" };
 
     expect(function_checking_multiple_fields,
            when(s.i, is_equal_to(13)),
            when(s.string, begins_with_string("hello")),
            will_return(13));
 
-    assert_that(function_checking_multiple_fields(s), is_equal_to(13));
+    assert_that(function_checking_multiple_fields(struct_to_send), is_equal_to(13));
 }

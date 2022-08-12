@@ -164,7 +164,8 @@ include::tutorial_src/first0.out[]
 All of the above rather assumes you are working in a Unix like environment, probably with 'gcc'.
 The code is pretty much standard C99, so any C compiler should work.
 *Cgreen* should compile on all systems that support the `sys/msg.h` messaging library.
-It has been tested on Linux, MacOSX, Cygwin and Windows.
+It has been tested on Linux, MacOSX, Cygwin.
+If you are on Windows we would be glad if you could figure out how to build there.
 
 So far we have tried compilation, and shown that the test suite actually runs.
 Let's add a meaningless test or two so that you can see how it runs...
@@ -1174,12 +1175,13 @@ For example, when the stream is empty nothing should happen.
 We hopefully get `NULL` from `read_paragraph` when the stream is exhausted.
 That is, it just returns a steady stream of `EOF`s.
 
-Fortunately, the code takes the stream as a parameter.
+Fortunately, this function takes the stream as a parameter.
 This is called dependency injection and is a very important concept.
-Thanks to this we can write a small function, a stub, with the same signature, that simulates a real stream, and inject that instead.
+Thanks to this we can write a small function, a stub, with the same signature, that simulates a real stream, and inject that instead of a real stream, which the production code probably does.
 
-NOTE: If the code does not inject the dependency this way we can often use another seam to modify the dependency to use our stub instead.
-If the stream is an external function you can compile the stub separately and link with that instead the real stream.
+NOTE: If the code does not inject the dependency this way we can often compile the stub separately and link with that instead the real stream.
+In this case your stub will have to have the same name as the original function, of course.
+(This is sometimes called the linkage seam.)
 
 [source,c]
 -----------------------
@@ -1216,7 +1218,7 @@ For our simple example above we just tell it to always return `EOF`...
 include::tutorial_src/stream_tests1.c[lines=1..17]
 -----------------------
 
-<1> The `always_expect()` macro takes as arguments the function name and defines the return value using the call to `will_return()`.
+<1> The `always_expect()` macro takes the function name as an argument and also defines the return value using the call to `will_return()`.
 This is a declaration of an expectation of a call to the stub, and we have told our `stream_stub()` to always return `EOF`  when called.
 
 Let's see if our production code actually works...
@@ -1268,9 +1270,9 @@ include::tutorial_src/stream3.out[]
 -----------------------
 
 So, how do the *Cgreen* stubs work?
-Each `expect()` describes one call to the stub and a call to `will_return()` is included it will aggregate into a list of return values which are used and returned in order as the expected calls arrive.
+Each `expect()` describes one call to the stub and when a call to `will_return()` is included, the return values will be collected and returned in order as the expected calls arrive.
 
-The `mock()` macro captures the parameter names, there values and the `__func__` property (the name of the stub function).
+The `mock()` macro captures the parameter names, their values and the `__func__` property (the name of the stub function).
 *Cgreen* can then use these to look up entries in the return list, and also to generate more helpful messages.
 
 We can now crank out our tests quite quickly...
@@ -1361,97 +1363,6 @@ Things get more interesting when we think of the traffic going the other way, fr
 This gets us into the same territory as mock objects.
 
 
-=== Important Things To Remember About `expect()` and `mock()`
-
-////
-
-TODO: The next few chapters, up to "Ruunning Tests with Mocked
-Functions", should really be moved to a separate section. They are
-interfering with the flow of the example with to much detailed
-information about things that are not relevant to the example.
-
-We probably need a more detailed section that describes the macros
-more in detail, with examples. Maybe lift them out to "More on
-Mocking".
-
-////
-
-The previous chapter might have been a bit much in terms of `expect()` and `mock()`.
-It is not always easy to follow what happens, and when.
-
-In order to help you avoid mistakes, here are some important things to remember when working with *Cgreen* mocks.
-
-- calls to `expect()` collects constraints and any other required information when it is called
-- this also goes for `will_return()` which will save the value of its parameter _when it is called_
-- the actual evaluation and execution of those constraints occur when `mock()` is called in the function named in the `expect()` call(s)
-- calls to a function specified by the `expect()` calls are evaluated in the same order as the ``expect()``s were executed, but only for that named function
-- the lexical scope of the first parameter in a `when()` is always inside the mocked function where the `mock()` call is made
-- the lexical scope of arguments to an `is_equal_to...()` is where that call is made
-
-IMPORTANT: In summary, `expect()` does early collection, including evaluation of return value expression, and `mock()` does late evaluation of the constraints collected against the given arguments to `mock()`.
-
-=== Other Use Cases For Mocks
-
-==== Out Parameters
-
-In C all function parameters are by value so if a function needs to return a value through a parameter that has to be done using a pointer.
-Typically this is a pointer to the area or variable the function should fill.
-
-*Cgreen* provides `will_set_contents_of_parameter()` to handle this use case.
-For example
-
-[source, c]
------------------------
-include::tutorial_src/set_contents.c[lines=3..12]
-...
------------------------
-
-
-When the mock for `convert_to_uppercase()` is called it will write the string "UPPER CASE" in the area pointed to by `converted_string`.
-
-==== Setting fields
-
-Sometimes you need to set a field in a struct sent by reference to a mocked function.
-You cannot use the `will_set_contents_of_parameter()` directly since you can't, or even don't want to, know the complete information in the structure.
-But with a little bit of boilerplate in your mock function you can still write to a single field.
-
-In the mock function you need to create a local variable that points to the field you want to update.
-You can then use this pointer variable in the mock call to supplement the real parameters.
-
-This local variable will then be accessible in `expect()` calls as if it was a parameter, and you can use it to wrote data to where it points, which then should be the field in the incoming structure.
-
-[source, c]
------------------------
-include::tutorial_src/set_field.c[lines=3..18]
-...
------------------------
-
-The local variable `field` in the mock function is set to point to the field that we need to update.
-It is then exposed by including it in the `mock()` call, and `will_set_contents_of_parameter()` will use it to update whatever it points to with the data provided in the `expect()`.
-
-NOTE: Both the local variable and the data argument in the call to `will_set_contents_of_parameter()` must be pointers.
-You cannot use literals as data, except when it is a string literal which as per C convention is converted to a pointer.
-
-==== Side Effects
-
-Sometimes returning simple values is not enough.
-The function that you want to mock might have some side effect, like setting a global error code, or aggregate some data.
-
-Let's assume that the `reader` increments a counter every time it gets called and we need to mimic that behaviour.
-There are many ways to do this, but here is one using the side effect feature.
-It works by calling a callback function that you provide, allowing you to feed some data to it.
-
-We create the "side effect function" which needs to take a single argument which should be a pointer to the "side effect data".
-You will have to cast that datapointer to the correct type.
-
-[source, c]
------------------------
-include::tutorial_src/side_effect.c[lines=29..44]
------------------------
-
-
-
-
 === Setting Expectations on Mock Functions
 
 To swap the traffic flow, we'll look at an outgoing example instead.
@@ -1499,243 +1410,10 @@ Unlike our earlier stub, `reader()` can now check its parameters.
 In object oriented circles, an object that checks its parameters as well as simulating behaviour is called a mock object.
 By analogy `reader()` is a mock function, or mock callback.
 
-Using the `expect` macro, we have set up the expectation that `writer()` will be called just once.
+Using the `expect()` macro, we have set up the expectation that `writer()` will be called just once.
 That call must have the string `"a"` for the `paragraph` parameter.
 If the actual value of that parameter does not match, the mock function will issue a failure straight to the test suite.
 This is what saves us writing a lot of assertions.
-
-=== The Mock Macros
-
-When specifying behavior of mocks there are three parts.
-First, how often the specified behaviour or expectation will be executed:
-
-|=======================================================================
-|*Macro*                       |*Description*
-|`expect(function, ...)`       |Expected once, in the specified order, for the same function
-|`always_expect(function, ...)`|Expect this behavior from here onwards
-|`never_expect(function)`      |From this point this mocked function must never be called
-|=======================================================================
-
-You can specify constraints and behaviours for each expectation (except for `never_expect()` naturally).
-A constraint places restrictions on the parameters (and will tell you if the expected restriction was not met), and a behaviour specifies what the mock should do if the parameter constraints are met.
-
-A parameter constraint is defined using the `when(parameter, constraint)` macro.
-It takes two parameters:
-
-|=================================================
-|*Parameter* |*Description*
-|`parameter` |The name of the parameter to the mock function
-|`constraint`|A constraint placed on that parameter
-|=================================================
-
-There is a multitude of constraints available (actually, exactly the same as for the assertions we saw earlier):
-
-|==========================================================================
-|*Constraint*                                             |*Type*
-|`is_equal_to(value)`                                     | Integers
-|`is_not_equal_to(value)`                                 | Integers
-|`is_greater_than(value)`                                 | Integers
-|`is_less_than(value)`                                    | Integers
-|                                                         |
-|`is_equal_to_contents_of(pointer, size_of_contents)`     |Bytes/Structures
-|`is_not_equal_to_contents_of(pointer, size_of_contents)` |Bytes/Structures
-||
-|`is_equal_to_string(value)`                              |String
-|`is_not_equal_to_string(value)`                          |String
-|`contains_string(value)`                                 |String
-|`does_not_contain_string(value)`                         |String
-|`begins_with_string(value)`                              |String
-||
-|`is_equal_to_double(value)`                              |Double
-|`is_not_equal_to_double(value)`                          |Double
-|`is_less_than_double(value)`                             |Double
-|`is_greater_than_double(value)`                          |Double
-|==========================================================================
-
-For the double valued constraints you can set the number of significant digits to consider a match with a call to `significant_figures_for_assert_double_are(int figures)`.
-The <<floating_point_comparison_algorithm, section on how to work with doubles>> has a more detailed discussion of the algorithm used for comparing floating point numbers.
-
-Then there are a couple of ways to return results from the mocks.
-They all provide ways to return various types of values through `mock()`.
-In your mocked function you can then simply return that value, or manipulate it as necessary.
-
-|===========================================================================================
-|*Macro*                                                      |*`mock()` will...*
-|`will_return(value)`                                         | return `value`, for integer types
-|`will_return_double(value)`                                  | return `value` as a "boxed double", for double floats (required because of C's type coercion rules which would otherwise convert a double into an int)
-|`will_return_by_value(struct, size)`                         | return a pointer to an allocated copy of the `struct` that can be copied and returned by value from the mocked function
-|`will_set_contents_of_parameter(parameter_name, pointer_to_value, size)`| write `size` bytes from the pointed out value (`pointer_to_value`) into where the referenced out parameter (`parameter_name`) is pointing
-|`will_capture_parameter(parameter_name, pointer_to_local_variable)`|capture the value of the parameter and store it in the local variable
-|`with_side_effect(function, pointer_to_data)`                | call the side effect `function` and pass `pointer_to_data` to it
-|===========================================================================================
-
-NOTE: *`will_return_double()`*: The "boxed double" returned by `mock()` have to be "unboxed" by the caller see <<double_mocks>> for details.
-
-NOTE: *`will_return_by_value`*: The memory allocated for the copy of the struct returned by `mock()` needs to be deallocated by the caller or it will be lost. You can do this with the code in the `Box` example below.
-
-NOTE: *`will_set_contents_of_parameter`*: The data to set must be correct at the time of the call to the mock function, and not be overwritten or released between the call to the `expect()` and the mock function. See <<refactoring-tests>> for details.
-
-NOTE: *`will_capture_parameter`*: The local variable to capture the value in must be live at the time of the call to the mock function, so using a local variable in a function called by your test will not work. See <<refactoring-tests>> for details.
-
-=== Combining Expectations
-
-You can combine the expectations for a `mock()` in various ways:
-
-[source,c]
------------------------
-  expect(mocked_file_writer,
-        when(data, is_equal_to(42)),
-        will_return(EOF));
-  expect(mocked_file_reader,
-        when(file, is_equal_to_contents_of(&FD, sizeof(FD))),
-        when(input, is_equal_to_string("Hello world!"),
-        with_side_effect(&update_counter, &counter),
-        will_set_contents_of_parameter(status, FD_CLOSED, sizeof(bool))));
------------------------
-
-If multiple `when()` are specified they all need to be fullfilled.
-You can of course only have one for each of the parameters of your mock function.
-
-You can also have multiple `will_set_contents_of_parameter()` in an expectation, one for each reference parameter, but naturally only one `will_return()`.
-
-To ensure that a specific call happens `n` times the macro `times(number_times_called)` can be passed as a constraint to a specific call:
-
-[source,c]
------------------------
-  expect(mocked_file_writer,
-        when(data, is_equal_to(42)),
-        times(1));
------------------------
-
-This feature only works for `expect`.
-
-The expections still need to respect the order of calling, so if we call the function
-`mocker_file_writer` with the following pattern:
-
-[source,c]
------------------------
-  mocked_file_writer(42);
-  mocked_file_writer(42);
-  mocked_file_writer(43);
-  mocked_file_writer(42);
------------------------
-
-The expectation code should look like the following
-
-[source,c]
------------------------
-  expect(mocked_file_writer,
-        when(data, is_equal_to(42)),
-        times(2));
-  expect(mocked_file_writer,
-        when(data, is_equal_to(43)),
-        times(1));
-  expect(mocked_file_writer,
-        when(data, is_equal_to(42)),
-        times(1));
------------------------
-
-
-=== Returning ``struct``s
-
-If the function we are mocking returns structs by value, then our mock function need to do that too.
-To do this we must use specific return macro, `will_return_by_value()`.
-Below is some example code using an imaginary struct typedef'ed as `Struct` and a corresponding function, `retrieve_struct()`, which we want to mock.
-
-The underlying mechanism of this is that in the test we create the struct that we want to return.
-The macro `will_return_by_value()` then copies that to a dynamically allocated area, saving it so that a pointer to that area can be returned by `mock()`.
-
-[source,c]
------------------------
-  Struct returned_struct = {...};
-  expect(retrieve_struct,
-         will_return_by_value(returned_struct, sizeof(Struct));
-         /* `returned_struct` has been copied to an allocated area */
------------------------
-
-NOTE: In some future version the `size` argument will be removed from `will_return_by_value()` size since the macro can easily calculate that for you.
-
-
-The mock function will then look like this:
-
-[source,c]
------------------------
-Struct retrieve_struct() {
-   return *(Struct *)mock();       /* De-reference the returned pointer to the allocated area */
-}
------------------------
-
-This would cause a memory leak since the area allocated by the `return_by_value()` macro is not deallocated.
-And in many scenarious this might not be a big problem, and you could make do with that simple version.
-
-In case we wanted to be sure, we should free the area automatically allocated by `will_return_by_value()`.
-The pointer returned by `mock()` will point to that area.
-So, here's a better, although slightly more complicated, version:
-
-[source,c]
------------------------
-Struct retrieve_struct() {
-    Struct *struct_p = (Struct *)mock(); /* Get the pointer */
-    Struct the_struct = *struct_p;       /* Dereference to get a struct */
-    free(struct_p);                      /* Deallocate the returned area */
-    return the_struct;                   /* Finally we can return the struct by value */
-}
------------------------
-
-
-=== Mocking `struct` Parameters
-
-Modern C standards allows function parameters to be ``struct``s by value.
-Since our `mock()` only can handle scalar values this presents a bit of a conundrum.
-
-[source,c]
------------------------
-include::tutorial_src/struct_parameters.c[lines=11..18]
------------------------
-
-And we also can not compare a non-scalar value with any of the `is_equal_to...()` constraint macros in the `expect()` call.
-Also remember that the C language does not allow comparing non-scalar values using `==`.
-
-There are a couple of ways to handle this and which one to select depends on what you want to do.
-
-==== Checking single `struct` Fields
-
-In an `expect(when())` we probably want to check one, or more, of the fields in the struct.
-
-Since `mock()` actually can "mock" anything we can use a normal field expression to access the value we want to check:
-
-[source,c]
------------------------
-include::tutorial_src/struct_parameters.c[lines=26..28]
------------------------
-
-The trick here is that `mock()` just saves the "name", as a string, given as the argument, in this case "s.i", and pair it with the value of that expression.
-There is no requirement that the "name" is actually a parameter, it can be anything.
-The only thing to remember is that the exact same string needs to be used in the `when()` call:
-
-[source,c]
------------------------
-include::tutorial_src/struct_parameters.c[lines=35..36]
------------------------
-
-You can do this with as many fields as you need.
-And there is no (reasonable) limit to how many arguments `mock()` can take, so you can start with the ones that you require and add more as you need them.
-
-[source,c]
------------------------
-include::tutorial_src/struct_parameters.c[lines=42..55]
------------------------
-
-NOTE: In both example we use an explicit value in `will_return()` instead of the value of the field, "s.i".
-That is because it is not possible to use the value of a mocked value in `will_return()`.
-Remember, `expect()` does early collection.
-At the time of executing it, there is no parameter available, so the value must come from that run-time environment.
-Also, since we already explicitly know the value, we have to use it in the `when()` clause, there will be no uncertainty of what it should be.
-The only concern might be duplication of an explicit value, but that is not a big problem in a unittest, clarity over DRY, and you can easily fix that with a suitably named local variable.
-
-=== Capturing Parameters
-
-TBD.
 
 === Running Tests With Mocked Functions
 
@@ -1914,6 +1592,24 @@ This might be improved at some future time.
 TIP: You can try the `cgreen-mocker` for this, as described in <<cgreen-mocker>>.
 
 
+== More on `expect()` and `mock()`
+
+=== Important Things To Remember About `expect()` and `mock()`
+
+Using `expect()` and `mock()` is a very powerful way to isolate your code under test from its dependencies.
+But it is not always easy to follow what happens, and when.
+
+Here are some important things to remember when working with *Cgreen* mocks.
+
+- calls to `expect()` collects constraints and any other required information when it is called
+- this also goes for `will_return()` which will save the value of its parameter _when it is called_
+- the actual evaluation and execution of those constraints occur when `mock()` is called in the function named in the `expect()` call(s)
+- calls to a function specified by the `expect()` calls are evaluated in the same order as the ``expect()``s were executed, but only for that named function
+- the lexical scope of the first parameter in a `when()` is always inside the mocked function where the `mock()` call is made
+- the lexical scope of arguments to an `is_equal_to...()` is where that call is made
+
+IMPORTANT: In summary, `expect()` does early collection, including evaluation of return value expression, and `mock()` does late evaluation of the constraints collected against the given arguments to `mock()`.
+
 [[refactoring-tests]]
 === Refactoring Tests with Mocks - CAUTION!
 
@@ -2077,6 +1773,299 @@ And this is the moral here, you cannot use local variables in an extracted funct
 CAUTION: Variables that are to be sent to a mocked function MUST be live at the call to that mocked function.
 
 
+=== Other Use Cases For Mocks
+
+==== Out Parameters
+
+In C all function parameters are by value so if a function needs to return a value through a parameter that has to be done using a pointer.
+Typically this is a pointer to the area or variable the function should fill.
+
+*Cgreen* provides `will_set_contents_of_parameter()` to handle this use case.
+For example
+
+[source, c]
+-----------------------
+include::tutorial_src/set_contents.c[lines=3..12]
+...
+-----------------------
+
+
+When the mock for `convert_to_uppercase()` is called it will write the string "UPPER CASE" in the area pointed to by `converted_string`.
+
+==== Setting fields
+
+Sometimes you need to set a field in a struct sent by reference to a mocked function.
+You cannot use the `will_set_contents_of_parameter()` directly since you can't, or even don't want to, know the complete information in the structure.
+But with a little bit of boilerplate in your mock function you can still write to a single field.
+
+In the mock function you need to create a local variable that points to the field you want to update.
+You can then use this pointer variable in the mock call to supplement the real parameters.
+
+This local variable will then be accessible in `expect()` calls as if it was a parameter, and you can use it to wrote data to where it points, which then should be the field in the incoming structure.
+
+[source, c]
+-----------------------
+include::tutorial_src/set_field.c[lines=3..18]
+...
+-----------------------
+
+The local variable `field` in the mock function is set to point to the field that we need to update.
+It is then exposed by including it in the `mock()` call, and `will_set_contents_of_parameter()` will use it to update whatever it points to with the data provided in the `expect()`.
+
+NOTE: Both the local variable and the data argument in the call to `will_set_contents_of_parameter()` must be pointers.
+You cannot use literals as data, except when it is a string literal which as per C convention is converted to a pointer.
+
+==== Side Effects
+
+Sometimes returning simple values is not enough.
+The function that you want to mock might have some side effect, like setting a global error code, or aggregate some data.
+
+Let's assume that the `reader` increments a counter every time it gets called and we need to mimic that behaviour.
+There are many ways to do this, but here is one using the side effect feature.
+It works by calling a callback function that you provide, allowing you to feed some data to it.
+
+We create the "side effect function" which needs to take a single argument which should be a pointer to the "side effect data".
+You will have to cast that datapointer to the correct type.
+
+[source, c]
+-----------------------
+include::tutorial_src/side_effect.c[lines=29..44]
+-----------------------
+
+=== The Mock Macros
+
+When specifying behavior of mocks there are three parts.
+First, how often the specified behaviour or expectation will be executed:
+
+|=======================================================================
+|*Macro*                       |*Description*
+|`expect(function, ...)`       |Expected once, in the specified order, for the same function
+|`always_expect(function, ...)`|Expect this behavior from here onwards
+|`never_expect(function)`      |From this point this mocked function must never be called
+|=======================================================================
+
+You can specify constraints and behaviours for each expectation (except for `never_expect()` naturally).
+A constraint places restrictions on the parameters (and will tell you if the expected restriction was not met), and a behaviour specifies what the mock should do if the parameter constraints are met.
+
+A parameter constraint is defined using the `when(parameter, constraint)` macro.
+It takes two parameters:
+
+|=================================================
+|*Parameter* |*Description*
+|`parameter` |The name of the parameter to the mock function
+|`constraint`|A constraint placed on that parameter
+|=================================================
+
+There is a multitude of constraints available (actually, exactly the same as for the assertions we saw earlier):
+
+|==========================================================================
+|*Constraint*                                             |*Type*
+|`is_equal_to(value)`                                     | Integers
+|`is_not_equal_to(value)`                                 | Integers
+|`is_greater_than(value)`                                 | Integers
+|`is_less_than(value)`                                    | Integers
+|                                                         |
+|`is_equal_to_contents_of(pointer, size_of_contents)`     |Bytes/Structures
+|`is_not_equal_to_contents_of(pointer, size_of_contents)` |Bytes/Structures
+||
+|`is_equal_to_string(value)`                              |String
+|`is_not_equal_to_string(value)`                          |String
+|`contains_string(value)`                                 |String
+|`does_not_contain_string(value)`                         |String
+|`begins_with_string(value)`                              |String
+||
+|`is_equal_to_double(value)`                              |Double
+|`is_not_equal_to_double(value)`                          |Double
+|`is_less_than_double(value)`                             |Double
+|`is_greater_than_double(value)`                          |Double
+|==========================================================================
+
+For the double valued constraints you can set the number of significant digits to consider a match with a call to `significant_figures_for_assert_double_are(int figures)`.
+The <<floating_point_comparison_algorithm, section on how to work with doubles>> has a more detailed discussion of the algorithm used for comparing floating point numbers.
+
+Then there are a couple of ways to return results from the mocks.
+They all provide ways to return various types of values through `mock()`.
+In your mocked function you can then simply return that value, or manipulate it as necessary.
+
+|===========================================================================================
+|*Macro*                                                      |*`mock()` will...*
+|`will_return(value)`                                         | return `value`, for integer types
+|`will_return_double(value)`                                  | return `value` as a "boxed double", for double floats (required because of C's type coercion rules which would otherwise convert a double into an int)
+|`will_return_by_value(struct, size)`                         | return a pointer to an allocated copy of the `struct` that can be copied and returned by value from the mocked function
+|`will_set_contents_of_parameter(parameter_name, pointer_to_value, size)`| write `size` bytes from the pointed out value (`pointer_to_value`) into where the referenced out parameter (`parameter_name`) is pointing
+|`will_capture_parameter(parameter_name, pointer_to_local_variable)`|capture the value of the parameter and store it in the local variable
+|`with_side_effect(function, pointer_to_data)`                | call the side effect `function` and pass `pointer_to_data` to it
+|===========================================================================================
+
+NOTE: *`will_return_double()`*: The "boxed double" returned by `mock()` have to be "unboxed" by the caller see <<double_mocks>> for details.
+
+NOTE: *`will_return_by_value`*: The memory allocated for the copy of the struct returned by `mock()` needs to be deallocated by the caller or it will be lost. You can do this with the code in the `Box` example below.
+
+NOTE: *`will_set_contents_of_parameter`*: The data to set must be correct at the time of the call to the mock function, and not be overwritten or released between the call to the `expect()` and the mock function. See <<refactoring-tests>> for details.
+
+NOTE: *`will_capture_parameter`*: The local variable to capture the value in must be live at the time of the call to the mock function, so using a local variable in a function called by your test will not work. See <<refactoring-tests>> for details.
+
+=== Combining Expectations
+
+You can combine the expectations for a `mock()` in various ways:
+
+[source,c]
+-----------------------
+  expect(mocked_file_writer,
+        when(data, is_equal_to(42)),
+        will_return(EOF));
+  expect(mocked_file_reader,
+        when(file, is_equal_to_contents_of(&FD, sizeof(FD))),
+        when(input, is_equal_to_string("Hello world!"),
+        with_side_effect(&update_counter, &counter),
+        will_set_contents_of_parameter(status, FD_CLOSED, sizeof(bool))));
+-----------------------
+
+If multiple `when()` are specified they all need to be fullfilled.
+You can of course only have one for each of the parameters of your mock function.
+
+You can also have multiple `will_set_contents_of_parameter()` in an expectation, one for each reference parameter, but naturally only one `will_return()`.
+
+To ensure that a specific call happens `n` times the macro `times(number_times_called)` can be passed as a constraint to a specific call:
+
+[source,c]
+-----------------------
+  expect(mocked_file_writer,
+        when(data, is_equal_to(42)),
+        times(1));
+-----------------------
+
+This feature only works for `expect()`.
+
+The expections still need to respect the order of calling, so if we call the function
+`mocker_file_writer` with the following pattern:
+
+[source,c]
+-----------------------
+  mocked_file_writer(42);
+  mocked_file_writer(42);
+  mocked_file_writer(43);
+  mocked_file_writer(42);
+-----------------------
+
+The expectation code should look like the following
+
+[source,c]
+-----------------------
+  expect(mocked_file_writer,
+        when(data, is_equal_to(42)),
+        times(2));
+  expect(mocked_file_writer,
+        when(data, is_equal_to(43)),
+        times(1));
+  expect(mocked_file_writer,
+        when(data, is_equal_to(42)),
+        times(1));
+-----------------------
+
+
+=== Returning `struct`
+
+If the function we are mocking returns structs by value, then our mock function need to do that too.
+To do this we must use specific return macro, `will_return_by_value()`.
+Below is some example code using an imaginary struct typedef'ed as `Struct` and a corresponding function, `retrieve_struct()`, which we want to mock.
+
+The underlying mechanism of this is that in the test we create the struct that we want to return.
+The macro `will_return_by_value()` then copies that to a dynamically allocated area, saving it so that a pointer to that area can be returned by `mock()`.
+
+[source,c]
+-----------------------
+  Struct returned_struct = {...};
+  expect(retrieve_struct,
+         will_return_by_value(returned_struct, sizeof(Struct));
+         /* `returned_struct` has been copied to an allocated area */
+-----------------------
+
+NOTE: In some future version the `size` argument will be removed from `will_return_by_value()` size since the macro can easily calculate that for you.
+
+
+The mock function will then look like this:
+
+[source,c]
+-----------------------
+Struct retrieve_struct() {
+   return *(Struct *)mock();       /* De-reference the returned pointer to the allocated area */
+}
+-----------------------
+
+This would cause a memory leak since the area allocated by the `return_by_value()` macro is not deallocated.
+And in many scenarious this might not be a big problem, and you could make do with that simple version.
+
+In case we wanted to be sure, we should free the area automatically allocated by `will_return_by_value()`.
+The pointer returned by `mock()` will point to that area.
+So, here's a better, although slightly more complicated, version:
+
+[source,c]
+-----------------------
+Struct retrieve_struct() {
+    Struct *struct_p = (Struct *)mock(); /* Get the pointer */
+    Struct the_struct = *struct_p;       /* Dereference to get a struct */
+    free(struct_p);                      /* Deallocate the returned area */
+    return the_struct;                   /* Finally we can return the struct by value */
+}
+-----------------------
+
+
+=== Mocking `struct` Parameters
+
+Modern C standards allows function parameters to be ``struct``s by value.
+Since our `mock()` only can handle scalar values this presents a bit of a conundrum.
+
+[source,c]
+-----------------------
+include::tutorial_src/struct_parameters.c[lines=11..18]
+-----------------------
+
+And we also can not compare a non-scalar value with any of the `is_equal_to...()` constraint macros in the `expect()` call.
+Also remember that the C language does not allow comparing non-scalar values using `==`.
+
+There are a couple of ways to handle this and which one to select depends on what you want to do.
+
+==== Checking Single `struct` Fields
+
+In an `expect(when())` we probably want to check one, or more, of the fields in the struct.
+
+Since `mock()` actually can "mock" anything we can use a normal field expression to access the value we want to check:
+
+[source,c]
+-----------------------
+include::tutorial_src/struct_parameters.c[lines=26..28]
+-----------------------
+
+The trick here is that `mock()` just saves the "name", as a string, given as the argument, in this case "s.i", and pair it with the value of that expression.
+There is no requirement that the "name" is actually a parameter, it can be anything.
+The only thing to remember is that the exact same string needs to be used when invoking `when()`:
+
+[source,c]
+-----------------------
+include::tutorial_src/struct_parameters.c[lines=35..36]
+-----------------------
+
+You can do this with as many fields as you need.
+And there is no (reasonable) limit to how many arguments `mock()` can take, so you can start with the ones that you require and add more as you need them.
+
+[source,c]
+-----------------------
+include::tutorial_src/struct_parameters.c[lines=42..55]
+-----------------------
+
+NOTE: In both example we use an explicit value in `will_return()` instead of the value of the field, "s.i".
+That is because it is not possible to use the value of a mocked value in `will_return()`.
+Remember, `expect()` does early collection.
+At the time of executing it, there is no parameter available, so the value must come from that run-time environment.
+Also, since we already explicitly know the value, we have to use it in the `when()` clause, there will be no uncertainty of what it should be.
+The only concern might be duplication of an explicit value, but that is not a big problem in a unittest, clarity over DRY, and you can easily fix that with a suitably named local variable.
+
+=== Capturing Parameters
+
+TBD.
+
+
 == Special Cases
 
 === Working with `doubles`
@@ -2148,7 +2137,7 @@ To get the value back you "unbox" it.
 
 There are two possible uses of `double` that you need to be aware of
 
-1. When a parameter to the mocked function is of `double` type and needs to be matched in an constraint in an `expect` call.
+1. When a parameter to the mocked function is of `double` type and needs to be matched in an constraint in an `expect()` call.
 
 2. When the mock function itself should return a `double` type value.
 
@@ -2181,7 +2170,7 @@ The `expect()` uses `will_return_double()` so the mock function needs to unbox t
 NOTE: Strange errors may occur if you box and/or unbox or combine `double` constraints incorrectly.
 
 [[floating_point_comparison_algorithm]]
-==== Details of floating point comparison algorithm
+==== Details of Floating Point Comparison Algorithm
 
 The number of significant digits set with `significant_figures_for_assert_double_are()` specifies a _relative_ tolerance.
 Cgreen considers two double precision numbers +x+ and +y+ equal if their difference normalized by the larger of the two is smaller than +10^(1 - significant_figures)^+.
