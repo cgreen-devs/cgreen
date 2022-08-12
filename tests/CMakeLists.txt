@@ -45,6 +45,7 @@ set(c_tests_library_SRCS
   message_formatting_tests.c
   messaging_tests.c
   mocks_tests.c
+  mocks_struct_tests.c
   parameters_tests.c
   reflective_runner_no_teardown_tests.c
   reflective_tests.c
@@ -131,6 +132,7 @@ foreach(case
     message_formatting
     messaging
     mocks
+    mocks_struct
     parameters
     reflective
     reflective_runner_no_teardown

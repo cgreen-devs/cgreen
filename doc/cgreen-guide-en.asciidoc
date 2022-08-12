@@ -1697,10 +1697,8 @@ Struct retrieve_struct() {
 }
 -----------------------
 
-NOTE: In some future version the `size` argument will be removed from `will_return_by_value()` size since the macro can easily calculate that for you.
-
-
 === Running tests with mocked functions
+
 
 It's about time we actually ran our test...
 

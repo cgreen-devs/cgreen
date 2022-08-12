@@ -5,7 +5,7 @@
 # makes generation of PDF impossible.  'stream2' and 'stream5' might
 # generate random data as 'actual' values in the output file. That is
 # the way it is supposed to be to work as documentation examples.
-# Take care that data is printable but looks random.
+# Take care data for those examples is printable but looks random.
 
 CFLAGS = -Wall -g
 
@@ -56,6 +56,7 @@ all: with_main with_runner special
 	echo "NOTE: of random memory as the actual value. Don't commit changes that do"
 	echo "NOTE: not. But also note that PDF generation of the documentation"
 	echo "NOTE: will fail if there are non-UTF-8 characters in them."
+	echo "NOTE: Edit by hand to reasonable values if needed."
 
 # Since we have multiple files for the same tutorial example, distinguished by a number,
 # we need to remove that number from all output
@@ -68,28 +69,29 @@ NORMALIZE_DURATION=-e 's/\ in\ [0-9]\+ms/\ in\ 42ms/g'
 SED=sed $(REMOVE_NUMBERS) $(NORMALIZE_DURATION)
 
 with_main:  first0 first1 \
-			words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 \
-			strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 \
-			double1 \
-			schema1 schema2 \
-			crash1 crash2 crash3 \
-			suite1 \
-			test_as_xml0 \
-			test_as_xml1 \
-			test_as_xml2 \
-			test_as_xml3 \
-			test_as_xml4 \
-			custom_constraint1 \
-			custom_constraint2 \
-			custom_constraint3
+		words0 words1 words2 words3 words4 words5 words6 words7 words8 words9 \
+		strlen1 strlen2 strlen3 strlen4 strlen5 strlen6 strlen7 \
+		double1 \
+		schema1 schema2 \
+		crash1 crash2 crash3 \
+		suite1 \
+		test_as_xml0 \
+		test_as_xml1 \
+		test_as_xml2 \
+		test_as_xml3 \
+		test_as_xml4 \
+		custom_constraint1 \
+		custom_constraint2 \
+		custom_constraint3
 	for f in $^ ; do echo $$f; $(LDPATH) ./$$f | $(SED) > $$f.out; done
 
 # Most tests built to run with the runner we can run here, but some need special care
 # They have their output produced directly in their build rules below and are run using
 # the 'special' rule
 with_runner: set_content side_effect stream0 stream1 stream2 stream3 stream4 stream6 \
-			 multiple_streams1 multiple_streams2 \
-			 formatter0 formatter1 formatter2 formatter3 formatter4 formatter5 formatter6
+		multiple_streams1 multiple_streams2 \
+		formatter0 formatter1 formatter2 formatter3 formatter4 formatter5 formatter6 \
+		struct_parameters
 	for f in $^ ; do echo $$f; $(RUNNER) $$f.so | $(SED) > $$f.out; done
 
 special: runner1 runner2 runner3 stream5 learning_mocks
@@ -299,6 +301,9 @@ formatter5: stream1.o formatter_tests5.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
 formatter6: stream2.o formatter_tests5.o
+	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
+
+struct_parameters: struct_parameters.o
 	$(LINK) -shared -o $@.so $^ $(LIBDIRS) -lcgreen
 
 learning_mocks: learning_mocks.o
