@@ -1124,59 +1124,6 @@ TestSuite *connection_fixture(TestSuite *suite) {
 This allows the reuse of common fixtures across projects.
 
 
-=== Legacy Style Assertions
-
-Cgreen have been around for a while, developed and matured.
-There is an older style of assertions that was the initial version, a style that we now call the 'legacy style', because it was more aligned with the original, now older, unit test frameworks.
-If you are not interested in historical artifacts, I recommend that you skip this section.
-
-But for completeness of documentation, here are the legacy style assertion macros:
-
-|=========================================================
-|*Assertion* |*Description*
-| `assert_true(boolean)` | Passes if boolean evaluates true
-| `assert_false(boolean)` | Fails if boolean evaluates true
-| `assert_equal(first, second)` | Passes if 'first == second'
-| `assert_not_equal(first, second)` | Passes if 'first != second'
-| `assert_string_equal(char *, char *)` | Uses 'strcmp()' and passes if
-                                          the strings are equal
-| `assert_string_not_equal(char *, char *)` | Uses 'strcmp()' and fails
-                                              if the strings are equal
-|=========================================================
-
-Each assertion has a default message comparing the two values.
-If you want to substitute your own failure messages, then you must use the `*_with_message()` counterparts...
-
-|=========================================================
-|*Assertion*
-| `assert_true_with_message(boolean, message, ...)`
-| `assert_false_with_message(boolean, message, ...)`
-| `assert_equal_with_message(tried, expected, message, ...)`
-| `assert_not_equal_with_message(tried, unexpected, message, ...)`
-| `assert_string_equal_with_message(char *, char *, message, ...)`
-| `assert_string_not_equal_with_message(char *, char *, message, ...)`
-|=========================================================
-
-All these assertions have an additional `char *` message parameter, which is the message you wished to display on failure.
-If this is set to `NULL`, then the default message is shown instead.
-The most useful assertion from this group is `assert_true_with_message()` as you can use that to create your own assertion functions with your own messages.
-
-Actually the assertion macros have variable argument lists.
-The failure message acts like the template in `printf()`.
-We could change the test above to be...
-
-[source,c]
------------------------------
-include::tutorial_src/strlen_tests4.c[lines=4..8]
------------------------------
-
-This should produce a slightly more user friendly message when things go wrong.
-But, actually, Cgreens default messages are so good that you are encouraged to skip the legacy style and go for the more modern constraints style assertions.
-This is particularly true when you use the BDD style test notation.
-
-IMPORTANT: We strongly recommend the use of BDD Style notation with constraints based assertions.
-
-
 == Mocking functions with Cgreen
 
 When testing you want certainty above all else.
@@ -1226,6 +1173,13 @@ By contrast, we could write a simulation of the stream for each test, called a "
 For example, when the stream is empty nothing should happen.
 We hopefully get `NULL` from `read_paragraph` when the stream is exhausted.
 That is, it just returns a steady stream of `EOF`s.
+
+Fortunately, the code takes the stream as a parameter.
+This is called dependency injection and is a very important concept.
+Thanks to this we can write a small function, a stub, with the same signature, that simulates a real stream, and inject that instead.
+
+NOTE: If the code does not inject the dependency this way we can often use another seam to modify the dependency to use our stub instead.
+If the stream is an external function you can compile the stub separately and link with that instead the real stream.
 
 [source,c]
 -----------------------
@@ -2261,7 +2215,7 @@ All you have to do is
 
 There is also one extra feature when you use C++, the `assert_throws` function.
 
-NOTE: If you use the runner, as described in <<runner>>, and thus link your tests into a shared library, don't forget to link it with the same C++ library that was used to create the `cgreen-runner`.
+NOTE: If you use the autodiscovering runner, as described in <<runner>>, and thus link your tests into a shared library, don't forget to link it with the same C++ library that was used to create the `cgreen-runner`.
 
 == Context, System Under Test & Suites
 
@@ -2384,6 +2338,7 @@ The runner will then load the library, enumerate all tests in it, and run every 
 It's automatic, and there is nothing to forget.
 
 
+[[runner]]
 === Using the Runner
 
 Assuming your tests are in `first_test.c` the typical command to build your library using `gcc` would be
@@ -3249,6 +3204,58 @@ But as mentioned before, this is, at least at this point in time, incompatible w
 So, it's coverage __or__ POSIX-correct child exits and guaranteed output consistency.
 You can't have both...
 
+[appendix]
+== Legacy Style Assertions
+
+Cgreen have been around for a while, developed and matured.
+There is an older style of assertions that was the initial version, a style that we now call the 'legacy style', because it was more aligned with the original, now older, unit test frameworks.
+If you are not interested in historical artifacts, I recommend that you skip this section.
+
+But for completeness of documentation, here are the legacy style assertion macros:
+
+|=========================================================
+|*Assertion* |*Description*
+| `assert_true(boolean)` | Passes if boolean evaluates true
+| `assert_false(boolean)` | Fails if boolean evaluates true
+| `assert_equal(first, second)` | Passes if 'first == second'
+| `assert_not_equal(first, second)` | Passes if 'first != second'
+| `assert_string_equal(char *, char *)` | Uses 'strcmp()' and passes if
+                                          the strings are equal
+| `assert_string_not_equal(char *, char *)` | Uses 'strcmp()' and fails
+                                              if the strings are equal
+|=========================================================
+
+Each assertion has a default message comparing the two values.
+If you want to substitute your own failure messages, then you must use the `*_with_message()` counterparts...
+
+|=========================================================
+|*Assertion*
+| `assert_true_with_message(boolean, message, ...)`
+| `assert_false_with_message(boolean, message, ...)`
+| `assert_equal_with_message(tried, expected, message, ...)`
+| `assert_not_equal_with_message(tried, unexpected, message, ...)`
+| `assert_string_equal_with_message(char *, char *, message, ...)`
+| `assert_string_not_equal_with_message(char *, char *, message, ...)`
+|=========================================================
+
+All these assertions have an additional `char *` message parameter, which is the message you wished to display on failure.
+If this is set to `NULL`, then the default message is shown instead.
+The most useful assertion from this group is `assert_true_with_message()` as you can use that to create your own assertion functions with your own messages.
+
+Actually the assertion macros have variable argument lists.
+The failure message acts like the template in `printf()`.
+We could change the test above to be...
+
+[source,c]
+-----------------------------
+include::tutorial_src/strlen_tests4.c[lines=4..8]
+-----------------------------
+
+This should produce a slightly more user friendly message when things go wrong.
+But, actually, Cgreens default messages are so good that you are encouraged to skip the legacy style and go for the more modern constraints style assertions.
+This is particularly true when you use the BDD style test notation.
+
+IMPORTANT: We strongly recommend the use of BDD Style notation with constraints based assertions.
 
 
 [appendix]
