@@ -78,7 +78,7 @@ also the documentation.
 
 Tests are fairly easy write, as shown by the examples in the beginning
 of this readme. You should probably read the
-[tutorial](https://cgreen-devs.github.io) once before writing your
+[tutorial](https://cgreen-devs.github.io/cgreen/cgreen-guide-en.html) once before writing your
 first test, though.
 
 Basically you can run your tests in two ways
@@ -108,7 +108,7 @@ version of Cgreen in your project use ``find_package(cgreen 1.1.0)``
 ## Reading Up!
 
 You can read the extensive tutorial directly on
-[GitHub](https://cgreen-devs.github.io).
+[GitHub](https://cgreen-devs.github.io/cgreen/cgreen-guide-en.html).
 
 There is a [cheat sheet](https://github.com/cgreen-devs/cgreen/blob/master/doc/cheat-sheet.md)
 available.
