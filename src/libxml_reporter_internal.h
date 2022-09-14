@@ -9,7 +9,6 @@
 extern "C" {
 #endif
 
-#include <stdio.h>
 typedef int XmlPrinter(xmlDocPtr);
 extern void set_libxml_reporter_printer(TestReporter *reporter, XmlPrinter *printer);
 
