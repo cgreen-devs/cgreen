@@ -65,13 +65,9 @@ set(CGREEN_C_TESTS_LIBRARY
 )
 
 add_library(${CGREEN_C_TESTS_LIBRARY} SHARED ${c_tests_library_SRCS})
-if (CGREEN_WITH_LIBXML2)
-  target_link_libraries(${CGREEN_C_TESTS_LIBRARY} ${CGREEN_LIBRARY}
-      ${LIBXML2_LIBRARIES})
-  include_directories(${LIBXML2_INCLUDE_DIRS})
-else ()
-  target_link_libraries(${CGREEN_C_TESTS_LIBRARY} ${CGREEN_LIBRARY})
-endif (CGREEN_WITH_LIBXML2)
+target_link_libraries(${CGREEN_C_TESTS_LIBRARY} ${CGREEN_LIBRARY}
+  $<$<BOOL:${CGREEN_WITH_LIBXML2}>:${LIBXML2_LIBRARIES}>)
+include_directories($<$<BOOL:${CGREEN_WITH_LIBXML2}>:${LIBXML2_INCLUDE_DIRS}>)
 macro_add_valgrind_test(${CGREEN_C_TESTS_LIBRARY})
 
 
