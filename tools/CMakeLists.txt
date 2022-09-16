@@ -93,8 +93,10 @@ if (NM_FOUND)
    macro_add_test(NAME cgreen_runner_wildcarded_tests_in_wildcarded_context
      COMMAND cgreen-runner $<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests> *:*)
 
-   macro_add_test(NAME cgreen_runner_with_xml_reporter
-     COMMAND cgreen-runner --xml TEST --suite cgreen_runner_tests $<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests>)
+   if (CGREEN_WITH_XML)
+     macro_add_test(NAME cgreen_runner_with_xml_reporter
+       COMMAND cgreen-runner --xml TEST --suite cgreen_runner_tests $<TARGET_FILE_DIR:cgreen_runner_tests>/$<TARGET_FILE_NAME:cgreen_runner_tests>)
+   endif (CGREEN_WITH_XML)
 
    if (CGREEN_WITH_LIBXML2)
       macro_add_test(NAME cgreen_runner_with_libxml2_reporter

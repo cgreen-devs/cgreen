@@ -52,8 +52,10 @@ set(c_tests_library_SRCS
   text_reporter_tests.c
   unit_tests.c
   vector_tests.c
-  xml_reporter_tests.c
 )
+if (CGREEN_WITH_XML)
+  LIST(APPEND c_tests_library_SRCS xml_reporter_tests.c)
+endif (CGREEN_WITH_XML)
 if (CGREEN_WITH_LIBXML2)
   LIST(APPEND c_tests_library_SRCS libxml_reporter_tests.c)
 endif (CGREEN_WITH_LIBXML2)
@@ -84,8 +86,13 @@ set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY}
 macro_add_unit_test(test_cgreen_c "${c_tests_SRCS}" "${TEST_TARGET_LIBRARIES}")
 macro_add_test(NAME test_cgreen_c_run_named_test COMMAND test_cgreen_c integer_one_should_assert_true)
 
+set(cgreen_runner_args)
+if (CGREEN_WITH_XML)
+  set(cgreen_runner_args -x TEST)
+endif (CGREEN_WITH_XML)
+
 # run them with cgreen-runner also
-macro_add_test(NAME runner_test_cgreen_c COMMAND cgreen-runner -x TEST ./${CMAKE_SHARED_LIBRARY_PREFIX}${CGREEN_C_TESTS_LIBRARY}${CMAKE_SHARED_LIBRARY_SUFFIX})
+macro_add_test(NAME runner_test_cgreen_c COMMAND cgreen-runner ${cgreen_runner_args} ./${CMAKE_SHARED_LIBRARY_PREFIX}${CGREEN_C_TESTS_LIBRARY}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 
 # C++ tests, library to use with runner, and a main program
@@ -120,7 +127,7 @@ SET_SOURCE_FILES_PROPERTIES(${cpp_tests_SRCS} PROPERTIES LANGUAGE CXX)
 
 macro_add_unit_test(test_cgreen_cpp "${cpp_tests_SRCS}" "${TEST_TARGET_LIBRARIES}" ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
 macro_add_test(NAME test_cgreen_cpp_run_named_test COMMAND test_cgreen_cpp different_pointers_with_same_contents_should_assert_equal)
-macro_add_test(NAME runner_test_cgreen_cpp COMMAND cgreen-runner -x TEST ./${CMAKE_SHARED_LIBRARY_PREFIX}${CGREEN_CPP_TESTS_LIBRARY}${CMAKE_SHARED_LIBRARY_SUFFIX})
+macro_add_test(NAME runner_test_cgreen_cpp COMMAND cgreen-runner ${cgreen_runner_args} ./${CMAKE_SHARED_LIBRARY_PREFIX}${CGREEN_CPP_TESTS_LIBRARY}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 # Temporary single CUT test library
 # Maybe we should do this for all tests instead
@@ -145,7 +152,6 @@ foreach(case
     text_reporter
     unit
     vector
-    xml_reporter
   )
   set(${case}_tests_SRCS
       ${case}_tests.c
@@ -156,6 +162,10 @@ foreach(case
   add_library(${${case}_tests_library} SHARED ${${case}_tests_SRCS})
   target_link_libraries(${${case}_tests_library} ${CGREEN_LIBRARY})
 endforeach(case)
+if (CGREEN_WITH_XML)
+  add_library(xml_reporter_tests SHARED xml_reporter_tests.c)
+  target_link_libraries(xml_reporter_tests ${CGREEN_LIBRARY})
+endif (CGREEN_WITH_XML)
 if (CGREEN_WITH_LIBXML2)
   add_library(libxml_reporter_tests SHARED libxml_reporter_tests.c)
   target_link_libraries(libxml_reporter_tests ${CGREEN_LIBRARY})
@@ -194,10 +204,12 @@ set(ignore_messages_library_SRCS ignore_messages_tests.c)
 add_library(${ignore_messages_library} SHARED ${ignore_messages_library_SRCS})
 target_link_libraries(${ignore_messages_library} ${CGREEN_LIBRARY})
 
-set(xml_output_library xml_output_tests)
-set(xml_output_library_SRCS xml_output_tests.c)
-add_library(${xml_output_library} SHARED ${xml_output_library_SRCS})
-target_link_libraries(${xml_output_library} ${CGREEN_LIBRARY})
+if (CGREEN_WITH_XML)
+  set(xml_output_library xml_output_tests)
+  set(xml_output_library_SRCS xml_output_tests.c)
+  add_library(${xml_output_library} SHARED ${xml_output_library_SRCS})
+  target_link_libraries(${xml_output_library} ${CGREEN_LIBRARY})
+endif (CGREEN_WITH_XML)
 
 if (CGREEN_WITH_LIBXML2)
   set(libxml_output_library libxml_output_tests)
@@ -252,12 +264,14 @@ macro_add_test(NAME ignore_messages
             ${ignore_messages_library}.expected
 )
 
-macro_add_test(NAME xml_output
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_xml_output_diff
-            xml_output_tests                # Name
-            ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
-            ${xml_output_library}.expected
-)
+if (CGREEN_WITH_XML)
+  macro_add_test(NAME xml_output
+      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../tools/cgreen_xml_output_diff
+              xml_output_tests                # Name
+              ${CMAKE_CURRENT_SOURCE_DIR}     # Where sources are
+              ${xml_output_library}.expected
+  )
+endif (CGREEN_WITH_XML)
 
 if (CGREEN_WITH_LIBXML2)
   macro_add_test(NAME libxml_output

@@ -7,6 +7,14 @@ if (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
   set (COMPILER_IS_CLANG TRUE)
 endif (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
 
+if (CGREEN_WITH_XML)
+  add_definitions(-DHAVE_XML_REPORTER=1)
+endif (CGREEN_WITH_XML)
+
+if (CGREEN_WITH_LIBXML2)
+  add_definitions(-DHAVE_LIBXML2_REPORTER=1)
+endif (CGREEN_WITH_LIBXML2)
+
 if (UNIX)
   if (CMAKE_COMPILER_IS_GNUCC OR COMPILER_IS_CLANG)
     # add_compile_options(-Wall -Wextra -Wunused) # only since CMake 2.8.12, so...
@@ -16,7 +24,6 @@ if (UNIX)
       # libxml2 headers depend on ICU library for Unicode support,
       # but ICU headers do not even compile with C++ 98.
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-      add_definitions(-DHAVE_LIBXML2_REPORTER=1)
     else ()
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98")
     endif (CGREEN_WITH_LIBXML2)

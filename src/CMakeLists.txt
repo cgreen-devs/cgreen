@@ -67,8 +67,10 @@ set(cgreen_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/text_reporter.c
   ${CMAKE_CURRENT_SOURCE_DIR}/utils.c
   ${CMAKE_CURRENT_SOURCE_DIR}/vector.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/xml_reporter.c
 )
+if (CGREEN_WITH_XML)
+  LIST(APPEND cgreen_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/xml_reporter.c)
+endif (CGREEN_WITH_XML)
 if (CGREEN_WITH_LIBXML2)
   LIST(APPEND cgreen_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/libxml_reporter.c)
 endif (CGREEN_WITH_LIBXML2)

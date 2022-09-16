@@ -32,16 +32,25 @@ static void version(void) {
 /*----------------------------------------------------------------------*/
 static void usage(const char *program_name) {
     printf("cgreen-runner for Cgreen unittest and mocking framework v%s\n\n", VERSION);
-    printf("Usage:\n    %s [--xml <prefix>] [--suite <name>] [--verbose] [--quiet] [--no-run] [--help] (<library> [<test>])+\n\n", program_name);
+    printf("Usage:\n    %s [--suite <name>] [--verbose] [--quiet] [--no-run] "
+#if HAVE_XML_REPORTER
+           "--xml <prefix>"
+#endif
+#if HAVE_LIBXML2_REPORTER
+           "--libxml2 <prefix>"
+#endif
+           "[--help] (<library> [<test>])+\n\n", program_name);
     printf("Discover and run all or named cgreen test(s) from one or multiple\n");
     printf("dynamically loadable libraries.\n\n");
     printf("A single test can be run using the form [<context>:]<name> where <context> can\n");
     printf("be omitted if there is no context.\n\n");
     printf("  -c --colours/colors\t\tUse colours to emphasis result (requires ANSI-capable terminal)\n");
     printf("  -C --no-colours/no-colors\tDon't use colours\n");
+#if HAVE_XML_REPORTER
     printf("  -x --xml <prefix>\t\tInstead of messages on stdout, write results into one XML-file\n");
     printf("\t\t\t\tper suite, compatible with Hudson/Jenkins CI. The filename(s)\n");
     printf("\t\t\t\twill be '<prefix>-<suite>.xml'\n");
+#endif
 #if HAVE_LIBXML2_REPORTER
     printf("  -X --libxml2 <prefix>\t\tFormat the test results using libxml2\n");
 #endif
@@ -78,9 +87,11 @@ static struct option options[] = {
         .flags = GOPT_ARGUMENT_FORBIDDEN,
     },
     [XML_OPT] = {
+#if HAVE_XML_REPORTER
         .short_name = 'x',
         .long_name = "xml",
         .flags = GOPT_ARGUMENT_REQUIRED,
+#endif
     },
     [LIBXML2_OPT] = {
 #if HAVE_LIBXML2_REPORTER
@@ -238,9 +249,14 @@ int main(int argc, char **argv) {
         printf("libxml2 reporter not available\n");
         return EXIT_FAILURE;
 #endif
-    } else if (have_xml_option())
+    } else if (have_xml_option()) {
+#if HAVE_XML_REPORTER
         reporter = create_xml_reporter(options[XML_OPT].argument);
-    else
+#else
+        printf("XML reporter not available\n");
+        return EXIT_FAILURE;
+#endif
+    } else
         reporter = create_text_reporter();
 
     suite_name_option = options[SUITE_OPT].argument;
