@@ -111,7 +111,7 @@ cmake_define_relative_file_paths ("${cgreen_SRCS}")
 include_directories(
   ${CGREEN_PUBLIC_INCLUDE_DIRS}
   ${CGREEN_PRIVATE_INCLUDE_DIRS}
-  ${LIBXML2_INCLUDE_DIRS}
+  $<$<BOOL:${CGREEN_WITH_LIBXML2}>:${LIBXML2_INCLUDE_DIRS}>
 )
 
 ### cgreen
@@ -124,7 +124,7 @@ target_link_libraries(
   ${CMAKE_THREAD_LIBS_INIT}
   ${MATH_LIB}
   ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}
-  ${LIBXML2_LIBRARIES}
+  $<$<BOOL:${CGREEN_WITH_LIBXML2}>:${LIBXML2_LIBRARIES}>
 )
 
 set_target_properties(
