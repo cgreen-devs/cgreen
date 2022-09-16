@@ -18,6 +18,7 @@ addons:
     - lcov
     - g++
     - valgrind
+    - libxml2-dev
 
 before_install:
   - if [[ $CC == gcc ]] ; then export CXX=g++ ; else export CXX=clang++ ; fi
