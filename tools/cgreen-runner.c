@@ -34,10 +34,10 @@ static void usage(const char *program_name) {
     printf("cgreen-runner for Cgreen unittest and mocking framework v%s\n\n", VERSION);
     printf("Usage:\n    %s [--suite <name>] [--verbose] [--quiet] [--no-run] "
 #if HAVE_XML_REPORTER
-           "--xml <prefix>"
+           "[--xml <prefix>] "
 #endif
 #if HAVE_LIBXML2_REPORTER
-           "--libxml2 <prefix>"
+           "[--libxml2 <prefix>] "
 #endif
            "[--help] (<library> [<test>])+\n\n", program_name);
     printf("Discover and run all or named cgreen test(s) from one or multiple\n");
