@@ -76,7 +76,8 @@ set(c_tests_SRCS
 )
 SET_SOURCE_FILES_PROPERTIES(${c_tests_SRCS} PROPERTIES LANGUAGE C)
 
-set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
+set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY}
+    $<$<BOOL:${CGREEN_WITH_LIBXML2}>:${LIBXML2_LIBRARIES}>)
 
 # unit test with main program runner
 macro_add_unit_test(test_cgreen_c "${c_tests_SRCS}" "${TEST_TARGET_LIBRARIES}")

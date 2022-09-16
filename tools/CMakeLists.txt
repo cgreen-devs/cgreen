@@ -21,7 +21,7 @@ if (NM_FOUND)
    cmake_define_relative_file_paths("${RUNNER_SRCS}")
 
    add_executable(cgreen-runner ${RUNNER_SRCS})
-   target_link_libraries(cgreen-runner ${CGREEN_LIBRARY} ${CMAKE_DL_LIBS})
+   target_link_libraries(cgreen-runner ${CGREEN_LIBRARY} $<$<BOOL:${CGREEN_WITH_LIBXML2}>:${LIBXML2_LIBRARIES}> ${CMAKE_DL_LIBS})
 
    install(TARGETS cgreen-runner
      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
