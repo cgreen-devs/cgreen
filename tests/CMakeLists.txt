@@ -154,8 +154,8 @@ foreach(case
   target_link_libraries(${${case}_tests_library} ${CGREEN_LIBRARY})
 endforeach(case)
 if (CGREEN_WITH_LIBXML2)
-  add_library(${libxml_reporter_tests_library} SHARED libxml_reporter_tests.c)
-  target_link_libraries(${libxml_reporter_tests_library} ${CGREEN_LIBRARY})
+  add_library(libxml_reporter_tests SHARED libxml_reporter_tests.c)
+  target_link_libraries(libxml_reporter_tests ${CGREEN_LIBRARY})
 endif (CGREEN_WITH_LIBXML2)
 
 
