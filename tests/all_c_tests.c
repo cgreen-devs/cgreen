@@ -52,7 +52,9 @@ int main(int argc, char **argv) {
     add_suite(suite, text_reporter_tests());
     add_suite(suite, unit_tests());
     add_suite(suite, vector_tests());
+#if HAVE_XML_REPORTER
     add_suite(suite, xml_reporter_tests());
+#endif
 #if HAVE_LIBXML2_REPORTER
     add_suite(suite, libxml_reporter_tests());
 #endif
