@@ -206,8 +206,6 @@ if (CGREEN_WITH_LIBXML2)
   target_link_libraries(${libxml_output_library} ${CGREEN_LIBRARY})
 endif (CGREEN_WITH_LIBXML2)
 
-set(TEST_TARGET_LIBRARIES ${CGREEN_LIBRARY})
-
 # TODO We should not add these if the cgreen-runner was not built e.g. no 'nm' available
 macro_add_test(
     NAME constraint_messsages
