@@ -30,9 +30,9 @@ before_install:
 script:
   - mkdir -p build
   - cd build
-  - cmake -DCGREEN_WITH_UNIT_TESTS:BOOL=ON -DCGREEN_WITH_STATIC_LIBRARY:BOOL=$CGREEN_WITH_STATIC_LIBRARY -DCGREEN_INTERNAL_WITH_GCOV:BOOL=$WITH_GCOV ..
-  - make -j2
-  - ctest --output-on-failure
+  - cmake -DCGREEN_WITH_XML:BOOL=OFF -DCGREEN_WITH_LIBXML2:BOOL=OFF -DCGREEN_WITH_UNIT_TESTS:BOOL=ON -DCGREEN_WITH_STATIC_LIBRARY:BOOL=$CGREEN_WITH_STATIC_LIBRARY -DCGREEN_INTERNAL_WITH_GCOV:BOOL=OFF .. && make -j2 && ctest --output-on-failure
+  - rm -f CMakeCache.txt
+  - cmake -DCGREEN_WITH_UNIT_TESTS:BOOL=ON -DCGREEN_WITH_STATIC_LIBRARY:BOOL=$CGREEN_WITH_STATIC_LIBRARY -DCGREEN_INTERNAL_WITH_GCOV:BOOL=$WITH_GCOV .. && make -j2 && ctest --output-on-failure
 
 after_success:
   - if [ "$CC" = "gcc" ];
