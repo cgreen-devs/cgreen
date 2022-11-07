@@ -2,7 +2,6 @@
 #define CGREEN_TIME_HEADER
 
 #include <stdint.h>
-#include <unistd.h>
 
 #ifdef __cplusplus
 namespace cgreen {
