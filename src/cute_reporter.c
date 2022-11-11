@@ -101,7 +101,7 @@ static void cute_finish_test(TestReporter *reporter, const char *filename, int l
 
     reporter_finish_test(reporter, filename, line, message);
     if (memo->error_count == reporter->failures + reporter->exceptions) {
-        memo->printer("#success %s, %d ms OK\n", name);
+        memo->printer("#success %s OK\n", name);
     }
 }
 
