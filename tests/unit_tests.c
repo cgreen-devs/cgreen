@@ -29,7 +29,7 @@ AfterEach(Unittests) {
 Ensure(Unittests, can_see_correct_version_marking) {
     char version_string[20];
 
-    sprintf(version_string, "%d.%d.%d", CGREEN_VERSION_MAJOR, CGREEN_VERSION_MINOR, CGREEN_VERSION_PATCH);
+    snprintf(version_string, sizeof(version_string), "%d.%d.%d", CGREEN_VERSION_MAJOR, CGREEN_VERSION_MINOR, CGREEN_VERSION_PATCH);
 
     assert_that(cgreen_library_version, is_equal_to_string(CGREEN_VERSION));
     assert_that(CGREEN_VERSION, is_equal_to_string(version_string));

@@ -35,7 +35,7 @@ static int mocked_vprinter(FILE *stream, const char *format, va_list ap) {
     (void)stream;               /* Unused */
 
     char buffer[10000];
-    vsprintf(buffer, format, ap);
+    vsnprintf(buffer, sizeof(buffer), format, ap);
     
     output = concat(output, buffer);
     return strlen(output);

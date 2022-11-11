@@ -37,7 +37,7 @@ static char *concat(char *output, char *buffer) {
 static int mocked_vprinter(const char *format, va_list ap) {
     char buffer[10000];
 
-    vsprintf(buffer, format, ap);
+    vsnprintf(buffer, sizeof(buffer), format, ap);
 
     output = concat(output, buffer);
     return strlen(output);
