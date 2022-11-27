@@ -58,7 +58,7 @@ TestReporter *create_cute_reporter(void) {
         return NULL;
     }
     reporter->memo = memo;
-    
+
     set_cute_reporter_printer(reporter, printf);
     set_cute_reporter_vprinter(reporter, vprintf);
 
@@ -108,7 +108,7 @@ static void cute_finish_test(TestReporter *reporter, const char *filename, int l
 static void cute_finish_suite(TestReporter *reporter, const char *filename, int line) {
     const char *name = get_current_from_breadcrumb((CgreenBreadcrumb *)reporter->breadcrumb);
     CuteMemo *memo = (CuteMemo *)reporter->memo;
-    
+
     reporter_finish_test(reporter, filename, line, NULL);
 
     reporter->total_passes += reporter->passes;
@@ -119,9 +119,8 @@ static void cute_finish_suite(TestReporter *reporter, const char *filename, int 
     memo->printer("#ending %s", name);
     if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0) {
         memo->printer(": %d pass%s, %d failure%s, %d exception%s, %d ms.\n",
-                      reporter->passes, reporter->passes == 1 ? "" : "es",
-                      reporter->failures, reporter->failures == 1 ? "" : "s",
-                      reporter->exceptions, reporter->exceptions == 1 ? "" : "s",
+                      reporter->total_passes, reporter->total_passes == 1 ? "" : "es",
+                      reporter->total_failures, reporter->total_failures == 1 ? "" : "s"                      reporter->total_exceptions, reporter->total_exceptions == 1 ? "" : "s",
                       reporter->total_duration);
     } else
         memo->printer("\n");
