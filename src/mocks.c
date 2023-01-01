@@ -856,7 +856,7 @@ static void apply_any_read_only_parameter_constraints(RecordedExpectation *expec
     for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
-        if (is_content_setting(constraint)) {
+        if (is_content_setting(constraint) || is_side_effect_constraint(constraint)) {
             continue;
         }
 
