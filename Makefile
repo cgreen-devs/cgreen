@@ -147,14 +147,16 @@ valgrind: build-it
 
 
 ############# Internal
-.PHONY:build-it
-build-it:
+build build/Makefile:
 ifeq ($(OS),Darwin)
 	cmake -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -S . -B build
 	#cmake -S . -B build
 else
 	cmake -S . -B build
 endif
+
+.PHONY:build-it
+build-it: build
 	$(MAKE) -C build
 
 .SILENT:
