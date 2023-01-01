@@ -221,6 +221,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     // return them. There should also be a 'mock_double_()' which does the same except
     // returning a double.
 
+    // First check all actual constraints for validity...
     for (int i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
@@ -244,8 +245,10 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
         }
     }
 
-    // if read-only constraints aren't matching, content-setting ones might corrupt memory
-    // so apply read-only ones first, and if they don't fail, then do the deeper constraints
+    // Now we can do the read-only constraints.  If read-only
+    // constraints aren't matching, content-setting ones might corrupt
+    // memory so apply read-only ones first, and if they don't fail,
+    // then do the deeper constraints
     failures_before_read_only_constraints_executed = test_reporter->failures;
 
     for (int i = 0; i < cgreen_vector_size(parameter_names); i++) {
@@ -256,6 +259,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
 
     failures_after_read_only_constraints_executed = test_reporter->failures;
 
+    // And now we can do the content setting constraints...
     // FIXME: this comparison doesn't work because only parent
     //        processes' pass/fail counts are updated, and even then
     //        only once they read from the pipe
@@ -267,6 +271,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
         }
     }
 
+    // And finally run all side effects
     for (int i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
