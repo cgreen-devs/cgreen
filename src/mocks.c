@@ -224,12 +224,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     for (int i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
-        if (is_side_effect_constraint(constraint)) {
-            apply_side_effect(test_reporter, expectation, constraint);
-            continue;
-        }
-
-        if(constraint->type == CGREEN_CALL_COUNTER_CONSTRAINT) {
+        if (constraint->type == CGREEN_CALL_COUNTER_CONSTRAINT) {
             expectation->number_times_called++;
             continue;
         }
@@ -271,6 +266,17 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
             apply_any_content_setting_parameter_constraints(expectation, parameter_name, actual, test_reporter);
         }
     }
+
+    for (int i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
+        Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
+
+        if (is_side_effect_constraint(constraint)) {
+            apply_side_effect(test_reporter, expectation, constraint);
+            continue;
+        }
+    }
+
+
 
     destroy_cgreen_vector(parameter_names);
     destroy_cgreen_vector(actual_values);
