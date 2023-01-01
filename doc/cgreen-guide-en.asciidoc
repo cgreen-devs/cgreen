@@ -1893,7 +1893,7 @@ In your mocked function you can then simply return that value, or manipulate it 
 |`will_return_double(value)`                                  | return `value` as a "boxed double", for double floats (required because of C's type coercion rules which would otherwise convert a double into an int)
 |`will_return_by_value(struct, size)`                         | return a pointer to an allocated copy of the `struct` that can be copied and returned by value from the mocked function
 |`will_set_contents_of_parameter(parameter_name, pointer_to_value, size)`| write `size` bytes from the pointed out value (`pointer_to_value`) into where the referenced out parameter (`parameter_name`) is pointing
-|`will_capture_parameter(parameter_name, pointer_to_local_variable)`|capture the value of the parameter and store it in the local variable
+|`will_capture_parameter(parameter_name, local_variable)`     |capture the value of the parameter and store it in the named local variable
 |`with_side_effect(function, pointer_to_data)`                | call the side effect `function` and pass `pointer_to_data` to it
 |===========================================================================================
 
