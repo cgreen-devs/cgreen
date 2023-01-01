@@ -187,7 +187,6 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     CgreenVector *parameter_names;
     int failures_before_read_only_constraints_executed;
     int failures_after_read_only_constraints_executed;
-    int i;
     CgreenValue stored_result;
     RecordedExpectation *expectation = find_expectation(function);
 
@@ -222,7 +221,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     // return them. There should also be a 'mock_double_()' which does the same except
     // returning a double.
 
-    for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
+    for (int i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
         if (is_side_effect_constraint(constraint)) {
@@ -254,7 +253,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     // so apply read-only ones first, and if they don't fail, then do the deeper constraints
     failures_before_read_only_constraints_executed = test_reporter->failures;
 
-    for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
+    for (int i = 0; i < cgreen_vector_size(parameter_names); i++) {
         const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
         CgreenValue actual = *(CgreenValue*)cgreen_vector_get(actual_values, i);
         apply_any_read_only_parameter_constraints(expectation, parameter_name, actual, test_reporter);
@@ -266,7 +265,7 @@ intptr_t mock_(TestReporter* test_reporter, const char *function, const char *mo
     //        processes' pass/fail counts are updated, and even then
     //        only once they read from the pipe
     if (failures_before_read_only_constraints_executed == failures_after_read_only_constraints_executed) {
-        for (i = 0; i < cgreen_vector_size(parameter_names); i++) {
+        for (int i = 0; i < cgreen_vector_size(parameter_names); i++) {
             const char* parameter_name = (const char*)cgreen_vector_get(parameter_names, i);
             CgreenValue actual = *(CgreenValue*)cgreen_vector_get(actual_values, i);
             apply_any_content_setting_parameter_constraints(expectation, parameter_name, actual, test_reporter);
