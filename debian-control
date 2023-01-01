@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 10), cmake
 Standards-Version: 4.0.0
 Homepage: https://github.com/cgreen-devs/cgreen
 Package: cgreen
-Version: 1.3.0
+Version: 1.6.1
 Architecture: amd64
 Description: Unit tests and mocking framework for C and C++
  A modern unit test and mocking framework for C and C++. Cgreen features
