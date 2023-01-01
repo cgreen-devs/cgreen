@@ -1937,6 +1937,18 @@ To ensure that a specific call happens `n` times the macro `times(number_times_c
 
 This feature only works for `expect()`.
 
+=== Order of constraints
+
+When you have multiple constraints in an `expect` the order in which they are executed is not always exactly then order un which they where given.
+
+First all constraints are inspected for validity, such as if the parameter name given cannot be found, but primarily to see if the parameters, if any, matche the actual parameters in the call.
+
+Then all read-only constraints are processed, followed by constraints that set contents.
+
+Finally all side effect constraints are executed.
+
+=== Order of multiple `expect`s
+
 The expections still need to respect the order of calling, so if we call the function
 `mocker_file_writer` with the following pattern:
 
