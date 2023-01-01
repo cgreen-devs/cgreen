@@ -1,6 +1,8 @@
 #ifndef CONSTRAINT_INTERNAL_H
 #define CONSTRAINT_INTERNAL_H
 
+#include <cgreen/constraint.h>
+
 /* constraints internal functions are used from some user level tests so must be compilable in C++ */
 #ifdef __cplusplus
 namespace cgreen {

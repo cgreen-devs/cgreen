@@ -877,9 +877,10 @@ static void apply_any_read_only_parameter_constraints(RecordedExpectation *expec
     }
 }
 
-static void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation, const char *parameter, CgreenValue actual, TestReporter* test_reporter) {
-    int i;
-    for (i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
+static void apply_any_content_setting_parameter_constraints(RecordedExpectation *expectation,
+                                                            const char *parameter, CgreenValue actual,
+                                                            TestReporter* test_reporter) {
+    for (int i = 0; i < cgreen_vector_size(expectation->constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(expectation->constraints, i);
 
         if (constraint_is_not_for_parameter(constraint, parameter)) {
@@ -901,8 +902,7 @@ static void apply_any_content_setting_parameter_constraints(RecordedExpectation 
 }
 
 static CgreenValue stored_result_or_default_for(CgreenVector* constraints) {
-    int i;
-    for (i = 0; i < cgreen_vector_size(constraints); i++) {
+    for (int i = 0; i < cgreen_vector_size(constraints); i++) {
         Constraint *constraint = (Constraint *)cgreen_vector_get(constraints, i);
 
         switch (constraint->type) {
@@ -932,8 +932,7 @@ static bool is_always_call(RecordedExpectation* expectation) {
 }
 
 static bool have_always_expectation_for(const char* function) {
-    int i;
-    for (i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
+    for (int i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
         RecordedExpectation *expectation =
                 (RecordedExpectation *)cgreen_vector_get(global_expectation_queue, i);
         if (strcmp(expectation->function, function) == 0) {
@@ -951,8 +950,7 @@ static bool is_never_call(RecordedExpectation* expectation) {
 }
 
 static bool have_never_call_expectation_for(const char* function) {
-    int i;
-    for (i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
+    for (int i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
         RecordedExpectation *expectation =
                 (RecordedExpectation *)cgreen_vector_get(global_expectation_queue, i);
         if (strcmp(expectation->function, function) == 0) {
@@ -966,8 +964,7 @@ static bool have_never_call_expectation_for(const char* function) {
 }
 
 static bool remove_never_call_expectation_for(const char* function) {
-    int i;
-    for (i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
+    for (int i = 0; i < cgreen_vector_size(global_expectation_queue); i++) {
         RecordedExpectation *expectation =
                 (RecordedExpectation *)cgreen_vector_get(global_expectation_queue, i);
         if (strcmp(expectation->function, function) == 0) {
