@@ -1,0 +1,45 @@
+# How to create a quick and dirty .deb
+
+Sometimes you need a .deb with a recent version of Cgreen to install
+for your development. And you don't want, or can't, wait for the
+package maintainer to keep up...
+
+## Build a package
+
+You can build a simple .tar.gz using `make package`. Depending on how
+`CMake` is configured you will get a couple of tar/zip file that you
+can start from.
+
+Once created they are located in the build directory. Pick one.
+
+## Prepare a packaging directory
+
+Create a separate directory somewhere, say `cgreen-deb`, and extract
+the selected package there. You should now have a directory like
+`cgreen-1.6.1_amd64`.
+
+Create a new subdirectory `DEBIAN` inside it. Copy the file
+`debian-control` from the repo to `DEBIAN/control`.
+
+Update the `Architecture:` field and ensure that the version is
+correct.
+
+## Make the .deb
+
+Run
+
+    $ dpkg-deb --build --root-owner-group cgreen-1.6.1_amd64
+
+That should create `cgreen-1.6.1_amd64.deb`.
+
+## Test it
+
+Verify that
+
+    $ sudo dpkg -i cgreen-1.6.1_amd64.deb
+
+installs the files correctly. And that
+
+    $ sudo dpkg -r cgreen
+
+removes them.
