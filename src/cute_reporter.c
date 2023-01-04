@@ -121,6 +121,7 @@ static void cute_finish_suite(TestReporter *reporter, const char *filename, int 
         memo->printer(": %d pass%s, %d failure%s, %d exception%s, %d ms.\n",
                       reporter->total_passes, reporter->total_passes == 1 ? "" : "es",
                       reporter->total_failures, reporter->total_failures == 1 ? "" : "s",
+                      reporter->total_exceptions, reporter->total_exceptions == 1 ? "" : "s",
                       reporter->total_duration);
     } else
         memo->printer("\n");
