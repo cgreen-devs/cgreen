@@ -2,10 +2,9 @@ Source: cgreen
 Section: devel
 Priority: optional
 Maintainer: Thomas Nilefalk <thomas@nilefalk.se>
-Build-Depends: debhelper (>= 10), cmake
-Standards-Version: 4.0.0
+Depends: libc6, libcgreen1
 Homepage: https://github.com/cgreen-devs/cgreen
-Package: cgreen
+Package: cgreen1
 Version: 1.6.1
 Architecture: amd64
 Description: Unit tests and mocking framework for C and C++

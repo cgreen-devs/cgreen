@@ -1,5 +1,5 @@
 # Generate gitrevision.h
-if (GITREVISION)
+if (GITREVISION AND GIT_EXECUTABLE)
   # Allow GITREVISION to be overridden manually / externally. This useful for vendoring.
   message(INFO, "GITREVISION manually overridden: ${GITREVISION}")
 else()

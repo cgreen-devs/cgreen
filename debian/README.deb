@@ -12,6 +12,13 @@ can start from.
 
 Once created they are located in the build directory. Pick one.
 
+NB: It seems this does not build the library and `cgreen-runner`
+correctly wrt. options set. Particularly it does not manage to create
+a `cgreen-runner` and a library that agrees on support for `libxml2`
+even if the normal build does. I solved this by simply copying the
+library and the `cgreen-runner` from a normal build into the packaging
+directory.
+
 ## Prepare a packaging directory
 
 Create a separate directory somewhere, say `cgreen-deb`, and extract
@@ -24,15 +31,27 @@ Create a new subdirectory `DEBIAN` inside it. Copy the file
 Update the `Architecture:` field and ensure that the version is
 correct.
 
+Depending on the packaging the lib-files might have been stored in a
+subdirectory rather than directly in <root>/lib.
+
 ## Make the .deb
 
-Run
+In the directory where you now have your unpacked package content (in
+the example above `cgreen-deb`) run
 
     $ dpkg-deb --build --root-owner-group cgreen-1.6.1_amd64
 
 That should create `cgreen-1.6.1_amd64.deb`.
 
 ## Test it
+
+You can run
+
+    $ lintian cgreen-1.6.1-amd64.deb
+
+and try to fix most of the errors and warnings.
+
+NOTE we are not making a real distro packaging!
 
 Verify that
 
