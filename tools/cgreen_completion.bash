@@ -78,7 +78,7 @@ _cgreen_runner_completion()
     tests=()
 
     # Look for words in the command given so far
-    for word in ${COMP_WORDS[@]}; do
+    for word in ${COMP_WORDS[@]:1}; do
         # Matching loadable libraries?
         if compgen -G "$word*.$LIBEXT" > /dev/null; then
             # Add that pattern
@@ -91,7 +91,7 @@ _cgreen_runner_completion()
     done
 
     # Remove all suggestions already used
-    for word in ${COMP_WORDS[@]}; do
+    for word in ${COMP_WORDS[@]:1}; do
         if [[ "$word" != "${COMP_WORDS[0]}" ]] ; then
             _removeFromOptions $word
             _removeFromLibraries $word
@@ -100,12 +100,14 @@ _cgreen_runner_completion()
     done
 
     completion_word=${COMP_WORDS[$COMP_CWORD]}
-    COMPREPLY=($(compgen -W '$(printf "%s " ${options[@]} ${libraries[@]} ${tests[@]})' -- "$completion_word"))
+    expansions="${options[@]} ${libraries[@]} ${tests[@]}"
+
+    COMPREPLY=($(compgen -W "$expansions" -- "$completion_word"))
 }
 
 _cgreen_debug_completion()
 {
-    local libraries tests
+    local options libraries tests
     options=("--debugger")
     libraries=()
     tests=()
@@ -140,7 +142,9 @@ _cgreen_debug_completion()
     done
 
     completion_word=${COMP_WORDS[$COMP_CWORD]}
-    COMPREPLY=($(compgen -W '$(printf "%s " ${options[@]} ${libraries[@]} ${tests[@]})' -- "$completion_word"))
+    expansions="${options[@]} ${libraries[@]} ${tests[@]}"
+
+    COMPREPLY=($(compgen -W "$expansions" -- "$completion_word"))
 }
 
 complete -o nosort -o dirnames -A directory -F _cgreen_runner_completion cgreen-runner
