@@ -9,10 +9,10 @@
 #include <cgreen/runner.h>
 #include <cgreen/boxed_double.h>
 
-#define CGREEN_VERSION "1.6.1"
+#define CGREEN_VERSION "1.6.2"
 #define CGREEN_VERSION_MAJOR 1
 #define CGREEN_VERSION_MINOR 6
-#define CGREEN_VERSION_PATCH 1
+#define CGREEN_VERSION_PATCH 2
 
 extern char *cgreen_library_version;
 extern char *cgreen_library_revision;
