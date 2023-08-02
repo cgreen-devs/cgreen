@@ -153,11 +153,11 @@ static void run_test_in_the_current_process(TestSuite *suite, CgreenTest *test, 
     (*reporter->finish_test)(reporter, test->filename, test->line, NULL);
 }
 
-static int per_test_timeout_defined() {
+static int per_test_timeout_defined(void) {
     return getenv(CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE) != NULL;
 }
 
-static int per_test_timeout_value() {
+static int per_test_timeout_value(void) {
     char* timeout_string;
     int timeout_value;
 
@@ -171,7 +171,7 @@ static int per_test_timeout_value() {
     return timeout_value;
 }
 
-static void validate_per_test_timeout_value() {
+static void validate_per_test_timeout_value(void) {
     int timeout = per_test_timeout_value();
 
     if (timeout <= 0) {

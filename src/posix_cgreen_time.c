@@ -16,7 +16,7 @@
 #endif
 
 #if defined(HAVE_GETTIMEOFDAY)
-uint32_t cgreen_time_get_current_milliseconds() {
+uint32_t cgreen_time_get_current_milliseconds(void) {
 #ifdef __CYGWIN__
     /* TODO: This is actually the POSIX recommended way to do this */
     struct timespec ts;
@@ -36,6 +36,5 @@ uint32_t cgreen_time_get_current_milliseconds() {
 #endif
 }
 #endif
-
 
 /* vim: set ts=4 sw=4 et cindent: */

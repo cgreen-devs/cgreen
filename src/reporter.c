@@ -29,7 +29,7 @@ static void assert_true(TestReporter *reporter, const char *file, int line,
                         int result, const char *message, ...);
 static int  read_reporter_results(TestReporter *reporter);
 
-TestReporter *get_test_reporter() {
+TestReporter *get_test_reporter(void) {
     return context.reporter;
 }
 
@@ -44,7 +44,7 @@ void set_reporter_options(TestReporter *reporter, void *options) {
     reporter->options = options;
 }
 
-TestReporter *create_reporter() {
+TestReporter *create_reporter(void) {
     CgreenBreadcrumb *breadcrumb;
     TestReporter *reporter = (TestReporter *) malloc(sizeof(TestReporter));
     if (reporter == NULL) {
