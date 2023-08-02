@@ -269,6 +269,7 @@ static void run(CgreenTest *spec) {
     std::string message = "an exception was thrown during test: ";
     try {
 #endif
+        current_test = spec;
         spec->run();
 #ifdef __cplusplus
         return;

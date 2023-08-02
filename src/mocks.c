@@ -14,6 +14,7 @@
 #include "parameters.h"
 #include "constraint_internal.h"
 #include "utils.h"
+#include "runner.h"
 
 
 #ifdef __ANDROID__
@@ -612,8 +613,8 @@ static void report_unexpected_call(TestReporter *test_reporter, RecordedExpectat
 
     test_reporter->assert_true(
         test_reporter,
-        expectation->test_file,
-        expectation->test_line,
+        current_test->filename,
+        current_test->line,
         false,
         message,
         expectation->function);
