@@ -800,7 +800,7 @@ static void trigger_unfulfilled_expectations(CgreenVector *expectation_queue, Te
         bool call_counter_present = false;
         for (int c = 0; c < cgreen_vector_size(expectation->constraints); c++) {
             Constraint *constraint = (Constraint *) cgreen_vector_get(expectation->constraints, c);
-            if(constraint->type == CGREEN_CALL_COUNTER_CONSTRAINT) {
+            if (constraint->type == CGREEN_CALL_COUNTER_CONSTRAINT) {
                 constraint->execute(
                         constraint,
                         expectation->function,

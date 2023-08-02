@@ -1,50 +1,50 @@
 Running "assertion_messages_tests" (7 tests)...
-assertion_messages_tests.c: Failure: AssertionMessage -> for_actual_with_percent 
+assertion_messages_tests.c:000: Failure: AssertionMessage -> for_actual_with_percent 
 	Expected [strlen("%d")] to [equal] [3]
 		actual value:			[2]
 		expected value:			[3]
 
-assertion_messages_tests.c: Failure: AssertionMessage -> for_compare_area_to_null 
+assertion_messages_tests.c:000: Failure: AssertionMessage -> for_compare_area_to_null 
 	Wanted to compare contents of [null_pointer] but it had a value of NULL.
 		If you want to explicitly check for null, use the is_null constraint instead.
 
-assertion_messages_tests.c: Failure: AssertionMessage -> for_compare_null_to_area 
+assertion_messages_tests.c:000: Failure: AssertionMessage -> for_compare_null_to_area 
 	Wanted to compare contents with [area],
 		but NULL was used for the pointer we wanted to compare to.
 		If you want to explicitly check for null, use the is_null constraint instead.
 
-assertion_messages_tests.c: Failure: AssertionMessage -> for_comparing_content_with_negative_length 
+assertion_messages_tests.c:000: Failure: AssertionMessage -> for_comparing_content_with_negative_length 
 	Wanted to compare contents with [something],
 		but [-4] was given for the comparison size.
 
-assertion_messages_tests.c: Failure: AssertionMessage -> for_using_double_constraints_with_assert_that 
+assertion_messages_tests.c:000: Failure: AssertionMessage -> for_using_double_constraints_with_assert_that 
 	Constraints of double type, such as [equal double],
 		should only be used with 'assert_that_double()' to ensure proper comparison.
 
-assertion_messages_tests.c: Failure: AssertionMessage -> for_using_double_constraints_with_assert_that 
+assertion_messages_tests.c:000: Failure: AssertionMessage -> for_using_double_constraints_with_assert_that 
 	Expected [3] to [equal double] [3.1415926]
 
-assertion_messages_tests.c: Failure: AssertionMessage -> for_using_double_constraints_with_assert_that 
+assertion_messages_tests.c:000: Failure: AssertionMessage -> for_using_double_constraints_with_assert_that 
 	Constraints of double type, such as [be less than double],
 		should only be used with 'assert_that_double()' to ensure proper comparison.
 
-assertion_messages_tests.c: Failure: AssertionMessage -> for_using_double_constraints_with_assert_that 
+assertion_messages_tests.c:000: Failure: AssertionMessage -> for_using_double_constraints_with_assert_that 
 	Constraints of double type, such as [be greater than double],
 		should only be used with 'assert_that_double()' to ensure proper comparison.
 
-assertion_messages_tests.c: Failure: AssertionMessage -> for_using_double_constraints_with_assert_that 
+assertion_messages_tests.c:000: Failure: AssertionMessage -> for_using_double_constraints_with_assert_that 
 	Expected [7] to [be greater than double] [3.1415926]
 
-assertion_messages_tests.c: Failure: AssertionMessage -> for_using_non_double_constraints_with_assert_that_double 
+assertion_messages_tests.c:000: Failure: AssertionMessage -> for_using_non_double_constraints_with_assert_that_double 
 	Only constraints of double type should be used with 'assert_that_double()'.
 		Other types of constraints, such as [equal], will probably fail comparison.
 
-assertion_messages_tests.c: Failure: AssertionMessage -> for_using_non_double_constraints_with_assert_that_double 
+assertion_messages_tests.c:000: Failure: AssertionMessage -> for_using_non_double_constraints_with_assert_that_double 
 	Expected [3] to [equal] [3] within [8] significant figures
 		actual value:			[3.000000]
 		expected value:			[0.000000]
 
-assertion_messages_tests.c: Failure: AssertionMessage -> return_value_constraints_are_not_allowed 
+assertion_messages_tests.c:000: Failure: AssertionMessage -> return_value_constraints_are_not_allowed 
 	Got constraint of type [return value],
 		but they are not allowed for assertions, only in mock expectations.
 

@@ -79,9 +79,10 @@ cat "${name}.error" >> "${name}.output"
 
 tempfile=`mktemp`
 
+
 # sed commands to normalize...
 # - line numbers in error messages
-echo "s/:[0-9]+:/:/g" > $tempfile
+echo "s/:[0-9]+:/:000:/g" > $tempfile
 
 # - timing info
 echo "s/in [0-9]+ms\./in 0ms\./g" >> $tempfile

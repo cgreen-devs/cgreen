@@ -79,9 +79,15 @@ else
 	SUFFIX=.so
 endif
 
+# Here are
+#
+# 1. tests linked into a library that we run as is
+# 2. tests linked into a library that we run and compare its normalized output to expected output
+
 # TODO: the diff_tools scripts determine prefix and extension by themselves
 # Would be better if those were arguments, since we do it here anyway
 
+# These "diff tools" also normalize the output using replacements
 DIFF_TOOL=../../tools/cgreen_runner_output_diff
 XML_DIFF_TOOL=../../tools/cgreen_xml_output_diff
 DIFF_TOOL_ARGUMENTS = $(1)_tests \

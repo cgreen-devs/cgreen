@@ -57,6 +57,11 @@ Ensure(Mocks, calls_beyond_expected_sequence_fail_when_mocks_are_strict) {
     assert_that(integer_out(), is_equal_to(3));
 }
 
+static void unexpected_mock(void) { mock(); }
+
+Ensure(Mocks, lists_unexpected_mock_calls) { unexpected_mock(); }
+
+
 // These are tentative solutions to mocks returning doubles and
 // trapping type errors when they do.
 

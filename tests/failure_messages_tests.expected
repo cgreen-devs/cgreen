@@ -1,8 +1,8 @@
 Running "failure_messages_tests" (2 tests)...
-failure_messages_tests.c: Exception: FailureMessage -> for_CGREEN_PER_TEST_TIMEOUT 
+failure_messages_tests.c:000: Exception: FailureMessage -> for_CGREEN_PER_TEST_TIMEOUT 
 	Test terminated unexpectedly, likely from a non-standard exception or Posix signal
 
-failure_messages_tests.c: Exception: FailureMessage -> for_time_out_in_only_one_second 
+failure_messages_tests.c:000: Exception: FailureMessage -> for_time_out_in_only_one_second 
 	Test terminated unexpectedly, likely from a non-standard exception or Posix signal
 
   "FailureMessage": 1 pass, 2 exceptions in 0ms.
