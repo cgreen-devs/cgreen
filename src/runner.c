@@ -17,8 +17,10 @@
 #include "cgreen/internal/android_headers/androidcompat.h"
 #endif // #ifdef __ANDROID__
 
+// Export the current running test
+CgreenTest *current_test;
 
-static const char* CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE = "CGREEN_PER_TEST_TIMEOUT";
+static const char *CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE = "CGREEN_PER_TEST_TIMEOUT";
 
 static void run_every_test(TestSuite *suite, TestReporter *reporter);
 static void run_named_test(TestSuite *suite, const char *name, TestReporter *reporter);
@@ -29,21 +31,25 @@ static int per_test_timeout_defined(void);
 static int per_test_timeout_value(void);
 static void validate_per_test_timeout_value(void);
 
-int run_test_suite(TestSuite *suite, TestReporter *reporter) {
+int run_test_suite(TestSuite *suite, TestReporter *reporter)
+{
     int success;
-    if (per_test_timeout_defined()) {
+    if (per_test_timeout_defined())
+    {
         validate_per_test_timeout_value();
     }
 
     setup_reporting(reporter);
     run_every_test(suite, reporter);
-    success = (reporter->total_failures == 0) && (reporter->total_exceptions==0);
+    success = (reporter->total_failures == 0) && (reporter->total_exceptions == 0);
     return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-int run_single_test(TestSuite *suite, const char *name, TestReporter *reporter) {
+int run_single_test(TestSuite *suite, const char *name, TestReporter *reporter)
+{
     int success;
-    if (per_test_timeout_defined()) {
+    if (per_test_timeout_defined())
+    {
         validate_per_test_timeout_value();
     }
 
@@ -53,7 +59,8 @@ int run_single_test(TestSuite *suite, const char *name, TestReporter *reporter) 
     return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-static void run_every_test(TestSuite *suite, TestReporter *reporter) {
+static void run_every_test(TestSuite *suite, TestReporter *reporter)
+{
     int i;
 
     run_specified_test_if_child(suite, reporter);
@@ -62,8 +69,10 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
     (*reporter->start_suite)(reporter, suite->name, count_tests(suite));
 
     // Run sub-suites first
-    for (i = 0; i < suite->size; i++) {
-        if (suite->tests[i].type != test_function) {
+    for (i = 0; i < suite->size; i++)
+    {
+        if (suite->tests[i].type != test_function)
+        {
             (*suite->setup)();
             run_every_test(suite->tests[i].Runnable.suite, reporter);
             (*suite->teardown)();
@@ -79,8 +88,10 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
     uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
 
     // Run top-level tests
-    for (i = 0; i < suite->size; i++) {
-        if (suite->tests[i].type == test_function) {
+    for (i = 0; i < suite->size; i++)
+    {
+        if (suite->tests[i].type == test_function)
+        {
             if (getenv("CGREEN_NO_FORK") == NULL)
                 run_test_in_its_own_process(suite, suite->tests[i].Runnable.test, reporter);
             else
@@ -89,22 +100,25 @@ static void run_every_test(TestSuite *suite, TestReporter *reporter) {
     }
 
     reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
-                                                                  cgreen_time_get_current_milliseconds());
+                                                              cgreen_time_get_current_milliseconds());
     reporter->total_duration = cgreen_time_duration_in_milliseconds(total_test_starting_milliseconds,
-                                                                  cgreen_time_get_current_milliseconds());
+                                                                    cgreen_time_get_current_milliseconds());
     send_reporter_completion_notification(reporter);
     (*reporter->finish_suite)(reporter, suite->filename, suite->line);
 }
 
-static void run_named_test(TestSuite *suite, const char *name, TestReporter *reporter) {
+static void run_named_test(TestSuite *suite, const char *name, TestReporter *reporter)
+{
     int i;
 
     uint32_t total_test_starting_milliseconds = cgreen_time_get_current_milliseconds();
 
     (*reporter->start_suite)(reporter, suite->name, count_tests(suite));
-    for (i = 0; i < suite->size; i++) {
+    for (i = 0; i < suite->size; i++)
+    {
         if (suite->tests[i].type != test_function &&
-                has_test(suite->tests[i].Runnable.suite, name)) {
+            has_test(suite->tests[i].Runnable.suite, name))
+        {
             (*suite->setup)();
             run_named_test(suite->tests[i].Runnable.suite, name, reporter);
             (*suite->teardown)();
@@ -119,49 +133,58 @@ static void run_named_test(TestSuite *suite, const char *name, TestReporter *rep
 
     uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
 
-    for (i = 0; i < suite->size; i++) {
-        if (suite->tests[i].type == test_function) {
-            if (strcmp(suite->tests[i].name, name) == 0) {
+    for (i = 0; i < suite->size; i++)
+    {
+        if (suite->tests[i].type == test_function)
+        {
+            if (strcmp(suite->tests[i].name, name) == 0)
+            {
                 run_test_in_the_current_process(suite, suite->tests[i].Runnable.test, reporter);
             }
         }
     }
 
     reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
-                                                                  cgreen_time_get_current_milliseconds());
+                                                              cgreen_time_get_current_milliseconds());
     reporter->total_duration = cgreen_time_duration_in_milliseconds(total_test_starting_milliseconds,
-                                                                  cgreen_time_get_current_milliseconds());
+                                                                    cgreen_time_get_current_milliseconds());
 
     send_reporter_completion_notification(reporter);
     (*reporter->finish_suite)(reporter, suite->filename, suite->line);
 }
 
-
-static void run_test_in_the_current_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter) {
+static void run_test_in_the_current_process(TestSuite *suite, CgreenTest *test, TestReporter *reporter)
+{
     uint32_t test_starting_milliseconds = cgreen_time_get_current_milliseconds();
 
     (*reporter->start_test)(reporter, test->name);
-    if (test->skip) {
+    if (test->skip)
+    {
         send_reporter_skipped_notification(reporter);
-    } else {
+    }
+    else
+    {
         run_the_test_code(suite, test, reporter);
         reporter->duration = cgreen_time_duration_in_milliseconds(test_starting_milliseconds,
-                                                             cgreen_time_get_current_milliseconds());
+                                                                  cgreen_time_get_current_milliseconds());
 
         send_reporter_completion_notification(reporter);
     }
     (*reporter->finish_test)(reporter, test->filename, test->line, NULL);
 }
 
-static int per_test_timeout_defined(void) {
+static int per_test_timeout_defined(void)
+{
     return getenv(CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE) != NULL;
 }
 
-static int per_test_timeout_value(void) {
-    char* timeout_string;
+static int per_test_timeout_value(void)
+{
+    char *timeout_string;
     int timeout_value;
 
-    if (!per_test_timeout_defined()) {
+    if (!per_test_timeout_defined())
+    {
         die("attempt to fetch undefined value for %s\n", CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE);
     }
 
@@ -171,43 +194,59 @@ static int per_test_timeout_value(void) {
     return timeout_value;
 }
 
-static void validate_per_test_timeout_value(void) {
+static void validate_per_test_timeout_value(void)
+{
     int timeout = per_test_timeout_value();
 
-    if (timeout <= 0) {
+    if (timeout <= 0)
+    {
         die("invalid value for %s environment variable: %d\n", CGREEN_PER_TEST_TIMEOUT_ENVIRONMENT_VARIABLE, timeout);
     }
 }
 
-static void run_setup_for(CgreenTest *spec) {
+static void run_setup_for(CgreenTest *spec)
+{
 #ifdef __cplusplus
     std::string message = "an exception was thrown during setup: ";
-    try {
+    try
+    {
 #endif
         spec->context->setup();
 #ifdef __cplusplus
         return;
-    } catch(const std::exception& exception) {
+    }
+    catch (const std::exception &exception)
+    {
         message += '[';
         message += exception.what();
         message += ']';
-    } catch(const std::exception* exception) {
+    }
+    catch (const std::exception *exception)
+    {
         message += '[';
         message += exception->what();
         message += ']';
-    } catch(const std::string& exception_message) {
+    }
+    catch (const std::string &exception_message)
+    {
         message += '[';
         message += exception_message;
         message += ']';
-    } catch(const std::string *exception_message) {
+    }
+    catch (const std::string *exception_message)
+    {
         message += '[';
         message += *exception_message;
         message += ']';
-    } catch(const char *exception_message) {
+    }
+    catch (const char *exception_message)
+    {
         message += '[';
         message += exception_message;
         message += ']';
-    } catch (...) {
+    }
+    catch (...)
+    {
         message += "unknown exception type";
     }
     va_list no_arguments;
@@ -218,35 +257,49 @@ static void run_setup_for(CgreenTest *spec) {
 #endif
 }
 
-static void run_teardown_for(CgreenTest *spec) {
+static void run_teardown_for(CgreenTest *spec)
+{
 #ifdef __cplusplus
     std::string message = "an exception was thrown during teardown: ";
-    try {
+    try
+    {
 #endif
         spec->context->teardown();
 #ifdef __cplusplus
         return;
-    } catch(const std::exception& exception) {
+    }
+    catch (const std::exception &exception)
+    {
         message += '[';
         message += exception.what();
         message += ']';
-    } catch(const std::exception* exception) {
+    }
+    catch (const std::exception *exception)
+    {
         message += '[';
         message += exception->what();
         message += ']';
-    } catch(const std::string& exception_message) {
+    }
+    catch (const std::string &exception_message)
+    {
         message += '[';
         message += exception_message;
         message += ']';
-    } catch(const std::string *exception_message) {
+    }
+    catch (const std::string *exception_message)
+    {
         message += '[';
         message += *exception_message;
         message += ']';
-    } catch(const char *exception_message) {
+    }
+    catch (const char *exception_message)
+    {
         message += '[';
         message += exception_message;
         message += ']';
-    } catch (...) {
+    }
+    catch (...)
+    {
         message += "unknown exception type";
     }
     va_list no_arguments;
@@ -264,36 +317,50 @@ static void run_teardown_for(CgreenTest *spec) {
    documented as a good place to put a breakpoint. Do not change the
    name or semantics of this function, it should continue to be very
    close to the test code. */
-static void run(CgreenTest *spec) {
+static void run(CgreenTest *spec)
+{
 #ifdef __cplusplus
     std::string message = "an exception was thrown during test: ";
-    try {
+    try
+    {
 #endif
         current_test = spec;
         spec->run();
 #ifdef __cplusplus
         return;
-    } catch(const std::exception& exception) {
+    }
+    catch (const std::exception &exception)
+    {
         message += '[';
         message += exception.what();
         message += ']';
-    } catch(const std::exception* exception) {
+    }
+    catch (const std::exception *exception)
+    {
         message += '[';
         message += exception->what();
         message += ']';
-    } catch(const std::string& exception_message) {
+    }
+    catch (const std::string &exception_message)
+    {
         message += '[';
         message += exception_message;
         message += ']';
-    } catch(const std::string *exception_message) {
+    }
+    catch (const std::string *exception_message)
+    {
         message += '[';
         message += *exception_message;
         message += ']';
-    } catch(const char *exception_message) {
+    }
+    catch (const char *exception_message)
+    {
         message += '[';
         message += exception_message;
         message += ']';
-    } catch (...) {
+    }
+    catch (...)
+    {
         message += "unknown exception type";
     }
     va_list no_arguments;
@@ -304,31 +371,41 @@ static void run(CgreenTest *spec) {
 #endif
 }
 
-void run_the_test_code(TestSuite *suite, CgreenTest *spec, TestReporter *reporter) {
+void run_the_test_code(TestSuite *suite, CgreenTest *spec, TestReporter *reporter)
+{
     significant_figures_for_assert_double_are(8);
     clear_mocks();
 
-    if (per_test_timeout_defined()) {
+    if (per_test_timeout_defined())
+    {
         validate_per_test_timeout_value();
 
         die_in(per_test_timeout_value());
     }
 
     // for historical reasons the suite can have a setup
-    if(has_setup(suite)) {
+    if (has_setup(suite))
+    {
         (*suite->setup)();
-    } else {
-        if (spec->context->setup != NULL) {
+    }
+    else
+    {
+        if (spec->context->setup != NULL)
+        {
             run_setup_for(spec);
         }
     }
 
     run(spec);
     // for historical reasons the suite can have a teardown
-    if (has_teardown(suite)) {
+    if (has_teardown(suite))
+    {
         (*suite->teardown)();
-    } else {
-        if (spec->context->teardown != NULL) {
+    }
+    else
+    {
+        if (spec->context->teardown != NULL)
+        {
             run_teardown_for(spec);
         }
     }
@@ -336,7 +413,8 @@ void run_the_test_code(TestSuite *suite, CgreenTest *spec, TestReporter *reporte
     tally_mocks(reporter);
 }
 
-void die(const char *message, ...) {
+void die(const char *message, ...)
+{
     va_list arguments;
     va_start(arguments, message);
     vprintf(message, arguments);

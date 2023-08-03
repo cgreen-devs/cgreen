@@ -1,3 +1,3 @@
 #include <cgreen/runner.h>
 
-CgreenTest *current_test;
+extern CgreenTest *current_test;
