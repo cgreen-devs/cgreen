@@ -26,20 +26,23 @@ the selected package there. You should now have a directory like
 `cgreen-1.6.1_amd64`.
 
 Create a new subdirectory `DEBIAN` inside it. Copy the file
-`debian-control` from the repo to `DEBIAN/control`.
+`debian/control` from the repo to `DEBIAN/control`.
 
 Update the `Architecture:` field and ensure that the version is
 correct.
 
 Depending on the packaging the lib-files might have been stored in a
-subdirectory rather than directly in <root>/lib.
+subdirectory rather than directly in <root>/lib. For Ubuntu they
+should be in `<root>/lib/x86_64-linux-gnu`.
 
 ## Make the .deb
+
+In the examples below `1.6.1` is of course just an example...
 
 In the directory where you now have your unpacked package content (in
 the example above `cgreen-deb`) run
 
-    $ dpkg-deb --build --root-owner-group cgreen-1.6.1_amd64
+    $ dpkg-deb --build --root-owner-group cgreen-1.6.1-x86_64-linux-gnu
 
 That should create `cgreen-1.6.1_amd64.deb`.
 
@@ -47,7 +50,7 @@ That should create `cgreen-1.6.1_amd64.deb`.
 
 You can run
 
-    $ lintian cgreen-1.6.1-amd64.deb
+    $ lintian cgreen-1.6.1-x86_64-linux-gnu.deb
 
 and try to fix most of the errors and warnings.
 
