@@ -112,7 +112,7 @@ static struct option options[] = {
     },
     [QUITE_OPT] = {
         .short_name = 'q',
-        .long_name = "quite",
+        .long_name = "quiet",
         .flags = GOPT_ARGUMENT_FORBIDDEN,
     },
     [VERSION_OPT] = {
