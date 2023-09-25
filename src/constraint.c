@@ -601,6 +601,9 @@ static void execute_sideeffect(Constraint *constraint, const char *function, Cgr
     (constraint->side_effect_callback)(constraint->side_effect_data);
 }
 
+#define IS_BIG_ENDIAN (!*(unsigned char *)&(uint16_t){1})
+static bool bigendian(void) { return IS_BIG_ENDIAN; }
+
 static void capture_parameter(Constraint *constraint, const char *function, CgreenValue actual,
                               const char *test_file, int test_line, TestReporter *reporter) {
     (void)function;
@@ -608,8 +611,17 @@ static void capture_parameter(Constraint *constraint, const char *function, Cgre
     (void)test_line;
     (void)reporter;
 
-    memmove(constraint->expected_value.value.pointer_value, &actual.value, constraint->size_of_expected_value);
-}
+    if ((sizeof(intptr_t) != constraint->size_of_expected_value) && bigendian()) {
+        // Then the beginning of a smaller value is not stored at the beginning of the actual.value union
+        size_t offset = sizeof(intptr_t) - constraint->size_of_expected_value;
+        // Offset is in bytes so we need to cast &actual.value to that before adding the offset
+        void *start_address = (unsigned char *)&actual.value + offset;
+        memmove(constraint->expected_value.value.pointer_value, start_address, constraint->size_of_expected_value);
+
+    } else
+        memmove(constraint->expected_value.value.pointer_value, &actual.value,
+                constraint->size_of_expected_value);
+    }
 
 
 void test_want(Constraint *constraint, const char *function, CgreenValue actual,

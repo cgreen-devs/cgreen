@@ -440,9 +440,9 @@ Ensure(Mocks, can_capture_parameter) {
     expect(simple_mocked_function,
            will_capture_parameter(first, captured_first),
            will_capture_parameter(second, captured_second));
-    simple_mocked_function(1, 2);
-    assert_that(captured_first, is_equal_to(1));
-    assert_that(captured_second, is_equal_to(2));
+    simple_mocked_function(0x12345678, 0x76543210);
+    assert_that(captured_first, is_equal_to_hex(0x12345678));
+    assert_that(captured_second, is_equal_to_hex(0x76543210));
 }
 
 static int changed_by_sideeffect = 1;
