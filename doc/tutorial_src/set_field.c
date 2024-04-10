@@ -14,5 +14,5 @@ void update_field(struct structure *struct_to_update) {
 Ensure(setting_field_of_parameter) {
     int fourty_two = 42;
     expect(update_field,
-           will_set_contents_of_parameter(field, &fourty_two, sizeof(int)));
+           will_set_contents_of_output_parameter(field, &fourty_two, sizeof(int)));
 }

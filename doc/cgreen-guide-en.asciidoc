@@ -1640,13 +1640,13 @@ Ensure(Readline, can_read_some_characters) {
     char canned_c = 'c';
 
     expect(mocked_read,
-           will_set_contents_of_parameter(buf, &canned_a, sizeof(char)),
+           will_set_contents_of_output_parameter(buf, &canned_a, sizeof(char)),
            will_return(1));
     expect(mocked_read,
-           will_set_contents_of_parameter(buf, &canned_b, sizeof(char)),
+           will_set_contents_of_output_parameter(buf, &canned_b, sizeof(char)),
            will_return(1));
     expect(mocked_read,
-           will_set_contents_of_parameter(buf, &canned_c, sizeof(char)),
+           will_set_contents_of_output_parameter(buf, &canned_c, sizeof(char)),
            will_return(1));
 
     ...
@@ -1660,7 +1660,7 @@ It is very tempting to break out the common expect:
 -----------------------------
 static void expect_char(char ch) {
     expect(mocked_read,
-        will_set_contents_of_parameter(buf, &ch, sizeof(char)),
+        will_set_contents_of_output_parameter(buf, &ch, sizeof(char)),
         will_return(1));
 }
 
@@ -1694,7 +1694,7 @@ At first glance the fix might look easy:
 static void expect_char(char ch) {
     char saved_ch = ch;
     expect(mocked_read,
-        will_set_contents_of_parameter(buf, &saved_ch, sizeof(char)),
+    will_set_contents_of_output_parameter(buf, &saved_ch, sizeof(char)),
         will_return(1));
 }
 
@@ -1711,7 +1711,7 @@ Ok, so let's make it static:
 static void expect_char(char ch) {
     static char saved_ch = ch;
     expect(mocked_read,
-        will_set_contents_of_parameter(buf, &saved_ch, sizeof(char)),
+        will_set_contents_of_output_parameter(buf, &saved_ch, sizeof(char)),
         will_return(1));
 }
 
@@ -1747,7 +1747,7 @@ The solution is now quite obvious:
 -----------------------------
 static void expect_char(char *ch_p) {
     expect(mocked_read,
-        will_set_contents_of_parameter(buf, ch_p, sizeof(char)),
+        will_set_contents_of_output_parameter(buf, ch_p, sizeof(char)),
         will_return(1));
 }
 
@@ -1780,7 +1780,7 @@ CAUTION: Variables that are to be sent to a mocked function MUST be live at the 
 In C all function parameters are by value so if a function needs to return a value through a parameter that has to be done using a pointer.
 Typically this is a pointer to the area or variable the function should fill.
 
-*Cgreen* provides `will_set_contents_of_parameter()` to handle this use case.
+*Cgreen* provides `will_set_contents_of_output_parameter()` to handle this use case.
 For example
 
 [source, c]
@@ -1795,7 +1795,7 @@ When the mock for `convert_to_uppercase()` is called it will write the string "U
 ==== Setting fields
 
 Sometimes you need to set a field in a struct sent by reference to a mocked function.
-You cannot use the `will_set_contents_of_parameter()` directly since you can't, or even don't want to, know the complete information in the structure.
+You cannot use the `will_set_contents_of_output_parameter()` directly since you can't, or even don't want to, know the complete information in the structure.
 But with a little bit of boilerplate in your mock function you can still write to a single field.
 
 In the mock function you need to create a local variable that points to the field you want to update.
@@ -1810,9 +1810,9 @@ include::tutorial_src/set_field.c[lines=3..18]
 -----------------------
 
 The local variable `field` in the mock function is set to point to the field that we need to update.
-It is then exposed by including it in the `mock()` call, and `will_set_contents_of_parameter()` will use it to update whatever it points to with the data provided in the `expect()`.
+It is then exposed by including it in the `mock()` call, and `will_set_contents_of_output_parameter()` will use it to update whatever it points to with the data provided in the `expect()`.
 
-NOTE: Both the local variable and the data argument in the call to `will_set_contents_of_parameter()` must be pointers.
+NOTE: Both the local variable and the data argument in the call to `will_set_contents_of_output_parameter()` must be pointers.
 You cannot use literals as data, except when it is a string literal which as per C convention is converted to a pointer.
 
 ==== Side Effects
@@ -1892,7 +1892,7 @@ In your mocked function you can then simply return that value, or manipulate it 
 |`will_return(value)`                                         | return `value`, for integer types
 |`will_return_double(value)`                                  | return `value` as a "boxed double", for double floats (required because of C's type coercion rules which would otherwise convert a double into an int)
 |`will_return_by_value(struct, size)`                         | return a pointer to an allocated copy of the `struct` that can be copied and returned by value from the mocked function
-|`will_set_contents_of_parameter(parameter_name, pointer_to_value, size)`| write `size` bytes from the pointed out value (`pointer_to_value`) into where the referenced out parameter (`parameter_name`) is pointing
+|`will_set_contents_of_output_parameter(parameter_name, pointer_to_value, size)`| write `size` bytes from the pointed out value (`pointer_to_value`) into where the referenced out parameter (`parameter_name`) is pointing
 |`will_capture_parameter(parameter_name, local_variable)`     |capture the value of the parameter and store it in the named local variable
 |`with_side_effect(function, pointer_to_data)`                | call the side effect `function` and pass `pointer_to_data` to it
 |===========================================================================================
@@ -1901,7 +1901,9 @@ NOTE: *`will_return_double()`*: The "boxed double" returned by `mock()` have to 
 
 NOTE: *`will_return_by_value`*: The memory allocated for the copy of the struct returned by `mock()` needs to be deallocated by the caller or it will be lost. You can do this with the code in the `Box` example below.
 
-NOTE: *`will_set_contents_of_parameter`*: The data to set must be correct at the time of the call to the mock function, and not be overwritten or released between the call to the `expect()` and the mock function. See <<refactoring-tests>> for details.
+NOTE: *`will_set_contents_of_output_parameter`*: The data to set must be correct at the time of the call to the mock function, and not be overwritten or released between the call to the `expect()` and the mock function. See <<refactoring-tests>> for details.
+
+NOTE: *`will_set_contents_of_output_parameter`*: The previous name of this macro was `will_set_contents_of_parameter` and it is still available. The new name is prefered due to readability.
 
 NOTE: *`will_capture_parameter`*: The local variable to capture the value in must be live at the time of the call to the mock function, so using a local variable in a function called by your test will not work. See <<refactoring-tests>> for details.
 
@@ -1918,13 +1920,13 @@ You can combine the expectations for a `mock()` in various ways:
         when(file, is_equal_to_contents_of(&FD, sizeof(FD))),
         when(input, is_equal_to_string("Hello world!"),
         with_side_effect(&update_counter, &counter),
-        will_set_contents_of_parameter(status, FD_CLOSED, sizeof(bool))));
+        will_set_contents_of_output_parameter(status, FD_CLOSED, sizeof(bool))));
 -----------------------
 
 If multiple `when()` are specified they all need to be fullfilled.
 You can of course only have one for each of the parameters of your mock function.
 
-You can also have multiple `will_set_contents_of_parameter()` in an expectation, one for each reference parameter, but naturally only one `will_return()`.
+You can also have multiple `will_set_contents_of_output_parameter()` in an expectation, one for each reference parameter, but naturally only one `will_return()`.
 
 To ensure that a specific call happens `n` times the macro `times(number_times_called)` can be passed as a constraint to a specific call:
 
@@ -1978,7 +1980,7 @@ The expectation code should look like the following
 
 === Handling out-parameters
 
-TBD. Hint: this involves using `will_set_contents_of_parameter()`.
+TBD. Hint: this involves using `will_set_contents_of_output_parameter()`.
 
 === Returning `struct`
 

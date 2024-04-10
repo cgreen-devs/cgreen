@@ -47,7 +47,7 @@ static void expect_read_line_from(int file_id, const char *line) {
                will_return(EOF));
     else
         expect(read_line, when(file, is_equal_to(file_id)),
-               will_set_contents_of_parameter(buffer, line, strlen(line)+1),
+               will_set_contents_of_output_parameter(buffer, line, strlen(line)+1),
                will_return(strlen(line)+1));
 }
 
