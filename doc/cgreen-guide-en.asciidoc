@@ -1976,6 +1976,10 @@ The expectation code should look like the following
 -----------------------
 
 
+=== Handling out-parameters
+
+TBD. Hint: this involves using `will_set_contents_of_parameter()`.
+
 === Returning `struct`
 
 If the function we are mocking returns structs by value, then our mock function need to do that too.
@@ -2008,7 +2012,10 @@ Struct retrieve_struct() {
 This would cause a memory leak since the area allocated by the `return_by_value()` macro is not deallocated.
 And in many scenarious this might not be a big problem, and you could make do with that simple version.
 
-In case we wanted to be sure, we should free the area automatically allocated by `will_return_by_value()`.
+We might want to be sure, e.g. if we want to use `valgrind` on when unittesting to catch leaks early.
+Then we don't want our unittests to pollute the actual leakage analysis.
+
+In that case the mock function needs to free up the area that was automatically allocated by `will_return_by_value()`.
 The pointer returned by `mock()` will point to that area.
 So, here's a better, although slightly more complicated, version:
 
@@ -2075,7 +2082,7 @@ The only concern might be duplication of an explicit value, but that is not a bi
 
 === Capturing Parameters
 
-TBD.
+TBD. Hint: this involves using `will_capture_parameter()`.
 
 
 == Special Cases
@@ -2084,7 +2091,7 @@ TBD.
 
 We are not talking about
 http://www.hostettler.net/blog/2014/05/18/fakes-stubs-dummy-mocks-doubles-and-all-that/[test doubles]
-here, but about values of C/C++ ``double`` type (a.k.a double float.)
+here, but about values of C/C++ ``double`` type (a.k.a. double float.)
 
 *Cgreen* is designed to make it easy and natural to write assertions and expectations.
 Many functions can be used for multiple data types, e.g. `is_equal_to()` applies to all integer type values, actually including pointers.
