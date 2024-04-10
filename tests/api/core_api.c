@@ -46,7 +46,7 @@ static int int_stub(int parameter) {
 // Mocks
 Ensure(mocks_compiles) {
     always_expect(int_stub, will_return(1));
-    always_expect(int_stub, will_set_contents_of_parameter(parameter, 1, sizeof(int)));
+    always_expect(int_stub, will_set_contents_of_output_parameter(parameter, 1, sizeof(int)));
     never_expect(int_stub);
     expect(int_stub, when(parameter, is_equal_to(1)));
     int_stub(1);

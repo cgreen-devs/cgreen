@@ -355,7 +355,7 @@ Ensure(Mocks, can_stub_an_out_parameter) {
     LargerThanIntptr local = { 4.13, 7.89, "alice" };
 
     expect(out_param_mock,
-        will_set_contents_of_parameter(result, &actual, sizeof(LargerThanIntptr))
+        will_set_contents_of_output_parameter(result, &actual, sizeof(LargerThanIntptr))
     );
 
     out_param_mock(&local);
@@ -373,7 +373,7 @@ Ensure(Mocks, can_stub_a_char_out_parameter) {
     char stubbed_char = 'a';
     char returned_char;
     expect(mocked_read,
-           will_set_contents_of_parameter(ch, &stubbed_char, 1));
+           will_set_contents_of_output_parameter(ch, &stubbed_char, 1));
     mocked_read(&returned_char);
     assert_that(returned_char, is_equal_to(stubbed_char));
 }
