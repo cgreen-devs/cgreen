@@ -539,6 +539,7 @@ assert_that(actual, <constraint>);
 
 NOTE: Sometimes you just want to fail the test explicitly, and there is a function for that too, `fail_test(const char *message)`.
 And there is a function to explicitly pass, `pass_test(void)`.
+There is also a function to programmatically skip a test, `skip_test(void)` to complement the `xEnsure` notation (see <<xensure>>).
 
 Assertions send messages to *Cgreen*, which in turn outputs the results.
 
@@ -2502,6 +2503,10 @@ With this method, it is a one character change to temporarily ignore, and un-ign
 It is also easily found using text searches through a complete source tree.
 *Cgreen* will also tally the skipped tests, so it is clearly visible that you have some skipped test when you run them.
 
+NOTE: You can also programmatically decide to skip a test depending on some run-time information.
+You do that simply by checking for the condition and calling `skip_test()` which will tally the test as skipped.
+
+NOTE: `skip_test()` does *not* exit your test function so you need to take care that continuing after the call does not trigger any undecided behaviour.
 
 
 [[changing_style]]

@@ -32,6 +32,7 @@ namespace cgreen {
 
 #define pass_test() assert_true(true)
 #define fail_test(...) assert_true_with_message(false, __VA_ARGS__)
+#define skip_test() send_reporter_skipped_notification(get_test_reporter())
 
 
 /* Utility: */
