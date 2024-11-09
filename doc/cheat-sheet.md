@@ -9,13 +9,15 @@
     BeforeEach( <sut> ) {}
     AfterEach( <sut> ) {}
 
-## A test
+## Tests
 
     Ensure( <sut>, <test_name> ) {
         assert_that( <expression> );
         assert_that( <expression>, <constraint> );
         assert_that_double(...);
     }
+
+    xEnsure( ... ) ... // Skip this test
 
 ## Constraints
 
@@ -96,3 +98,9 @@
 
     %.o: %.c
         $(CC) $(CFLAGS) -fPIC -c -o $@ $^
+
+## Programmatic control of result
+
+    fail_test(char *message);
+    pass_test(void);
+    skip_test(void);
