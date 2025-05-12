@@ -28,6 +28,8 @@ TestSuite *unit_tests(void);
 TestSuite *vector_tests(void);
 TestSuite *xml_reporter_tests(void);
 TestSuite *libxml_reporter_tests(void);
+TestSuite *test_suite_a(void);
+TestSuite *test_suite_b(void);
 
 int main(int argc, char **argv) {
     int suite_result;
@@ -46,6 +48,8 @@ int main(int argc, char **argv) {
     add_suite(suite, message_formatting_tests());
     add_suite(suite, messaging_tests());
     add_suite(suite, mock_tests());
+    add_suite(suite, test_suite_a());
+    add_suite(suite, test_suite_b());
     add_suite(suite, parameter_tests());
     add_suite(suite, reflective_no_teardown_tests());
     add_suite(suite, reflective_tests());
