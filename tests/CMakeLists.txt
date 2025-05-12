@@ -46,6 +46,7 @@ set(c_tests_library_SRCS
   messaging_tests.c
   mocks_tests.c
   mocks_struct_tests.c
+  multiple_suite_tests.c
   parameters_tests.c
   reflective_runner_no_teardown_tests.c
   reflective_tests.c
