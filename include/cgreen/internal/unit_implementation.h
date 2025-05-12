@@ -45,31 +45,43 @@ typedef struct {
 
 #define Ensure_NARG(...) ENSURE_macro_dispatcher(Ensure, __VA_ARGS__)
 
-#define EnsureWithContextAndSpecificationName(skip, contextName, specName) \
-    static void contextName##__##specName (void);\
-    CgreenTest spec_name(contextName, specName) = { skip, &contextFor##contextName, STRINGIFY_TOKEN(specName), &contextName##__##specName, FILENAME, __LINE__ }; \
+#define EnsureWithContextAndSpecificationName(skip, contextName, specName)      \
+    static void contextName##__##specName (void);                               \
+    __attribute__((__visibility__("default")))                                  \
+    extern CgreenTest spec_name(contextName, specName);                         \
+    CgreenTest spec_name(contextName, specName) = {                             \
+        skip, &contextFor##contextName, STRINGIFY_TOKEN(specName),              \
+        &contextName##__##specName, FILENAME, __LINE__                          \
+    };                                                                          \
     static void contextName##__##specName (void)
 
 extern CgreenContext defaultContext;
 
-#define EnsureWithSpecificationName(skip, specName) \
-    static void specName (void);\
-    CgreenTest spec_name(default, specName) = { skip, &defaultContext, STRINGIFY_TOKEN(specName), &specName, FILENAME, __LINE__ }; \
+#define EnsureWithSpecificationName(skip, specName)                             \
+    static void specName (void);                                                \
+    __attribute__((visibility("default")))                                      \
+    extern CgreenTest spec_name(default, specName);                             \
+    CgreenTest spec_name(default, specName) = {                                 \
+        skip, &defaultContext, STRINGIFY_TOKEN(specName),                       \
+        &specName, FILENAME, __LINE__                                           \
+    };                                                                          \
     static void specName (void)
 
-#define DescribeImplementation(subject) \
-        static void setup(void);                \
-        static void teardown(void);                                     \
-        static CgreenContext contextFor##subject = { STRINGIFY_TOKEN(subject), FILENAME, &setup, &teardown }; \
-        extern void(*BeforeEach_For_##subject)(void);                   \
-        extern void(*AfterEach_For_##subject)(void);                    \
-        static void setup(void) {                                       \
-            if (BeforeEach_For_##subject != NULL) BeforeEach_For_##subject(); \
-        }                                                               \
-        static void teardown(void) {                                    \
-            if (AfterEach_For_##subject != NULL) AfterEach_For_##subject(); \
-        }                                                               \
-        typedef struct Dummy_ ## subject { int x; } Dummy_ ## subject ## _t
+#define DescribeImplementation(subject)                                         \
+    static void setup##subject (void);                                          \
+    static void teardown##subject (void);                                       \
+    static CgreenContext contextFor##subject __attribute__((__used__)) = {      \
+        STRINGIFY_TOKEN(subject), FILENAME, &setup##subject, &teardown##subject \
+    };                                                                          \
+    extern void(*BeforeEach_For_##subject)(void);                               \
+    extern void(*AfterEach_For_##subject)(void);                                \
+    static void setup##subject (void) {                                         \
+        if (BeforeEach_For_##subject != NULL) BeforeEach_For_##subject();       \
+    }                                                                           \
+    static void teardown##subject (void) {                                      \
+        if (AfterEach_For_##subject != NULL) AfterEach_For_##subject();         \
+    }                                                                           \
+    typedef struct Dummy_ ## subject { int x; } Dummy_ ## subject ## _t
 
 #define BeforeEachImplementation(subject) \
         void BeforeEach_For_##subject##_Function(void);                 \
