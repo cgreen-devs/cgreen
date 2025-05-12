@@ -5,8 +5,7 @@ using namespace cgreen;
 #endif
 
 // This funciton exemplifies infrastructure common between multiple suits 
-int common_func_btw_SUTs()
-{
+static int common_func_btw_SUTs(void) {
     return 0;
 }
 
