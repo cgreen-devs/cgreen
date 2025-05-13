@@ -23,6 +23,18 @@ if (NM_FOUND)
    add_executable(cgreen-runner ${RUNNER_SRCS})
    target_link_libraries(cgreen-runner ${CGREEN_LIBRARY} $<$<BOOL:${CGREEN_WITH_LIBXML2}>:${LIBXML2_LIBRARIES}> ${CMAKE_DL_LIBS})
 
+   if(APPLE)
+     set_target_properties(cgreen-runner PROPERTIES
+       BUILD_RPATH "@loader_path/../src"
+       INSTALL_RPATH "@loader_path/../lib"
+     )
+   elseif(UNIX)
+     set_target_properties(cgreen-runner PROPERTIES
+       BUILD_RPATH "\$ORIGIN/../src"
+       INSTALL_RPATH "\$ORIGIN/../lib"
+     )
+   endif()
+
    install(TARGETS cgreen-runner
      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
