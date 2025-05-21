@@ -41,12 +41,10 @@
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) > (b) ? (b) : (a))
 
-
 static int significant_figures = 8;
-static double absolute_tolerance = DBL_MIN / 1.0e-8;
 
-
-static double accuracy(int significant_figures, double largest);
+static double double_absolute_tolerance = 1e-15;
+static double double_relative_tolerance = 1e-7;
 
 static bool compare_want_greater_value(Constraint *constraint, CgreenValue actual);
 
@@ -77,6 +75,9 @@ static void test_do_not_want_double(Constraint *constraint, const char *function
                                     const char *test_file, int test_line, TestReporter *reporter);
 static bool compare_want_lesser_double(Constraint *constraint, CgreenValue actual);
 static bool compare_want_greater_double(Constraint *constraint, CgreenValue actual);
+static bool compare_want_nearly_double(Constraint *constraint, CgreenValue actual);
+static void test_want_nearly_double(Constraint *constraint, const char *function, CgreenValue actual,
+                                    const char *test_file, int test_line, TestReporter *reporter);
 
 static void set_contents(Constraint *constraint, const char *function, CgreenValue actual,
                          const char *test_file, int test_line, TestReporter *reporter);
@@ -442,7 +443,18 @@ Constraint *create_greater_than_double_constraint(double expected_value, const c
     constraint->execute = &test_true;
     constraint->name = "be greater than double";
     constraint->destroy = &destroy_double_constraint;
-    constraint->expected_value_message = "\t\texpected to be greater than:\t[%08f]";
+
+    return constraint;
+}
+
+Constraint *create_nearly_double_constraint(double expected_value, const char *expected_value_name) {
+    Constraint *constraint = create_constraint_expecting(make_cgreen_double_value(expected_value), expected_value_name);
+    constraint->type = CGREEN_DOUBLE_COMPARER_CONSTRAINT;
+
+    constraint->compare = &compare_want_nearly_double;
+    constraint->execute = &test_want_nearly_double;
+    constraint->name = "be nearly double";
+    constraint->destroy = &destroy_double_constraint;
 
     return constraint;
 }
@@ -722,6 +734,10 @@ static bool compare_want_greater_double(Constraint *constraint, CgreenValue actu
     return double_is_greater(constraint->expected_value.value.double_value, actual.value.double_value);
 }
 
+static bool compare_want_nearly_double(Constraint *constraint, CgreenValue actual) {
+    return doubles_are_nearly(constraint->expected_value.value.double_value, actual.value.double_value);
+}
+
 static void test_want_double(Constraint *constraint, const char *function, CgreenValue actual,
                              const char *test_file, int test_line, TestReporter *reporter) {
     (*reporter->assert_true)(
@@ -752,6 +768,20 @@ static void test_do_not_want_double(Constraint *constraint, const char *function
             actual.value.double_value,
             function,
             constraint->parameter_name);
+}
+
+static void test_want_nearly_double(Constraint *constraint, const char *function, CgreenValue actual,
+                                    const char *test_file, int test_line, TestReporter *reporter) {
+    (*reporter->assert_true)(
+        reporter,
+        test_file,
+        test_line,
+        (*constraint->compare)(constraint, actual),
+        "Wanted [%f], but got [%f] in function [%s] parameter [%s]",
+        constraint->expected_value.value.double_value,
+        actual.value.double_value,
+        function,
+        constraint->parameter_name);
 }
 
 void destroy_double_constraint(Constraint *constraint) {
@@ -852,22 +882,45 @@ bool constraint_is_for_parameter_in(const Constraint *constraint, const char *na
     return found;
 }
 
+static double accuracy(double largest) {
+    return pow(10.0, 1.0 + floor(log10(fabs(largest))) - significant_figures);
+}
+
 bool doubles_are_equal(double tried, double expected) {
     double abs_diff = fabs(tried - expected);
-    if (abs_diff < absolute_tolerance) return true;
-    return abs_diff < accuracy(significant_figures, max(fabs(tried), fabs(expected)));
+    if (abs_diff < double_absolute_tolerance) return true;
+    double max_abs = max(fabs(tried), fabs(expected));
+    return abs_diff < accuracy(max_abs);
 }
 
 bool double_is_lesser(double actual, double expected) {
-    return expected < actual + accuracy(significant_figures, max(actual, expected));
+    return expected < actual + accuracy(max(actual, expected));
 }
 
 bool double_is_greater(double actual, double expected) {
-    return expected > actual - accuracy(significant_figures, max(actual, expected));
+    return expected > actual - accuracy(max(actual, expected));
 }
 
-static double accuracy(int figures, double largest) {
-    return pow(10.0, 1.0 + floor(log10(fabs(largest))) - figures);
+bool doubles_are_nearly(double tried, double expected) {
+    double abs_diff = fabs(tried - expected);
+    double abs_max = fmax(fabs(tried), fabs(expected));
+    return abs_diff < double_relative_tolerance*abs_max + double_absolute_tolerance;
+}
+
+void double_relative_tolerance_is(double tol) {
+    double_relative_tolerance = tol;
+}
+
+double get_double_relative_tolerance(void) {
+    return double_relative_tolerance;
+}
+
+void double_absolute_tolerance_is(double tol) {
+    double_absolute_tolerance = tol;
+}
+
+double get_double_absolute_tolerance(void) {
+    return double_absolute_tolerance;
 }
 
 void significant_figures_for_assert_double_are(int figures) {
