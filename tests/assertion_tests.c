@@ -149,6 +149,20 @@ Ensure(different_pointers_with_same_contents_should_assert_equal) {
     );
 }
 
+Ensure(support_for_pointer_arithmetic) {
+    
+    int data[2][4] = {{0,1,2,3},{7,8,9,10}};
+    int same_data[2][4] = {{0,1,2,3}, {7,8,9,10}};
+    size_t data_sz = sizeof(data)/sizeof(data[0]);
+    printf("%s,%d: data_sz = %ld\n", __FILE__, __LINE__, data_sz);
+    for (size_t i = 0; i < data_sz; i++)
+    {
+        assert_that(data + i,
+            is_equal_to_contents_of(same_data + i, sizeof(same_data[i]))
+        );
+    }
+}
+
 Ensure(one_should_assert_float_equal_to_one) {
     float x = 1;
     float y = 1;
@@ -354,5 +368,6 @@ TestSuite *assertion_tests(void) {
     add_test(suite, inspecting_contents_of_with_zero_size_produces_nice_error_message);
     add_test(suite, fail_reports_message);
     add_test(suite, return_value_constraints_are_not_allowed);
+    add_test(suite, support_for_pointer_arithmetic);
     return suite;
 }
