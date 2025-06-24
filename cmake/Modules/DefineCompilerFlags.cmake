@@ -49,6 +49,7 @@ if (UNIX)
         if (WITH_FPIC)
             # add_compile_options(-fPIC) # Only since CMake 2.8.12, so...
             add_definitions(-fPIC)
+            add_link_options("-rdynamic")
         endif (WITH_FPIC)
     endif (NOT CYGWIN)
 
