@@ -18,7 +18,10 @@ CgreenValue *create_cgreen_value(CgreenValue value) {
 }
 
 CgreenValue make_cgreen_integer_value(intptr_t integer) {
-    CgreenValue value = {CGREEN_INTEGER, {0}, sizeof(intptr_t)};
+    CgreenValue value;
+    value.type = CGREEN_INTEGER;
+    value.value_size = sizeof(intptr_t);
+    memset(&value.value, 0, sizeof(value.value));
     value.value.integer_value = integer;
     return value;
 }
