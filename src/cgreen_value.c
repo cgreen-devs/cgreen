@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <include/cgreen/cgreen_value.h>
 
 static char *stringdup(const char *string) {
@@ -18,25 +19,25 @@ CgreenValue *create_cgreen_value(CgreenValue value) {
 }
 
 CgreenValue make_cgreen_integer_value(intptr_t integer) {
-    CgreenValue value = {CGREEN_INTEGER, {0}, sizeof(intptr_t)};
+    CgreenValue value = {CGREEN_INTEGER, {}, sizeof(value.value.integer_value)};
     value.value.integer_value = integer;
     return value;
 }
 
 CgreenValue make_cgreen_string_value(const char *string) {
-    CgreenValue value = {CGREEN_STRING, {0}, sizeof(const char *)};
+    CgreenValue value = {CGREEN_STRING, {}, sizeof(value.value.string_value)};
     value.value.string_value = stringdup(string);
     return value;
 }
 
 CgreenValue make_cgreen_pointer_value(void *pointer) {
-    CgreenValue value = {CGREEN_POINTER, {0}, sizeof(intptr_t)};
+    CgreenValue value = {CGREEN_POINTER, {}, sizeof(value.value.pointer_value)};
     value.value.pointer_value = pointer;
     return value;
 }
 
 CgreenValue make_cgreen_double_value(double d) {
-    CgreenValue value = {CGREEN_DOUBLE, {0}, sizeof(intptr_t)};
+    CgreenValue value = {CGREEN_DOUBLE, {}, sizeof(value.value.double_value)};
     value.value.double_value = d;
     return value;
 }
