@@ -43,7 +43,8 @@ CgreenValue make_cgreen_double_value(double d) {
 }
 
 CgreenValue make_cgreen_by_value(void *pointer, size_t size) {
-    CgreenValue value = {CGREEN_BYVALUE, {0}, size};
+    CgreenValue value = {CGREEN_BYVALUE, {}, size};
+    // No need to make a copy, the constraints factory handles that
     value.value.pointer_value = pointer;
     return value;
 }
