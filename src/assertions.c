@@ -111,7 +111,23 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
 
     boxed_actual = (BoxedDouble*)box_double(actual);
 
-    (*get_test_reporter()->assert_true)(get_test_reporter(), file, line,
+    if (!strcmp(constraint->name, "be nearly double")) {
+        (*get_test_reporter()->assert_true)(get_test_reporter(), file, line,
+            (*constraint->compare)(constraint, make_cgreen_double_value(actual)),
+            "Expected [%s] to [%s] [%s] with [%g] relative and [%g] absolute tolerance\n"
+            "\t\tactual value:\t\t\t[%g]\n"
+            "\t\texpected value:\t\t\t[%g]\n"
+            "\t\tactual - expected:\t\t[%g]\n",
+            expression,
+            constraint->name,
+            constraint->expected_value_name,
+            get_double_relative_tolerance(),
+            get_double_absolute_tolerance(),
+            actual,
+            constraint->expected_value.value.double_value,
+            actual - constraint->expected_value.value.double_value);
+    } else {
+        (*get_test_reporter()->assert_true)(get_test_reporter(), file, line,
             (*constraint->compare)(constraint, make_cgreen_double_value(actual)),
             "Expected [%s] to [%s] [%s] within [%d] significant figures\n"
             "\t\tactual value:\t\t\t[%08f]\n"
@@ -122,6 +138,7 @@ void assert_that_double_(const char *file, int line, const char *expression, dou
             get_significant_figures(),
             actual,
             constraint->expected_value.value.double_value);
+    }
 
     free(boxed_actual);
     constraint->destroy(constraint);

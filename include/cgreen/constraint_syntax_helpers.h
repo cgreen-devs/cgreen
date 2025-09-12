@@ -52,6 +52,7 @@
 #define is_less_than_double(value) __CGREEN_NAMESPACE_PREFIX create_less_than_double_constraint(value, #value)
 #define is_greater_than_double(value) __CGREEN_NAMESPACE_PREFIX create_greater_than_double_constraint(value, #value)
 
+#define is_nearly_double(value) create_nearly_double_constraint(value, #value)
 
 #define with_side_effect(callback, data) __CGREEN_NAMESPACE_PREFIX create_with_side_effect_constraint(callback, data)
 #define will_return(value) __CGREEN_NAMESPACE_PREFIX create_return_value_constraint((intptr_t)(value))

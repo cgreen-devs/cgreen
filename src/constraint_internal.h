@@ -34,6 +34,7 @@ extern bool constraint_is_for_parameter_in(const Constraint *, const char *);
 extern bool doubles_are_equal(double tried, double expected);
 extern bool double_is_lesser(double actual, double expected);
 extern bool double_is_greater(double actual, double expected);
+extern bool doubles_are_nearly(double tried, double expected);
 
 
 #ifdef __cplusplus

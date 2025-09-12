@@ -38,6 +38,10 @@ namespace cgreen {
 /* Utility: */
 int get_significant_figures(void);
 void significant_figures_for_assert_double_are(int figures);
+void double_relative_tolerance_is(double tolerance);
+double get_double_relative_tolerance(void);
+void double_absolute_tolerance_is(double tolerance);
+double get_double_absolute_tolerance(void);
 
 #include <cgreen/legacy.h>
 
