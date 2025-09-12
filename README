@@ -1,0 +1,39 @@
+HOW-TO:  Compiling the Cgreen Guide
+===================================
+
+The Cgreen Guide Book is written using Asciidoctor. Asciidoctor builds
+upon the asciidoc format, is 100 times faster than the Python asciidoc
+toolchain and can generate PDF in the same step. Writing in
+asciidoc(tor) is a wonderful way to write textual docs. Please visit
+http://www.asciidoctor.org for more information.
+
+You also need a source-highlighter as described in
+(http://asciidoctor.org/docs/asciidoc-syntax-quick-reference/#source-code)
+
+There are a number of source examples in the documentation that are
+automatically included from the `tutorial_src` subdirectory. They are
+kept separate so that they can be compiled to ensure that they
+actually are correct. Then all, or a part of, the file can be
+included. To do that, go to the subdirectory, ensure you have the
+correct version of cgreen in your path and do `make`.
+
+The one drawback of this strategy is that you cannot read the source
+of the examples in a raw asciidoc-conversion, like on github, since it
+requires including other files, which is not allowed for security
+reasons. So we need to generate the documentation and upload it to
+`cgreen-devs.github.io`. Ensure you have *asciidoctor* installed
+(`sudo apt install asciidoctor` or similar).
+
+It is preferred to generate multi-page HTML, which currently
+asciidoctor does not do natively yet. There is an extension in the
+asciidoctor-extension-lab, which I have not
+tried. [asciidoctor-chunker](https://github.com/wshito/asciidoctor-chunker)
+works well, but requires installing Roswell (a Common Lisp
+environment). If you use asciidoctor-chunker, first generate the HTML with asciidoctor
+
+    asciidoctor cgreen-guide-en.asciidoc -o html/cgreen-guide-en.html
+
+then chunk it using asciidoctor-chunker (assuming some convenience
+links in your path...)
+
+    asciidoctor-chunker html/cgreen-guide-en.html
