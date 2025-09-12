@@ -150,11 +150,10 @@ Ensure(different_pointers_with_same_contents_should_assert_equal) {
 }
 
 Ensure(support_for_pointer_arithmetic) {
-    
+
     int data[2][4] = {{0,1,2,3},{7,8,9,10}};
     int same_data[2][4] = {{0,1,2,3}, {7,8,9,10}};
     size_t data_sz = sizeof(data)/sizeof(data[0]);
-    printf("%s,%d: data_sz = %ld\n", __FILE__, __LINE__, data_sz);
     for (size_t i = 0; i < data_sz; i++)
     {
         assert_that(data + i,
