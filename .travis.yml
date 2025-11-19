@@ -28,7 +28,7 @@ before_install:
   - if [[ $CC == gcc ]] ; then export CXX=g++ ; else export CXX=clang++ ; fi
   - $CC --version
   - $CXX --version
-  - gem install coveralls-lcov
+  - if [ "$TRAVIS_CPU_ARCH" != "s390x" ]; then gem install coveralls-lcov ; fi
   - if [ "$CC" = "gcc" ]; then export WITH_GCOV=ON; else WITH_GCOV=OFF; fi
 
 script:
@@ -39,12 +39,12 @@ script:
   - cmake -DCGREEN_WITH_UNIT_TESTS:BOOL=ON -DCGREEN_WITH_STATIC_LIBRARY:BOOL=$CGREEN_WITH_STATIC_LIBRARY -DCGREEN_INTERNAL_WITH_GCOV:BOOL=$WITH_GCOV .. && make -j2 && ctest --output-on-failure
 
 after_success:
-  - if [ "$CC" = "gcc" ];
-    then
-      lcov -d tests -d src -d tools -base-directory .. -c -o coverage.info;
-      lcov --remove coverage.info '/usr/*' -o coverage.info;
-      cd ..;
-      coveralls-lcov build/coverage.info;
+  - |
+    if [ "$CC" = "gcc" ] && [ "$TRAVIS_CPU_ARCH" != "s390x" ]; then
+      lcov -d tests -d src -d tools -base-directory .. -c -o coverage.info
+      lcov --remove coverage.info '/usr/*' -o coverage.info
+      cd ..
+      coveralls-lcov build/coverage.info
     fi
 
 notifications:
