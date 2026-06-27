@@ -1957,25 +1957,66 @@ The expections still need to respect the order of calling, so if we call the fun
 
 [source,c]
 -----------------------
-  mocked_file_writer(42);
-  mocked_file_writer(42);
-  mocked_file_writer(43);
-  mocked_file_writer(42);
+  file_writer(42);
+  file_writer(42);
+  file_writer(43);
+  file_writer(42);
 -----------------------
 
 The expectation code should look like the following
 
 [source,c]
 -----------------------
-  expect(mocked_file_writer,
-        when(data, is_equal_to(42)),
-        times(2));
-  expect(mocked_file_writer,
-        when(data, is_equal_to(43)),
-        times(1));
-  expect(mocked_file_writer,
-        when(data, is_equal_to(42)),
-        times(1));
+  expect(file_writer,
+         when(data, is_equal_to(42)),
+         times(2));
+  expect(file_writer,
+         when(data, is_equal_to(43)),
+         times(1));
+  expect(file_writer,
+         when(data, is_equal_to(42)),
+         times(1));
+-----------------------
+
+So the order of `expect`s for one mocked file need to mimic the order in which that
+function will be called during the test run. This order is enforced and any call
+out-of-sequence will be considered a failed expectation.
+
+However, order _between_ mocked calls does not matter, and it is not enforced either. Imagine
+we have this source code
+
+[source,c]
+-----------------------
+  file_writer(42);
+  file_writer(43);
+  int c = file_reader();
+-----------------------
+
+To match that with `expect`s you could have
+
+[source,c]
+-----------------------
+  expect(file_writer, when(data, is_equal_to(42)));
+  expect(file_writer, when(data, is_equal_to(43)));
+  expect(file_reader, ...)
+-----------------------
+
+or
+
+[source,c]
+-----------------------
+  expect(file_reader, ...)
+  expect(file_writer, when(data, is_equal_to(42)));
+  expect(file_writer, when(data, is_equal_to(43)));
+-----------------------
+
+or even
+
+[source,c]
+-----------------------
+  expect(file_writer, when(data, is_equal_to(42)));
+  expect(file_reader, ...)
+  expect(file_writer, when(data, is_equal_to(43)));
 -----------------------
 
 
