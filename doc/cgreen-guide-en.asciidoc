@@ -2547,7 +2547,7 @@ It is also easily found using text searches through a complete source tree.
 NOTE: You can also programmatically decide to skip a test depending on some run-time information.
 You do that simply by checking for the condition and calling `skip_test()` which will tally the test as skipped.
 
-NOTE: `skip_test()` does *not* exit your test function so you need to take care that continuing after the call does not trigger any undecided behaviour.
+NOTE: `skip_test()` does *not* exit your test function so you need to take care that continuing after the call does not trigger any unintended behaviour.
 
 
 [[changing_style]]
