@@ -225,8 +225,8 @@ Constraint *create_equal_to_hexvalue_constraint(intptr_t expected_value, const c
     constraint->execute = &test_want;
     constraint->name = "equal";
     constraint->size_of_expected_value = sizeof(intptr_t);
-    constraint->actual_value_message = "\n\t\tactual value:\t\t\t[0x%x]";
-    constraint->expected_value_message = "\t\texpected value:\t\t\t[0x%x]";
+    constraint->actual_value_message = "\n\t\tactual value:\t\t\t[0x%" PRIxPTR "]";
+    constraint->expected_value_message = "\t\texpected value:\t\t\t[0x%" PRIxPTR "]";
 
     return constraint;
 }
