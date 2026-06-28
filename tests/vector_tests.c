@@ -142,6 +142,27 @@ Ensure(Vector, returns_null_for_remove_from_illegal_index) {
     destroy_cgreen_vector(vector);
 }
 
+Ensure(Vector, returns_null_for_get_one_past_the_last_item) {
+    char panic_message[1000] = "";
+
+    panic_set_output_buffer(panic_message);
+    cgreen_vector_add(vector, &a);
+
+    assert_that(cgreen_vector_get(vector, 1), is_equal_to(NULL));
+    assert_that(panic_message, contains_string("illegal position (1) in vector operation"));
+}
+
+Ensure(Vector, returns_null_for_remove_one_past_the_last_item) {
+    char panic_message[1000] = "";
+
+    panic_set_output_buffer(panic_message);
+    cgreen_vector_add(vector, &a);
+
+    assert_that(cgreen_vector_remove(vector, 1), is_equal_to(NULL));
+    assert_that(panic_message, contains_string("illegal position (1) in vector operation"));
+    assert_that(cgreen_vector_size(vector), is_equal_to(1));
+}
+
 TestSuite *vector_tests(void) {
     TestSuite *suite = create_test_suite();
     set_setup(suite, set_up_vector);
@@ -161,5 +182,7 @@ TestSuite *vector_tests(void) {
     add_test_with_context(suite, Vector, vector_size_of_null_pointer_is_zero);
     add_test_with_context(suite, Vector, returns_null_for_get_on_illegal_index);
     add_test_with_context(suite, Vector, returns_null_for_remove_from_illegal_index);
+    add_test_with_context(suite, Vector, returns_null_for_get_one_past_the_last_item);
+    add_test_with_context(suite, Vector, returns_null_for_remove_one_past_the_last_item);
     return suite;
 }

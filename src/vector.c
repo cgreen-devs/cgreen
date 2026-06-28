@@ -56,25 +56,24 @@ void *cgreen_vector_remove(CgreenVector *vector, int position) {
     void *item;
     int i;
 
-    if (position < 0 || position > cgreen_vector_size(vector)) {
+    if (position < 0 || position >= cgreen_vector_size(vector)) {
         PANIC("illegal position (%d) in vector operation", position);
         return NULL;
     }
 
     item = vector->items[position];
 
-    for (i = position; i < vector->size; i++) {
+    for (i = position; i < vector->size - 1; i++) {
         vector->items[i] = vector->items[i + 1];
     }
 
-    vector->items[vector->size] = NULL;
-
     vector->size--;
+    vector->items[vector->size] = NULL;
     return item;
 }
 
 void *cgreen_vector_get(const CgreenVector *vector, int position) {
-    if (position < 0 || position > cgreen_vector_size(vector)) {
+    if (position < 0 || position >= cgreen_vector_size(vector)) {
         PANIC("CGREEN INTERNAL ERROR: illegal position (%d) in vector operation", position);
         return NULL;
     }
