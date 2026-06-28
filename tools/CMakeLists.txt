@@ -42,7 +42,7 @@ if (NM_FOUND)
      DESTINATION ${CMAKE_INSTALL_BINDIR}
    )
 
-   install(FILES cgreen-debug
+   install(PROGRAMS cgreen-debug
      DESTINATION ${CMAKE_INSTALL_BINDIR})
 
    set(CGREEN_RUNNER_TESTS_LIBRARY
