@@ -6,6 +6,7 @@
 #include <cgreen/string_comparison.h>
 
 #include <stdint.h>
+#include <inttypes.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -133,7 +134,7 @@ void assert_equal_(const char *file, int line, const char *expression, intptr_t 
             file,
             line,
             (tried == expected),
-            "[%s] should be [%d] but was [%d]\n", expression, expected, tried);
+            "[%s] should be [%" PRIdPTR "] but was [%" PRIdPTR "]\n", expression, expected, tried);
 }
 
 void assert_not_equal_(const char *file, int line, const char *expression, intptr_t tried, intptr_t expected) {
@@ -142,7 +143,7 @@ void assert_not_equal_(const char *file, int line, const char *expression, intpt
             file,
             line,
             (tried != expected),
-            "[%s] should not be [%d] but was\n", expression, expected, tried);
+            "[%s] should not be [%" PRIdPTR "] but was\n", expression, expected);
 }
 
 void assert_double_equal_(const char *file, int line, const char *expression, double tried, double expected) {
