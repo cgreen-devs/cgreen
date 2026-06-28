@@ -2,10 +2,10 @@ Source: cgreen
 Section: devel
 Priority: optional
 Maintainer: Thomas Nilefalk <thomas@nilefalk.se>
-Depends: libc6
+Depends: libc6, libxml2
 Homepage: https://github.com/cgreen-devs/cgreen
 Package: cgreen1
-Version: 1.6.2
+Version: 1.6.5
 Architecture: amd64
 Description: Unit tests and mocking framework for C and C++
  A modern unit test and mocking framework for C and C++. Cgreen features
