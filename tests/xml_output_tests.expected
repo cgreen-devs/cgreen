@@ -20,4 +20,11 @@
 		</testcase>
 		<testcase classname="xml_output_tests/default" name="passing_test_is_listed_by_xml_reporter" time="0.00000">
 		</testcase>
+		<testcase classname="xml_output_tests/default" name="percent_in_value_is_not_treated_as_format_directive_by_xml_reporter" time="0.00000">
+			<failure message="Expected [&quot;a literal %%d should survive&quot;] to [contain string] [&quot;absent&quot;]
+		actual value:			[&quot;a literal %d should survive&quot;]
+		expected to contain:		[&quot;absent&quot;]">
+				<location file="xml_output_tests.c" line="0"/>
+			</failure>
+		</testcase>
 	</testsuite>

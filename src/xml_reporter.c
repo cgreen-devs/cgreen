@@ -195,7 +195,7 @@ static void xml_show_skip(TestReporter *reporter, const char *file, int line) {
 
 static void xml_concat_escaped_message(const char *message, va_list arguments) {
     char buffer[1000];
-    snprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), message, arguments);
+    vsnprintf(buffer, sizeof(buffer)/sizeof(buffer[0]), message, arguments);
 
     size_t current_char_position = 0;
     for (; current_char_position < strlen(buffer); current_char_position++) {
@@ -268,7 +268,7 @@ static void transfer_output_from(FILE *tmpfile, XmlPrinter printer, FILE *out) {
     fseek(tmpfile, 0, SEEK_SET);
     char buffer[1000];
     while (fgets(buffer, 1000, tmpfile) != NULL)
-        printer(out, buffer);
+        printer(out, "%s", buffer);
 }
 
 
