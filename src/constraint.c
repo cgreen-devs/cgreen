@@ -490,10 +490,19 @@ Constraint *create_set_parameter_value_constraint(const char *parameter_name, in
     Constraint* constraint = create_constraint();
     constraint->type = CGREEN_CONTENT_SETTER_CONSTRAINT;
 
+    /* Issue #337: copy the source value now, at expect() time, into an owned
+       buffer. Storing the source pointer let a local or computed source dangle
+       before the mock ran (and repeated helper calls reused one stack slot).
+       The copy is freed via destroy_by_value_constraint when the expectation
+       is retired -- same pattern as create_return_by_value_constraint(). */
+    intptr_t value_copy = (intptr_t)malloc(size_to_set);
+    memcpy((void *)value_copy, (void *)value_to_set, size_to_set);
+
     constraint->compare = &compare_true;
     constraint->execute = &set_contents;
+    constraint->destroy = &destroy_by_value_constraint;
     constraint->name = "set parameter value";
-    constraint->expected_value = make_cgreen_integer_value(value_to_set);
+    constraint->expected_value = make_cgreen_by_value((void *)value_copy, size_to_set);
     constraint->size_of_expected_value = size_to_set;
     constraint->parameter_name = parameter_name;
 

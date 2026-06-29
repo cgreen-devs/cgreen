@@ -378,6 +378,31 @@ Ensure(Mocks, can_stub_a_char_out_parameter) {
     assert_that(returned_char, is_equal_to(stubbed_char));
 }
 
+static void int_out_mock(int *out) {
+    mock(out);
+}
+
+/* Issue #337: the source value must be copied at expect() time, not
+   referenced at mock-call time. Here the source is a local in a helper
+   that has already returned -- and whose stack slot is reused by the
+   second call -- before the mock runs. */
+static void queue_int_output(int value) {
+    int local = value;
+    expect(int_out_mock, will_set_contents_of_output_parameter(out, &local, sizeof(local)));
+}
+
+Ensure(Mocks, set_contents_copies_source_value_at_expect_time) {
+    queue_int_output(111);
+    queue_int_output(222);
+
+    int first = 0, second = 0;
+    int_out_mock(&first);
+    int_out_mock(&second);
+
+    assert_that(first, is_equal_to(111));
+    assert_that(second, is_equal_to(222));
+}
+
 // function which when mocked will be referred to by preprocessor macro
 static void function_macro_mock(void) {
     mock();
@@ -538,6 +563,7 @@ TestSuite *mock_tests(void) {
     add_test_with_context(suite, Mocks, can_always_mock_full_function_call);
     add_test_with_context(suite, Mocks, can_mock_full_function_call_when_there_is_no_space_between_parameters);
     add_test_with_context(suite, Mocks, can_stub_an_out_parameter);
+    add_test_with_context(suite, Mocks, set_contents_copies_source_value_at_expect_time);
     add_test_with_context(suite, Mocks, string_contains_expectation_is_confirmed);
     add_test_with_context(suite, Mocks, can_mock_a_function_macro);
     add_test_with_context(suite, Mocks, constraint_number_of_calls_when_no_when_is_present);

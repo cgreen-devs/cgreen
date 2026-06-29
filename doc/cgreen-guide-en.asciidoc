@@ -1631,31 +1631,9 @@ You will need to change the name there manually.
 
 ==== Local Variables
 
-For example, consider this code
+When you extract common `expect()` setup into a helper function, take a little care with data held in local variables.
 
-[source,c]
------------------------------
-Ensure(Readline, can_read_some_characters) {
-    char canned_a = 'a';
-    char canned_b = 'b';
-    char canned_c = 'c';
-
-    expect(mocked_read,
-           will_set_contents_of_output_parameter(buf, &canned_a, sizeof(char)),
-           will_return(1));
-    expect(mocked_read,
-           will_set_contents_of_output_parameter(buf, &canned_b, sizeof(char)),
-           will_return(1));
-    expect(mocked_read,
-           will_set_contents_of_output_parameter(buf, &canned_c, sizeof(char)),
-           will_return(1));
-
-    ...
-    <call something that calls mocked_read()>
-    ...
------------------------------
-
-It is very tempting to break out the common expect:
+`will_set_contents_of_output_parameter()` copies the data at the time of the `expect()` call, so locals are safe -- even in a helper function that has returned before the mocked call is made:
 
 [source,c]
 -----------------------------
@@ -1666,112 +1644,34 @@ static void expect_char(char ch) {
 }
 
 Ensure(Readline, can_read_some_characters) {
-    char canned_a = 'a';
-    char canned_b = 'b';
-    char canned_c = 'c';
-
-    expect_char(canned_a);
-    expect_char(canned_b);
-    expect_char(canned_c);
-
+    expect_char('a');
+    expect_char('b');
+    expect_char('c');
     ...
     <call something that calls mocked_read()>
     ...
 -----------------------------
 
-Much nicer, right?
+NOTE: Earlier releases of *Cgreen* stored a _pointer_ to the data and only read it when the mock was actually called, so the source had to remain valid until then. If you build against an older *Cgreen* (for example one packaged by your distribution) that caveat still applies; see <<release-history>>.
 
-This will most likely lead to a segmentation fault or illegal memory reference, something that can be really tricky to track down.
-The problem is that when `mocked_read()` is actually called, as an effect of calling something that calls `mocked_read()`, the parameter `ch` to the nicely extracted `expect_char()` does not exist anymore.
-
-Good thing that you run the tests after each and every little refactoring, right?
-Because then you know that it was the extraction you just did that was the cause.
-Then you can come here and read up on what the problem might be and what to do about it.
-
-At first glance the fix might look easy:
+`will_capture_parameter()` is different, and there the subtlety is unavoidable.
+It writes the captured value _into_ a variable of yours, which must be live both when the mock is called and afterwards, when your test reads what was captured.
+So it cannot live in a helper function that returns before the call.
+In practice this rarely bites, precisely because the test itself needs that variable in order to assert on the captured value -- so it naturally stays in the scope of the test:
 
 [source,c]
 -----------------------------
-static void expect_char(char ch) {
-    char saved_ch = ch;
-    expect(mocked_read,
-    will_set_contents_of_output_parameter(buf, &saved_ch, sizeof(char)),
-        will_return(1));
+Ensure(Capture, captures_the_value) {
+    int captured;
+    expect(mocked_fn, will_capture_parameter(value, captured));
+    ...
+    <call something that calls mocked_fn()>
+    ...
+    assert_that(captured, is_equal_to(...));
 }
-
-Ensure(Readline, can_read_some_characters) {
-   ...
 -----------------------------
 
-Close! But the local variable is also gone at the call to `mocked_read()`. Of course.
-
-Ok, so let's make it static:
-
-[source,c]
------------------------------
-static void expect_char(char ch) {
-    static char saved_ch = ch;
-    expect(mocked_read,
-        will_set_contents_of_output_parameter(buf, &saved_ch, sizeof(char)),
-        will_return(1));
-}
-
-Ensure(Readline, can_read_some_characters) {
-   ...
------------------------------
-
-Ok, so then it must exist.
-But the problem then becomes the three consequtive calls to `expect_char()`.
-
-[source,c]
------------------------------
-Ensure(Readline, can_read_some_characters) {
-    char canned_a = 'a';
-    char canned_b = 'b';
-    char canned_c = 'c';
-
-    expect_char(canned_a);
-    expect_char(canned_b);
-    expect_char(canned_c);
-
-    ...
-    <call something that calls mocked_read()>
-    ...
------------------------------
-
-Each of those have a different actual parameter, which is hard to store in one variable.
-Even if it is static.
-
-The solution is now quite obvious:
-
-[source,c]
------------------------------
-static void expect_char(char *ch_p) {
-    expect(mocked_read,
-        will_set_contents_of_output_parameter(buf, ch_p, sizeof(char)),
-        will_return(1));
-}
-
-Ensure(Readline, can_read_some_characters) {
-    char canned_a = 'a';
-    char canned_b = 'b';
-    char canned_c = 'c';
-
-    expect_char(&canned_a);
-    expect_char(&canned_b);
-    expect_char(&canned_c);
-
-    ...
-    <call something that calls mocked_read()>
-    ...
------------------------------
-
-By using pointers to the variables in the test, we can ensure that the values are live when the expected call is made.
-So we don't have to make the character variables used in the test static, because as local variables those will remain live long enough.
-
-And this is the moral here, you cannot use local variables in an extracted function as data for a mocked function call.
-
-CAUTION: Variables that are to be sent to a mocked function MUST be live at the call to that mocked function.
+CAUTION: The variable you capture into with `will_capture_parameter()` must be live at the call to the mocked function _and_ where your test reads it -- so keep it in the scope of the test, not in an extracted helper.
 
 
 === Other Use Cases For Mocks
@@ -1901,8 +1801,6 @@ In your mocked function you can then simply return that value, or manipulate it 
 NOTE: *`will_return_double()`*: The "boxed double" returned by `mock()` have to be "unboxed" by the caller see <<double_mocks>> for details.
 
 NOTE: *`will_return_by_value`*: The memory allocated for the copy of the struct returned by `mock()` needs to be deallocated by the caller or it will be lost. You can do this with the code in the `Box` example below.
-
-NOTE: *`will_set_contents_of_output_parameter`*: The data to set must be correct at the time of the call to the mock function, and not be overwritten or released between the call to the `expect()` and the mock function. See <<refactoring-tests>> for details.
 
 NOTE: *`will_set_contents_of_output_parameter`*: The previous name of this macro was `will_set_contents_of_parameter` and it is still available. The new name is prefered due to readability.
 
@@ -3315,9 +3213,10 @@ IMPORTANT: We strongly recommend the use of BDD Style notation with constraints 
 
 
 [appendix]
+[[release-history]]
 == Release History
 
-In this section only the introduction or changes of major features are listed, and thus only MINOR versions.
+In this section we list the changes that are relevant to you as a user of *Cgreen* -- new features, renames, and changes in behaviour that might affect how you use it.
 For a detailed log of features, enhancements and bug fixes visit the projects repository on GitHub, https://github.com/cgreen-devs/cgreen.
 
 Since 1.4.1 Cgreen has included the following C pre-processer definition variables
@@ -3331,6 +3230,10 @@ You can use them to conditionally check for Cgreen features introduced as declar
 
 Since 1.2.0 Cgreen has featured a public version variable in the loaded library, `cgreen_library_version`.
 This is mainly used by the `cgreen-runner` to present version of the loaded library, but it can also be used to check for availability of features in the same way.
+
+=== 1.6.6
+
+- `will_set_contents_of_output_parameter()` (and its older name `will_set_contents_of_parameter()`) now copies the source data at the time of the `expect()` call instead of storing a pointer to it. The source no longer has to remain valid until the mocked function is called.
 
 === 1.6.0
 
