@@ -37,6 +37,25 @@ clean: build/Makefile
 package: build/Makefile
 	$(MAKE) -C build package
 
+# Bump the version consistently across CMakeLists.txt, the public header and
+# debian/control. Pick the level you want, or set it explicitly:
+#   make bump VERSION=1.7.0
+#   make bump-patch | bump-minor | bump-major
+# Nothing is committed or tagged -- review the diff, then commit and tag.
+.PHONY:bump bump-patch bump-minor bump-major
+bump:
+	@test -n "$(VERSION)" || { echo "Usage: make bump VERSION=X.Y.Z  (or bump-patch/bump-minor/bump-major)"; exit 1; }
+	@tools/bump-version.sh $(VERSION)
+
+bump-patch:
+	@tools/bump-version.sh --patch
+
+bump-minor:
+	@tools/bump-version.sh --minor
+
+bump-major:
+	@tools/bump-version.sh --major
+
 .PHONY:install
 install: build
 ifeq ($(OS),Msys)
