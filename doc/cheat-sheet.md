@@ -81,6 +81,7 @@
     will_return_double( <value> )
     will_return_by_value( <value>, <size> )
     with_side_effect( <function>, <pointer_to_data> )
+    will_set_scalar_output_parameter( <parameter_name>, <scalar_value> )
     will_set_contents_of_output_parameter( <parameter_name>, <value>, <size> )
 
 ## C++

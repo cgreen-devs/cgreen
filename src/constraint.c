@@ -509,6 +509,39 @@ Constraint *create_set_parameter_value_constraint(const char *parameter_name, in
     return constraint;
 }
 
+static void report_unsupported_scalar_size(Constraint *constraint, const char *function, CgreenValue actual,
+                                           const char *test_file, int test_line, TestReporter *reporter) {
+    (void)constraint; (void)function; (void)actual;
+    (*reporter->assert_true)(
+            reporter, test_file, test_line, false,
+            "will_set_scalar_output_parameter() was given an unsupported scalar size;\n"
+            "\t\tuse will_set_contents_of_output_parameter() for values wider than 8 bytes or for non-scalars.");
+}
+
+Constraint *create_set_scalar_output_parameter_constraint(const char *parameter_name, intmax_t value, size_t size) {
+    /* Re-narrow the widened value to a real typed temporary so the stored bytes
+       are native-endian, then reuse the (copy-at-expect-time) contents setter.
+       The temporary only has to survive the delegated call, which copies it. */
+    switch (size) {
+        case 1: { int8_t  v = (int8_t)value;  return create_set_parameter_value_constraint(parameter_name, (intptr_t)&v, size); }
+        case 2: { int16_t v = (int16_t)value; return create_set_parameter_value_constraint(parameter_name, (intptr_t)&v, size); }
+        case 4: { int32_t v = (int32_t)value; return create_set_parameter_value_constraint(parameter_name, (intptr_t)&v, size); }
+        case 8: { int64_t v = (int64_t)value; return create_set_parameter_value_constraint(parameter_name, (intptr_t)&v, size); }
+        default: {
+            /* Only reachable for scalars wider than intmax_t (e.g. __int128);
+               report at mock time rather than silently truncating. */
+            Constraint *constraint = create_constraint();
+            constraint->type = CGREEN_CONTENT_SETTER_CONSTRAINT;
+            constraint->compare = &compare_true;
+            constraint->execute = &report_unsupported_scalar_size;
+            constraint->name = "set parameter value";
+            constraint->parameter_name = parameter_name;
+            constraint->size_of_expected_value = size;
+            return constraint;
+        }
+    }
+}
+
 Constraint *create_with_side_effect_constraint(void (*callback)(void *), void *data) {
     Constraint* constraint = create_constraint();
     constraint->type = CGREEN_CALL_CONSTRAINT;

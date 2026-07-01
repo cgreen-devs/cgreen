@@ -1678,18 +1678,32 @@ CAUTION: The variable you capture into with `will_capture_parameter()` must be l
 
 ==== Out Parameters
 
-In C all function parameters are by value so if a function needs to return a value through a parameter that has to be done using a pointer.
-Typically this is a pointer to the area or variable the function should fill.
+In C all function parameters are by value, so a function that needs to return a value through a parameter must do that using a pointer to the area or variable the function should fill. A `Cgreen` mock function also has to be able to fill such an "out parameter".
 
-*Cgreen* provides `will_set_contents_of_output_parameter()` to handle this use case.
-For example
+If the out parameter is a scalar -- an `int`, `long`, `bool`, an `enum` or a pointer -- you would use:
+
+[source, c]
+-----------------------
+expect(get_option, will_set_scalar_output_parameter(chars_read, 6));
+-----------------------
+
+As scalars come in varying sizes the number of bytes written must match the size of the target variable. You control the width of the value written in the same way you would force any C literal to a particular size:
+
+[source, c]
+-----------------------
+will_set_scalar_output_parameter(count, 6L);        // a long
+will_set_scalar_output_parameter(small, (short)6);  // a short
+-----------------------
+
+IMPORTANT: The value's type must match the type of the variable the out parameter points to and is written into. This is your responsibility. *Cgreen* cannot know the actual size of the parameter in the `expect` as that is expanded compile-time with no access to the function declaration. If the widths disagree during run-time, you will write too few or too many bytes. When in doubt, cast the value to the correct size/type. (NOTE: A character literal like `'a'` is an `int` in C but a `char` in C++, so use `(char)'a'` for a `char` out parameter.)
+
+For anything that is not a scalar -- a struct, a string, an array -- you need to use `will_set_contents_of_output_parameter()` with a pointer to the data and an explicit size:
 
 [source, c]
 -----------------------
 include::tutorial_src/set_contents.c[lines=3..12]
 ...
 -----------------------
-
 
 When the mock for `convert_to_uppercase()` is called it will write the string "UPPER CASE" in the area pointed to by `converted_string`.
 
@@ -1793,6 +1807,7 @@ In your mocked function you can then simply return that value, or manipulate it 
 |`will_return(value)`                                         | return `value`, for integer types
 |`will_return_double(value)`                                  | return `value` as a "boxed double", for double floats (required because of C's type coercion rules which would otherwise convert a double into an int)
 |`will_return_by_value(struct, size)`                         | return a pointer to an allocated copy of the `struct` that can be copied and returned by value from the mocked function
+|`will_set_scalar_output_parameter(parameter_name, value)`| write the scalar `value` (an integer, `bool`, `enum` or pointer) into the referenced out parameter; the number of bytes is taken from the type of `value`
 |`will_set_contents_of_output_parameter(parameter_name, pointer_to_value, size)`| write `size` bytes from the pointed out value (`pointer_to_value`) into where the referenced out parameter (`parameter_name`) is pointing
 |`will_capture_parameter(parameter_name, local_variable)`     |capture the value of the parameter and store it in the named local variable
 |`with_side_effect(function, pointer_to_data)`                | call the side effect `function` and pass `pointer_to_data` to it
@@ -1801,6 +1816,8 @@ In your mocked function you can then simply return that value, or manipulate it 
 NOTE: *`will_return_double()`*: The "boxed double" returned by `mock()` have to be "unboxed" by the caller see <<double_mocks>> for details.
 
 NOTE: *`will_return_by_value`*: The memory allocated for the copy of the struct returned by `mock()` needs to be deallocated by the caller or it will be lost. You can do this with the code in the `Box` example below.
+
+NOTE: *`will_set_scalar_output_parameter`*: The number of bytes written is `sizeof` the value you pass, so its type must match the out parameter's type. See _Out Parameters_ above.
 
 NOTE: *`will_set_contents_of_output_parameter`*: The previous name of this macro was `will_set_contents_of_parameter` and it is still available. The new name is prefered due to readability.
 

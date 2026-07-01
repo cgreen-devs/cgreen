@@ -403,6 +403,37 @@ Ensure(Mocks, set_contents_copies_source_value_at_expect_time) {
     assert_that(second, is_equal_to(222));
 }
 
+Ensure(Mocks, can_set_a_scalar_int_output_parameter_from_a_literal) {
+    int result = 0;
+    expect(int_out_mock, will_set_scalar_output_parameter(out, 42));
+    int_out_mock(&result);
+    assert_that(result, is_equal_to(42));
+}
+
+static void short_out_mock(short *out) {
+    mock(out);
+}
+
+Ensure(Mocks, can_set_a_scalar_short_output_parameter) {
+    short result = 0;
+    expect(short_out_mock, will_set_scalar_output_parameter(out, (short)0x1234));
+    short_out_mock(&result);
+    assert_that(result, is_equal_to(0x1234));
+}
+
+static void long_long_out_mock(long long *out) {
+    mock(out);
+}
+
+/* The width follows the value's own type via sizeof(value): a >32-bit value
+   through a long long out-parameter must survive whole (not truncated to int). */
+Ensure(Mocks, scalar_output_parameter_width_follows_the_value_type) {
+    long long result = 0;
+    expect(long_long_out_mock, will_set_scalar_output_parameter(out, 0x1122334455LL));
+    long_long_out_mock(&result);
+    assert_that(result, is_equal_to(0x1122334455LL));
+}
+
 // function which when mocked will be referred to by preprocessor macro
 static void function_macro_mock(void) {
     mock();
@@ -564,6 +595,9 @@ TestSuite *mock_tests(void) {
     add_test_with_context(suite, Mocks, can_mock_full_function_call_when_there_is_no_space_between_parameters);
     add_test_with_context(suite, Mocks, can_stub_an_out_parameter);
     add_test_with_context(suite, Mocks, set_contents_copies_source_value_at_expect_time);
+    add_test_with_context(suite, Mocks, can_set_a_scalar_int_output_parameter_from_a_literal);
+    add_test_with_context(suite, Mocks, can_set_a_scalar_short_output_parameter);
+    add_test_with_context(suite, Mocks, scalar_output_parameter_width_follows_the_value_type);
     add_test_with_context(suite, Mocks, string_contains_expectation_is_confirmed);
     add_test_with_context(suite, Mocks, can_mock_a_function_macro);
     add_test_with_context(suite, Mocks, constraint_number_of_calls_when_no_when_is_present);

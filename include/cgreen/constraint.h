@@ -87,6 +87,7 @@ Constraint *create_return_value_constraint(intptr_t value_to_return);
 Constraint *create_return_by_value_constraint(intptr_t value_to_return, size_t size);
 Constraint *create_return_double_value_constraint(double value_to_return);
 Constraint *create_set_parameter_value_constraint(const char *parameter_name, intptr_t value_to_set, size_t size_to_set);
+Constraint *create_set_scalar_output_parameter_constraint(const char *parameter_name, intmax_t value_to_set, size_t size_to_set);
 Constraint *create_with_side_effect_constraint(void (*callback)(void *), void *data);
 Constraint *create_capture_parameter_constraint(const char *parameter_name, void *captured, size_t size_to_capture);
 
