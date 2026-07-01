@@ -3,10 +3,9 @@ language: c
 dist: focal
 
 # Build matrix
-# s390x temporarily dropped: Travis VMs fail to boot (support contacted).
-# The "!= s390x" guards below are kept so re-adding the arch just works.
 arch:
   - amd64
+  - s390x
 
 compiler:
   - gcc
