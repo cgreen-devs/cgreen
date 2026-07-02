@@ -434,6 +434,14 @@ Ensure(Mocks, scalar_output_parameter_width_follows_the_value_type) {
     assert_that(result, is_equal_to(0x1122334455LL));
 }
 
+/* Issue #202: a mock called with a NULL out-parameter must not write into it. */
+Ensure(Mocks, set_contents_does_not_write_to_a_null_out_parameter) {
+    int value = 42;
+    expect(int_out_mock, will_set_contents_of_output_parameter(out, &value, sizeof(value)));
+    int_out_mock(NULL);   /* used to segfault by writing into NULL */
+    assert_that(true);    /* reaching here means it did not crash */
+}
+
 // function which when mocked will be referred to by preprocessor macro
 static void function_macro_mock(void) {
     mock();
@@ -608,6 +616,7 @@ TestSuite *mock_tests(void) {
     add_test_with_context(suite, Mocks, can_set_a_scalar_int_output_parameter_from_a_literal);
     add_test_with_context(suite, Mocks, can_set_a_scalar_short_output_parameter);
     add_test_with_context(suite, Mocks, scalar_output_parameter_width_follows_the_value_type);
+    add_test_with_context(suite, Mocks, set_contents_does_not_write_to_a_null_out_parameter);
     add_test_with_context(suite, Mocks, string_contains_expectation_is_confirmed);
     add_test_with_context(suite, Mocks, can_mock_a_function_macro);
     add_test_with_context(suite, Mocks, constraint_number_of_calls_when_no_when_is_present);

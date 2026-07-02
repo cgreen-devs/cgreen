@@ -624,6 +624,10 @@ static void set_contents(Constraint *constraint, const char *function, CgreenVal
         return;
     }
 
+    if (actual.value.pointer_value == NULL) {
+        return;   /* Issue #202: a NULL out-parameter is a no-op, not a crash */
+    }
+
     memmove((void *)actual.value.pointer_value, constraint->expected_value.value.pointer_value, constraint->size_of_expected_value);
 }
 
