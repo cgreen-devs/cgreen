@@ -57,7 +57,7 @@ static void usage(const char *program_name) {
     printf("  -s --suite <name>\t\tName the top level suite\n");
     printf("  -n --no-run\t\t\tDon't run the tests\n");
     printf("  -v --verbose\t\t\tShow progress information\n");
-    printf("  -q --quiet\t\t\tJust output dots for each test\n");
+    printf("  -q --quiet\t\t\tOutput a single character per context ('.'=pass, 'S'=suspended, 'F'=fail, 'X'=error), then a summary\n");
     printf("     --version\t\t\tShow version information\n");
 }
 

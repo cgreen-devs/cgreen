@@ -208,16 +208,35 @@ static void text_reporter_finish_suite(TestReporter *reporter, const char *file,
     reporter->total_exceptions += reporter->exceptions;
 
     if (have_quiet_mode(reporter)) {
-        if (use_colors) {
-            memo->printer(GREEN);
-            if (reporter->failures) memo->printer(RED);
-            if (reporter->exceptions) memo->printer(MAGENTA);
-        }
-        if (reporter->exceptions) memo->printer("X");
-        else if (reporter->failures) memo->printer("F");
-        else memo->printer(".");
-        if (use_colors) {
-            memo->printer(RESET);
+        if (get_breadcrumb_depth((CgreenBreadcrumb *) reporter->breadcrumb) == 0) {
+            /* Top-level: end the dot stream and print the totals summary, so that
+               failed and suspended (xEnsure) tests are visible even in quiet mode. */
+            char buf[1000];
+            char prepend[100];
+            memo->printer("\n");
+            sprintf(prepend, "Completed \"%s\": ", name);
+            text_reporter_print_results(buf, prepend,
+                                        reporter->total_passes,
+                                        reporter->total_failures,
+                                        reporter->total_skips,
+                                        reporter->total_exceptions,
+                                        reporter->total_duration,
+                                        use_colors);
+            memo->printer("%s.\n", buf);
+        } else {
+            if (use_colors) {
+                memo->printer(GREEN);
+                if (reporter->skips) memo->printer(YELLOW);
+                if (reporter->failures) memo->printer(RED);
+                if (reporter->exceptions) memo->printer(MAGENTA);
+            }
+            if (reporter->exceptions) memo->printer("X");
+            else if (reporter->failures) memo->printer("F");
+            else if (reporter->skips) memo->printer("S");
+            else memo->printer(".");
+            if (use_colors) {
+                memo->printer(RESET);
+            }
         }
     } else {
         char buf[1000];

@@ -187,6 +187,74 @@ Ensure(TextReporter, will_report_non_finishing_test) {
     assert_that(output, contains_string("1 exception"));
 }
 
+/* Issue #335: in quiet mode the final summary must still reveal skipped
+   (xEnsure) and failed tests, otherwise there is no indication of them. */
+Ensure(TextReporter, quiet_mode_reports_skips_in_the_summary) {
+    TextReporterOptions quiet = {0};
+    quiet.quiet_mode = true;
+    set_reporter_options(reporter, &quiet);
+
+    reporter->start_suite(reporter, "suite_name", 2);
+
+    reporter->start_test(reporter, "a_pass");
+    (*reporter->assert_true)(reporter, "file", 2, true, "");
+    send_reporter_completion_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, NULL);
+
+    reporter->start_test(reporter, "a_skip");
+    send_reporter_skipped_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, NULL);
+
+    reporter->finish_suite(reporter, "filename", line);
+
+    assert_that(output, contains_string("1 pass"));
+    assert_that(output, contains_string("1 skipped"));
+}
+
+/* Issue #335: a context that only suspended tests shows "S" in the dot stream. */
+Ensure(TextReporter, quiet_mode_marks_a_suspended_context_with_S) {
+    TextReporterOptions quiet = {0};
+    quiet.quiet_mode = true;
+    set_reporter_options(reporter, &quiet);
+
+    reporter->start_suite(reporter, "run", 1);
+    reporter->start_suite(reporter, "a_context", 1);
+    reporter->start_test(reporter, "a_skip");
+    send_reporter_skipped_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, NULL);
+    reporter->finish_suite(reporter, "filename", line);   /* nested context -> "S" */
+
+    assert_that(output, contains_string("S"));
+
+    reporter->finish_suite(reporter, "filename", line);   /* top-level -> summary */
+}
+
+/* Issue #335: a context with both a failure and a skip shows the more severe
+   "F" in the stream, but the skip is still tallied in the summary. */
+Ensure(TextReporter, quiet_mode_shows_F_but_still_tallies_a_skip_in_a_mixed_context) {
+    TextReporterOptions quiet = {0};
+    quiet.quiet_mode = true;
+    set_reporter_options(reporter, &quiet);
+
+    reporter->start_suite(reporter, "run", 1);
+    reporter->start_suite(reporter, "a_context", 2);
+
+    reporter->start_test(reporter, "a_skip");
+    send_reporter_skipped_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, NULL);
+
+    reporter->start_test(reporter, "a_fail");
+    (*reporter->assert_true)(reporter, "file", 2, false, "boom");
+    send_reporter_completion_notification(reporter);
+    reporter->finish_test(reporter, "filename", line, NULL);
+
+    reporter->finish_suite(reporter, "filename", line);   /* context -> "F", not "S" */
+    reporter->finish_suite(reporter, "filename", line);   /* top-level -> summary */
+
+    assert_that(strstr(output, "S"), is_null);            /* the stream char is F, not S */
+    assert_that(output, contains_string("skipped"));      /* but the skip is still tallied */
+}
+
 TestSuite *text_reporter_tests(void) {
     TestSuite *suite = create_test_suite();
     set_setup(suite, text_reporter_tests_setup);
@@ -195,6 +263,9 @@ TestSuite *text_reporter_tests(void) {
     add_test_with_context(suite, TextReporter, will_report_passed_for_test_with_one_pass_on_completion);
     add_test_with_context(suite, TextReporter, will_report_failed_once_for_each_fail);
     add_test_with_context(suite, TextReporter, will_report_non_finishing_test);
+    add_test_with_context(suite, TextReporter, quiet_mode_reports_skips_in_the_summary);
+    add_test_with_context(suite, TextReporter, quiet_mode_marks_a_suspended_context_with_S);
+    add_test_with_context(suite, TextReporter, quiet_mode_shows_F_but_still_tallies_a_skip_in_a_mixed_context);
 
     set_teardown(suite, text_reporter_tests_teardown);
     return suite;

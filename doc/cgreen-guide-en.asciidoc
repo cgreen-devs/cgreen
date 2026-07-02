@@ -2367,7 +2367,7 @@ is fairly straight-forward. But you have a few options:
 --no-run::       Don't run the tests
 --verbose::      Show progress information and list discovered tests
 --colours::      Use colours (or colors) to emphasis result (requires ANSI-capable terminal)
---quiet::        Be more quiet
+--quiet::        Output a single character per context (`.` pass, `S` suspended, `F` fail, `X` error) followed by a summary of the totals
 
 The `verbose` option is particularly handy since it will give you the actual names of all tests discovered.
 So if you have long test names you can avoid mistyping them by copying and pasting from the output of `cgreen-runner --verbose`.
