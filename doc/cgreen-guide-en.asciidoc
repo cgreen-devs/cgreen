@@ -1014,8 +1014,8 @@ So we added a simple `if` block to take the test name as an optional argument.
 The entire test suite will be searched for the named test.
 This trick also saves us a recompile when we debug.
 
-When you use the BDD notation you can only have a single test subject (which is actually equivalent of a suite) in a single file because you can only have one `Describe()` macro in each file.
-But using this strategy you can create composite suites that takes all your tests and run them in one go.
+When you use the BDD notation, each test subject is named by a `Describe()` macro and is the equivalent of a suite. Since *Cgreen* 1.6.5 you can have several `Describe()` macros in the same source file (before that each needed its own file).
+You can also create composite suites that gather tests from several files and run them in one go.
 
 CAUTION: Rewrite pending.
 The next couple of sections does not reflect the current best thinking.
@@ -3248,41 +3248,73 @@ You can use them to conditionally check for Cgreen features introduced as declar
 Since 1.2.0 Cgreen has featured a public version variable in the loaded library, `cgreen_library_version`.
 This is mainly used by the `cgreen-runner` to present version of the loaded library, but it can also be used to check for availability of features in the same way.
 
-=== 1.6.6
+=== Version 1.7.0
 
-- `will_set_contents_of_output_parameter()` (and its older name `will_set_contents_of_parameter()`) now copies the source data at the time of the `expect()` call instead of storing a pointer to it. The source no longer has to remain valid until the mocked function is called.
+- `will_set_contents_of_output_parameter()` (and its older name `will_set_contents_of_parameter()`) now copies the source data at the time of the `expect()` call instead of just storing a pointer to it. The source no longer has to remain valid until the mocked function is called.
+- Added `will_set_scalar_output_parameter()` to set a scalar (integer, `bool`, `enum` or pointer) out parameter directly, without a throwaway local and a `sizeof`.
+- `will_return_by_value()` no longer needs the `size` argument; it is derived from the value with `sizeof`. The two-argument form still works.
+- A mock called with a `NULL` out parameter no longer crashes -- the write is simply skipped.
+- In quiet mode (`-q`) suspended (`xEnsure`) and failed tests are now visible: each context shows `.`/`S`/`F`/`X` and a summary of the totals is printed at the end.
 
-=== 1.6.0
+=== Version 1.6.5
+
+- Added `skip_test()` to programatically skip an individual test
+- Allow multiple `Describe`s in a single source file
+- Renamed `will_set_contents_of_parameter()` to `will_set_contents_of_output_parameter()` for readability; the old name still works
+- Fixed C++ namespace handling for the constraint macros
+- Fixed segfaults when building with `CGREEN_WITH_STATIC_LIBRARY=ON`
+- The XML reporter no longer corrupts failure messages or captured output containing `%`
+- `is_equal_to_hex()` and the legacy `assert_equal()` no longer truncate 64-bit values in their failure messages
+- `cgreen_vector` now rejects a one-past-the-end index in `get`/`remove`, fixing an out-of-bounds access
+
+(1.6.4 was tagged but never published; its changes are included here.)
+
+=== Version 1.6.3
+
+- Fixed `will_capture_parameter()` on big-endian machines (found on s390x)
+- For an unexpected call to a mock, the failure now points to the test rather than the mocked function
+
+=== Version 1.6.2
+
+- Fixed a bug in the CUTE reporter
+- Improved zsh compatibility for the completion script (manual activation required)
+
+=== Version 1.6.1
+
+- Added `libxml2` as an alternative XML report formatter, enabled automatically when available
+- Side-effect constraints (`with_side_effect()`) are now evaluated last among an `expect()`'s constraints
+
+=== Version 1.6.0
 
 - Reverted use of `libbfd` introduced in 1.5.0 due to portability issues and Debian deeming it to be a serious bug due to `libbfd` not having a stable interface
 
-=== 1.5.1
+=== Version 1.5.1
 
 - Fixed a problem with `ends_with_string()` which randomly crashed
 
-=== 1.5.0
+=== Version 1.5.0
 
 - Replaced calling `nm` with BFD library calls, this makes the `cgreen-runner` a bit more fiddly to build on some systems
 - Introduced `will_capture_parameter()`
 
-=== 1.4.0
+=== Version 1.4.0
 
 - A memory leak in `will_return_by_value()` was fixed but now requires user deallocation.
 
-=== 1.3.0
+=== Version 1.3.0
 
 - Renamed CgreenValueType values to avoid clash, now all start with `CGREEN_`
 
-=== 1.2.0
+=== Version 1.2.0
 
 - Introduced `will_return_by_value()`
 - Introduced `with_side_effect()`
 
-=== 1.1.0
+=== Version 1.1.0
 
 None.
 
-=== 1.0.0
+=== Version 1.0.0
 
 First official non-beta release.
 

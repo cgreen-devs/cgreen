@@ -5,7 +5,7 @@ Maintainer: Thomas Nilefalk <thomas@nilefalk.se>
 Depends: libc6, libxml2
 Homepage: https://github.com/cgreen-devs/cgreen
 Package: cgreen1
-Version: 1.6.5
+Version: 1.7.0
 Architecture: amd64
 Description: Unit tests and mocking framework for C and C++
  A modern unit test and mocking framework for C and C++. Cgreen features
