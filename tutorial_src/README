@@ -1,0 +1,12 @@
+This directory contains source files and output for the examples in
+the tutorial documentataion. You should run these now and then and
+make sure that they compile and work.
+
+Note however that the guide includes specific lines from certain of
+these files, so if you change anything you need to be certain that the
+guide is still correct.
+
+On the other hand we will always know that the code in the guide
+actually works and is correct.
+
+You need mysql client header files to make some sources to compile.
