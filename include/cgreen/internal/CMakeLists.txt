@@ -11,6 +11,7 @@ set(cgreen_internal_HDRS
   runner_platform.h
   function_macro.h
   stringify_token.h
+  constraint_syntax_helpers_internal.h
 )
 
 install(

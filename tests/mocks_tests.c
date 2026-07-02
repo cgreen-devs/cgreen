@@ -544,6 +544,16 @@ Ensure(Mocks, can_return_by_value) {
     assert_that(actualStruct.height, is_equal_to(10));
 }
 
+Ensure(Mocks, can_return_by_value_without_a_size) {
+    Struct someStruct = {.height = 10, .weight = 20};
+    expect(retrieveStruct, will_return_by_value(someStruct));   /* size taken from sizeof(someStruct) */
+    someStruct.height = 30;
+
+    Struct actualStruct = retrieveStruct();
+    assert_that(actualStruct.weight, is_equal_to(20));
+    assert_that(actualStruct.height, is_equal_to(10));
+}
+
 Struct retrieveSpecialStruct(int structNumber) {
     Struct *struct_p = (Struct *)mock(structNumber);
     Struct the_struct = *struct_p;
@@ -606,6 +616,7 @@ TestSuite *mock_tests(void) {
     add_test_with_context(suite, Mocks, constraint_number_of_calls_order_of_expectations_matter);
     add_test_with_context(suite, Mocks, mock_expect_with_side_effect);
     add_test_with_context(suite, Mocks, can_return_by_value);
+    add_test_with_context(suite, Mocks, can_return_by_value_without_a_size);
     add_test_with_context(suite, Mocks, can_return_by_value_depending_on_input_parameter);
 
     return suite;

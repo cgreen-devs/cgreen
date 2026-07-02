@@ -976,8 +976,8 @@ $ cgreen-debug <library> <context>:<testname>
 The script will try to find a debugger, invoke it on the
 `cgreen-runner` and break on that test.
 
-NOTE: Currently it only supports `gdb` and will prefer `cgdb` if
-that's available.
+NOTE: Currently it supports `gdb` (will prefer `cgdb` if
+that's available) and `lldb`.
 
 
 === Building Composite Test Suites
@@ -1695,7 +1695,7 @@ will_set_scalar_output_parameter(count, 6L);        // a long
 will_set_scalar_output_parameter(small, (short)6);  // a short
 -----------------------
 
-IMPORTANT: The value's type must match the type of the variable the out parameter points to and is written into. This is your responsibility. *Cgreen* cannot know the actual size of the parameter in the `expect` as that is expanded compile-time with no access to the function declaration. If the widths disagree during run-time, you will write too few or too many bytes. When in doubt, cast the value to the correct size/type. (NOTE: A character literal like `'a'` is an `int` in C but a `char` in C++, so use `(char)'a'` for a `char` out parameter.)
+IMPORTANT: The value's type must match the type of the variable the out parameter points to and is written into. This is your responsibility. *Cgreen* cannot know the actual size of the parameter in the `expect` as that is expanded compile-time with no access to the function declaration. If the widths disagree during run-time, too few or too many bytes will be written. When in doubt, cast the value to the correct size/type. (NOTE: A character literal like `'a'` is an `int` in C but a `char` in C++, so use `(char)'a'` for a `char` out parameter.)
 
 For anything that is not a scalar -- a struct, a string, an array -- you need to use `will_set_contents_of_output_parameter()` with a pointer to the data and an explicit size:
 
@@ -1806,7 +1806,7 @@ In your mocked function you can then simply return that value, or manipulate it 
 |*Macro*                                                      |*`mock()` will...*
 |`will_return(value)`                                         | return `value`, for integer types
 |`will_return_double(value)`                                  | return `value` as a "boxed double", for double floats (required because of C's type coercion rules which would otherwise convert a double into an int)
-|`will_return_by_value(struct, size)`                         | return a pointer to an allocated copy of the `struct` that can be copied and returned by value from the mocked function
+|`will_return_by_value(struct [, size])`                      | return a pointer to an allocated copy of the `struct` that can be copied and returned by value from the mocked function; `size` is optional, defaults to `sizeof` the value, and is rarely necessary
 |`will_set_scalar_output_parameter(parameter_name, value)`| write the scalar `value` (an integer, `bool`, `enum` or pointer) into the referenced out parameter; the number of bytes is taken from the type of `value`
 |`will_set_contents_of_output_parameter(parameter_name, pointer_to_value, size)`| write `size` bytes from the pointed out value (`pointer_to_value`) into where the referenced out parameter (`parameter_name`) is pointing
 |`will_capture_parameter(parameter_name, local_variable)`     |capture the value of the parameter and store it in the named local variable
@@ -1857,7 +1857,7 @@ This feature only works for `expect()`.
 
 === Order of constraints
 
-When you have multiple constraints in an `expect` the order in which they are executed is not always exactly then order in which they where given.
+When you have multiple constraints in an `expect` the order in which they are executed is not always exactly the order in which they where given.
 
 First all constraints are inspected for validity, such as if the parameter name given cannot be found, but primarily to see if the parameters, if any, matche the actual parameters in the call.
 
@@ -1937,7 +1937,7 @@ or even
 
 === Handling out-parameters
 
-TBD. Hint: this involves using `will_set_contents_of_output_parameter()`.
+TBD. Hint: this involves using `will_set_scalar_output_parameter()` and `will_set_contents_of_output_parameter()`.
 
 === Returning `struct`
 
@@ -1946,17 +1946,17 @@ To do this we must use specific return macro, `will_return_by_value()`.
 Below is some example code using an imaginary struct typedef'ed as `Struct` and a corresponding function, `retrieve_struct()`, which we want to mock.
 
 The underlying mechanism of this is that in the test we create the struct that we want to return.
-The macro `will_return_by_value()` then copies that to a dynamically allocated area, saving it so that a pointer to that area can be returned by `mock()`.
+The macro `will_return_by_value()` then copies that to a dynamically allocated area, saving it so that it can be returned by `mock()`.
 
 [source,c]
 -----------------------
   Struct returned_struct = {...};
   expect(retrieve_struct,
-         will_return_by_value(returned_struct, sizeof(Struct));
+         will_return_by_value(returned_struct));
          /* `returned_struct` has been copied to an allocated area */
 -----------------------
 
-NOTE: In some future version the `size` argument will be removed from `will_return_by_value()` size since the macro can easily calculate that for you.
+NOTE: `will_return_by_value` has an optional `size` argument. When omitted, the macro uses `sizeof` the value; passing it explicitly lets you override the size if you ever need to.
 
 
 The mock function will then look like this:

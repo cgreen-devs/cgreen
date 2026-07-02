@@ -6,6 +6,7 @@
 #ifdef __cplusplus
 #include <cgreen/cpp_constraint.h>
 #endif
+#include <cgreen/internal/constraint_syntax_helpers_internal.h>
 #include <stdint.h>
 
 /* we normally want to favor delegating functions (for namespacing,
@@ -55,7 +56,7 @@
 
 #define with_side_effect(callback, data) __CGREEN_NAMESPACE_PREFIX create_with_side_effect_constraint(callback, data)
 #define will_return(value) __CGREEN_NAMESPACE_PREFIX create_return_value_constraint((intptr_t)(value))
-#define will_return_by_value(value, size) __CGREEN_NAMESPACE_PREFIX create_return_by_value_constraint((intptr_t)&(value), size)
+#define will_return_by_value(...) will_return_by_value_NARG(__VA_ARGS__)(__VA_ARGS__)
 #define will_return_double(value) __CGREEN_NAMESPACE_PREFIX create_return_double_value_constraint(value)
 #define will_set_contents_of_parameter(parameter_name, pointer_to_value, size) __CGREEN_NAMESPACE_PREFIX create_set_parameter_value_constraint(#parameter_name, (intptr_t)(pointer_to_value), (size_t)(size))
 #define will_set_contents_of_output_parameter(parameter_name, pointer_to_value, size) __CGREEN_NAMESPACE_PREFIX create_set_parameter_value_constraint(#parameter_name, (intptr_t)(pointer_to_value), (size_t)(size))
