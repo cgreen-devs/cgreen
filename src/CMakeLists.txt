@@ -7,8 +7,14 @@ else()
     # Use the git version if Git is available and the .git directory is found.
     # NOTE: $GITDIR is determined in top-level CMakeLists.txt
     execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --always --abbrev=7 --dirty=-modified
+                    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
                     OUTPUT_VARIABLE GITREVISION
+                    RESULT_VARIABLE GITREVISION_RESULT
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if (NOT GITREVISION_RESULT EQUAL 0)
+      message(WARNING "-- Unable to determine git revision. Setting git revision to 'unknown'.")
+      set(GITREVISION "built from unknown git commit")
+    endif()
   else()
     # No version control
     # e.g. when the software is built from a source tarball
