@@ -31,13 +31,13 @@ arch=`arch`
 if [ $arch == "arm64" ] ; then
     buildfor arm64
     if [ ! -f libcgreen.x86_64.dylib ] ; then
-       echo "You need to run this aldo in an x86_64 environment to create fat binaries."
+       echo "You need to run this also in an x86_64 environment to create fat binaries."
        exit
     fi
 else
     buildfor x86_64
     if [ ! -f libcgreen.arm64.dylib ] ; then
-       echo "You need to run this in an arm64 environment to create fat binaries."
+       echo "You need to run this also in an arm64 environment to create fat binaries."
        exit
     fi
 fi
