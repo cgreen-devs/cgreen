@@ -38,7 +38,7 @@ set(CGREEN_PRIVATE_INCLUDE_DIRS
 
 if (MSVC)
   LIST(APPEND CGREEN_PRIVATE_INCLUDE_DIRS
-    ${PROJECT_SOURCE_DIR}/../include/cgreen/internal/windows_headers
+    ${PROJECT_SOURCE_DIR}/include/cgreen/internal/windows_headers
   )
 endif(MSVC)
 
