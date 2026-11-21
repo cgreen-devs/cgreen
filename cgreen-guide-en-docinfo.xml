@@ -1,0 +1,47 @@
+<!--
+  article-docinfo.xml
+  Example DocBook document information file for article.txt.
+-->
+
+<authorgroup>
+  <author>
+    <firstname>Marcus</firstname>
+    <surname>Baker</surname>
+    <othername>lastcraft</othername>
+    <email>marcus@lastcraft.com</email>
+  </author>
+
+  <author>
+    <firstname>João</firstname>
+    <surname>Freitas</surname>
+    <othername>joaohf</othername>
+    <email>joaohf@gmail.com</email>
+  </author>
+
+  <author>
+    <firstname>Thomas</firstname>
+    <surname>Nilefalk</surname>
+    <othername>thoni56</othername>
+    <email>thomas@junovagen.se</email>
+  </author>
+
+</authorgroup>
+
+<edition>Cgreen Unit Test for C language</edition>
+
+<copyright>
+  <year>2012</year>
+  <holder>Cgreen Team</holder>
+</copyright>
+
+<legalnotice>
+<para>Permission to use, copy, modify and distribute.</para>
+</legalnotice>
+
+<legalnotice>
+<para>The copyright holders make no representation about the suitability of
+this document for any purpose. It is provided
+<quote>as is</quote> without expressed or implied warranty.</para>
+</legalnotice>
+
+
